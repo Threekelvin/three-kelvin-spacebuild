@@ -1,0 +1,6 @@
+"Gamemode"
+{
+	"base"		"sandbox"
+	"title"		"3K Spacebuild"
+	"maps"		"^sb_"
+}
