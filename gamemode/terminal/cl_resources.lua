@@ -32,8 +32,8 @@ local function MakePanel(res, val, btnl, btnr)
 		end
 		
 		btn.txtbox.style = {"dim"}
-		btn.txtbox.Paint = function(panel, w, h)
-			derma.SkinHook("Paint", "TKTextBox", btn.txtbox, w, h)
+		btn.txtbox.Paint = function(txtbox, w, h)
+			derma.SkinHook("Paint", "TKTextBox", txtbox, w, h)
 			return true
 		end
 	end
@@ -44,7 +44,7 @@ local function MakePanel(res, val, btnl, btnr)
 		end
 	end
 	
-	btn.Paint = function(panel, w, h)
+	btn.Paint = function(btn, w, h)
 		derma.SkinHook("Paint", "TKResPanel", btn, w, h)
 		return true
 	end
@@ -257,10 +257,10 @@ function PANEL:Think()
 	
 	//-- Station Storage --\\
 	for k,v in pairs(self.storage.list) do
-		if !Storage[k] then
-			self.storage:RemoveItem(self.storage.list[k])
-			self.storage.list[k] = nil
-		end
+		if Storage[k] then continue end
+        
+        self.storage:RemoveItem(self.storage.list[k])
+        self.storage.list[k] = nil
 	end
 	
 	for k,v in pairs(Storage) do

@@ -204,10 +204,6 @@ local function ToggleAutoRefine(ply, uid, arg)
 end
 ///--- ---\\\
 
-///--- Market ---\\\
-
-///--- ---\\\
-
 ///--- Research ---\\\
 local function AddResearch(ply, uid, arg)
 	local dir, idx = arg[1], arg[2]
@@ -233,6 +229,14 @@ local function AddResearch(ply, uid, arg)
 		TK:UpdateDeviceData(ply, 2)
 	end
 end
+///--- ---\\\
+
+///--- Loadout ---\\\
+
+///--- ---\\\
+
+///--- Market ---\\\
+
 ///--- ---\\\
 
 ///--- Terminal ConCommand ---\\\

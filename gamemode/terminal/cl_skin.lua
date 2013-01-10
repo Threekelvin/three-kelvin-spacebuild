@@ -23,6 +23,8 @@ SKIN.link2 		= 	Color(0,200,0)
 SKIN.link3 		= 	Color(0,0,200)
 SKIN.link4 		= 	Color(200,200,200)
 
+SKIN.lock       = Material("icon32/lock.png")
+
 ///--- Frames ---\\\
 function SKIN:PaintTKFrame(panel, w, h)
 	draw.RoundedBox(4, 0, 0, w, h, self.dark)
@@ -221,7 +223,7 @@ function SKIN:PaintTKLoadout(panel, w, h)
     
     draw.RoundedBox(4, 500, 75, 270, 450, self.normal)
     draw.RoundedBox(4, 505, 80, 260, 40, self.dark)
-    draw.SimpleText("Inventory", "TKFont25", 635, 87.5, self.text, TEXT_ALIGN_CENTER)
+    draw.SimpleText("Items", "TKFont25", 635, 87.5, self.text, TEXT_ALIGN_CENTER)
     
     if panel.Error then
 		draw.RoundedBox(4, 5, 45, 765, 25, self.warning)
@@ -257,6 +259,41 @@ function SKIN:PaintTKButton(btn, w, h)
 		draw.RoundedBox(4, 0, 0, w, h, self[btn.style[2]])
 	end
 	draw.SimpleText(btn.text || "", "TKFont25", w / 2, h / 2, self.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+function SKIN:PaintTKLOButton(btn, w, h)
+    if tobool(btn.loadout["slot_".. btn.id .."_locked"]) then
+        surface.SetMaterial(self.lock)
+        surface.SetDrawColor(255, 255, 255, 255)
+        surface.DrawTexturedRect(w / 2 - 16, h / 2 - 16, 32, 32)
+        return 
+    end
+    
+    if !IsValid(btn.Entity) then return end
+	
+	local x, y = btn:LocalToScreen(0, 0)
+	
+	btn.Entity:SetAngles(Angle(0, RealTime() * 10, 0))
+
+	local ang = (btn.vLookatPos-btn.vCamPos):Angle()
+	local w, h = btn:GetSize()
+	cam.Start3D(btn.vCamPos, ang, 70, x, y, w, h, 5, 4096)
+        cam.IgnoreZ(true)
+	
+        render.SuppressEngineLighting(true)
+        render.SetLightingOrigin(btn.Entity:GetPos())
+        render.ResetModelLighting(50 / 255, 50 / 255, 50 / 255)
+        render.SetColorModulation(1, 1, 1)
+        render.SetBlend(1)
+
+        render.SetModelLighting(BOX_TOP, 1, 1, 1)
+        render.SetModelLighting(BOX_FRONT, 1, 1, 1)
+
+        btn.Entity:DrawModel()
+        
+        render.SuppressEngineLighting( false )
+        cam.IgnoreZ(false)
+	cam.End3D()
 end
 ///--- ---\\\
 
@@ -296,6 +333,13 @@ function SKIN:PaintTKUpPanel(btn, w, h)
 	surface.SetMaterial(TerminalData.Icons[btn.data.icon || "default"])
 	surface.SetDrawColor(255, 255, 255, 255)
 	surface.DrawTexturedRect(5, 5, 64, 64)
+end
+
+function SKIN:PaintTKResPanel(btn, w, h)
+	draw.RoundedBox(4, 0, 0, w, h, self.light)
+	draw.RoundedBox(4, h, 5, w - 65, 25, self.dark)
+	draw.SimpleText(btn.item.name, "TKFont15", h + 5, 17.5, self.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	draw.RoundedBox(4, h, 40, w - 65, 20, self.dim)
 end
 ///--- ---\\\
 

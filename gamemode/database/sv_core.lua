@@ -7,8 +7,6 @@ local MySQL = {}
 local PlayerData = {}
 
 ///--- MySql Settings ---\\\
-MySQL.LoadTables = CreateConVar("3k_mysql_create_tables", 1, FCVAR_ARCHIVE)
-
 MySQL.SQLSettings = {
 	Host = "127.0.0.1",
 	Port = 3306,
@@ -35,17 +33,17 @@ function MySQL.NetworkValue(ply, idx, Data)
 	if idx == "name" then
 		ply:SetNWString("TKName", Data)
 	elseif idx == "playtime" then
-		ply:SetNWInt("TKPlaytime", Data)
+		ply:SetNWInt("TKPlaytime", tonumber(Data))
 	elseif idx == "score" then
-		ply:SetNWInt("TKScore", Data)
+		ply:SetNWInt("TKScore", tonumber(Data))
 	elseif idx == "rank" then
-		TK.AM:SetRank(ply, Data)
+		TK.AM:SetRank(ply, tonumber(Data))
 	elseif idx == "team" then
-		ply:SetTeam(Data)
+		ply:SetTeam(tonumber(Data))
 	elseif idx == "team_rank" then
-		ply:SetNWInt("TKTeamRank", Data)
+		ply:SetNWInt("TKTeamRank", tonumber(Data))
 	elseif idx == "leader" then
-		ply:SetNWInt("TKLeader", Data)
+		ply:SetNWInt("TKLeader", tonumber(Data))
 	end
 end
 
@@ -61,14 +59,10 @@ function MySQL.Setup()
 			net.WriteInt(time, 32)
 		net.Broadcast()
 	end)
-	
-	if MySQL.LoadTables:GetBool() then
-		RunConsoleCommand("3k_mysql_create_tables", 0)
-		
-		for k,v in pairs(TK.DB:GetCreateQueries()) do
-			MySQL.MakePriorityQuery(v)
-		end
-	end
+
+    for k,v in pairs(TK.DB:GetCreateQueries()) do
+        MySQL.MakePriorityQuery(v)
+    end
 end
 
 function MySQL.ProcessQuery(data)
@@ -163,9 +157,19 @@ function TK.DB:SetPlayerData(ply, dbtable, content)
 		if data[k] != v then
 			net.Start("DB_Sync")
 				net.WriteString(dbtable)
-				net.WriteBit(type(v) == "number")
-				net.WriteString("_".. k)
-				net.WriteString("_".. tostring(v))
+				net.WriteString(k)
+                
+                local typ = type(v)
+                if typ == "number" then
+                    net.WriteInt(1, 4)
+                    net.WriteFloat(tonumber(v))
+                elseif typ == "string" then
+                    net.WriteInt(2, 4)
+                    net.WriteString(tostring(v))
+                elseif typ == "table" then
+                    net.WriteInt(3, 4)
+                    net.WriteTable(v)
+                end
 			net.Send(ply)
 			
 			MySQL.NetworkValue(ply, k, v)
@@ -217,7 +221,7 @@ function MySQL.LoadPlayerData(ply, steamid, ip, uid)
 			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_info", {{"steamid", steamid}, {"name", ply:Name()}}))
 			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_team", {{"steamid", steamid}}))
             MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_loadout", {{"steamid", steamid}}))
-            MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_inventory", {{"steamid", steamid}, {"inventory", "[]"}}))
+            MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_inventory", {{"steamid", steamid}, {"inventory", util.TableToJSON({1, 2, 3, 4})}}))
 			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_setting", {{"steamid", steamid}}))
 			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_storage", {{"steamid", steamid}}))
 			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_refinery", {{"steamid", steamid}}))

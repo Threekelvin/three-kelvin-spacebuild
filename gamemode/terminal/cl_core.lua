@@ -146,8 +146,24 @@ function Terminal:Open()
 	if !Terminal.Menu then
 		Terminal:Create()
 	else
-		Terminal.Menu.startTime = SysTime()
+		hook.Remove("GUIMousePressed", "OuterClickClose")
+		hook.Remove("KeyRelease", "ReleaseClose")
+		timer.Simple(1, function()
+			hook.Add("GUIMousePressed", "OuterClickClose", function(mc)
+				if !vgui.IsHoveringWorld() then return end
+				if !IsValid(Terminal.Menu) then return end
+				Terminal.Menu:SetVisible(false)
+				hook.Remove("GUIMousePressed", "OuterClickClose")
+			end)
+			hook.Add("KeyRelease", "ReleaseClose", function(ply, key)
+				if !( key == IN_USE ) then return end
+				if !IsValid(Terminal.Menu) then return end
+				Terminal.Menu:SetVisible(false)
+				hook.Remove("KeyRelease", "ReleaseClose")
+			end)
+		end)
 		Terminal.Menu:SetVisible(true)
+		Terminal.Menu.startTime = SysTime()
 	end
 	gamemode.Call("TKOpenTerminal")
 end

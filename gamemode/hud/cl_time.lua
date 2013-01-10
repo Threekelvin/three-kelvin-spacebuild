@@ -24,6 +24,16 @@ function Hud:CreateData()
 		{x = self.width - self.longEdge, y = 0}
 	}
 	self.verticies = {}
+	
+	self.MOTDSpeed = 20
+	self.MOTD = vgui.Create( "DPanel" )
+		self.MOTDtext = vgui.Create( "DLabel", self.MOTD )
+		self.MOTDtext:SetFont( self.font )
+		self.MOTDtext:SetText( "Message of the Day" )
+		self.MOTDtext:SizeToContents()
+	self.MOTD:SetSize( self.longEdge - 10, self.MOTD.Text:GetTall() )
+	self.MOTD:SetPos( Hud.width - 5 - self.MOTD:GetWide(), self.tallEdge - 3 - self.MOTD:GetTall() )
+		self.MOTDtext:SetPos( self.MOTD:GetWide(), 0 )
 end
 
 function Hud:RotateVerticies(angle)
@@ -60,6 +70,8 @@ function Hud:ShowHide()
     if self.angleRatio == 0 || self.angleRatio == 100 then 
         self.moving = false 
     end
+	
+	Hud.MOTD:SetVisible( Hud.show:GetBool() )
 end
 
 hook.Add("GUIMousePressed", "TKPH_Time", function(mc)
@@ -80,6 +92,13 @@ hook.Add("HUDPaint", "TKPH_Time", function()
 	end
 	
 	Hud:ShowHide()
+	
+	//-- MOTD Scroll --\\
+	local x = 0
+	if !( self.MOTDtext:GetPos().x < -self.MOTDtext:GetWide() ) then
+		x = self.MOTDtext:GetPos().x - self.MOTDSpeed*FrameTime()
+	end
+	self.MOTDtext:SetPos( x, 0 )
 	
 	//-- Backround --\\
 	surface.SetTexture(0)

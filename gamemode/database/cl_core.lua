@@ -6,14 +6,16 @@ local OSTime = 0
 net.Receive("DB_Sync", function()
 	local dbtable = net.ReadString()
 	PlayerData[dbtable] = PlayerData[dbtable] || {}
-	
-	if net.ReadBit() == 1 then
-		local dir, value = string.sub(net.ReadString(), 2), string.sub(net.ReadString(), 2)
-		PlayerData[dbtable][dir] = tonumber(value)
-	else
-		local dir, value = string.sub(net.ReadString(), 2), string.sub(net.ReadString(), 2)
-		PlayerData[dbtable][dir] = value
-	end
+    local dir = net.ReadString()
+    local typ = net.ReadInt(4)
+    
+    if typ == 1 then
+        PlayerData[dbtable][dir] = tonumber(net.ReadFloat())
+    elseif typ == 2 then
+        PlayerData[dbtable][dir] = tostring(net.ReadString())
+    elseif typ == 3 then
+        PlayerData[dbtable][dir] = net.ReadTable()
+    end
 end)
 
 net.Receive("DB_Time", function()
