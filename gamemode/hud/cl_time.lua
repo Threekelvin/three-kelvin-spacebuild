@@ -27,13 +27,17 @@ function Hud:CreateData()
 	
 	self.MOTDSpeed = 20
 	self.MOTD = vgui.Create( "DPanel" )
+	self.MOTD.Paint = function() return true end
 		self.MOTDtext = vgui.Create( "DLabel", self.MOTD )
 		self.MOTDtext:SetFont( self.font )
+		self.MOTDtext:SetColor( TK.HUD.Colors.text )
 		self.MOTDtext:SetText( "Message of the Day" )
 		self.MOTDtext:SizeToContents()
-	self.MOTD:SetSize( self.longEdge - 10, self.MOTD.Text:GetTall() )
+	self.MOTD:SetSize( self.shortEdge - 10, self.MOTDtext:GetTall() )
 	self.MOTD:SetPos( Hud.width - 5 - self.MOTD:GetWide(), self.tallEdge - 3 - self.MOTD:GetTall() )
 		self.MOTDtext:SetPos( self.MOTD:GetWide(), 0 )
+	self.MOTD:SetVisible(false)
+	self.MOTD.xCur = self.MOTD:GetWide()
 end
 
 function Hud:RotateVerticies(angle)
@@ -62,16 +66,15 @@ function Hud:ShowHide()
 			self.angleRatio = 100
 		end
 	end
-    
-    if !self.moving then return end
-    
+
+    if !self.moving then return	end
+
     self:RotateVerticies(-self.maxang * self.angleRatio / 100)
     
-    if self.angleRatio == 0 || self.angleRatio == 100 then 
+    if self.angleRatio == 0 || self.angleRatio == 100 then
+		self.MOTD:SetVisible( self.show:GetBool() )
         self.moving = false 
     end
-	
-	Hud.MOTD:SetVisible( Hud.show:GetBool() )
 end
 
 hook.Add("GUIMousePressed", "TKPH_Time", function(mc)
@@ -82,6 +85,7 @@ hook.Add("GUIMousePressed", "TKPH_Time", function(mc)
     if y < Hud.tallEdge && x > Hud.width - Hud.longEdge then
 		surface.PlaySound("garrysmod/ui_return.wav")
 		RunConsoleCommand("3k_show_hud_time", Hud.show:GetBool() && 0 || 1)
+		Hud.MOTD:SetVisible(false)
 	end
 end)
 
@@ -90,15 +94,18 @@ hook.Add("HUDPaint", "TKPH_Time", function()
 	if Hud.width != surface.ScreenWidth() then
 		Hud:CreateData()
 	end
-	
+
 	Hud:ShowHide()
-	
+
 	//-- MOTD Scroll --\\
-	local x = 0
-	if !( self.MOTDtext:GetPos().x < -self.MOTDtext:GetWide() ) then
-		x = self.MOTDtext:GetPos().x - self.MOTDSpeed*FrameTime()
+	if ( Hud.MOTD:IsVisible() ) then
+		local x = Hud.MOTD.xCur
+		Hud.MOTD.xCur = Hud.MOTD:GetWide()
+		if !( x < -Hud.MOTDtext:GetWide() ) then
+			Hud.MOTD.xCur = x - Hud.MOTDSpeed*FrameTime()
+		end
+		Hud.MOTDtext:SetPos( Hud.MOTD.xCur, 0 )
 	end
-	self.MOTDtext:SetPos( x, 0 )
 	
 	//-- Backround --\\
 	surface.SetTexture(0)
@@ -118,6 +125,6 @@ hook.Add("HUDPaint", "TKPH_Time", function()
     surface.SetFont(Hud.font)
     local x, y = surface.GetTextSize("00:00:00")
     
-    draw.SimpleText("Playtime: "..TK:FormatTime(info.playtime), Hud.font, Hud.width - 5, 3, Hud.textcolor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
-	draw.SimpleText(os.date("%H:%M:%S"), Hud.font, Hud.width - x - 5, Hud.tallEdge / 2, Hud.textcolor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText("Playtime: "..TK:FormatTime(info.playtime), Hud.font, Hud.width - 5, 3, TK.HUD.Colors.text, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
+	draw.SimpleText(os.date("%H:%M:%S"), Hud.font, Hud.width - x - 5, Hud.tallEdge / 2, TK.HUD.Colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end)
