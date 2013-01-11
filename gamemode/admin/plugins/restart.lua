@@ -13,20 +13,14 @@ if SERVER then
 			v:ConCommand("playgamesound "..sound)
 		end
 	end
-	
-	util.AddNetworkString("ADD_HUD_WARNING")
-	local function addHUDwarning( message )
-		net.Start( "ADD_HUD_WARNING" )
+
+	util.AddNetworkString("HUD_WARNING")
+	local function HUDwarning( ply, message )
+		net.Start( "HUD_WARNING" )
 			net.WriteString( message )
-		net.Broadcast()
+		net.Send( ply )
 	end
-	
-	util.AddNetworkString("CLEAR_HUD_WARNING")
-	local function clearHUDwarning()
-		net.Start( "CLEAR_HUD_WARNING" )
-		net.Broadcast()
-	end
-	
+
 	function PLUGIN.Call(ply, arg)
 		if ply:HasAccess(PLUGIN.Level) then
 			if !Restart then
@@ -35,7 +29,7 @@ if SERVER then
 					return
 				end
 				Restart = true
-				addHUDwarning( "Restart in progress..." )
+				HUDwarning( player.GetAll(), "Restart in progress..." )
 				RunConsoleCommand("sv_password", "restarting")
 				local Time = math.Clamp(tonumber(arg[1]) || 120, 10, 120)
 				
@@ -78,7 +72,7 @@ if SERVER then
 				end)
 			else
 				Restart = false
-				clearHUDwarning()
+				HUDwarning( player.GetAll(), "" )
 				RunConsoleCommand("sv_password", "")
 				timer.Remove("server_restart")
 				TK.AM:StopSounds()

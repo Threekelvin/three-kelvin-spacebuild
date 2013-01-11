@@ -31,7 +31,7 @@ function Hud:CreateData()
 		self.MOTDtext = vgui.Create( "DLabel", self.MOTD )
 		self.MOTDtext:SetFont( self.font )
 		self.MOTDtext:SetColor( TK.HUD.Colors.text )
-		self.MOTDtext:SetText( "Message of the Day" )
+		self.MOTDtext:SetText( TK.HUD.MOTDs[TK.HUD.MOTDindex] )
 		self.MOTDtext:SizeToContents()
 	self.MOTD:SetSize( self.shortEdge - 10, self.MOTDtext:GetTall() )
 	self.MOTD:SetPos( Hud.width - 5 - self.MOTD:GetWide(), self.tallEdge - 3 - self.MOTD:GetTall() )
@@ -103,6 +103,8 @@ hook.Add("HUDPaint", "TKPH_Time", function()
 		Hud.MOTD.xCur = Hud.MOTD:GetWide()
 		if !( x < -Hud.MOTDtext:GetWide() ) then
 			Hud.MOTD.xCur = x - Hud.MOTDSpeed*FrameTime()
+		else
+			TK.HUD.NextMOTD()
 		end
 		Hud.MOTDtext:SetPos( Hud.MOTD.xCur, 0 )
 	end

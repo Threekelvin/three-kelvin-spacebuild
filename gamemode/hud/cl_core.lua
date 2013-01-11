@@ -43,12 +43,29 @@ TK.HUD.Colors = {
 
 TK.HUD.WARNING = false
 
-net.Receive( "ADD_HUD_WARNING", function()
-	TK.HUD.WARNING = net.ReadString()
+net.Receive( "HUD_WARNING", function()
+	local message = net.ReadString()
+	if message:gsub("%s+", "") != "" then
+		TK.HUD.WARNING = message
+		TK.HUD.Time.MOTDtext:SetText( message )
+		TK.HUD.Time.MOTDtext:SizeToContents()
+	else
+		TK.HUD.WARNING = false
+		TK.HUD.NextMOTD()
+	end
 end)
-net.Receive( "CLEAR_HUD_WARNING", function()
-	TK.HUD.WARNING = false
-end)
+
+TK.HUD.MOTDs = {
+	"Welcome to Three Kelvin Spacebuild!",
+	"This server has Audio Emotes! Bind +Audio_EmotePanel_Show to see the menu."
+}
+TK.HUD.MOTDindex = 1
+
+function TK.HUD.NextMOTD()
+	TK.HUD.MOTDindex = ( TK.HUD.MOTDindex % table.Count( TK.HUD.MOTDs ) ) + 1
+	TK.HUD.Time.MOTDtext:SetText( TK.HUD.MOTDs[TK.HUD.MOTDindex] )
+	TK.HUD.Time.MOTDtext:SizeToContents()
+end
 
 hook.Add("HUDPaint", "TKHUD_Admin", function()
     if !IsValid(LocalPlayer()) then return end

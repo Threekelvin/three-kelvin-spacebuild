@@ -22,7 +22,7 @@ if SERVER then
 					TK.AM:SystemMessage({ply, " Has Kicked ", tar})
 					game.ConsoleCommand("kickid "..tar:SteamID().." "..reason.."\n")
 				else
-					TK.AM:SystemMessage({"You Can Not Kick ", tar}, {ply}, 2)	
+					TK.AM:SystemMessage({"You cannot Kick ", tar}, {ply}, 2)	
 				end
 			end
 		else
