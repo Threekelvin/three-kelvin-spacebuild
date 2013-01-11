@@ -3,6 +3,7 @@ local PANEL = {}
 
 local function MakePanel(panel, slot, id, item)
     local btn = vgui.Create("DButton")
+    btn.active = true
     btn.slot = slot
     btn.id = id
     btn.item = item
@@ -13,6 +14,10 @@ local function MakePanel(panel, slot, id, item)
         return true
     end
     btn.DoClick = function()
+        if !btn.active then return end
+        btn.active = false
+        timer.Simple(1, function() if IsValid(btn) then btn.active = true end end)
+        
         surface.PlaySound("ui/buttonclickrelease.wav")
         panel.Terminal.AddQuery("setslot", btn.slot, btn.id, btn.item.idx)
     end
@@ -44,25 +49,7 @@ local function MakeSlot(panel, slot, id)
         
         btn.Entity:SetNoDraw(true)
     end
-    
-    btn.Think = function()
-        local itemid = btn.loadout[btn.slot.. "_" ..btn.id.. "_item"]
-        if !itemid || itemid == btn.item then return end
-        btn.item = itemid
-        local item = TK.IL:GetItem(itemid)
-        
-        btn:SetToolTip(item.name)
-        btn:SetModel(item.mdl)
-        btn.vCamPos = Vector(item.r, item.r, item.r)
-        btn.vLookatPos = Vector(0 ,0 , item.r / 2)
-    end
-    btn.Paint = function(btn, w, h)
-        derma.SkinHook("Paint", "TKLOButton", btn, w, h)
-        return true
-    end
-    btn.DoClick = function()
-        if tobool(btn.loadout[btn.slot.. "_" ..btn.id.. "_locked"]) then return end
-        surface.PlaySound("ui/buttonclickrelease.wav")
+    btn.MakeList = function(btn)
         panel.items:Clear(true)
         
         local validitems = {}
@@ -84,6 +71,29 @@ local function MakeSlot(panel, slot, id)
         for k,v in pairs(validitems) do
             panel.items:AddItem(MakePanel(panel, btn.slot, btn.id, TK.IL:GetItem(v)))
         end
+    end
+    
+    btn.Think = function()
+        local itemid = btn.loadout[btn.slot.. "_" ..btn.id.. "_item"]
+        if !itemid || itemid == btn.item then return end
+        btn.item = itemid
+        local item = TK.IL:GetItem(itemid)
+        
+        btn:SetToolTip(item.name)
+        btn:SetModel(item.mdl)
+        btn.vCamPos = Vector(item.r, item.r, item.r)
+        btn.vLookatPos = Vector(0 ,0 , item.r / 2)
+        
+        btn:MakeList()
+    end
+    btn.Paint = function(btn, w, h)
+        derma.SkinHook("Paint", "TKLOButton", btn, w, h)
+        return true
+    end
+    btn.DoClick = function()
+        if tobool(btn.loadout[btn.slot.. "_" ..btn.id.. "_locked"]) then return end
+        surface.PlaySound("ui/buttonclickrelease.wav")
+        btn:MakeList()
     end
     
     return btn

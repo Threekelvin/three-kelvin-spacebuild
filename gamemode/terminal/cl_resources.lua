@@ -51,22 +51,23 @@ local function MakePanel(res, val, btnl, btnr)
 	
 	if btnl then
 		btn.DoClick = function()
-			if btn.active then
-				btn.active = false
-				timer.Simple(1, function() if IsValid(btn) then btn.active = true end end)
-				surface.PlaySound("ui/buttonclickrelease.wav")
-				pcall(btnl, btn)
-			end
+			if !btn.active then return end
+            btn.active = false
+            timer.Simple(1, function() if IsValid(btn) then btn.active = true end end)
+            
+            surface.PlaySound("ui/buttonclickrelease.wav")
+            pcall(btnl, btn)
 		end
 	end
+    
 	if btnr then
 		btn.DoRightClick = function()
-			if btn.active then
-				btn.active = false
-				timer.Simple(1, function() if IsValid(btn) then btn.active = true end end)
-				surface.PlaySound("ui/buttonclickrelease.wav")
-				pcall(btnr, btn)
-			end
+			if !btn.active then return end
+            btn.active = false
+            timer.Simple(1, function() if IsValid(btn) then btn.active = true end end)
+            
+            surface.PlaySound("ui/buttonclickrelease.wav")
+            pcall(btnr, btn)
 		end
 	end
 
@@ -84,11 +85,11 @@ local function SelectButton(panel, frame, entid, ent)
 	btn:SetText("")
 	
 	btn.DoClick = function()
-		if IsValid(btn.ent) then
-			surface.PlaySound("ui/buttonclickrelease.wav")
-			panel.ActiveNode = btn.ent
-			frame:Remove()
-		end
+		if !IsValid(btn.ent) then return end
+        
+        surface.PlaySound("ui/buttonclickrelease.wav")
+        panel.ActiveNode = btn.ent
+        frame:Remove()
 	end
 	
 	btn.style = {"normal", "dim"}
@@ -122,31 +123,27 @@ local function SelectNode(panel)
 		
 		local Nodes = {}
 		for k,v in pairs(ents.FindByClass("rd_node")) do
-			if v:CPPIGetOwner() == LocalPlayer() then
-				table.insert(Nodes, v)
-			end
+			if v:CPPIGetOwner() != LocalPlayer() then continue end
+			table.insert(Nodes, v)
 		end
 		
 		for k,v in pairs(nodes.list) do
-			if !IsValid(v) then
-				nodes:RemoveItem(nodes.list[k])
-				nodes.list[k] = nil
-			end
+			if IsValid(v) then continue end
+            nodes:RemoveItem(nodes.list[k])
+            nodes.list[k] = nil
 		end
 		
 		for k,v in pairs(Nodes) do
 			local id = v:EntIndex()
 			if (v:GetPos() - TK.TerminalPlanet.Pos):LengthSqr() <= TK.TerminalPlanet.Size then
-				if !nodes.list[id] then
-					local btn = SelectButton(panel, mouseblock, id, v)
-					nodes.list[id] = btn
-					nodes:AddItem(btn)
-				end
+				if nodes.list[id] then continue end
+                local btn = SelectButton(panel, mouseblock, id, v)
+                nodes.list[id] = btn
+                nodes:AddItem(btn)
 			else
-				if nodes.list[id] then
-					nodes:RemoveItem(nodes.list[id])
-					nodes.list[id] = nil
-				end
+				if !nodes.list[id] then continue end
+                nodes:RemoveItem(nodes.list[id])
+                nodes.list[id] = nil
 			end
 		end
 	end
@@ -246,12 +243,11 @@ function PANEL:Think()
 	
 	if !IsValid(self.ActiveNode) then
 		for k,v in pairs(ents.FindByClass("rd_node")) do
-			if v:CPPIGetOwner() == LocalPlayer() then
-				if (v:GetPos() - TK.TerminalPlanet.Pos):LengthSqr() <= TK.TerminalPlanet.Size then
-					self.ActiveNode = v
-					break
-				end
-			end
+			if v:CPPIGetOwner() != LocalPlayer() then continue end
+            if (v:GetPos() - TK.TerminalPlanet.Pos):LengthSqr() <= TK.TerminalPlanet.Size then
+                self.ActiveNode = v
+                break
+            end
 		end
 	end
 	

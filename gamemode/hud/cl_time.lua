@@ -24,20 +24,42 @@ function Hud:CreateData()
 		{x = self.width - self.longEdge, y = 0}
 	}
 	self.verticies = {}
-	
-	self.MOTDSpeed = 20
-	self.MOTD = vgui.Create( "DPanel" )
-	self.MOTD.Paint = function() return true end
-		self.MOTDtext = vgui.Create( "DLabel", self.MOTD )
-		self.MOTDtext:SetFont( self.font )
-		self.MOTDtext:SetColor( TK.HUD.Colors.text )
-		self.MOTDtext:SetText( TK.HUD.MOTDs[TK.HUD.MOTDindex] )
-		self.MOTDtext:SizeToContents()
-	self.MOTD:SetSize( self.shortEdge - 10, self.MOTDtext:GetTall() )
-	self.MOTD:SetPos( Hud.width - 5 - self.MOTD:GetWide(), self.tallEdge - 3 - self.MOTD:GetTall() )
-		self.MOTDtext:SetPos( self.MOTD:GetWide(), 0 )
-	self.MOTD:SetVisible(false)
-	self.MOTD.xCur = self.MOTD:GetWide()
+    
+    surface.SetFont(self.font)
+    local w, h = surface.GetTextSize("TEST")
+
+    if IsValid(self.MOTD) then return end
+	self.MOTD = vgui.Create("DPanel")
+    self.MOTD.vpaint = false
+    self.MOTD.vtext = ""
+    self.MOTD.vlenght = 0
+    self.MOTD.voffset = 0
+    self.MOTD:SetSize(self.shortEdge - 10, h)
+	self.MOTD:SetPos(self.width - 5 - self.MOTD:GetWide(), self.tallEdge - 3 - h)
+    self.MOTD.SetText = function(panel, str)
+        panel.vtext = str
+        surface.SetFont(self.font)
+        local w, h = surface.GetTextSize(str)
+        panel.vlenght = w
+        panel.voffset = 0
+    end
+	self.MOTD.Paint = function(panel, w, h)
+        if !panel.vpaint then return true end
+        panel.vpaint = false
+        
+        surface.SetFont(self.font)
+        surface.SetTextColor(TK.HUD.Colors.text)
+        surface.SetTextPos(w - panel.voffset, 0)
+        surface.DrawText(panel.vtext)
+
+        panel.voffset = panel.voffset + 25 * FrameTime()
+        if panel.voffset > (panel.vlenght + w) then
+            panel:SetText(TK.HUD.NextMOTD())
+        end
+        return true
+    end
+    
+    self.MOTD:SetText(TK.HUD.NextMOTD())
 end
 
 function Hud:RotateVerticies(angle)
@@ -72,7 +94,6 @@ function Hud:ShowHide()
     self:RotateVerticies(-self.maxang * self.angleRatio / 100)
     
     if self.angleRatio == 0 || self.angleRatio == 100 then
-		self.MOTD:SetVisible( self.show:GetBool() )
         self.moving = false 
     end
 end
@@ -85,29 +106,14 @@ hook.Add("GUIMousePressed", "TKPH_Time", function(mc)
     if y < Hud.tallEdge && x > Hud.width - Hud.longEdge then
 		surface.PlaySound("garrysmod/ui_return.wav")
 		RunConsoleCommand("3k_show_hud_time", Hud.show:GetBool() && 0 || 1)
-		Hud.MOTD:SetVisible(false)
 	end
 end)
 
 hook.Add("HUDPaint", "TKPH_Time", function()
 	if !IsValid(LocalPlayer()) || !LocalPlayer():Alive() then return end
-	if Hud.width != surface.ScreenWidth() then
-		Hud:CreateData()
-	end
+    if Hud.width != surface.ScreenWidth() then Hud:CreateData() end
 
 	Hud:ShowHide()
-
-	//-- MOTD Scroll --\\
-	if ( Hud.MOTD:IsVisible() ) then
-		local x = Hud.MOTD.xCur
-		Hud.MOTD.xCur = Hud.MOTD:GetWide()
-		if !( x < -Hud.MOTDtext:GetWide() ) then
-			Hud.MOTD.xCur = x - Hud.MOTDSpeed*FrameTime()
-		elseif !TK.HUD.WARNING then
-			TK.HUD.NextMOTD()
-		end
-		Hud.MOTDtext:SetPos( Hud.MOTD.xCur, 0 )
-	end
 	
 	//-- Backround --\\
 	surface.SetTexture(0)
@@ -129,4 +135,7 @@ hook.Add("HUDPaint", "TKPH_Time", function()
     
     draw.SimpleText("Playtime: "..TK:FormatTime(info.playtime), Hud.font, Hud.width - 5, 3, TK.HUD.Colors.text, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
 	draw.SimpleText(os.date("%H:%M:%S"), Hud.font, Hud.width - x - 5, Hud.tallEdge / 2, TK.HUD.Colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    
+    //-- MOTD --\\
+    Hud.MOTD.vpaint = true
 end)

@@ -47,24 +47,26 @@ net.Receive( "HUD_WARNING", function()
 	local message = net.ReadString()
 	if message:gsub("%s+", "") != "" then
 		TK.HUD.WARNING = message
-		TK.HUD.Time.MOTDtext:SetText( message )
-		TK.HUD.Time.MOTDtext:SizeToContents()
+        TK.HUD.Time.MOTD:SetText(TK.HUD.NextMOTD())
 	else
 		TK.HUD.WARNING = false
-		TK.HUD.NextMOTD()
+		TK.HUD.Time.MOTD:SetText(TK.HUD.NextMOTD())
 	end
 end)
 
+local index = 0
 TK.HUD.MOTDs = {
 	"Welcome to Three Kelvin Spacebuild!",
 	"This server has Audio Emotes! Bind +AudioEmotePanel_Show to see the menu."
 }
-TK.HUD.MOTDindex = 1
 
 function TK.HUD.NextMOTD()
-	TK.HUD.MOTDindex = ( TK.HUD.MOTDindex % table.Count( TK.HUD.MOTDs ) ) + 1
-	TK.HUD.Time.MOTDtext:SetText( TK.HUD.MOTDs[TK.HUD.MOTDindex] )
-	TK.HUD.Time.MOTDtext:SizeToContents()
+    if TK.HUD.WARNING then
+        return TK.HUD.WARNING
+    else
+        index = (index % #TK.HUD.MOTDs) + 1
+        return TK.HUD.MOTDs[index]
+    end
 end
 
 hook.Add("HUDPaint", "TKHUD_Admin", function()
