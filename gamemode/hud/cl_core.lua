@@ -41,6 +41,15 @@ TK.HUD.Colors = {
     bar = Color(0,0,0,125)
 }
 
+TK.HUD.WARNING = false
+
+net.Receive( "ADD_HUD_WARNING", function()
+	TK.HUD.WARNING = net.ReadString()
+end)
+net.Receive( "CLEAR_HUD_WARNING", function()
+	TK.HUD.WARNING = false
+end)
+
 hook.Add("HUDPaint", "TKHUD_Admin", function()
     if !IsValid(LocalPlayer()) then return end
     TK.HUD.Colors.border = team.GetColor(LocalPlayer():Team())

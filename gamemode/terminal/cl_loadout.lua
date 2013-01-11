@@ -7,7 +7,7 @@ local function MakePanel(item)
 	btn:SetSkin("Terminal")
 	btn:SetSize(0, 65)
     btn.Paint = function(btn, w, h)
-        derma.SkinHook("Paint", "TKLOButton", btn, w, h)
+        derma.SkinHook("Paint", "TKItemPanel", btn, w, h)
         return true
     end
     
@@ -45,6 +45,7 @@ local function MakeSlot(panel, slot, id)
         btn.item = itemid
         local item = TK.IL:GetItem(itemid)
         
+        btn:SetToolTip(item.name)
         btn:SetModel(item.mdl)
         btn.vCamPos = Vector(item.r, item.r, item.r)
         btn.vLookatPos = Vector(0 ,0 , item.r / 2)
@@ -68,7 +69,7 @@ local function MakeSlot(panel, slot, id)
         for k,v in pairs(panel[btn.slot]) do
             if v.item == 0 then continue end
             for _,itm in pairs(validitems) do
-                if v.item == item then
+                if v.item == itm then
                     validitems[_] = nil
                     break
                 end
@@ -89,6 +90,10 @@ function PANEL:Init()
     self.loadout = {}
     
     self.items = vgui.Create("DPanelList", self)
+    self.items:SetSpacing(5)
+	self.items:SetPadding(5)
+	self.items:EnableHorizontal(false)
+	self.items:EnableVerticalScrollbar(true)
     
     self.mining = {}
     self.mining[1] = MakeSlot(self, "mining", "m1")

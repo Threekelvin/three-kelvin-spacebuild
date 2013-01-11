@@ -14,6 +14,19 @@ if SERVER then
 		end
 	end
 	
+	util.AddNetworkString("ADD_HUD_WARNING")
+	local function addHUDwarning( message )
+		net.Start( "ADD_HUD_WARNING" )
+			net.WriteString( message )
+		net.Broadcast()
+	end
+	
+	util.AddNetworkString("CLEAR_HUD_WARNING")
+	local function clearHUDwarning()
+		net.Start( "CLEAR_HUD_WARNING" )
+		net.Broadcast()
+	end
+	
 	function PLUGIN.Call(ply, arg)
 		if ply:HasAccess(PLUGIN.Level) then
 			if !Restart then
@@ -22,6 +35,7 @@ if SERVER then
 					return
 				end
 				Restart = true
+				addHUDwarning( "Restart in progress..." )
 				RunConsoleCommand("sv_password", "restarting")
 				local Time = math.Clamp(tonumber(arg[1]) || 120, 10, 120)
 				
@@ -64,6 +78,7 @@ if SERVER then
 				end)
 			else
 				Restart = false
+				clearHUDwarning()
 				RunConsoleCommand("sv_password", "")
 				timer.Remove("server_restart")
 				TK.AM:StopSounds()

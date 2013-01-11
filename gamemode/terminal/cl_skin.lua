@@ -276,7 +276,6 @@ function SKIN:PaintTKLOButton(btn, w, h)
 	btn.Entity:SetAngles(Angle(0, RealTime() * 10, 0))
 
 	local ang = (btn.vLookatPos-btn.vCamPos):Angle()
-	local w, h = btn:GetSize()
 	cam.Start3D(btn.vCamPos, ang, 70, x, y, w, h, 5, 4096)
         cam.IgnoreZ(true)
 	
@@ -335,11 +334,10 @@ function SKIN:PaintTKUpPanel(btn, w, h)
 	surface.DrawTexturedRect(5, 5, 64, 64)
 end
 
-function SKIN:PaintTKResPanel(btn, w, h)
+function SKIN:PaintTKItemPanel(btn, w, h)
 	draw.RoundedBox(4, 0, 0, w, h, self.light)
-	draw.RoundedBox(4, h, 5, w - 65, 25, self.dark)
-	draw.SimpleText(btn.item.name, "TKFont15", h + 5, 17.5, self.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-	draw.RoundedBox(4, h, 40, w - 65, 20, self.dim)
+	draw.RoundedBox(4, 5, 5, w - 10, 25, self.dark)
+	draw.SimpleText(btn.item.name, "TKFont15", w / 2, 17.5, self.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 ///--- ---\\\
 

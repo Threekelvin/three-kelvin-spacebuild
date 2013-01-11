@@ -87,7 +87,7 @@ hook.Add("HUDPaint", "TKPH_Stats", function()
 	surface.DrawPoly(Hud.verticies)
 	
 	//-- Boarder --\\
-	surface.SetDrawColor(TK.HUD.Colors.border)
+	surface.SetDrawColor(TK.HUD.WARNING && Color(255, 0, 0, 191 + 64*math.sin( math.pi*RealTime() )) || TK.HUD.Colors.border)
 	surface.DrawLine(Hud.verticies[2].x, Hud.verticies[2].y, Hud.verticies[3].x, Hud.verticies[3].y)
 	surface.DrawLine(Hud.verticies[3].x, Hud.verticies[3].y, Hud.verticies[4].x, Hud.verticies[4].y)
 	
@@ -95,12 +95,12 @@ hook.Add("HUDPaint", "TKPH_Stats", function()
 	if Hud.moving || !Hud.show:GetBool() then return end
     
     local info = TK.DB:GetPlayerData("player_info")
-    draw.SimpleText("Name:", Hud.font, 5, 3, Hud.textcolor)
-    draw.SimpleText(info.name, Hud.font, 122, 3, Hud.textcolor)
+    draw.SimpleText("Name:", Hud.font, 5, 3, TK.HUD.Colors.text)
+    draw.SimpleText(info.name, Hud.font, 122, 3, TK.HUD.Colors.text)
     
-    draw.SimpleText("Experience:", Hud.font, 5, Hud.tallEdge / 2, Hud.textcolor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-    draw.SimpleText(TK:Format(info.exp), Hud.font, 122, Hud.tallEdge / 2, Hud.textcolor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText("Experience:", Hud.font, 5, Hud.tallEdge / 2, TK.HUD.Colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText(TK:Format(info.exp), Hud.font, 122, Hud.tallEdge / 2, TK.HUD.Colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     
-    draw.SimpleText("Credits:", Hud.font, 5, Hud.tallEdge - 3, Hud.textcolor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-    draw.SimpleText(TK:Format(info.credits), Hud.font, 122, Hud.tallEdge - 3, Hud.textcolor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+    draw.SimpleText("Credits:", Hud.font, 5, Hud.tallEdge - 3, TK.HUD.Colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+    draw.SimpleText(TK:Format(info.credits), Hud.font, 122, Hud.tallEdge - 3, TK.HUD.Colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 end)

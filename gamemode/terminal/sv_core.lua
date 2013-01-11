@@ -5,8 +5,10 @@ umsg.PoolString("3k_terminal_refinery_start")
 umsg.PoolString("3k_terminal_refinery_finish")
 ///--- ---\\\
 
+local Terminal = {}
+
 ///--- Resources ---\\\
-local function storageToNode(ply, uid, arg)
+function Terminal.StorageToNode(ply, arg)
 	local Node, res, amt = Entity(tonumber(arg[1])), arg[2], tonumber(arg[3])
 	if !IsValid(Node) || Node:CPPIGetOwner() != ply then return end
 	if !Node.IsTKRD || !Node.IsNode then print("error", Node) return end
@@ -21,7 +23,7 @@ local function storageToNode(ply, uid, arg)
 	TK.DB:UpdatePlayerData(ply, "terminal_storage", {res, storage[res] - amt})
 end
 
-local function NodeTostorage(ply, uid, arg)
+function Terminal.NodeTostorage(ply, arg)
 	local Node, res, amt = Entity(tonumber(arg[1])), arg[2], tonumber(arg[3])
 	if !IsValid(Node) || Node:CPPIGetOwner() != ply then return end
 	if !Node.IsTKRD || !Node.IsNode then return end
@@ -38,7 +40,7 @@ end
 ///--- ---\\\
 
 ///--- Refinery ---\\\
-local function StartRefine(ply, res)
+function Terminal.StartRefine(ply, res)
 	local storage, newstorage = TK.DB:GetPlayerData(ply, "terminal_storage"), {}
 	local refinery, newrefinery = TK.DB:GetPlayerData(ply, "terminal_refinery"), {}
 	local settings = TK.DB:GetPlayerData(ply, "terminal_setting")
@@ -72,7 +74,7 @@ local function StartRefine(ply, res)
 	end
 end
 
-local function AutoRefine(ply)
+function Terminal.AutoRefine(ply)
 	local storage, res = TK.DB:GetPlayerData(ply, "terminal_storage"), {}
 	local settings = TK.DB:GetPlayerData(ply, "terminal_setting")
 	
@@ -95,7 +97,7 @@ local function AutoRefine(ply)
 	return res
 end
 
-local function EndRefine(ply)
+function Terminal.EndRefine(ply)
 	local refinery, newrefinery = TK.DB:GetPlayerData(ply, "terminal_refinery"), {}
 	local info = TK.DB:GetPlayerData(ply, "player_info")
 	local score, credits = info.score, info.credits
@@ -115,7 +117,7 @@ local function EndRefine(ply)
 		
 		TK.DB:UpdatePlayerData(ply, "player_info", {"score", score}, {"credits", credits})
 		
-		local res = AutoRefine(ply)
+		local res = Terminal.AutoRefine(ply)
 		if table.Count(res) == 0 then
 			TK.DB:UpdatePlayerData(ply, "terminal_refinery", unpack(newrefinery))
 			TK.DB:UpdatePlayerData(ply, "terminal_setting", {"refine_started", 0}, {"refine_length", 0})
@@ -152,31 +154,31 @@ hook.Add("Initialize", "TKRefinery", function()
 			local complete = settings.refine_started + settings.refine_length
 			if complete > 0 then
 				if TK.DB:OSTime() >= complete then
-					EndRefine(v)
+					Terminal.EndRefine(v)
 				end
 			else
-				local res = AutoRefine(v)
+				local res = Terminal.AutoRefine(v)
 				if table.Count(res) != 0 then
-					StartRefine(v, res)
+					Terminal.StartRefine(v, res)
 				end
 			end
 		end
 	end)
 end)
 
-local function Refine(ply, uid, arg)
-	StartRefine(ply, {[arg[1]] = tonumber(arg[2])})
+function Terminal.Refine(ply, arg)
+	Terminal.StartRefine(ply, {[arg[1]] = tonumber(arg[2])})
 end
 
-local function RefineAll(ply, uid, arg)
+function Terminal.RefineAll(ply, arg)
 	local storage, res = TK.DB:GetPlayerData(ply, "terminal_storage"), {}
 	res["asteroid_ore"] = storage["asteroid_ore"] || 0
 	res["raw_tiberium"] = storage["raw_tiberium"] || 0
 	
-	StartRefine(ply, res)
+	Terminal.StartRefine(ply, res)
 end
 
-local function CancelRefine(ply, uid, arg)
+function Terminal.CancelRefine(ply, arg)
 	local storage, newstorage = TK.DB:GetPlayerData(ply, "terminal_storage"), {}
 	local refinery, newrefinery = TK.DB:GetPlayerData(ply, "terminal_refinery"), {}
 	
@@ -194,7 +196,7 @@ local function CancelRefine(ply, uid, arg)
 	umsg.End()
 end
 
-local function ToggleAutoRefine(ply, uid, arg)
+function Terminal.ToggleAutoRefine(ply, arg)
 	local settings = TK.DB:GetPlayerData(ply, "terminal_setting")
 	if arg[1] == "asteroid_ore" then
 		TK.DB:UpdatePlayerData(ply, "terminal_setting", {"auto_refine_ore", !tobool(settings.auto_refine_ore) && 1 || 0})
@@ -205,7 +207,7 @@ end
 ///--- ---\\\
 
 ///--- Research ---\\\
-local function AddResearch(ply, uid, arg)
+function Terminal.AddResearch(ply, arg)
 	local dir, idx = arg[1], arg[2]
 	local upgrades = TK.DB:GetPlayerData(ply, "terminal_upgrades_".. dir)
 	local data = TerminalData.ResearchData[dir][idx]
@@ -232,7 +234,9 @@ end
 ///--- ---\\\
 
 ///--- Loadout ---\\\
-
+function Terminal.SetSlot(ply, arg)
+    
+end
 ///--- ---\\\
 
 ///--- Market ---\\\
@@ -295,25 +299,21 @@ concommand.Add("3k_term", function(ply, cmd, arg)
 	table.remove(arg, 1)
 	
 	if command == "storagetonode" then
-		storageToNode(ply, uid, arg)
+		Terminal.StorageToNode(ply, arg)
 	elseif command == "nodetostorage" then
-		NodeTostorage(ply, uid, arg)
+		Terminal.NodeTostorage(ply, uid, arg)
 	elseif command == "refine" then
-		Refine(ply, uid, arg)
+		Terminal.Refine(ply, arg)
 	elseif command == "refineall" then
-		RefineAll(ply, uid, arg)
+		Terminal.RefineAll(ply, arg)
 	elseif command == "cancelrefine" then
-		CancelRefine(ply, uid, arg)
+		Terminal.CancelRefine(ply, arg)
 	elseif command == "toggleautorefine" then
-		ToggleAutoRefine(ply, uid, arg)
+		Terminal.ToggleAutoRefine(ply, arg)
 	elseif command == "addresearch" then
-		AddResearch(ply, uid, arg)
-	elseif command == "acceptapp" then
-		AcceptApp(ply, uid, arg)
-	elseif command == "rejectapp" then
-		RejectApp(ply, uid, arg)
-	elseif command == "getmembers" then
-		GetMembers(ply, uid, arg)
+		Terminal.AddResearch(ply, arg)
+    elseif command == "setslot" then
+        Terminal.SetSlot(ply, arg)
 	else
 		ErrorNoHalt(ply:Name().." ["..ply:SteamID().."] used unknown command: "..command.."    args: "..table.concat(arg, " ").."\n")
 	end
