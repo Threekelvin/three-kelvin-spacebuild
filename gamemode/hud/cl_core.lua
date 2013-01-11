@@ -69,8 +69,9 @@ end
 
 hook.Add("HUDPaint", "TKHUD_Admin", function()
     if !IsValid(LocalPlayer()) then return end
-    TK.HUD.Colors.border = TK.HUD.WARNING && Color(255, 0, 0, 191 + 64*math.sin( math.pi*RealTime() )) || team.GetColor(LocalPlayer():Team())
-    TK.HUD.Colors.bar = Color(TK.HUD.Colors.border.r, TK.HUD.Colors.border.g, TK.HUD.Colors.border.b, 100)
+	local teamcol = team.GetColor(LocalPlayer():Team())
+    TK.HUD.Colors.border = TK.HUD.WARNING && Color(255, 0, 0, 191 + 64*math.sin( math.pi*RealTime() )) || teamcol
+    TK.HUD.Colors.bar = Color(teamcol.r, teamcol.g, teamcol.b, 100)
     
     if !LocalPlayer():Alive() || !LocalPlayer():IsModerator() then return end
     
@@ -87,7 +88,12 @@ hook.Add("HUDPaint", "TKHUD_Admin", function()
 
             draw.SimpleText(ply:Name(), "TKFont15", textPos.x, textPos.y, teamCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			teamCol.a = boxAlpha
-			draw.RoundedBox(4, boxPos.x - 8, boxPos.y - 8, 16, 16, teamCol)
+			draw.RoundedBox(4, boxPos.x - 9, boxPos.y - 9, 18, 18, teamCol)
+			local rankIcon = TK.RankIcons[ ply:GetNWInt( "TKRank", 0 ) ]
+			if rankIcon then
+				surface.SetMaterial( rankIcon )
+				surface.DrawTexturedRect( boxPos.x - 8, boxPos.y - 8, 16, 16 )
+			end
         end
     end
 end)

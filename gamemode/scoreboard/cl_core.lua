@@ -13,7 +13,7 @@ surface.CreateFont( "ScoreboardDefaultTitle",
 	weight		= 800
 })
 
-local RankIcons = {
+TK.RankIcons = {
 	false,
 	"icon16/vip.png",
 	"icon16/dj.png",
@@ -22,7 +22,7 @@ local RankIcons = {
 	"icon16/superadmin.png",
 	"icon16/owner.png"
 }
-local RankNames = {
+TK.RankNames = {
 	false,
 	"VIP",
 	"DJ",

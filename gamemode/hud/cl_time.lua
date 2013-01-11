@@ -103,7 +103,7 @@ hook.Add("HUDPaint", "TKPH_Time", function()
 		Hud.MOTD.xCur = Hud.MOTD:GetWide()
 		if !( x < -Hud.MOTDtext:GetWide() ) then
 			Hud.MOTD.xCur = x - Hud.MOTDSpeed*FrameTime()
-		else
+		elseif !TK.HUD.WARNING then
 			TK.HUD.NextMOTD()
 		end
 		Hud.MOTDtext:SetPos( Hud.MOTD.xCur, 0 )
