@@ -235,7 +235,42 @@ end
 
 ///--- Loadout ---\\\
 function Terminal.SetSlot(ply, arg)
+    local slot, idx, item = arg[1], tonumber(arg[2]), tonumber(arg[3])
+    local loadout = TK.DB:GetPlayerData(ply, "player_loadout")
+    local inventory = TK.DB:GetPlayerData(ply, "player_inventory")
+    local validitems = {}
     
+    for k,v in pairs(inventory) do
+        if !TK.IL:IsSlot(slot, v) then continue end
+        table.insert(validitems, v)
+    end
+    
+    PrintTable(validitems)
+    print("---")
+    
+    for k,v in pairs(loadout) do
+        if string.match(k, "^[%w]+") != slot then continue end
+        if string.match(k, "$[%w]+") != "item" then continue end
+
+        for _,itm in pairs(validitems) do
+            if itm != v then continue end
+            validitems[_] = nil
+            break
+        end
+    end
+    
+    PrintTable(validitems)
+    print("---")
+    
+    for k,v in pairs(validitems) do
+        if v != item then continue end
+        TK.DB:UpdatePlayerData(ply, "player_loadout", {slot.. "_" ..idx.. "_item", item})
+        break
+    end
+end
+
+function Terminal.UnlockSlot(ply, arg)
+
 end
 ///--- ---\\\
 

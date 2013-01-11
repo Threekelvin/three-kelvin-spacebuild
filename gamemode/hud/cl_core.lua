@@ -57,7 +57,7 @@ end)
 
 TK.HUD.MOTDs = {
 	"Welcome to Three Kelvin Spacebuild!",
-	"This server has Audio Emotes! Bind +Audio_EmotePanel_Show to see the menu."
+	"This server has Audio Emotes! Bind +AudioEmotePanel_Show to see the menu."
 }
 TK.HUD.MOTDindex = 1
 
@@ -82,18 +82,15 @@ hook.Add("HUDPaint", "TKHUD_Admin", function()
 			local boxAlpha = math.Clamp( (localvec - vec):LengthSqr()/4000, 45, 300 ) - 45
 			local teamCol = team.GetColor(ply:Team())
 
-			local textPos = (vec + Vector( 0, 0, 0.9*ply:BoundingRadius() )):ToScreen()
+			local textPos = (vec + Vector( 0, 0, 0.9 * ply:BoundingRadius())):ToScreen()
 			local boxPos = vec:ToScreen()
-			textPos.y = math.Clamp( textPos.y, 0, boxPos.y - 16 )
+			textPos.y = math.Clamp( textPos.y, 0, boxPos.y - 18 )
 
             draw.SimpleText(ply:Name(), "TKFont15", textPos.x, textPos.y, teamCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-			teamCol.a = boxAlpha
-			draw.RoundedBox(4, boxPos.x - 9, boxPos.y - 9, 18, 18, teamCol)
-			local rankIcon = TK.RankIcons[ ply:GetNWInt( "TKRank", 0 ) ]
-			if rankIcon then
-				surface.SetMaterial( rankIcon )
-				surface.DrawTexturedRect( boxPos.x - 8, boxPos.y - 8, 16, 16 )
-			end
+            
+            surface.SetDrawColor(Color(255, 255, 255, boxAlpha))
+			surface.SetMaterial(ply:GetIcon())
+			surface.DrawTexturedRect(boxPos.x - 8, boxPos.y - 8, 16, 16)
         end
     end
 end)

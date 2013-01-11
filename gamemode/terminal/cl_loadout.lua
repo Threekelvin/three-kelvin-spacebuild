@@ -1,14 +1,20 @@
 
 local PANEL = {}
 
-local function MakePanel(item)
+local function MakePanel(panel, slot, id, item)
     local btn = vgui.Create("DButton")
+    btn.slot = slot
+    btn.id = id
     btn.item = item
 	btn:SetSkin("Terminal")
 	btn:SetSize(0, 65)
     btn.Paint = function(btn, w, h)
         derma.SkinHook("Paint", "TKItemPanel", btn, w, h)
         return true
+    end
+    btn.DoClick = function()
+        surface.PlaySound("ui/buttonclickrelease.wav")
+        panel.Terminal.AddQuery("setslot", btn.slot, btn.id, btn.item.idx)
     end
     
     return btn
@@ -40,7 +46,7 @@ local function MakeSlot(panel, slot, id)
     end
     
     btn.Think = function()
-        local itemid = btn.loadout["slot_".. btn.id]
+        local itemid = btn.loadout[btn.slot.. "_" ..btn.id.. "_item"]
         if !itemid || itemid == btn.item then return end
         btn.item = itemid
         local item = TK.IL:GetItem(itemid)
@@ -55,8 +61,7 @@ local function MakeSlot(panel, slot, id)
         return true
     end
     btn.DoClick = function()
-        print(btn.loadout["slot_".. btn.id .."_locked"])
-        if tobool(btn.loadout["slot_".. btn.id .."_locked"]) then return end
+        if tobool(btn.loadout[btn.slot.. "_" ..btn.id.. "_locked"]) then return end
         surface.PlaySound("ui/buttonclickrelease.wav")
         panel.items:Clear(true)
         
@@ -77,7 +82,7 @@ local function MakeSlot(panel, slot, id)
         end
         
         for k,v in pairs(validitems) do
-            panel.items:AddItem(MakePanel(TK.IL:GetItem(v)))
+            panel.items:AddItem(MakePanel(panel, btn.slot, btn.id, TK.IL:GetItem(v)))
         end
     end
     
@@ -96,28 +101,28 @@ function PANEL:Init()
 	self.items:EnableVerticalScrollbar(true)
     
     self.mining = {}
-    self.mining[1] = MakeSlot(self, "mining", "m1")
-    self.mining[2] = MakeSlot(self, "mining", "m2")
-    self.mining[3] = MakeSlot(self, "mining", "m3")
-    self.mining[4] = MakeSlot(self, "mining", "m4")
-    self.mining[5] = MakeSlot(self, "mining", "m5")
-    self.mining[6] = MakeSlot(self, "mining", "m6")
+    self.mining[1] = MakeSlot(self, "mining", 1)
+    self.mining[2] = MakeSlot(self, "mining", 2)
+    self.mining[3] = MakeSlot(self, "mining", 3)
+    self.mining[4] = MakeSlot(self, "mining", 4)
+    self.mining[5] = MakeSlot(self, "mining", 5)
+    self.mining[6] = MakeSlot(self, "mining", 6)
     
     self.storage = {}
-    self.storage[1] = MakeSlot(self, "storage", "s1")
-    self.storage[2] = MakeSlot(self, "storage", "s2")
-    self.storage[3] = MakeSlot(self, "storage", "s3")
-    self.storage[4] = MakeSlot(self, "storage", "s4")
-    self.storage[5] = MakeSlot(self, "storage", "s5")
-    self.storage[6] = MakeSlot(self, "storage", "s6")
+    self.storage[1] = MakeSlot(self, "storage", 1)
+    self.storage[2] = MakeSlot(self, "storage", 2)
+    self.storage[3] = MakeSlot(self, "storage", 3)
+    self.storage[4] = MakeSlot(self, "storage", 4)
+    self.storage[5] = MakeSlot(self, "storage", 5)
+    self.storage[6] = MakeSlot(self, "storage", 6)
     
     self.weapon = {}
-    self.weapon[1] = MakeSlot(self, "weapon", "w1")
-    self.weapon[2] = MakeSlot(self, "weapon", "w2")
-    self.weapon[3] = MakeSlot(self, "weapon", "w3")
-    self.weapon[4] = MakeSlot(self, "weapon", "w4")
-    self.weapon[5] = MakeSlot(self, "weapon", "w5")
-    self.weapon[6] = MakeSlot(self, "weapon", "w6")
+    self.weapon[1] = MakeSlot(self, "weapon", 1)
+    self.weapon[2] = MakeSlot(self, "weapon", 2)
+    self.weapon[3] = MakeSlot(self, "weapon", 3)
+    self.weapon[4] = MakeSlot(self, "weapon", 4)
+    self.weapon[5] = MakeSlot(self, "weapon", 5)
+    self.weapon[6] = MakeSlot(self, "weapon", 6)
 end
 
 function PANEL:PerformLayout()

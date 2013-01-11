@@ -4,7 +4,8 @@ TK.AM = TK.AM || {}
 TK.AM.Rank = {
 	Group = {"User", "VIP", "DJ", "Moderator", "Admin", "SuperAdmin", "Owner"},
 	Tag = {"", "[VIP] ", "[DJ] ", "[M] ", "[A] ", "[SA] ", "[O] "},
-	RGBA = {Color(255,255,255), Color(0,75,255), Color(0, 0, 0), Color(0,200,0), Color(255,215,0), Color(200,0,0), Color(125,0,255)}		
+	RGBA = {Color(255,255,255), Color(0,75,255), Color(0, 0, 0), Color(0,200,0), Color(255,215,0), Color(200,0,0), Color(125,0,255)},
+    Icon = {Material("icon16/user.png"), Material("icon16/vip.png"), Material("icon16/dj.png"), Material("icon16/moderator.png"), Material("icon16/admin.png"), Material("icon16/superadmin.png"), Material("icon16/owner.png")}
 }
 
 ///--- Plugins ---\\\
@@ -109,6 +110,11 @@ end
 function _R.Entity:GetRGBA()
 	if !IsValid(self) then return TK.AM.Rank.RGBA[6] end
 	return TK.AM.Rank.RGBA[self:GetNWInt("TKRank", 1)]
+end
+
+function _R.Entity:GetIcon()
+    if !IsValid(self) then return TK.AM.Rank.Icon[6] end
+	return TK.AM.Rank.Icon[self:GetNWInt("TKRank", 1)]
 end
 
 function _R.Entity:IsOwner()

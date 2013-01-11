@@ -262,7 +262,7 @@ function SKIN:PaintTKButton(btn, w, h)
 end
 
 function SKIN:PaintTKLOButton(btn, w, h)
-    if tobool(btn.loadout["slot_".. btn.id .."_locked"]) then
+    if tobool(btn.loadout[btn.slot.. "_" ..btn.id.. "_locked"]) then
         surface.SetMaterial(self.lock)
         surface.SetDrawColor(255, 255, 255, 255)
         surface.DrawTexturedRect(w / 2 - 16, h / 2 - 16, 32, 32)

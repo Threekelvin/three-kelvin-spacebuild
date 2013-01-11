@@ -13,26 +13,6 @@ surface.CreateFont( "ScoreboardDefaultTitle",
 	weight		= 800
 })
 
-TK.RankIcons = {
-	false,
-	"icon16/vip.png",
-	"icon16/dj.png",
-	"icon16/moderator.png",
-	"icon16/admin.png",
-	"icon16/superadmin.png",
-	"icon16/owner.png"
-}
-TK.RankNames = {
-	false,
-	"VIP",
-	"DJ",
-	"Moderator",
-	"Admin",
-	"Super-Admin",
-	"Owner"
-}
-
-
 --
 -- This defines a new panel type for the player row. The player row is given a player
 -- and then from that point on it pretty much looks after itself. It updates player info
@@ -61,6 +41,9 @@ local PLAYER_LINE =
 		self.Rank		= self.RankPanel:Add( "DImageButton" )
 		self.Rank:SetSize( 16, 16 )
 		self.Rank:SetPos( self.RankPanel:GetWide()/2 - 8, self.RankPanel:GetTall()/2 - 8)
+        self.Rank.SetMaterial = function(btn, mat)
+            btn.m_Image:SetMaterial(mat)
+        end
 
 		self.Name		= self:Add( "DLabel" )
 		self.Name:Dock( LEFT )
@@ -123,13 +106,8 @@ local PLAYER_LINE =
 		
 		if ( self.NumRank == nil || self.NumRank != self.Player:GetNWInt("TKRank", 0) ) then
 			self.NumRank		=	self.Player:GetNWInt("TKRank", 0)
-			if ( RankIcons[self.NumRank] ) then
-				self.Rank:SetImage( RankIcons[self.NumRank] )
-				self.Rank:SetAlpha( 255 )
-			else
-				self.Rank:SetAlpha( 0 )
-			end
-			self.Rank:SetToolTip( RankNames[self.NumRank] )
+			self.Rank:SetMaterial( self.Player:GetIcon() )
+			self.Rank:SetToolTip( self.Player:GetGroup() )
 		end
 
 		if ( self.NumScore == nil || self.NumScore != self.Player:GetNWInt("TKScore", 0) ) then
