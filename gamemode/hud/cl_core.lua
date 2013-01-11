@@ -69,7 +69,7 @@ end
 
 hook.Add("HUDPaint", "TKHUD_Admin", function()
     if !IsValid(LocalPlayer()) then return end
-    TK.HUD.Colors.border = team.GetColor(LocalPlayer():Team())
+    TK.HUD.Colors.border = TK.HUD.WARNING && Color(255, 0, 0, 191 + 64*math.sin( math.pi*RealTime() )) || team.GetColor(LocalPlayer():Team())
     TK.HUD.Colors.bar = Color(TK.HUD.Colors.border.r, TK.HUD.Colors.border.g, TK.HUD.Colors.border.b, 100)
     
     if !LocalPlayer():Alive() || !LocalPlayer():IsModerator() then return end

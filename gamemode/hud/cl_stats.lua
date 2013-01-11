@@ -87,7 +87,7 @@ hook.Add("HUDPaint", "TKPH_Stats", function()
 	surface.DrawPoly(Hud.verticies)
 	
 	//-- Boarder --\\
-	surface.SetDrawColor(TK.HUD.WARNING && Color(255, 0, 0, 191 + 64*math.sin( math.pi*RealTime() )) || TK.HUD.Colors.border)
+	surface.SetDrawColor(TK.HUD.Colors.border)
 	surface.DrawLine(Hud.verticies[2].x, Hud.verticies[2].y, Hud.verticies[3].x, Hud.verticies[3].y)
 	surface.DrawLine(Hud.verticies[3].x, Hud.verticies[3].y, Hud.verticies[4].x, Hud.verticies[4].y)
 	
