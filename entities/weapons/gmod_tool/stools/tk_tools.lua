@@ -16,9 +16,6 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 	
 	function TOOL:SelectModel()
 		local str = self:GetClientInfo("model")
-		if !TK.RD.EntityData[class][str] then
-			return table.GetFirstKey(TK.RD.EntityData[class])
-		end
 		return str
 	end
 
@@ -149,121 +146,6 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 		language.Add("tool."..class..".0", "Left Click: Spawn a "..TOOL.Name)
 		language.Add("sboxlimit_"..class, "You Have Hit the "..TOOL.Name.." Limit!")
 	end
-	
-	cleanup.Register(TOOL.Name)
-
-	TOOL.Mode			= class
-	TOOL.Command		= nil
-	TOOL.ConfigName		= nil
-	TOOL.Tab 			= "3K Spacebuild"
-	TOOL.Data			= nil
-	
-	TOOL:CreateConVars()
-	SWEP.Tool[TOOL.Mode] = TOOL
-	TOOL = nil
-end
-
-for k,v in pairs(file.Find("dm_weapons/*.lua", "LUA")) do
-	local class = string.match(v, "[%w_ ]+")
-	TOOL 			= ToolObj:Create()
-	TOOL.Name  		= class
-	TOOL.Category	= "Weapons"
-	TOOL.Limit 		= 5
-	TOOL.Data 	= {}
-	
-	TOOL.ClientConVar["dontweld"] = 0
-	TOOL.ClientConVar["allowweldingtoworld"] = 0
-	TOOL.ClientConVar["makefrozen"] = 1
-	TOOL.ClientConVar["model"] = ""
-	
-
-	function TOOL:LeftClick(trace)
-		if !trace.Hit then return end
-		if CLIENT then return true end
-		
-		local ply = self:GetOwner()
-		if !ply:CheckLimit(class) then return false end
-		
-		if self:GetClientNumber("dontweld", 0) == 0 then
-			local hit = trace.Entity
-			if hit then
-				if hit:IsWorld() then
-					if self:GetClientNumber("allowweldingtoworld", 0) == 1 then
-						constraint.Weld(ent, hit, 0, 0, 0, true)
-					end
-				else
-					constraint.Weld(ent, hit, 0, 0, 0, true)
-				end
-			end
-		end
-		
-		if self:GetClientNumber("makefrozen", 0) == 1 then
-			local phys = ent:GetPhysicsObject()
-			if phys:IsValid() then
-				phys:Wake()
-				phys:EnableMotion(false)
-			end
-		end
-		
-		ply:AddCount(class, ent)
-		
-		undo.Create(self.Name)
-			undo.AddEntity(ent)
-			undo.SetPlayer(ply)
-		undo.Finish()
-
-		ply:AddCleanup(self.Name, ent)
-	end
-	
-	function TOOL:RightClick(trace)
-		return
-	end
-	
-	function TOOL:Reload(trace)
-		if !trace.Hit then return end
-		if SERVER then return end
-		if !IsValid(trace.Entity) then return end
-		RunConsoleCommand(class.."_model", trace.Entity:GetModel())
-	end
-
-	function TOOL:Think()
-		if !IsValid(self.GhostEntity) || self.GhostEntity:GetModel() != self:GetClientInfo("model") then
-			self:MakeGhostEntity(self:SelectModel(), Vector(0,0,0), Angle(0,0,0))
-		else
-			local trace = self:GetOwner():GetEyeTrace()
-			if !trace.Hit then return end
-			self.GhostEntity:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
-			self.GhostEntity:SetPos(trace.HitPos + trace.HitNormal * ((self.GhostEntity:OBBMaxs().z - self.GhostEntity:OBBMins().z) / 2 - self.GhostEntity:OBBCenter().z))
-		end	
-	end
-
-	if CLIENT then
-		function TOOL.BuildCPanel(CPanel)
-			local DontWeld = vgui.Create("DCheckBoxLabel")
-			DontWeld:SetText("Don't Weld")
-			DontWeld:SetConVar(class.."_dontweld")
-			DontWeld:SetValue(1)
-			DontWeld:SizeToContents()
-			CPanel:AddItem(DontWeld)
-			
-			local AllowWeldingToWorld = vgui.Create("DCheckBoxLabel")
-			AllowWeldingToWorld:SetText("Allow Welding To World")
-			AllowWeldingToWorld:SetConVar(class.."_allowweldingtoworld")
-			AllowWeldingToWorld:SetValue(0)
-			AllowWeldingToWorld:SizeToContents()
-			CPanel:AddItem(AllowWeldingToWorld)
-			
-			local MakeFrozen = vgui.Create("DCheckBoxLabel")
-			MakeFrozen:SetText("Make Frozen")
-			MakeFrozen:SetConVar(class.."_makefrozen")
-			MakeFrozen:SetValue(1)
-			MakeFrozen:SizeToContents()
-			CPanel:AddItem(MakeFrozen)
-		end
-	end
-	
-	AddCSLuaFile("dm_weapons/"..v)
-	include("dm_weapons/"..v)
 	
 	cleanup.Register(TOOL.Name)
 

@@ -25,8 +25,13 @@ MySQL.Cache = {}
 MySQL.NextConnect = CurTime() + 60
 ///--- ---\\\
 
+util.AddNetworkString( "HUD_WARNING" )
 function MySQL.Msg(msg)
 	ErrorNoHalt(msg.."\n")
+	net.Start( "HUD_WARNING" )
+		net.WriteString( "database" )
+		net.WriteString( MySQL.Connected && "" || "No database connection" )
+	net.Broadcast()
 end
 
 function MySQL.NetworkValue(ply, idx, Data)
@@ -175,6 +180,8 @@ function TK.DB:SetPlayerData(ply, dbtable, content)
 			MySQL.NetworkValue(ply, k, v)
 			
 			data[k] = v
+            
+            gamemode.Call("TKDBPlayerData", ply, dbtable, k, v)
 		end
 	end
 end
@@ -337,6 +344,9 @@ hook.Add("Initialize", "MySQLLoad", function()
 			v.tkstats.score = 0
 		end
 	end)
+    
+    function GAMEMODE:TKDBPlayerData(ply, dbtable, idx, data)
+    end
 end)
 
 hook.Add("InitPostEntity", "MySQLLoad", function()
@@ -389,10 +399,7 @@ hook.Add("PlayerAuthed", "TKLoadPlayer", function(ply, steamid, uid)
 	ply.tkstats.score = 0
 	ply.tkstats.paydelay = 0
 	
-	PlayerData[uid] = {}
-	for k,v in pairs(TK.DB:MakePlayerData(ply)) do
-		TK.DB:SetPlayerData(ply, k, v)
-	end
+	PlayerData[uid] = TK.DB:MakePlayerData()
 
 	MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("server_ban_data", {"idx"}, {"steamid = %s OR ip = %s LIMIT 1", steamid, ip}), function(data, ply, steamid, uid, ip)
 		if !IsValid(ply) then return end

@@ -224,12 +224,6 @@ function Terminal.AddResearch(ply, arg)
 
 	TK.DB:UpdatePlayerData(ply, "terminal_upgrades_".. dir, {idx, upgrades[idx] + 1})
 	TK.DB:UpdatePlayerData(ply, "player_info", {"credits", credits - cost})
-	
-	if dir == "ore" then
-		TK:UpdateDeviceData(ply, 1)
-	elseif dir == "tib" then
-		TK:UpdateDeviceData(ply, 2)
-	end
 end
 ///--- ---\\\
 
@@ -247,7 +241,7 @@ function Terminal.SetSlot(ply, arg)
     
     for k,v in pairs(loadout) do
         if string.match(k, "^[%w]+") != slot then continue end
-        if string.match(k, "$[%w]+") != "item" then continue end
+        if string.match(k, "[%w]+$") != "item" then continue end
 
         for _,itm in pairs(validitems) do
             if itm != v then continue end

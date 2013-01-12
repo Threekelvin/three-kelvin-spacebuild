@@ -6,40 +6,44 @@ local Items = {
         {
             idx = 1,
             name = "Basic Asteroid Mining Laser",
+            class = "tk_ore_laser",
             mdl = "models/props_phx/life_support/crylaser_small.mdl",
+            data = {},
             r = 19,
             buy = 10000,
-            sell = 7500,
-            data = {}
+            sell = 7500
         },
         {
             idx = 2,
             name = "Basic Tiberium Extractor",
+            class = "tk_tib_extractor",
             mdl = "models/techbot/sonic_thingy.mdl",
+            data = {},
             r = 28,
             buy = 10000,
-            sell = 7500,
-            data = {}
+            sell = 7500
         },
     },
     storage = {
         {
             idx = 3,
             name = "Basic Asteroid Ore Storage",
+            class = "tk_ore_storage",
             mdl = "models/slyfo/nacshortsleft.mdl",
+            data = {},
             r = 73,
             buy = 10000,
-            sell = 7500,
-            data = {}
+            sell = 7500
         },
         {
             idx = 4,
             name = "Basic Raw Tiberium Storage",
+            class = "tk_tib_storage",
             mdl = "models/slyfo/sat_resourcetank.mdl",
+            data = {},
             r = 47,
             buy = 10000,
             sell = 7500,
-            data = {}
         }
     },
     weapon = {
@@ -55,7 +59,7 @@ function TK.IL:GetItem(id)
         end
     end
     
-    return {}
+    return false
 end
 
 function TK.IL:GetSlotItems(idx)
