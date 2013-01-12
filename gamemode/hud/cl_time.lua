@@ -41,7 +41,6 @@ function Hud:CreateData()
         surface.SetFont(self.font)
         local w, h = surface.GetTextSize(str)
         panel.vlenght = w
-        panel.voffset = 0
     end
 	self.MOTD.Paint = function(panel, w, h)
         if !panel.vpaint then return true end
@@ -55,6 +54,7 @@ function Hud:CreateData()
         panel.voffset = panel.voffset + 25 * FrameTime()
         if panel.voffset > (panel.vlenght + w) then
             panel:SetText(TK.HUD.NextMOTD())
+			panel.voffset = 0
         end
         return true
     end

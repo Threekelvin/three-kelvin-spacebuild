@@ -28,13 +28,10 @@ function TOOL:LeftClick(trace)
     if CLIENT then return true end
     
     local ply = self:GetOwner()
-
-    local ent = ents.Create(class)
-    ent:SetModel(self:SelectModel())
-    ent:SetPos(trace.HitPos)
-    ent:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
-    ent:Spawn()
-    ent:SetPos(trace.HitPos + trace.HitNormal * ((ent:OBBMaxs().z - ent:OBBMins().z) / 2 - ent:OBBCenter().z))
+    local item = self:GetClientNumber("item", 0)
+    if !TK.LO:CanSpawn(ply, item) then return end
+    
+    local ent = TK.LO:SpawnItem(ply, item, trace)
     
     if self:GetClientNumber("dontweld", 0) == 0 then
         local hit = trace.Entity
@@ -56,8 +53,6 @@ function TOOL:LeftClick(trace)
             phys:EnableMotion(false)
         end
     end
-    
-    ply:AddCount(class, ent)
     
     undo.Create(self.Name)
         undo.AddEntity(ent)
