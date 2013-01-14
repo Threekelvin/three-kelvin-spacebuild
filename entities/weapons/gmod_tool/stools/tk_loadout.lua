@@ -54,12 +54,12 @@ function TOOL:LeftClick(trace)
         end
     end
     
-    undo.Create(self.Name)
+    undo.Create(ent.PrintName)
         undo.AddEntity(ent)
         undo.SetPlayer(ply)
     undo.Finish()
 
-    ply:AddCleanup(self.Name, ent)
+    ply:AddCleanup(ent.PrintName, ent)
     return true
 end
 

@@ -5,9 +5,9 @@ function EFFECT:Init(data)
 	
 	sound.Play("ambient/levels/labs/electric_explosion"..math.random(1, 5)..".wav", pos, 100, 100)
 	
-	timer.Simple(0.1, function(pos)
+	timer.Simple(0.1, function()
 		ParticleEffect("electrical_arc_01_system", pos + Vector(0,0,100), Angle(0,0,0))
-	end, pos)
+	end)
 	
 	local emitter = ParticleEmitter( pos )
 		for i = 0, (256 * scale) do

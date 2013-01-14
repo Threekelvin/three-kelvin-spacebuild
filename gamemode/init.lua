@@ -97,17 +97,18 @@ hook.Add("InitPostEntity", "TKSetup", function()
 
 		for k,v in pairs(TK.Ents) do
 			local ent = ents.Create(v.ent)
-			if v.model then
-				ent:SetModel(v.model)
-			end
+			if v.model then ent:SetModel(v.model) end
+
 			ent:SetPos(v.pos)
 			ent:SetAngles(v.ang)
 			ent:Spawn()
 			ent:SetUnFreezable(true)
+            if v.color then ent:SetColor(v.color) end
+            
 			local phys = ent:GetPhysicsObject()
-			if phys:IsValid() then
-				phys:EnableMotion(false)
-			end
+			if phys:IsValid() then phys:EnableMotion(false) end
+            if v.notsolid then ent:SetNotSolid(true) end
+            
 			table.insert(TK.SpawnedEnts, ent)
 		end
 	end)

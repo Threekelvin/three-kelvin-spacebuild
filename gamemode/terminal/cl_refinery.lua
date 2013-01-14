@@ -283,11 +283,11 @@ function PANEL:Think()
 	self.NextThink = CurTime() + 1
 	
 	local Refinery = TK.DB:GetPlayerData("terminal_refinery")
-	self.OreCost = TerminalData:Ore("asteroid_ore")
-	self.OreSpeed = TerminalData:Refine("asteroid_ore")
+	self.OreCost = TK.TD:Ore("asteroid_ore")
+	self.OreSpeed = TK.TD:Refine("asteroid_ore")
 	self.OreAmount = math.floor(600 * self.OreSpeed)
-	self.TibCost = TerminalData:Ore("raw_tiberium")
-	self.TibSpeed = TerminalData:Refine("raw_tiberium")
+	self.TibCost = TK.TD:Ore("raw_tiberium")
+	self.TibSpeed = TK.TD:Refine("raw_tiberium")
 	self.TibAmount = math.floor(600 * self.TibSpeed)
 	
 	local settings = TK.DB:GetPlayerData("terminal_setting")

@@ -49,7 +49,7 @@ function SKIN:PaintTKUpFrame(panel, w, h)
 	draw.SimpleText("Bonuses", "TKFont18", 142.5, 171, self.text, TEXT_ALIGN_CENTER)
 	
 	draw.RoundedBox(4, 285, 25, 210, 65, self.light)
-	surface.SetMaterial(TerminalData.Icons[panel.btn.data.icon || "default"])
+	surface.SetMaterial(TK.TD.Icons[panel.btn.data.icon || "default"])
 	surface.SetDrawColor(255, 255, 255, 255)
 	surface.DrawTexturedRect(357.5, 25, 64, 64)
 	
@@ -316,7 +316,7 @@ function SKIN:PaintTKResPanel(btn, w, h)
 	draw.RoundedBox(4, h, 40, w - 65, 20, self.dim)
 	draw.SimpleText(TK:Format(btn.val), "TKFont18", w - 10, 50, self.text, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 	
-	surface.SetMaterial(TerminalData.Icons[btn.res || "default"])
+	surface.SetMaterial(TK.TD.Icons[btn.res || "default"])
 	surface.SetDrawColor(255, 255, 255, 255)
 	surface.DrawTexturedRect(0.5, 0.5, 64, 64)
 end
@@ -329,7 +329,7 @@ function SKIN:PaintTKUpPanel(btn, w, h)
 	draw.SimpleText("Level", "TKFont20", h + 5, 45, self.text)
 	draw.SimpleText(btn.rank.." / "..btn.data.maxlvl, "TKFont20", w - 10, 45, self.text, TEXT_ALIGN_RIGHT)
 	
-	surface.SetMaterial(TerminalData.Icons[btn.data.icon || "default"])
+	surface.SetMaterial(TK.TD.Icons[btn.data.icon || "default"])
 	surface.SetDrawColor(255, 255, 255, 255)
 	surface.DrawTexturedRect(5, 5, 64, 64)
 end
@@ -348,7 +348,7 @@ function SKIN:PaintTKContainer(panel, w, h)
 	for k,v in pairs(panel.children) do
 		v:SetPos(panel.scrollx + v.posx, panel.scrolly + v.posy)
 		for l,b in pairs(v.data.req || {}) do
-			local req = TerminalData.ResearchData[v.root[1]][b].pos
+			local req = TK.TD.ResearchData[v.root[1]][b].pos
 			local w, h = v:GetSize()
 			local X, Y = 5 + ((w + 100) * (req[1] - 1)), 5 + ((h + 10) * (req[2] - 1))
 			local Offset = 12.5 + 50 * (req[2] - 1) / panel.ResearchMax

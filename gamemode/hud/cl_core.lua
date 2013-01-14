@@ -45,26 +45,14 @@ TK.HUD.WARNING = {}
 
 net.Receive( "HUD_WARNING", function()
 	local sender, message = net.ReadString(), net.ReadString()
-	if message:gsub("%s+", "") != "" then
-		local found = false
-		for i=1,#TK.HUD.WARNING do
-			if TK.HUD.WARNING[i][1] == sender then
-				TK.HUD.WARNING[i] = { sender, message }
-				found = true
-				break
-			end
+	for i=1,#TK.HUD.WARNING do
+		if TK.HUD.WARNING[i][1] == sender then
+			table.remove( TK.HUD.WARNING, i )
+			break
 		end
-		if !found then table.insert( TK.HUD.WARNING, { sender, message } ) end
-        if IsValid(TK.HUD.Time.MOTD) then TK.HUD.Time.MOTD:SetText(TK.HUD.NextMOTD()) end
-	else
-		for i=1,#TK.HUD.WARNING do
-			if TK.HUD.WARNING[i][1] == sender then
-				table.remove( TK.HUD.WARNING, i )
-				break
-			end
-		end
-		if IsValid(TK.HUD.Time.MOTD) then TK.HUD.Time.MOTD:SetText(TK.HUD.NextMOTD()) end
 	end
+	if message:gsub("%s+", "") != "" then table.insert( TK.HUD.WARNING, { sender, message } ) end
+	if IsValid(TK.HUD.Time.MOTD) then TK.HUD.Time.MOTD:SetText(TK.HUD.NextMOTD()) end
 end)
 
 local index = 0

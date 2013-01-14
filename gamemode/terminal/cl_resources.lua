@@ -260,7 +260,7 @@ function PANEL:Think()
 	end
 	
 	for k,v in pairs(Storage) do
-		if v > 0 && table.HasValue(TerminalData.Resources, k) then
+		if v > 0 && table.HasValue(TK.TD.Resources, k) then
 			if !self.storage.list[k] then
 				local panel = MakePanel(k, v, function(panel)
 					if !IsValid(self.Terminal) then return end
@@ -306,7 +306,7 @@ function PANEL:Think()
 		end
 		
 		for k,v in pairs(Resources) do
-			if v.cur > 0 && table.HasValue(TerminalData.Resources, k) then
+			if v.cur > 0 && table.HasValue(TK.TD.Resources, k) then
 				if !self.node.list[k] then
 					local panel = MakePanel(k, v.cur, function(panel)
 						if !IsValid(self.Terminal) then return end

@@ -15,7 +15,7 @@ local function MakeResearchBox(panel, data, dir, idx)
 		btn.NextThink = CurTime() + 1
 		
 		btn.rank = TK.DB:GetPlayerData("terminal_upgrades_".. btn.root[1])[btn.root[2]]
-		btn.cost = TerminalData:ResearchCost(btn.root[1], btn.root[2])
+		btn.cost = TK.TD:ResearchCost(btn.root[1], btn.root[2])
 	end
 	
 	btn.Paint = function(panel, w, h)
@@ -97,15 +97,15 @@ local function MakeResearchBox(panel, data, dir, idx)
 		upgrade.DoClick = function()
 			if !IsValid(panel.Terminal) then return end
 			surface.PlaySound("ui/buttonclickrelease.wav")
-			local cost = TerminalData:ResearchCost(btn.root[1], btn.root[2])
+			local cost = TK.TD:ResearchCost(btn.root[1], btn.root[2])
 			if TK.DB:GetPlayerData("player_info").credits < cost then 
 				panel:ShowError("Not Enough Credits")
 				return 
 			end
 			local upgrades = TK.DB:GetPlayerData("terminal_upgrades_".. btn.root[1])
 			for k,v in pairs(data.req || {}) do
-				if upgrades[v] != TerminalData.ResearchData[btn.root[1]][v].maxlvl then
-					panel:ShowError("Requires "..TerminalData.ResearchData[btn.root[1]][v].name) 
+				if upgrades[v] != TK.TD.ResearchData[btn.root[1]][v].maxlvl then
+					panel:ShowError("Requires "..TK.TD.ResearchData[btn.root[1]][v].name) 
 					return
 				end
 			end
@@ -130,7 +130,7 @@ local function MakeTechTree(parent, panel, idx)
 		panel.children[k] = nil
 	end
 	
-	local Data = TerminalData.ResearchData[idx] || {}
+	local Data = TK.TD.ResearchData[idx] || {}
 	local btn
 	for k,v in pairs(Data) do
 		if v.pos then 

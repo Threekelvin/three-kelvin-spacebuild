@@ -97,21 +97,15 @@ function ENT:DoThink()
 		if ent:GetClass() == "tk_roid" then
 			if ent.Ore > self.power then
 				self:SupplyResource("asteroid_ore", self.power)
-				owner.tkstats.score = owner.tkstats.score + (self.power * TerminalData:Ore(owner, "asteroid_ore") * 0.375)
+				owner.tkstats.score = owner.tkstats.score + (self.power * TK.TD:Ore(owner, "asteroid_ore") * 0.375)
 				WireLib.TriggerOutput(self, "Output", self.power)
 				ent.Ore = ent.Ore - self.power
 			else
 				self:SupplyResource("asteroid_ore", ent.Ore)
-				owner.tkstats.score = owner.tkstats.score + (ent.Ore * TerminalData:Ore(owner, "asteroid_ore") * 0.375)
+				owner.tkstats.score = owner.tkstats.score + (ent.Ore * TK.TD:Ore(owner, "asteroid_ore") * 0.375)
 				WireLib.TriggerOutput(self, "Output", ent.Ore)
 				ent.Ore = 0
 			end
-		elseif ent:GetClass() == "tk_orestorage" then
-			if ent:GetEntTable().netid == self:GetEntTable().netid then return end
-			local ore = ent:ConsumeResource("asteroid_ore", self.power)
-			self:SupplyResource("asteroid_ore", ore)
-			owner.tkstats.score = owner.tkstats.score + (ore * TerminalData:Ore(owner, "asteroid_ore") * 0.375)
-			WireLib.TriggerOutput(self, "Output", ore)
 		elseif ent:IsPlayer() || ent:IsNPC() then
 			local dmginfo = DamageInfo()
 			dmginfo:SetDamage(math.random(5, 25))

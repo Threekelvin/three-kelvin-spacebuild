@@ -71,8 +71,6 @@ function _R.Entity:DrawTib()
 end
 
 function _R.Entity:DrawExtractor()
-	if bDontDrawModel then return end
-	
 	if self:GetActive() then
 		if self.mining != self:GetCrystal() then
 			self.mining = self:GetCrystal()

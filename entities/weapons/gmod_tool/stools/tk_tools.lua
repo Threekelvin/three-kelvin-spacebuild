@@ -16,6 +16,9 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 	
 	function TOOL:SelectModel()
 		local str = self:GetClientInfo("model")
+        if !TK.RD.EntityData[class][str] then
+			return table.GetFirstKey(TK.RD.EntityData[class])
+		end
 		return str
 	end
 

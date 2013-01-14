@@ -1,13 +1,13 @@
-TerminalData = TerminalData || {}
+TK.TD = TK.TD || {}
 
-function TerminalData:ResearchCost(dir, idx)
+function TK.TD:ResearchCost(dir, idx)
 	local upgrades = TK.DB:GetPlayerData("terminal_upgrades_".. dir)
 	local lvl = upgrades[idx] + 1
-	local data = TerminalData.ResearchData[dir][idx].cost
+	local data = TK.TD.ResearchData[dir][idx].cost
 	return math.Round(data[1] * data[2] * lvl)
 end
 
-function TerminalData:Ore(res)
+function TK.TD:Ore(res)
 	local upgrades = TK.DB:GetPlayerData("terminal_upgrades_ref")
 	
 	if res == "asteroid_ore" then
@@ -18,7 +18,7 @@ function TerminalData:Ore(res)
 	return 0
 end
 
-function TerminalData:Refine(res)
+function TK.TD:Refine(res)
 	local upgrades = TK.DB:GetPlayerData("terminal_upgrades_ref")
 	
 	if res == "asteroid_ore" then
@@ -29,7 +29,7 @@ function TerminalData:Refine(res)
 	return 0
 end
 
-TerminalData.Icons = {
+TK.TD.Icons = {
 	["default"] = Material("icon64/default.png"),
 	["energy"] = Material("icon64/energy.png"),
 	["water"] = Material("icon64/water.png"),

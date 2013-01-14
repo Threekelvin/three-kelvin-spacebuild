@@ -1,8 +1,9 @@
-TerminalData = TerminalData || {}
 
-TerminalData.Resources = {"asteroid_ore", "raw_tiberium", "oxygen", "nitrogen", "carbon_dioxide", "hydrogen", "water", "liquid_nitrogen"}
+TK.TD = TK.TD || {}
 
-TerminalData.ResearchData = {
+TK.TD.Resources = {"asteroid_ore", "raw_tiberium", "oxygen", "nitrogen", "carbon_dioxide", "hydrogen", "water", "liquid_nitrogen"}
+
+TK.TD.ResearchData = {
 	["ore"] = {
 		["r1"] = {
 			name = "InGaN Gain Medium",

@@ -88,7 +88,15 @@ if game.GetMap() == "sb_twinsuns_fixed" then
 			model = "models/Slyfo/refinery_large.mdl",
 			pos = Vector(9302.6719, -5697.8823, -8383.5820),
 			ang = Angle(0,-135,0)
-		}
+		},
+        [10] = {
+            ent = "gmod_playx",
+			model = "models/dav0r/camera.mdl",
+            color = Color(255, 255, 255, 1),
+            notsolid = true,
+			pos = Vector(-10735, 13060, -45),
+			ang = Angle(0,90,0)
+        }
 	}
 elseif game.GetMap() == "sb_forlorn_sb3_r3" then
 	TK.SpawnPoints = {

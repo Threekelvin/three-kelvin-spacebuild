@@ -4,7 +4,7 @@ include('shared.lua')
 local function BuildResearchTable(dir)
 	local Research = {}
 	
-	for k,v in pairs(TerminalData.ResearchData[dir] || {}) do
+	for k,v in pairs(TK.TD.ResearchData[dir] || {}) do
 		Research[k] = 0
 	end
 	

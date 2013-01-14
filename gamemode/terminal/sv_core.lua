@@ -27,7 +27,7 @@ function Terminal.NodeTostorage(ply, arg)
 	local Node, res, amt = Entity(tonumber(arg[1])), arg[2], tonumber(arg[3])
 	if !IsValid(Node) || Node:CPPIGetOwner() != ply then return end
 	if !Node.IsTKRD || !Node.IsNode then return end
-    if !table.HasValue(TerminalData.Resources, res) then return end
+    if !table.HasValue(TK.TD.Resources, res) then return end
 	if (Node:GetPos() - TK.TerminalPlanet.Pos):LengthSqr() > TK.TerminalPlanet.Size then return end
 	local storage = TK.DB:GetPlayerData(ply, "terminal_storage")
 	storage[res] = storage[res] || 0
@@ -51,7 +51,7 @@ function Terminal.StartRefine(ply, res)
 			if storage[k] >= v then
 				table.insert(newstorage, {k, storage[k] - v})
 				table.insert(newrefinery, {k, refinery[k] + v})
-				newtime = newtime + (v / TerminalData:Refine(ply, k))
+				newtime = newtime + (v / TK.TD:Refine(ply, k))
 			end
 		end
 	end
@@ -79,7 +79,7 @@ function Terminal.AutoRefine(ply)
 	local settings = TK.DB:GetPlayerData(ply, "terminal_setting")
 	
 	if tobool(settings.auto_refine_ore) && storage["asteroid_ore"] then
-		local amount = math.floor(600 * TerminalData:Refine(ply, "asteroid_ore"))
+		local amount = math.floor(600 * TK.TD:Refine(ply, "asteroid_ore"))
 		if storage["asteroid_ore"] >= amount then
 			res["asteroid_ore"] = amount
 			return res
@@ -87,7 +87,7 @@ function Terminal.AutoRefine(ply)
 	end
 	
 	if tib == 1 && storage["raw_tiberium"] then
-		local amount = math.floor(600 * TerminalData:Refine(ply, "raw_tiberium"))
+		local amount = math.floor(600 * TK.TD:Refine(ply, "raw_tiberium"))
 		if storage["raw_tiberium"] >= amount then
 			res["raw_tiberium"] = amount
 			return res
@@ -104,7 +104,7 @@ function Terminal.EndRefine(ply)
 	
 	for k,v in pairs(refinery) do
 		if v > 0 then
-			local value = TerminalData:Ore(ply, k)
+			local value = TK.TD:Ore(ply, k)
 			table.insert(newrefinery, {k, 0})
 			score = score + (v * value * 0.125)
 			credits = credits + (v * value)
@@ -131,7 +131,7 @@ function Terminal.EndRefine(ply)
 				if storage[k] >= v then
 					table.insert(newstorage, {k, storage[k] - v})
 					table.insert(newrefinery, {k, v})
-					newtime = newtime + (v / TerminalData:Refine(ply, k))
+					newtime = newtime + (v / TK.TD:Refine(ply, k))
 				end
 			end
 			
@@ -210,13 +210,13 @@ end
 function Terminal.AddResearch(ply, arg)
 	local dir, idx = arg[1], arg[2]
 	local upgrades = TK.DB:GetPlayerData(ply, "terminal_upgrades_".. dir)
-	local data = TerminalData.ResearchData[dir][idx]
-	local cost = TerminalData:ResearchCost(ply, dir, idx)
+	local data = TK.TD.ResearchData[dir][idx]
+	local cost = TK.TD:ResearchCost(ply, dir, idx)
 	local info = TK.DB:GetPlayerData(ply, "player_info")
 	
 	if cost == 0 || info.credits < cost then return end
 	for k,v in pairs(data.req || {}) do
-		if upgrades[v] != TerminalData.ResearchData[dir][v].maxlvl then
+		if upgrades[v] != TK.TD.ResearchData[dir][v].maxlvl then
 			return 
 		end
 	end

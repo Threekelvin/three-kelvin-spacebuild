@@ -130,12 +130,12 @@ function ENT:DoThink()
 		
 		if crystal.Tib > Speed then
 			self:SupplyResource("raw_tiberium", Speed)
-			owner.tkstats.score = owner.tkstats.score + (Speed * TerminalData:Ore(owner, "raw_tiberium") * 0.375)
+			owner.tkstats.score = owner.tkstats.score + (Speed * TK.TD:Ore(owner, "raw_tiberium") * 0.375)
 			WireLib.TriggerOutput(self, "Output", Speed)
 			crystal.Tib = crystal.Tib - Speed
 		else
 			self:SupplyResource("raw_tiberium", crystal.Tib)
-			owner.tkstats.score = owner.tkstats.score + (crystal.Tib * TerminalData:Ore(owner, "raw_tiberium") * 0.375)
+			owner.tkstats.score = owner.tkstats.score + (crystal.Tib * TK.TD:Ore(owner, "raw_tiberium") * 0.375)
 			WireLib.TriggerOutput(self, "Output", crystal.Tib)
 			crystal.Tib = 0
 		end

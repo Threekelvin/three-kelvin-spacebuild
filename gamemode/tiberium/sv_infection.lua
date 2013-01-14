@@ -63,20 +63,19 @@ local function ScanForEntities(ent)
 	end
 	
 	for k,v in pairs(entlist) do
-		if v.IsTKRD then
-			local netid = v:GetEntTable().netid
-			if !table.HasValue(nets, netid) then
-				table.insert(nets, netid)
-				ScanNetwork(netid, entlist)
-				
-				for l,b in pairs(TK.RD.GetConnectedEnts(netid)) do
-					if !table.HasValue(nets, b) then
-						table.insert(nets, b)
-						ScanNetwork(b, entlist)
-					end
-				end
-			end
-		end
+		if !v.IsTKRD || v.IsNode then continue end
+        local netid = v:GetEntTable().netid
+        if !table.HasValue(nets, netid) then
+            table.insert(nets, netid)
+            ScanNetwork(netid, entlist)
+            
+            for l,b in pairs(TK.RD.GetConnectedEnts(netid)) do
+                if !table.HasValue(nets, b) then
+                    table.insert(nets, b)
+                    ScanNetwork(b, entlist)
+                end
+            end
+        end
 	end
 	return entlist
 end

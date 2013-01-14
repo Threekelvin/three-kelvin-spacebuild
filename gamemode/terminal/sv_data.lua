@@ -1,10 +1,10 @@
-TerminalData = TerminalData || {}
+TK.TD = TK.TD || {}
 
-function TerminalData:ResearchCost(ply, dir, idx)
+function TK.TD:ResearchCost(ply, dir, idx)
 	if !IsValid(ply) then return 0 end
 	local upgrades = TK.DB:GetPlayerData(ply, "terminal_upgrades_".. dir)
 	local lvl = upgrades[idx] + 1
-	local data = TerminalData.ResearchData[dir][idx]
+	local data = TK.TD.ResearchData[dir][idx]
 	if lvl > data.maxlvl then 
 		return 0
 	else
@@ -12,7 +12,7 @@ function TerminalData:ResearchCost(ply, dir, idx)
 	end
 end
 
-function TerminalData:Ore(ply, res)
+function TK.TD:Ore(ply, res)
 	if !IsValid(ply) then return 0 end
 	local upgrades = TK.DB:GetPlayerData(ply, "terminal_upgrades_ref")
 	
@@ -24,7 +24,7 @@ function TerminalData:Ore(ply, res)
 	return 0
 end
 
-function TerminalData:Refine(ply, res)
+function TK.TD:Refine(ply, res)
 	if !IsValid(ply) then return 0 end
 	local upgrades = TK.DB:GetPlayerData(ply, "terminal_upgrades_ref")
 	
