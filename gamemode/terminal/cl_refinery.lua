@@ -102,7 +102,7 @@ usermessage.Hook("3k_terminal_refinery_start", function(msg)
 end)
 
 usermessage.Hook("3k_terminal_refinery_finish", function(msg)
-	--- Ghost Hook
+	-- Ghost Hook
 end)
 
 function PANEL:Init()

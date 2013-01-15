@@ -82,41 +82,37 @@ function TK.DB:MakePlayerData()
 		asteroid_ore = 0,
 		raw_tiberium = 0
 	}
-	data.terminal_upgrades_ore = {
-		r1 = 0,
-		r2 = 0,
-		r3 = 0,
-		r4 = 0,
-		r5 = 0,
-		r6 = 0,
-		r7 = 0,
-		r8 = 0,
-		r9 = 0,
-		r10 = 0,
-		r11 = 0,
-		r12 = 0
-	}
-	data.terminal_upgrades_tib = {
-		r1 = 0,
-		r2 = 0,
-		r3 = 0,
-		r4 = 0,
-		r5 = 0,
-		r6 = 0,
-		r7 = 0,
-		r8 = 0,
-		r9 = 0
-	}
-	data.terminal_upgrades_ref = {
-		r1 = 0,
-		r2 = 0,
-		r3 = 0,
-		r4 = 0,
-		r5 = 0,
-		r6 = 0,
-		r7 = 0,
-		r8 = 0,
-		r9 = 0
+	data.terminal_upgrades = {
+		ingan_gain_medium = 0,
+		min_parallax_colli = 0,
+		beam_waist_reduc = 0,
+		uhv_flash_lamp = 0,
+		passive_cooling = 0,
+		quantum_pump_timing = 0,
+		unity_reflector = 0,
+		kers = 0,
+		gain_medium_compress = 0,
+		binary_pack_algor = 0,
+		cnf_structure = 0,
+		relative_dim_stabil = 0,
+		doppler_offset_detun = 0,
+		shock_echo_shield = 0,
+		active_feed_analysis = 0,
+		inc_sig_amp = 0,
+		adv_reverb_mapping = 0,
+		adpat_echo_cancel = 0,
+		tib_liquidation = 0,
+		graded_rad_shield = 0,
+		inter_tib_storage = 0,
+		blast_furnace = 0,
+		nano_hopper = 0,
+		non_static_heads = 0,
+		arc_furnace = 0,
+		mag_conveyor = 0,
+		sonic_pulse_macer = 0,
+		plasma_tor_furnace = 0,
+		relativ_centrifuge = 0,
+		bec_casting = 0
 	}
 	
 	return data

@@ -118,7 +118,7 @@ if CLIENT then
                 if string.match(k, "[%w]+$") != "item" then continue end
                 if v == 0 then continue end
                 
-                local item = TK.IL:GetItem(v)
+                local item = TK.TD:GetItem(v)
                 local icon = vgui.Create("SpawnIcon")
                 icon:SetModel(item.mdl)
                 icon:SetSize(64, 64)

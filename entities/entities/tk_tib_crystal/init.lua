@@ -33,16 +33,21 @@ local Stages = {
 	}
 }
 
-function ENT:SendStatus(ply)
-	umsg.Start("TKTibStatus", ply)
-		umsg.Entity(self)
-		umsg.Bool(self.Stable)
-	umsg.End()
+umsg.PoolString("TKTib")
+
+function ENT:SendStatus()
+    umsg.Start("TKTib")
+        umsg.Short(self:EntIndex())
+        umsg.Bool(self.Stable)
+    umsg.End()
 end
 
-hook.Add("PlayerInitialSpawn", "TKSendTibStatus", function(ply)
+hook.Add("PlayerInitialSpawn", "TKTib_SendStatus", function(ply)
 	for k,v in pairs(ents.FindByClass("tk_tib_crystal")) do
-		v:SendStatus(ply)
+		umsg.Start("TKTib", ply)
+            umsg.Short(v:EntIndex())
+            umsg.Bool(v.Stable)
+        umsg.End()
 	end
 end)
 
@@ -145,11 +150,10 @@ function ENT:Think()
 	if math.random(1, 250) == 25 then
 		self.Stable = false
 		self:SendStatus()
-		timer.Simple(60, function(self)
-			if IsValid(self) then
-				self.Stable = true
-				self:SendStatus()
-			end
+		timer.Simple(60, function()
+			if !IsValid(self) then return end
+            self.Stable = true
+            self:SendStatus()
 		end)
 	end
 	
@@ -173,17 +177,16 @@ function ENT:Think()
 	end
 	
 	for k,v in pairs(player.GetAll()) do
-		if IsValid(v) && v:Alive() then
-			local dist = (self:GetPos() -v:GetPos()):LengthSqr()
-			if dist < 1000000 then
-				local dmginfo = DamageInfo()
-				dmginfo:SetDamage(math.ceil(10 * (1 - dist / 1000000)))
-				dmginfo:SetDamageType(DMG_RADIATION)
-				dmginfo:SetAttacker(self)
-				dmginfo:SetInflictor(self)
-				v:TakeDamageInfo(dmginfo)
-			end
-		end
+		if !IsValid(v) || !v:Alive() then continue end
+        local dist = (self:GetPos() -v:GetPos()):LengthSqr()
+        if dist > 1000000 then continue end
+        
+        local dmginfo = DamageInfo()
+        dmginfo:SetDamage(math.ceil(10 * (1 - dist / 1000000)))
+        dmginfo:SetDamageType(DMG_RADIATION)
+        dmginfo:SetAttacker(self)
+        dmginfo:SetInflictor(self)
+        v:TakeDamageInfo(dmginfo)
 	end
 	
 	self:NextThink(CurTime() + 1)

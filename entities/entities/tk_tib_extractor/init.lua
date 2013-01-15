@@ -3,12 +3,7 @@ AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
 function ENT:ExtractorPower()
-	if self.upgrades then
-		local Power = 1 + (1 * ((self.upgrades.r1 * 10) + (self.upgrades.r2 * 5) + (self.upgrades.r4 * 10) + (self.upgrades.r5 * 25)) / 100)
-		return math.floor(Power)
-	else
-		return 10
-	end
+    
 end
 
 function ENT:ExtractorEnergy()

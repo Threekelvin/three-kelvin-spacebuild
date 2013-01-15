@@ -47,13 +47,11 @@ function Terminal.StartRefine(ply, res)
 	local newtime = 0
 	
 	for k,v in pairs(res) do
-		if storage[k] then
-			if storage[k] >= v then
-				table.insert(newstorage, {k, storage[k] - v})
-				table.insert(newrefinery, {k, refinery[k] + v})
-				newtime = newtime + (v / TK.TD:Refine(ply, k))
-			end
-		end
+		if !storage[k] || storage[k] < v then continue end
+        
+        table.insert(newstorage, {k, storage[k] - v})
+        table.insert(newrefinery, {k, refinery[k] + v})
+        newtime = newtime + (v / TK.TD:Refine(ply, k))
 	end
 	
 	if newtime > 0 then
@@ -208,22 +206,22 @@ end
 
 ///--- Research ---\\\
 function Terminal.AddResearch(ply, arg)
-	local dir, idx = arg[1], arg[2]
-	local upgrades = TK.DB:GetPlayerData(ply, "terminal_upgrades_".. dir)
-	local data = TK.TD.ResearchData[dir][idx]
-	local cost = TK.TD:ResearchCost(ply, dir, idx)
+	local idx = arg[1]
+	local upgrades = TK.DB:GetPlayerData(ply, "terminal_upgrades")
+	local data = TK.TD:GetUpgrade(idx)
+	local cost = TK.TD:ResearchCost(ply, idx)
 	local info = TK.DB:GetPlayerData(ply, "player_info")
 	
-	if cost == 0 || info.credits < cost then return end
+	if cost == 0 || info.exp < cost then return end
 	for k,v in pairs(data.req || {}) do
-		if upgrades[v] != TK.TD.ResearchData[dir][v].maxlvl then
+		if upgrades[v] != TK.TD:GetUpgrade(v).maxlvl then
 			return 
 		end
 	end
 
 
-	TK.DB:UpdatePlayerData(ply, "terminal_upgrades_".. dir, {idx, upgrades[idx] + 1})
-	TK.DB:UpdatePlayerData(ply, "player_info", {"credits", credits - cost})
+	TK.DB:UpdatePlayerData(ply, "terminal_upgrades", {idx, upgrades[idx] + 1})
+	TK.DB:UpdatePlayerData(ply, "player_info", {"exp", info.exp - cost})
 end
 ///--- ---\\\
 
@@ -235,7 +233,7 @@ function Terminal.SetSlot(ply, arg)
     local validitems = {}
     
     for k,v in pairs(inventory) do
-        if !TK.IL:IsSlot(slot, v) then continue end
+        if !TK.TD:IsSlot(slot, v) then continue end
         table.insert(validitems, v)
     end
     

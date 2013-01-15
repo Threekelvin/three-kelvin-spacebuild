@@ -54,7 +54,7 @@ local function MakeSlot(panel, slot, id)
         
         local validitems = {}
         for k,v in pairs(TK.DB:GetPlayerData("player_inventory").inventory) do
-            if !TK.IL:IsSlot(btn.slot, v) then continue end
+            if !TK.TD:IsSlot(btn.slot, v) then continue end
             table.insert(validitems, v)
         end
         
@@ -69,7 +69,7 @@ local function MakeSlot(panel, slot, id)
         end
         
         for k,v in pairs(validitems) do
-            panel.items:AddItem(MakePanel(panel, btn.slot, btn.id, TK.IL:GetItem(v)))
+            panel.items:AddItem(MakePanel(panel, btn.slot, btn.id, TK.TD:GetItem(v)))
         end
     end
     
@@ -77,7 +77,7 @@ local function MakeSlot(panel, slot, id)
         local itemid = btn.loadout[btn.slot.. "_" ..btn.id.. "_item"]
         if !itemid || itemid == btn.item then return end
         btn.item = itemid
-        local item = TK.IL:GetItem(itemid)
+        local item = TK.TD:GetItem(itemid)
         
         btn:SetToolTip(item.name)
         btn:SetModel(item.mdl)

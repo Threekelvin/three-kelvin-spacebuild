@@ -6,13 +6,10 @@ local Mat2 = Material("models/alyx/emptool_glow")
 if usermessage then
 	local IncomingMessage = usermessage.IncomingMessage
 	function usermessage.IncomingMessage(idx, msg)
-		if idx == "TKTibStatus" then
-			local ent, stable = msg:ReadEntity(), msg:ReadBool()
-			if !IsValid(ent) then return end
-			Status[ent:EntIndex()] = stable
-		else
-			IncomingMessage(idx, msg)
-		end
+		if idx != "TKTib" then IncomingMessage(idx, msg) return end
+        
+        local entid, stable = msg:ReadShort(), msg:ReadBool()
+        Status[entid] = stable
 	end
 end
 
