@@ -36,6 +36,18 @@ local function SetSpawnPoint(ply, side)
 	ply:SetPos(Spawn)
 end
 
+local Weapons = {
+	"weapon_physcannon"	=	true,
+	"weapon_physgun"	=	true,
+	"hands"				=	true,
+	"gmod_camera"		=	true,
+	"gmod_tool"			=	true
+}
+function GM:PlayerCanPickupWeapon(ply, wep)
+   if ( Weapons[wep:GetClass()] != nil ) || ply:IsAdmin() return true end
+   return false
+end
+
 function GM:PlayerLoadout(ply)
 	ply:StripWeapons()
 	ply:StripAmmo()
