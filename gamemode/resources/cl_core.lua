@@ -33,7 +33,6 @@ net.Receive("TKRD_MEnt", function()
 end)
 
 hook.Add("Initialize", "TK.RD", function()
-	TK.RD.AddResource("energy", "Energy")
 	TK.RD.AddResource("oxygen", "Oxygen")
 	TK.RD.AddResource("carbon_dioxide", "Carbon Dioxide")
 	TK.RD.AddResource("nitrogen", "Nitrogen")

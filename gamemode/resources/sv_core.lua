@@ -69,6 +69,7 @@ local function RegisterEnt(ent)
 	if ent_table[entid] && ent_table[entid].ent == ent then return end
 	ent_table[entid] = {
 		netid = 0,
+        power = 0,
 		res = {},
 		data = {},
 		update = {},
@@ -79,6 +80,7 @@ end
 local function RegisterNet(node)
 	if !IsValid(node) then return end
 	local netid = table.insert(net_table, {
+        powergrid = 0,
 		res = {},
 		entities = {},
 		update = {},
@@ -555,7 +557,6 @@ end
 
 ///--- Resources ---\\\
 hook.Add("Initialize", "TKRD", function()
-	TK.RD.AddResource("energy", "Energy")
 	TK.RD.AddResource("oxygen", "Oxygen")
 	TK.RD.AddResource("carbon_dioxide", "Carbon Dioxide")
 	TK.RD.AddResource("nitrogen", "Nitrogen")

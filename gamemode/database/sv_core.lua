@@ -11,8 +11,8 @@ MySQL.SQLSettings = {
 	Host = "127.0.0.1",
 	Port = 3306,
 	Name = "threekelvin",
-	Username = "gmod_dev",
-	Password = "zKKZ8KSHCmx4Rzve"
+	Username = "root",
+	Password = "password"
 }
 
 MySQL.DataBase = nil

@@ -14,7 +14,6 @@ function ENT:Initialize()
 	end
 	
 	self:SetPowered(true)
-	self:AddResource("energy", 0, true)
 	
 	WireLib.CreateOutputs(self, {"On", "Output"})
 end
