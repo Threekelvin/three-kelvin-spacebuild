@@ -39,7 +39,7 @@ function ENT:Initialize()
 	self.atmosphere.percent.nitrogen = 70
 	self.atmosphere.percent.hydrogen = 5
 	
-	self:SetPowered(true)
+	self:SetNWBool("Generator", true)
 	self:AddResource("energy", 0)
 	self:AddResource("oxygen", 0)
 	self:AddResource("nitrogen", 0)
@@ -59,7 +59,7 @@ function ENT:OnRemove()
 end
 
 function ENT:TurnOn()
-	if self.IsActive || !self:IsLinked() then return end
+	if self:GetActive() || !self:IsLinked() then return end
 	
 	local entlist, hull = {}, {}
 	local vol = 0
@@ -108,8 +108,9 @@ function ENT:TurnOn()
 end
 
 function ENT:TurnOff()
-	if !self.IsActive then return end
+	if !self:GetActive() then return end
 	self:SetActive(false)
+    self:SetPower(0)
 	
 	for k,v in pairs(self.brushes) do
 		SafeRemoveEntity(v)
@@ -118,12 +119,12 @@ function ENT:TurnOff()
 end
 
 function ENT:DoThink()
-	if !self.IsActive then return end
+	if !self:GetActive() then return end
 	local env
 	local size = table.Count(self.brushes)
 	local rate = math.max(math.floor(self.volume / 30), 50 * size)
 	
-	for k,v in ipairs(self.auenv.envlist) do
+	for k,v in ipairs(self.tk_env.envlist) do
 		if v != self then 
 			env = v
 			break
@@ -143,9 +144,6 @@ function ENT:DoThink()
 	self.atmosphere.resources.carbon_dioxide = math.max(self.atmosphere.resources.carbon_dioxide - 5 * size, 0)
 	self.atmosphere.resources.nitrogen = math.max(self.atmosphere.resources.nitrogen - 5 * size, 0)
 	self.atmosphere.resources.hydrogen = math.max(self.atmosphere.resources.hydrogen - 5 * size, 0)
-	
-	if self:GetResourceAmount("energy") < 50 * size then self:TurnOff() return end
-	self:ConsumeResource("energy", 50 * size)
 	
 	if self.atmosphere.tempcold  < 290 then
 		local energy = math.ceil((290 - self.atmosphere.tempcold) / 34) * size
@@ -192,10 +190,12 @@ function ENT:DoThink()
 	
 	if total > self.volume then
 		self.atmosphere.resources.empty = 0
-		print("If this happens too much i will fix it")
+		print("Ship Core Error: 1", total, self.volume)
 	else
 		self.atmosphere.resources.empty = self.volume - total
 	end
+    
+    self:SetPower(1 * size)
 end
 
 function ENT:NewNetwork(netid)
@@ -256,24 +256,24 @@ function ENT:InAtmosphere(pos)
 end
 
 function ENT:DoGravity(ent)
-	if !IsValid(ent) || !ent.auenv then return end
+	if !IsValid(ent) || !ent.tk_env then return end
 	local phys = ent:GetPhysicsObject()
 	if !IsValid(phys) then return end
 
 	local grav = self.atmosphere.gravity
-	if !ent.auenv.gravity != grav then
+	if !ent.tk_env.gravity != grav then
 		local bool = grav > 0
 		phys:EnableGravity(bool)
 		phys:EnableDrag(bool)
 		ent:SetGravity(grav + 0.0001)
-		ent.auenv.gravity = grav
+		ent.tk_env.gravity = grav
 	end
 end
 
 function ENT:InSun(ent)
 	if !IsValid(ent) then return false end
 	local pos = ent:LocalToWorld(ent:OBBCenter())
-	for k,v in pairs(TK.AT.GetSuns()) do
+	for k,v in pairs(TK.AT:GetSuns()) do
 		local trace = {}
 		trace.start = pos - (pos - v):GetNormal() * 2048
 		trace.endpos = pos

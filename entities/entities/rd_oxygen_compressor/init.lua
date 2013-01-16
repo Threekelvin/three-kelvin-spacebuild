@@ -5,13 +5,12 @@ include('shared.lua')
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	
-	self:SetPowered(true)
-	self:AddResource("energy", 0)
+	self:SetNWBool("Generator", true)
 	self:AddResource("oxygen", 0, true)
 	self:AddSound("l", 3, 65)
 	
 	WireLib.CreateInputs(self, {"On", "Multiplier", "Mute"})
-	WireLib.CreateOutputs(self, {"On", "O2Output"})
+	WireLib.CreateOutputs(self, {"On", "Output"})
 end
 
 function ENT:TriggerInput(iname, value)
@@ -22,51 +21,39 @@ function ENT:TriggerInput(iname, value)
 			self:TurnOff()
 		end
 	elseif iname == "Multiplier" then
-		self.Mult = math.max(1, value)
+		self.mult = math.max(0, value)
 	elseif iname == "Mute" then
-		self.Mute = tobool(value)
+		self.mute = tobool(value)
 	end
 end
 
 function ENT:TurnOn()
-	if self.IsActive || !self:IsLinked() then return end
+	if self:GetActive() || !self:IsLinked() then return end
 	self:SetActive(true)
 	self:SoundPlay(1)
 	WireLib.TriggerOutput(self, "On", 1)
 end
 
 function ENT:TurnOff()
-	if !self.IsActive then return end
+	if !self:GetActive() then return end
 	self:SetActive(false)
+    self:SetPower(0)
 	self:SoundStop(1)
 	WireLib.TriggerOutput(self, "On", 0)
-	WireLib.TriggerOutput(self, "O2Output", 0)
+	WireLib.TriggerOutput(self, "Output", 0)
 end
 
-function ENT:Idle()
-	if self.IsIdle then return end
-	self:SetIdle(true)
-	WireLib.TriggerOutput(self, "O2Output", 0)
-end
-
-function ENT:DoThink()
-	if !self.IsActive then return end
+function ENT:DoThink(eff)
+	if !self:GetActive() then return end
 	
 	local env = self:GetEnv()
-	if !env:IsPlanet() then self:Idle() return end
-	local energy = self:GetResourceAmount("energy")
-	local oxygen = math.min(env:GetAtmosphereResource("oxygen"), self.data.oxygen * self.Mult)
+	if !env:IsPlanet() || !env:HasResource("oxygen") then self:TurnOff() return end
+    if !self:Work() then return end
+    
+	local oxygen = self.data.oxygen * self.mult * env:GetResourcePercent("oxygen") / 100 * eff
 
-	if oxygen <= 0 then self:Idle() return end
-	if energy < oxygen * self.data.energy then self:Idle() return end
-	
-	self:ConsumeResource("energy", oxygen * self.data.energy)
-	oxygen = env:ConsumeAtmosphere("oxygen", oxygen)
-	
 	self:SupplyResource("oxygen", oxygen)
-	WireLib.TriggerOutput(self, "O2Output", oxygen)
-	
-	self:Work()
+	WireLib.TriggerOutput(self, "Output", oxygen)
 end
 
 function ENT:NewNetwork(netid)

@@ -5,13 +5,12 @@ include('shared.lua')
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	
-	self:SetPowered(true)
-	self:AddResource("energy", 0)
+	self:SetNWBool("Generator", true)
 	self:AddResource("nitrogen", 0, true)
 	self:AddSound("l", 3, 65)
 	
 	WireLib.CreateInputs(self, {"On", "Multiplier", "Mute"})
-	WireLib.CreateOutputs(self, {"On", "N2Output"})
+	WireLib.CreateOutputs(self, {"On", "Output"})
 end
 
 function ENT:TriggerInput(iname, value)
@@ -22,51 +21,38 @@ function ENT:TriggerInput(iname, value)
 			self:TurnOff()
 		end
 	elseif iname == "Multiplier" then
-		self.Mult = math.max(1, value)
+		self.mult = math.max(0, value)
 	elseif iname == "Mute" then
-		self.Mute = tobool(value)
+		self.mute = tobool(value)
 	end
 end
 
 function ENT:TurnOn()
-	if self.IsActive || !self:IsLinked() then return end
+	if self:GetActive() || !self:IsLinked() then return end
 	self:SetActive(true)
 	self:SoundPlay(1)
 	WireLib.TriggerOutput(self, "On", 1)
 end
 
 function ENT:TurnOff()
-	if !self.IsActive then return end
+	if !self:GetActive() then return end
 	self:SetActive(false)
+    self:SetPower(0)
 	self:SoundStop(1)
 	WireLib.TriggerOutput(self, "On", 0)
-	WireLib.TriggerOutput(self, "N2Output", 0)
+	WireLib.TriggerOutput(self, "Output", 0)
 end
 
-function ENT:Idle()
-	if self.IsIdle then return end
-	self:SetIdle(true)
-	WireLib.TriggerOutput(self, "N2Output", 0)
-end
-
-function ENT:DoThink()
-	if !self.IsActive then return end
+function ENT:DoThink(eff)
+	if !self:GetActive() then return end
 	
 	local env = self:GetEnv()
-	if !env:IsPlanet() then self:Idle() return end
-	local energy = self:GetResourceAmount("energy")
-	local nitrogen = math.min(env:GetAtmosphereResource("nitrogen"), self.data.nitrogen * self.Mult)
-	
-	if nitrogen <= 0 then self:Idle() return end
-	if energy < nitrogen * self.data.energy then self:Idle() return end
-	
-	self:ConsumeResource("energy", nitrogen * self.data.energy)
-	nitrogen = env:ConsumeAtmosphere("nitrogen", nitrogen)
-	
+	if !env:IsPlanet() || !env:HasResource("nitrogen") then self:TurnOff() return end
+    if !self:Work() then return end
+    
+	local nitrogen = self.data.nitrogen * self.mult * env:GetResourcePercent("nitrogen") / 100 * eff
 	self:SupplyResource("nitrogen", nitrogen)
-	WireLib.TriggerOutput(self, "N2Output", nitrogen)
-	
-	self:Work()
+	WireLib.TriggerOutput(self, "Output", nitrogen)
 end
 
 function ENT:NewNetwork(netid)

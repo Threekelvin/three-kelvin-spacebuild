@@ -1,138 +1,116 @@
 
 util.AddNetworkString("TKLS_Ply")
 
+local function PlayerUpdate(ply)
+    local data = {}
+    data.energy = ply.hev.energy
+    data.water = ply.hev.water
+    data.oxygen = ply.hev.oxygen
+    data.temp = temp
+    data.airper = airper
+    
+    net.Start("TKLS_Ply")
+        net.WriteTable(data)
+    net.Send(ply)
+end
+
 local function PlayerLSCheck()
 	if !TK.AT.IsSpacebuild then return end
 	for _,ply in pairs(player.GetAll()) do
-		if IsValid(ply) && ply.hev && ply:Alive() then
-			local pod = ply:GetVehicle()
-			local env = ply:GetEnv()
-			local temp, insun = env:DoTemp(ply)
-			local airper = math.floor(env:GetTrueAtmospherePercent("oxygen"))
-			
-			if insun && env.atmosphere.sunburn then
-				ply:TakeDamage(5)
-			end
-			
-			if temp != ply.hev.temp then
-				ply.hev.temp = temp
-				ply.hev.update = true
-			end
-			
-			if ply.hev.temp < 273 then
-				local required = math.floor((290 - ply.hev.temp) / 34)
-				if IsValid(pod) then
-					required = required - pod:ConsumeResource("energy", required)
-				end
-				
-				if required == 0 then
-				
-				elseif ply.hev.energy >= required then
-					ply.hev.energy = ply.hev.energy - required
-					ply.hev.temp = 290
-					ply.hev.update = true
-				else
-					local left = required - ply.hev.energy
-					ply.hev.energy = 0
-					ply.hev.temp = 290 - left * 17
-					ply.hev.update = true
-					
-					local dmg = (290 - ply.hev.temp) / 10
-					ply.hev.recover = ply.hev.recover + dmg
-					ply:TakeDamage(dmg)
-				end
-			elseif ply.hev.temp > 307 then
-				local required = math.floor((ply.hev.temp - 290) / 34)
-				if IsValid(pod) then
-					required = required - pod:ConsumeResource("water", required)
-				end
-				
-				if required == 0 then
-				
-				elseif ply.hev.water >= required then
-					ply.hev.water = ply.hev.water - required
-					ply.hev.temp = 290
-					ply.hev.update = true
-				else
-					local left = required - ply.hev.water
-					ply.hev.water = 0
-					ply.hev.temp = 290 + left * 17
-					ply.hev.update = true
-					
-					local dmg = (ply.hev.temp - 290) / 10
-					ply.hev.recover = ply.hev.recover + dmg
-					ply:TakeDamage(dmg)
-				end
-			else
-				if ply.hev.energy < 100 then
-					ply.hev.energy = math.min(ply.hev.energy + 5, 100)
-					ply.hev.update = true
-				end
-				if ply.hev.water < 100 then
-					ply.hev.water = math.min(ply.hev.water + 5, 100)
-					ply.hev.update = true
-				end
-			end
-			
-			if airper != ply.hev.airper then
-				ply.hev.airper = airper
-				ply.hev.update = true
-			end
-			
-			if ply.hev.airper < 5 || ply:WaterLevel() == 3 then
-				local required = 5
-				if IsValid(pod) then
-					required = required - pod:ConsumeResource("oxygen", required)
-				end
-				if required == 0 then
-				
-				elseif ply.hev.oxygen >= required then
-					ply.hev.oxygen = ply.hev.oxygen - required
-					ply.hev.update = true
-				else
-					local left = required - ply.hev.oxygen
-					ply.hev.oxygen = 0
-					ply.hev.update = true
-					
-					ply.hev.recover = ply.hev.recover + left
-					ply:TakeDamage(left)
-				end
-			else
-				if ply.hev.oxygen < 100 then
-					ply.hev.oxygen = math.min(ply.hev.oxygen + 5, 100)
-					ply.hev.update = true
-				end
-				
-				env:ConsumeAtmosphere("oxygen", 5)
-				env:SupplyAtmosphere("carbon_dioxide", 5)
-			end
-			
-			if ply.hev.recover > 0 && ply.hev.temp > 273 && ply.hev.temp < 307 && ply.hev.oxygen > 0 then
-				if ply:Health() + 5 >= 100 then
-					ply:SetHealth(100)
-					ply.hev.recover = 0
-				else
-					ply:SetHealth(ply:Health() + 5)
-					ply.hev.recover = ply.hev.recover - 5
-				end
-			end
-			
-			if ply.hev.update then
-				ply.hev.update = false
+		if !IsValid(ply) || !ply.hev || !ply:Alive() then continue end
+        
+        local env = ply:GetEnv()
+        local temp, insun = env:DoTemp(ply)
+        local airper = math.floor(env:GetResourcePercent("oxygen"))
+        
+        if insun && env.atmosphere.sunburn then
+            ply:TakeDamage(5)
+        end
+        
+        if temp != ply.hev.temp then
+            ply.hev.temp = temp
+            ply.hev.update = true
+        end
+        
+        if ply.hev.temp < 273 then
+            local required = 5
+
+            if ply.hev.energy >= required then
+                ply.hev.energy = ply.hev.energy - required
+                ply.hev.temp = 290
+                ply.hev.update = true
+            else
+                local left = required - ply.hev.energy
+                ply.hev.energy = 0
+                ply.hev.temp = 290 - left * 17
+                ply.hev.update = true
                 
-                local data = {}
-                data.energy = ply.hev.energy
-                data.water = ply.hev.water
-                data.oxygen = ply.hev.oxygen
-                data.temp = temp
-                data.airper = airper
+                local dmg = (290 - ply.hev.temp) / 10
+                ply:TakeDamage(dmg)
+            end
+        elseif ply.hev.temp > 307 then
+            local required = 5
+            
+            if ply.hev.water >= required then
+                ply.hev.water = ply.hev.water - required
+                ply.hev.temp = 290
+                ply.hev.update = true
+            else
+                local left = required - ply.hev.water
+                ply.hev.water = 0
+                ply.hev.temp = 290 + left * 17
+                ply.hev.update = true
                 
-                net.Start("TKLS_Ply")
-                    net.WriteTable(data)
-                net.Send(ply)
-			end
-		end
-	end
+                local dmg = (ply.hev.temp - 290) / 10
+                ply:TakeDamage(dmg)
+            end
+        else
+            if ply.hev.energy < ply.hev.energymax  then
+                ply.hev.energy = math.min(ply.hev.energy + 5, ply.hev.energymax)
+                ply.hev.update = true
+            end
+            if ply.hev.water < ply.hev.watermax  then
+                ply.hev.water = math.min(ply.hev.water + 5, ply.hev.watermax)
+                ply.hev.update = true
+            end
+        end
+        
+        if airper != ply.hev.airper then
+            ply.hev.airper = airper
+            ply.hev.update = true
+        end
+        
+        if ply.hev.airper < 5 || ply:WaterLevel() == 3 then
+            local required = 5
+            
+            if ply.hev.oxygen >= required then
+                ply.hev.oxygen = ply.hev.oxygen - required
+                ply.hev.update = true
+            else
+                local left = required - ply.hev.oxygen
+                ply.hev.oxygen = 0
+                ply.hev.update = true
+                
+                ply:TakeDamage(left)
+            end
+        else
+            if ply.hev.oxygen < ply.hev.oxygenmax then
+                ply.hev.oxygen = math.min(ply.hev.oxygen + 5, ply.hev.oxygenmax)
+                ply.hev.update = true
+            end
+        end
+        
+        if ply.hev.health == ply:Health() && ply:Health() < 100 then
+            ply:SetHealth(math.min(ply:Health() + 1, 100))
+        end
+        
+        ply.hev.health = ply:Health()
+        
+        if ply.hev.update then
+            ply.hev.update = false
+            PlayerUpdate(ply)
+        end
+    end
 end
 
 hook.Add("Initialize", "TKLS", function()
@@ -140,36 +118,31 @@ hook.Add("Initialize", "TKLS", function()
 end)
 
 hook.Add("PlayerInitialSpawn", "TKLS", function(ply)
-	ply.auenv = {}
-	ply.auenv.envlist = {Space}
-	ply.auenv.gravity = -1
+	ply.tk_env = {}
+	ply.tk_env.envlist = {Space}
+	ply.tk_env.gravity = -1
 	ply:GetEnv():DoGravity(ply)
 	
-	timer.Simple(5, function(ply)
-		if !IsValid(ply) then return end
-		ply.hev = {}
-		ply.hev.energy = 100
-		ply.hev.energymax = 1500
-		ply.hev.oxygen = 100
-		ply.hev.oxygenmax = 1500
-		ply.hev.water = 100
-		ply.hev.watermax = 1500
-		ply.hev.temp = 290
-		ply.hev.airper = 5
-		ply.hev.recover = 0
-		ply.hev.update = true
-		ply.hev.sound = 0
-	end, ply)
+    ply.hev = {}
+    ply.hev.energy = 600
+    ply.hev.energymax = 600
+    ply.hev.oxygen = 600
+    ply.hev.oxygenmax = 600
+    ply.hev.water = 600
+    ply.hev.watermax = 600
+    ply.hev.temp = 290
+    ply.hev.airper = 5
+    ply.hev.health = 100
+    ply.hev.update = true
 end)
 
 hook.Add("PlayerSpawn", "TKLS", function(ply)
 	ply.hev = ply.hev || {}
-	ply.hev.energy = 100
-	ply.hev.oxygen = 100
-	ply.hev.water = 100
+	ply.hev.energy = 600
+	ply.hev.oxygen = 600
+	ply.hev.water = 600
 	ply.hev.temp = 290
 	ply.hev.airper = 5
-	ply.hev.recover = 0
 	ply.hev.update = true
 end)
 

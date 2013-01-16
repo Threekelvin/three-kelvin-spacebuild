@@ -8,18 +8,11 @@ ENT.Author = "Ghost400"
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
+
 function ENT:GetActive()
-	return self:GetNWBool("Actived", false)
+    return self:GetNWBool("Active", false)
 end
 
-function ENT:GetIdle()
-	return self:GetNWBool("Idle", false)
-end
-
-function ENT:GetPowered()
-	return self:GetNWBool("Powered", false)
-end
-
-function ENT:GetOverlay()
-	return self:GetNWBool("Overlay", true)
+function ENT:IsGenerator()
+    return self:GetNWBool("Generator", false)
 end

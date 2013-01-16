@@ -7,7 +7,7 @@ function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	self.device = {1, 3}
 
-	self:SetPowered(true)
+	self:SetNWBool("Generator", true)
 	self:AddResource("energy", 0)
 	
 	self.Inputs = Wire_CreateInputs(self, {"On"})
@@ -15,14 +15,14 @@ function ENT:Initialize()
 end
 
 function ENT:TurnOn()
-	if self.IsActive || !self:IsLinked() then return end
+	if self:GetActive() || !self:IsLinked() then return end
 	if self:GetResourceAmount("energy") < 100 then return end
 	self:SetActive(true)
 	WireLib.TriggerOutput(self, "On", 1)
 end
 
 function ENT:TurnOff()
-	if !self.IsActive then return end
+	if !self:GetActive() then return end
 	self:SetActive(false)
 	WireLib.TriggerOutput(self, "On", 0)
 	WireLib.TriggerOutput(self, "Remaining", 0)
@@ -40,7 +40,7 @@ function ENT:TriggerInput(iname, value)
 end
 
 function ENT:DoThink()
-	if !self.IsActive then return end
+	if !self:GetActive() then return end
 	
 	if self:GetResourceAmount("energy") < 100 then
 		self:TurnOff()

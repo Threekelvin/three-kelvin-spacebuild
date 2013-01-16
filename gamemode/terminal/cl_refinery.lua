@@ -7,7 +7,7 @@ local function MakePanel(res, val)
 	btn:SetSize(0, 65)
 	btn.active = true
 	btn.res = res
-	btn.pres = TK.RD.GetResourceName(res)
+	btn.pres = TK.RD:GetResourceName(res)
 	btn.val = val
 	btn:SetText("")
 	

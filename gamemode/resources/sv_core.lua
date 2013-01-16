@@ -69,7 +69,7 @@ local function RegisterEnt(ent)
 	if ent_table[entid] && ent_table[entid].ent == ent then return end
 	ent_table[entid] = {
 		netid = 0,
-        power = 0,
+        powergrid = 0,
 		res = {},
 		data = {},
 		update = {},
@@ -91,7 +91,7 @@ local function RegisterNet(node)
 	node.netdata = net_table[netid]
 end
 
-function TK.RD.Register(ent, node)
+function TK.RD:Register(ent, node)
 	if !IsValid(ent) then return end
 	ent.IsTKRD = true
 	
@@ -102,19 +102,19 @@ function TK.RD.Register(ent, node)
 		RegisterEnt(ent)
 	end
 	
-	if TK.RD.EntityData[ent:GetClass()] then
-		ent.data = TK.RD.EntityData[ent:GetClass()][ent:GetModel()] || {}
+	if self.EntityData[ent:GetClass()] then
+		ent.data = self.EntityData[ent:GetClass()][ent:GetModel()] || {}
 	end
 end
 
-function TK.RD.RemoveEnt(ent)
+function TK.RD:RemoveEnt(ent)
 	if !IsValid(ent) then return end
 	ent:Unlink()
 	SendKillEnt(ent:EntIndex())
 	ent_table[ent:EntIndex()] = nil
 end
 
-function TK.RD.RemoveNet(ent)
+function TK.RD:RemoveNet(ent)
 	if !IsValid(ent) then return end
 	ent:Unlink()
 	SendKillNet(ent:GetNetID())
@@ -146,20 +146,36 @@ local function ValidAmount(amt)
 	return amt < 0 && 0 || amt
 end
 
-function TK.RD.AddResource(idx, name)
+function TK.RD:AddResource(idx, name)
 	idx = tostring(idx)
 	name = tostring(name) || idx
 	res_table[idx] = name
     util.AddNetworkString(idx)
 end
 
-function TK.RD.IsLinked(ent)
+function TK.RD:SetPower(ent, power)
+    if !IsValid(ent) then return end
+	if !ent.IsTKRD || ent.IsNode then return end
+    power = tonumber(power || 0)
+    local entdata = ent_table[ent:EntIndex()]
+    local prepower = entdata.powergrid
+    if prepower == power then return end
+    entdata.powergrid = power
+    entdata.update = {}
+
+    if entdata.netid == 0 then return end
+    local netdata = net_table[entdata.netid]
+    netdata.powergrid = netdata.powergrid + entdata.powergrid - prepower
+    netdata.update = {}
+end
+
+function TK.RD:IsLinked(ent)
 	if !IsValid(ent) || !ent.IsTKRD then return false end
 	local entdata = ent_table[ent:EntIndex()]
 	return entdata.netid > 0
 end
 
-function TK.RD.Link(ent, netid)
+function TK.RD:Link(ent, netid)
 	if !IsValid(ent) then return false end
 	if !ent.IsTKRD || ent.IsNode then return false end
 	local entdata = ent_table[ent:EntIndex()]
@@ -167,7 +183,9 @@ function TK.RD.Link(ent, netid)
 	if entdata.netid == netid then return false end
 	if !netdata then return false end
 	
-	TK.RD.Unlink(ent, true)
+	self:Unlink(ent, true)
+    
+    netdata.powergrid = netdata.powergrid + entdata.powergrid
 	
 	for k,v in pairs(entdata.res) do
 		if v.max > 0 then
@@ -186,12 +204,12 @@ function TK.RD.Link(ent, netid)
 	return true
 end
 
-function TK.RD.Unlink(ent, relink)
+function TK.RD:Unlink(ent, relink)
 	if !IsValid(ent) || !ent.IsTKRD then return false end
 	if ent.IsNode then
 		local entlist = table.Copy(ent.netdata.entities)
 		for k,v in ipairs(entlist) do
-			TK.RD.Unlink(v)
+			self:Unlink(v)
 		end
 		entlist = nil
 	else
@@ -199,6 +217,8 @@ function TK.RD.Unlink(ent, relink)
 		if entdata.netid == 0 then return false end
 		local netdata = net_table[entdata.netid]
 		if !netdata then return false end
+        
+        netdata.powergrid = netdata.powergrid - entdata.powergrid
 		
 		for k,v in pairs(entdata.res) do
 			if v.max > 0 then
@@ -229,7 +249,7 @@ function TK.RD.Unlink(ent, relink)
 	return true
 end
 
-function TK.RD.EntAddResource(ent, idx, max, gen)
+function TK.RD:EntAddResource(ent, idx, max, gen)
 	if !IsValid(ent) || !ent.IsTKRD then return false end
 	local entdata = ent_table[ent:EntIndex()]
 	max = ValidAmount(max)
@@ -250,7 +270,7 @@ function TK.RD.EntAddResource(ent, idx, max, gen)
 				if netdata.res[idx].cur > netdata.res[idx].max then
 					netdata.res[idx].cur = netdata.res[idx].max
 				else
-					TK.RD.NetSupplyResource(netid, idx, left)
+					TK.RD:NetSupplyResource(netid, idx, left)
 				end
 			else
 				entdata.res[idx].max = max
@@ -299,7 +319,7 @@ function TK.RD.EntAddResource(ent, idx, max, gen)
 	return true
 end
 
-function TK.RD.NetSupplyResource(netid, idx, amt)
+function TK.RD:NetSupplyResource(netid, idx, amt)
 	local netdata = net_table[netid]
 	local iamt = ValidAmount(amt)
 	if !netdata || iamt == 0 then return 0 end
@@ -335,14 +355,14 @@ function TK.RD.NetSupplyResource(netid, idx, amt)
 	return iamt
 end
 
-function TK.RD.EntSupplyResource(ent, idx, amt)
+function TK.RD:EntSupplyResource(ent, idx, amt)
 	if !IsValid(ent) || !ent.IsTKRD then return 0 end
 	local iamt = ValidAmount(amt)
 	if iamt == 0 then return 0 end
 	local entdata = ent_table[ent:EntIndex()]
 	
 	if entdata.netid != 0 then
-		iamt = TK.RD.NetSupplyResource(entdata.netid, idx, iamt)
+		iamt = self:NetSupplyResource(entdata.netid, idx, iamt)
 	else
 		if !entdata.res[idx] then return 0 end
 		if entdata.res[idx].cur + iamt > entdata.res[idx].max then
@@ -359,7 +379,7 @@ function TK.RD.EntSupplyResource(ent, idx, amt)
 	return iamt
 end
 
-function TK.RD.NetConsumeResource(netid, idx, amt)
+function TK.RD:NetConsumeResource(netid, idx, amt)
 	local netdata = net_table[netid]
 	local iamt = ValidAmount(amt)
 	if !netdata || iamt == 0 then return 0 end
@@ -399,14 +419,14 @@ function TK.RD.NetConsumeResource(netid, idx, amt)
 	return iamt
 end
 
-function TK.RD.EntConsumeResource(ent, idx, amt)
+function TK.RD:EntConsumeResource(ent, idx, amt)
 	if !IsValid(ent) || !ent.IsTKRD then return 0 end
 	local iamt = ValidAmount(amt)
 	if iamt == 0 then return 0 end
 	local entdata = ent_table[ent:EntIndex()]
 	
 	if entdata.netid != 0 then
-		iamt = TK.RD.NetConsumeResource(entdata.netid, idx, iamt)
+		iamt = self:NetConsumeResource(entdata.netid, idx, iamt)
 	else
 		if !entdata.res[idx] then return 0 end
 		if iamt > entdata.res[idx].cur then
@@ -423,14 +443,31 @@ function TK.RD.EntConsumeResource(ent, idx, amt)
 	return iamt
 end
 
-function TK.RD.GetNetResourceAmount(netid, idx)
+function TK.RD:GetNetPowerGrid(netid)
+    local netdata = net_table[entdata.netid]
+    if !netdata then return 0 end
+    return netdata.powergrid || 0
+end
+
+function TK.RD:GetNetResourceAmount(netid, idx)
 	local netdata = net_table[netid]
 	if !netdata then return 0 end
 	if !netdata.res[idx] then return 0 end
 	return netdata.res[idx].cur
 end
 
-function TK.RD.GetEntResourceAmount(ent, idx)
+function TK.RD:GetEntPowerGrid(ent)
+    if !IsValid(ent) then return 0 end
+	local entdata = ent_table[ent:EntIndex()]
+    if entdata.netid != 0 then
+        local netdata = net_table[entdata.netid]
+        return netdata.powergrid || 0
+    else
+        return entdata.powergrid || 0
+    end
+end
+
+function TK.RD:GetEntResourceAmount(ent, idx)
 	if !IsValid(ent) || !ent.IsTKRD then return 0 end
 	local entdata = ent_table[ent:EntIndex()]
 	if entdata.netid != 0 then
@@ -443,21 +480,27 @@ function TK.RD.GetEntResourceAmount(ent, idx)
 	end
 end
 
-function TK.RD.GetUnitResourceAmount(ent, idx)
+function TK.RD:GetUnitPowerGrid(ent)
+    if !IsValid(ent) then return 0 end
+	local entdata = ent_table[ent:EntIndex()]
+    return entdata.powergrid || 0
+end
+
+function TK.RD:GetUnitResourceAmount(ent, idx)
 	if !IsValid(ent) || !ent.IsTKRD then return 0 end
 	local entdata = ent_table[ent:EntIndex()]
 	if !entdata.res[idx] then return 0 end
 	return entdata.res[idx].cur
 end
 
-function TK.RD.GetNetResourceCapacity(netid, idx)
+function TK.RD:GetNetResourceCapacity(netid, idx)
 	local netdata = net_table[netid]
 	if !netdata then return 0 end
 	if !netdata.res[idx] then return 0 end
 	return netdata.res[idx].max
 end
 
-function TK.RD.GetEntResourceCapacity(ent, idx)
+function TK.RD:GetEntResourceCapacity(ent, idx)
 	if !IsValid(ent) || !ent.IsTKRD then return 0 end
 	local entdata = ent_table[ent:EntIndex()]
 	if entdata.netid != 0 then
@@ -470,27 +513,27 @@ function TK.RD.GetEntResourceCapacity(ent, idx)
 	end
 end
 
-function TK.RD.GetUnitResourceCapacity(ent, idx)
+function TK.RD:GetUnitResourceCapacity(ent, idx)
 	if !IsValid(ent) || !ent.IsTKRD then return 0 end
 	local entdata = ent_table[ent:EntIndex()]
 	if !entdata.res[idx] then return 0 end
 	return entdata.res[idx].max
 end
 
-function TK.RD.GetConnectedEnts(netid)
+function TK.RD:GetConnectedEnts(netid)
 	local netdata = net_table[netid]
 	return netdata.entities || {}
 end
 
-function TK.RD.GetNetTable(netid)
+function TK.RD:GetNetTable(netid)
 	return net_table[netid] || {}
 end
 
-function TK.RD.GetEntTable(entid)
+function TK.RD:GetEntTable(entid)
 	return ent_table[entid] || {}
 end
 
-function TK.RD.GetResources()
+function TK.RD:GetResources()
 	local res = {}
 	for k,v in pairs(res_table) do
 		table.insert(res, k)
@@ -498,15 +541,15 @@ function TK.RD.GetResources()
 	return res
 end
 
-function TK.RD.IsResource(str)
+function TK.RD:IsResource(str)
 	return tobool(res_table[str])
 end
 
-function TK.RD.GetResourceName(idx)
+function TK.RD:GetResourceName(idx)
 	return res_table[idx] || idx
 end
 
-function TK.RD.MakeDupeInfo(ent)
+function TK.RD:MakeDupeInfo(ent)
 	if !ent.IsTKRD then return end
 	
 	if !ent.IsNode then return end
@@ -520,21 +563,21 @@ function TK.RD.MakeDupeInfo(ent)
 	duplicator.StoreEntityModifier(ent, "TKRDInfo", info)
 end
 
-function TK.RD.ApplyDupeInfo(ent, CreatedEntities)
+function TK.RD:ApplyDupeInfo(ent, CreatedEntities)
 	if !ent.EntityMods || !ent.EntityMods.TKRDInfo then return end
 	local TKRDInfo = ent.EntityMods.TKRDInfo
 
 	for k,v in ipairs(TKRDInfo || {}) do
 		local ent2 = CreatedEntities[v]
 		if IsValid(ent2) then
-			TK.RD.Link(ent2, ent.netid)
+			self:Link(ent2, ent.netid)
 		end
 	end
 	
 	ent.EntityMods.TKRDInfo = nil
 end
 
-function TK.RD.WaterLevel(ent)
+function TK.RD:WaterLevel(ent)
 	if !IsValid(ent) then return 0 end
 	local height = (ent:OBBMaxs().z - ent:OBBMins().z) / 2
 	local trace = {}
@@ -557,15 +600,15 @@ end
 
 ///--- Resources ---\\\
 hook.Add("Initialize", "TKRD", function()
-	TK.RD.AddResource("oxygen", "Oxygen")
-	TK.RD.AddResource("carbon_dioxide", "Carbon Dioxide")
-	TK.RD.AddResource("nitrogen", "Nitrogen")
-	TK.RD.AddResource("hydrogen", "Hydrogen")
-	TK.RD.AddResource("liquid_nitrogen", "Liquid Nitrogen")
-	TK.RD.AddResource("water", "Water")
-	TK.RD.AddResource("steam", "Steam")
-    TK.RD.AddResource("asteroid_ore", "Asteroid Ore")
-    TK.RD.AddResource("raw_tiberium", "Raw Tiberium")
+	TK.RD:AddResource("oxygen", "Oxygen")
+	TK.RD:AddResource("carbon_dioxide", "Carbon Dioxide")
+	TK.RD:AddResource("nitrogen", "Nitrogen")
+	TK.RD:AddResource("hydrogen", "Hydrogen")
+	TK.RD:AddResource("liquid_nitrogen", "Liquid Nitrogen")
+	TK.RD:AddResource("water", "Water")
+	TK.RD:AddResource("steam", "Steam")
+    TK.RD:AddResource("asteroid_ore", "Asteroid Ore")
+    TK.RD:AddResource("raw_tiberium", "Raw Tiberium")
 end)
 ///--- ---\\\
 
@@ -584,49 +627,49 @@ hook.Add("PlayerSpawnedVehicle", "TKRD", function(ply, ent)
 	end
 
 	function ent:AddResource(idx, max, gen)
-		return TK.RD.EntAddResource(self, idx, max, gen)
+		return TK.RD:EntAddResource(self, idx, max, gen)
 	end
 
 	function ent:IsLinked()
-		return TK.RD.IsLinked(self)
+		return TK.RD:IsLinked(self)
 	end
 
 	function ent:Link(netid)
-		return TK.RD.Link(self, netid)
+		return TK.RD:Link(self, netid)
 	end
 
 	function ent:Unlink()
-		return TK.RD.Unlink(self)
+		return TK.RD:Unlink(self)
 	end
 
 	function ent:GetEntTable()
-		return TK.RD.GetEntTable(self:EntIndex())
+		return TK.RD:GetEntTable(self:EntIndex())
 	end
 
 	function ent:SupplyResource(idx, amt)
-		return TK.RD.EntSupplyResource(self, idx, amt)
+		return TK.RD:EntSupplyResource(self, idx, amt)
 	end
 
 	function ent:ConsumeResource(idx, amt)
-		return TK.RD.EntConsumeResource(self, idx, amt)
+		return TK.RD:EntConsumeResource(self, idx, amt)
 	end
 
 	function ent:GetResourceAmount(idx)
-		return TK.RD.GetEntResourceAmount(self, idx)
+		return TK.RD:GetEntResourceAmount(self, idx)
 	end
 
 	function ent:GetUnitResourceAmount(idx)
-		return TK.RD.GetUnitResourceAmount(self, idx)
+		return TK.RD:GetUnitResourceAmount(self, idx)
 	end
 
 	function ent:GetResourceCapacity(idx)
-		return TK.RD.GetEntResourceCapacity(self, idx)
+		return TK.RD:GetEntResourceCapacity(self, idx)
 	end
 
 	function ent:GetUnitResourceCapacity(idx)
-		return TK.RD.GetUnitResourceCapacity(self, idx)
+		return TK.RD:GetUnitResourceCapacity(self, idx)
 	end
 	
-	TK.RD.Register(ent)
+	TK.RD:Register(ent)
 end)
 ///--- ---\\\

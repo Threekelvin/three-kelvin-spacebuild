@@ -19,11 +19,22 @@ function ENT:Draw()
 	end
 
 	local OverlayText = {self.PrintName, "\nNetwork ", self:GetNetID(), "\nOwner: ", name, "\nRange: ", self:GetRange(), "\n", idx = 9}
+    Add(OverlayText, "\nPower Grid: ")
+    
+    netdata.powergrid = netdata.powergrid || 0
+    if netdata.powergrid > 0 then
+        Add(OverlayText, "+")
+        Add(OverlayText, netdata.powergrid)
+        Add(OverlayText, "MW")
+    else
+        Add(OverlayText, netdata.powergrid)
+        Add(OverlayText, "MW")
+    end
 
 	if table.Count(netdata.res) > 0 then
-		Add(OverlayText, "\n\n\n\nResources:\n\n")
+		Add(OverlayText, "\n\nResources:\n\n")
 		for k,v in pairs(netdata.res) do
-			Add(OverlayText, TK.RD.GetResourceName(k))
+			Add(OverlayText, TK.RD:GetResourceName(k))
 			Add(OverlayText, ": ")
 			Add(OverlayText, v.cur)
 			Add(OverlayText, "/")
@@ -52,22 +63,14 @@ function ENT:Draw()
 			surface.DrawText( line )
 		end
 	cam.End3D2D()
-
-	if LocalPlayer():GetEyeTrace().Entity != self then return end
-
-	table.remove( ScreenText, 5 )
-	table.remove( ScreenText, 6 )
-	table.remove( ScreenText, 7 )
-	table.remove( ScreenText, 9 )
-	AddWorldTip(nil, table.concat(ScreenText, "\n"), nil, self:LocalToWorld(self:OBBCenter()))
 end
 
 function ENT:GetNetTable()
-	return TK.RD.GetNetTable(self:GetNetID())
+	return TK.RD:GetNetTable(self:GetNetID())
 end
 
 function ENT:GetResourceAmount(idx)
-	return TK.RD.GetNetResourceAmount(self:GetNetID(), idx)
+	return TK.RD:GetNetResourceAmount(self:GetNetID(), idx)
 end
 
 function ENT:GetUnitResourceAmount(idx)
@@ -75,7 +78,7 @@ function ENT:GetUnitResourceAmount(idx)
 end
 
 function ENT:GetResourceCapacity(idx)
-	return TK.RD.GetNetResourceCapacity(self:GetNetID(), idx)
+	return TK.RD:GetNetResourceCapacity(self:GetNetID(), idx)
 end
 
 function ENT:GetUnitResourceCapacity(idx)

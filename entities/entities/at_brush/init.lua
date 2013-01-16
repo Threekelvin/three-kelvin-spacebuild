@@ -22,13 +22,13 @@ local function EnvPrioritySort(a, b)
 end
 
 function ENT:StartTouch(ent)
-	if !ent.auenv || !IsValid(self.env) then return end
+	if !ent.tk_env || !IsValid(self.env) then return end
 	
 	self.inside[ent:EntIndex()] = ent
 	
 	local oldenv = ent:GetEnv()
-	table.insert(ent.auenv.envlist, self.env)
-	table.sort(ent.auenv.envlist, EnvPrioritySort)
+	table.insert(ent.tk_env.envlist, self.env)
+	table.sort(ent.tk_env.envlist, EnvPrioritySort)
 	local newenv = ent:GetEnv()
 	
 	if oldenv != newenv then
@@ -38,14 +38,14 @@ function ENT:StartTouch(ent)
 end
 
 function ENT:EndTouch(ent)
-	if !ent.auenv then return end
+	if !ent.tk_env then return end
 	local entid = ent:EntIndex()
 	
 	if self.inside[entid] && IsValid(self.env) then
 		local oldenv = ent:GetEnv()
-		for k,v in pairs(ent.auenv.envlist) do
+		for k,v in pairs(ent.tk_env.envlist) do
 			if v == self.env then
-				table.remove(ent.auenv.envlist, k)
+				table.remove(ent.tk_env.envlist, k)
 				break
 			end
 		end
@@ -66,9 +66,9 @@ function ENT:OnRemove()
 	for idx,ent in pairs(self.inside) do
 		if IsValid(ent) then
 			local oldenv = ent:GetEnv()
-			for k,v in pairs(ent.auenv.envlist) do
+			for k,v in pairs(ent.tk_env.envlist) do
 				if v == self.env then
-					table.remove(ent.auenv.envlist, k)
+					table.remove(ent.tk_env.envlist, k)
 					break
 				end
 			end

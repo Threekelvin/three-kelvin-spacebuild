@@ -13,7 +13,6 @@ end
 function ENT:Draw()
     self:DrawModel()
     
-    if !self:GetOverlay() then return end
     if (self:GetPos() - LocalPlayer():GetPos()):LengthSqr() > 262144 then return end
     if LocalPlayer():GetEyeTrace().Entity != self then return end
     
@@ -49,15 +48,13 @@ function ENT:Draw()
         Add(OverlayText, entdata.data.temp || 3)
         Add(OverlayText, "\nGravity: ")
         Add(OverlayText, entdata.data.gravity || 0)
-        Add(OverlayText, "\nOxygen: ")
-        Add(OverlayText, entdata.data.oxygen || 0)
-        Add(OverlayText, "%\nCarbon Dioxide: ")
-        Add(OverlayText, entdata.data.carbon_dioxide || 0)
-        Add(OverlayText, "%\nNitrogen: ")
-        Add(OverlayText, entdata.data.nitrogen || 0)
-        Add(OverlayText, "%\nHydrogen: ")
-        Add(OverlayText, entdata.data.hydrogen || 0)
-        Add(OverlayText, "%")
+        for k,v in pairs(entdata.data.resources) do
+            Add(OverlayText, "\n")
+            Add(OverlayText, TK.RD:GetResourceName(k))
+            Add(OverlayText, ": ")
+            Add(OverlayText, v)
+            Add(OverlayText, "%")
+        end
     else
         Add(OverlayText, "Off")
     end

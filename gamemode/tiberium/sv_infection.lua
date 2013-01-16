@@ -33,7 +33,7 @@ local function CanInfect(ent)
 end
 
 local function ScanNetwork(netid, entlist)
-	local node = TK.RD.GetNetTable(netid).node
+	local node = TK.RD:GetNetTable(netid).node
 	if IsValid(node) then
 		if !entlist[node:EntIndex()] then
 			entlist[node:EntIndex()] = node
@@ -42,7 +42,7 @@ local function ScanNetwork(netid, entlist)
 			end
 		end
 		
-		for k,v in pairs(TK.RD.GetConnectedEnts(netid)) do
+		for k,v in pairs(TK.RD:GetConnectedEnts(netid)) do
 			if !entlist[v:EntIndex()] then
 				entlist[v:EntIndex()] = b
 				for l,b in pairs(constraint.GetAllConstrainedEntities(v) || {}) do
@@ -69,7 +69,7 @@ local function ScanForEntities(ent)
             table.insert(nets, netid)
             ScanNetwork(netid, entlist)
             
-            for l,b in pairs(TK.RD.GetConnectedEnts(netid)) do
+            for l,b in pairs(TK.RD:GetConnectedEnts(netid)) do
                 if !table.HasValue(nets, b) then
                     table.insert(nets, b)
                     ScanNetwork(b, entlist)

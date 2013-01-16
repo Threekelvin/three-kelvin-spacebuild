@@ -7,12 +7,21 @@ local MySQL = {}
 local PlayerData = {}
 
 ///--- MySql Settings ---\\\
+--[[
 MySQL.SQLSettings = {
 	Host = "127.0.0.1",
 	Port = 3306,
 	Name = "threekelvin",
 	Username = "gmod_dev",
 	Password = "zKKZ8KSHCmx4Rzve"
+}
+--]]
+MySQL.SQLSettings = {
+	Host = "127.0.0.1",
+	Port = 3306,
+	Name = "threekelvin",
+	Username = "root",
+	Password = "password"
 }
 
 MySQL.DataBase = nil
@@ -34,21 +43,17 @@ function MySQL.Msg(msg)
 	net.Broadcast()
 end
 
-function MySQL.NetworkValue(ply, idx, Data)
+function MySQL.NetworkValue(ply, idx, data)
 	if idx == "name" then
-		ply:SetNWString("TKName", Data)
+		ply:SetNWString("TKName", data)
 	elseif idx == "playtime" then
-		ply:SetNWInt("TKPlaytime", tonumber(Data))
+		ply:SetNWInt("TKPlaytime", tonumber(data))
 	elseif idx == "score" then
-		ply:SetNWInt("TKScore", tonumber(Data))
+		ply:SetNWInt("TKScore", tonumber(data))
 	elseif idx == "rank" then
-		TK.AM:SetRank(ply, tonumber(Data))
+		TK.AM:SetRank(ply, tonumber(data))
 	elseif idx == "team" then
-		ply:SetTeam(tonumber(Data))
-	elseif idx == "team_rank" then
-		ply:SetNWInt("TKTeamRank", tonumber(Data))
-	elseif idx == "leader" then
-		ply:SetNWInt("TKLeader", tonumber(Data))
+		ply:SetTeam(tonumber(data))
 	end
 end
 
@@ -379,13 +384,16 @@ end)
 
 hook.Add("PlayerAuthed", "TKLoadPlayer", function(ply, steamid, uid)
 	local ip = TK.AM:GetIP(ply)
-	ply:SetTeam(1)
 	ply.uid = uid
 	ply.tkstats = {}
 	ply.tkstats.score = 0
 	ply.tkstats.paydelay = 0
 	
 	PlayerData[uid] = TK.DB:MakePlayerData()
+    
+    ply:SetNWString("TKName", ply:Name())
+	ply:SetNWInt("TKPlaytime", 0)
+    ply:SetNWInt("TKScore", 0)
 
 	MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("server_ban_data", {"idx"}, {"steamid = %s OR ip = %s LIMIT 1", steamid, ip}), function(data, ply, steamid, uid, ip)
 		if !IsValid(ply) then return end

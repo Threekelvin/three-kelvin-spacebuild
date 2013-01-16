@@ -39,7 +39,7 @@ function ENT:Initialize()
 	self.energy = self:LaserEnergy()
 	self:SetNWInt("range", self.range)
 
-	self:SetPowered(true)
+	self:SetNWBool("Generator", true)
 	self:AddResource("energy", 0)
 	self:AddResource("asteroid_ore", 0, true)
 	self:AddSound("l", 7, 65)
@@ -49,7 +49,7 @@ function ENT:Initialize()
 end
 
 function ENT:TurnOn()
-	if self.IsActive || !self:IsLinked() then return end
+	if self:GetActive() || !self:IsLinked() then return end
 	if self:GetResourceAmount("energy") > self.energy then
 		self:SetActive(true)
 		WireLib.TriggerOutput(self, "On", 1)
@@ -60,7 +60,7 @@ function ENT:TurnOn()
 end
 
 function ENT:TurnOff()
-	if !self.IsActive then return end
+	if !self:GetActive() then return end
 	self:SetActive(false)
 	WireLib.TriggerOutput(self, "On", 0)
 	WireLib.TriggerOutput(self, "Output", 0)
@@ -80,7 +80,7 @@ function ENT:TriggerInput(iname, value)
 end
 
 function ENT:DoThink()
-	if !self.IsActive then return end
+	if !self:GetActive() then return end
 	
 	if self.energy > self:GetResourceAmount("energy") then
 		self:TurnOff()

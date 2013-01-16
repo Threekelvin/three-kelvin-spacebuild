@@ -26,7 +26,7 @@ if SERVER then
 		if ply:HasAccess(PLUGIN.Level) then
 			if !Restart then
 				if table.Count(player.GetAll()) == 0 then
-					RunConsoleCommand("changegamemode", game.GetMap(), string.match(GAMEMODE.Folder, "[%w_]+$"))
+					RunConsoleCommand("changelevel", game.GetMap())
 					return
 				end
 				Restart = true

@@ -68,18 +68,6 @@ function TK:FormatTime(num)
 	end
 end
 
-hook.Add("Initialize", "EntSpawn", function()
-	GAMEMODE.EntitySpawned = function()
-	end
-	
-	hook.Add("OnEntityCreated", "EntSpawn", function(ent)
-		timer.Simple(0.1, function()
-            if !IsValid(ent) then return end
-            gamemode.Call("EntitySpawned", ent)
-		end)
-	end)
-end)
-
 local function IsValidFolder(dir)
 	if dir == "." || dir == ".." then return false end
 	if string.GetExtensionFromFilename(dir) then return false end
@@ -118,5 +106,16 @@ local function LoadModules()
 		end
 	end
 end
+
+hook.Add("Initialize", "EntSpawn", function()
+	GAMEMODE.EntitySpawned = function()
+	end
+    
+    local Spawn = _R.Entity.Spawn
+    function _R.Entity:Spawn()
+        Spawn(self)
+        gamemode.Call("EntitySpawned", self)
+    end
+end)
 
 LoadModules()

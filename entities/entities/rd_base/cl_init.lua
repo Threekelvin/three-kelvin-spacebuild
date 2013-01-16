@@ -9,17 +9,16 @@ function ENT:Draw()
 	self:DrawModel()
 	if Wire_Render then Wire_Render(self) end
 	
-	if !self:GetOverlay() then return end
 	if (self:GetPos() - LocalPlayer():GetPos()):LengthSqr() > 262144 then return end
 	if LocalPlayer():GetEyeTrace().Entity != self then return end
 	
 	local entdata = self:GetEntTable()
-	local res, gen = {}, {}
+	local power, res, gen = self:GetPowerGrid(), {}, {}
 	for k,v in pairs(entdata.res) do
 		if v.gen then
-			gen[TK.RD.GetResourceName(k)] = k
+			gen[TK.RD:GetResourceName(k)] = k
 		else
-			res[TK.RD.GetResourceName(k)] = k
+			res[TK.RD:GetResourceName(k)] = k
 		end
 	end
 	local owner , uid = self:CPPIGetOwner()
@@ -41,13 +40,24 @@ function ENT:Draw()
 	Add(OverlayText, "Owner: ")
 	Add(OverlayText, name)
 	Add(OverlayText, "\n")
-	if self:GetPowered() then
+    
+	if self:IsGenerator() then
 		Add(OverlayText, "Status: ")
-		Add(OverlayText, self:GetActive() && (self:GetIdle() && "Idle" || "On") || "Off")
-		Add(OverlayText, "\n")
+		Add(OverlayText, self:GetActive() && "On" || "Off")
+		Add(OverlayText, "\nPower Grid: ")
+        
+        if power > 0 then
+            Add(OverlayText, "+")
+            Add(OverlayText, power)
+            Add(OverlayText, "MW")
+        else
+            Add(OverlayText, power)
+            Add(OverlayText, "MW")
+        end
 	end
+    
 	if table.Count(res) > 0 then
-		Add(OverlayText, "\nResources:\n")
+		Add(OverlayText, "\n\nResources:\n")
 		for k,v in pairs(res) do
 			Add(OverlayText, k)
 			Add(OverlayText, ": ")
@@ -57,6 +67,7 @@ function ENT:Draw()
 			Add(OverlayText, "\n")
 		end
 	end
+    
 	if table.Count(gen) > 0 then
 		Add(OverlayText, "\nGenerates:\n")
 		for k,v in pairs(gen) do
@@ -69,7 +80,9 @@ function ENT:Draw()
 		end
 	end
 	
-	OverlayText[OverlayText.idx - 1] = "\n"
+    if OverlayText[#OverlayText] != "\n" then
+        Add(OverlayText, "\n")
+    end
 	OverlayText.idx = nil
 	AddWorldTip(nil, table.concat(OverlayText, ""), nil, self:LocalToWorld(self:OBBCenter()))
 end
@@ -87,21 +100,29 @@ function ENT:DoCommand(cmd, ...)
 end
 
 function ENT:GetEntTable()
-	return TK.RD.GetEntTable(self:EntIndex())
+	return TK.RD:GetEntTable(self:EntIndex())
+end
+
+function ENT:GetPowerGrid()
+    return TK.RD:GetEntPowerGrid(self)
 end
 
 function ENT:GetResourceAmount(idx)
-	return TK.RD.GetEntResourceAmount(self, idx)
+	return TK.RD:GetEntResourceAmount(self, idx)
+end
+
+function ENT:GetUnitPowerGrid()
+    return TK.RD:GetUnitPowerGrid(self)
 end
 
 function ENT:GetUnitResourceAmount(idx)
-	return TK.RD.GetUnitResourceAmount(self, idx)
+	return TK.RD:GetUnitResourceAmount(self, idx)
 end
 
 function ENT:GetResourceCapacity(idx)
-	return TK.RD.GetEntResourceCapacity(self, idx)
+	return TK.RD:GetEntResourceCapacity(self, idx)
 end
 
 function ENT:GetUnitResourceCapacity(idx)
-	return TK.RD.GetUnitResourceCapacity(self, idx)
+	return TK.RD:GetUnitResourceCapacity(self, idx)
 end

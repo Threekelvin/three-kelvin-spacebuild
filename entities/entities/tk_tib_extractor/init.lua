@@ -27,7 +27,7 @@ function ENT:Initialize()
 	self.power = self:ExtractorPower()
 	self.energy = self:ExtractorEnergy()
 	
-	self:SetPowered(true)
+	self:SetNWBool("Generator", true)
 	self:AddResource("raw_tiberium", 0, true)
 	self:AddResource("energy", 0)
 	self:AddSound("a", 4, 75)
@@ -44,7 +44,7 @@ function ENT:UpdateTransmitState()
 end
 
 function ENT:TurnOn()
-	if self.IsActive || !self:IsLinked() then return end
+	if self:GetActive() || !self:IsLinked() then return end
 	if self:GetResourceAmount("energy") > self.energy then
 		self:SetActive(true)
 		self:SoundPlay(1)
@@ -57,7 +57,7 @@ function ENT:TurnOn()
 end
 
 function ENT:TurnOff()
-	if !self.IsActive then return end
+	if !self:GetActive() then return end
 	self:SetActive()
 	self:SoundStop(2)
 	self:SoundStop(3)
@@ -79,7 +79,7 @@ function ENT:TriggerInput(iname, value)
 end
 
 function ENT:DoThink()
-	if !self.IsActive then return end
+	if !self:GetActive() then return end
 
 	if self.energy > self:GetResourceAmount("energy") then
 		self:TurnOff()

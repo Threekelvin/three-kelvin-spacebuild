@@ -5,13 +5,12 @@ include('shared.lua')
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	
-	self:SetPowered(true)
-	self:AddResource("energy", 0)
+	self:SetNWBool("Generator", true)
 	self:AddResource("carbon_dioxide", 0, true)
 	self:AddSound("l", 3, 65)
 	
 	WireLib.CreateInputs(self, {"On", "Multiplier", "Mute"})
-	WireLib.CreateOutputs(self, {"On", "CO2Output"})
+	WireLib.CreateOutputs(self, {"On", "Output"})
 end
 
 function ENT:TriggerInput(iname, value)
@@ -22,51 +21,38 @@ function ENT:TriggerInput(iname, value)
 			self:TurnOff()
 		end
 	elseif iname == "Multiplier" then
-		self.Mult = math.max(1, value)
+		self.mult = math.max(0, value)
 	elseif iname == "Mute" then
-		self.Mute = tobool(value)
+		self.mute = tobool(value)
 	end
 end
 
 function ENT:TurnOn()
-	if self.IsActive || !self:IsLinked() then return end
+	if self:GetActive() || !self:IsLinked() then return end
 	self:SetActive(true)
 	self:SoundPlay(1)
 	WireLib.TriggerOutput(self, "On", 1)
 end
 
 function ENT:TurnOff()
-	if !self.IsActive then return end
+	if !self:GetActive() then return end
 	self:SetActive(false)
+    self:SetPower(0)
 	self:SoundStop(1)
 	WireLib.TriggerOutput(self, "On", 0)
-	WireLib.TriggerOutput(self, "CO2Output", 0)
+	WireLib.TriggerOutput(self, "Output", 0)
 end
 
-function ENT:Idle()
-	if self.IsIdle then return end
-	self:SetIdle(true)
-	WireLib.TriggerOutput(self, "CO2Output", 0)
-end
-
-function ENT:DoThink()
-	if !self.IsActive then return end
+function ENT:DoThink(eff)
+	if !self:GetActive() then return end
 	
 	local env = self:GetEnv()
-	if !env:IsPlanet() then self:Idle() return end
-	local energy = self:GetResourceAmount("energy")
-	local carbon_dioxide = math.min(env:GetAtmosphereResource("carbon_dioxide"), self.data.carbon_dioxide * self.Mult)
-	
-	if carbon_dioxide <= 0 then self:Idle() return end
-	if energy < carbon_dioxide * self.data.energy then self:Idle() return end
-	
-	self:ConsumeResource("energy", carbon_dioxide * self.data.energy)
-	carbon_dioxide = env:ConsumeAtmosphere("carbon_dioxide", carbon_dioxide)
-	
+	if !env:IsPlanet() || !env:HasResource("carbon_dioxide") then self:TurnOff() return end
+    if !self:Work() then return end
+    
+	local carbon_dioxide = self.data.carbon_dioxide * self.mult * env:GetResourcePercent("carbon_dioxide") / 100 * eff
 	self:SupplyResource("carbon_dioxide", carbon_dioxide)
-	WireLib.TriggerOutput(self, "CO2Output", carbon_dioxide)
-	
-	self:Work()
+	WireLib.TriggerOutput(self, "Output", carbon_dioxide)
 end
 
 function ENT:NewNetwork(netid)

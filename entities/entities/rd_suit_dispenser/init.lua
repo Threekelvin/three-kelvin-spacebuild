@@ -5,7 +5,6 @@ include('shared.lua')
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	
-	self:AddResource("energy", 0)
 	self:AddResource("oxygen", 0)
 	self:AddResource("water", 0)
 end
@@ -21,7 +20,7 @@ end
 function ENT:Use(ply, caller)
 	if !ply:IsPlayer() then return end
 	if !ply.hev then return end
-	ply:AddhevRes("energy", self:ConsumeResource("energy", ply.hev.energymax - ply.hev.energy))
+    ply:AddhevRes("energy", ply.hev.energymax - ply.hev.energy)
 	ply:AddhevRes("water", self:ConsumeResource("water", ply.hev.watermax - ply.hev.water))
 	ply:AddhevRes("oxygen", self:ConsumeResource("oxygen", ply.hev.oxygenmax - ply.hev.oxygen))
 end

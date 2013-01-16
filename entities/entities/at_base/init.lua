@@ -46,14 +46,14 @@ function ENT:Initialize()
 end
 
 function ENT:StartTouch(ent)
-	if !ent.auenv then return end
+	if !ent.tk_env then return end
 	if self.atmosphere.sphere then
 		if (ent:GetPos() - self:GetPos()):LengthSqr() <= self.atmosphere.radius * self.atmosphere.radius then
 			self.inside[ent:EntIndex()] = ent
 			
 			local oldenv = ent:GetEnv()
-			table.insert(ent.auenv.envlist, self)
-			table.sort(ent.auenv.envlist, EnvPrioritySort)
+			table.insert(ent.tk_env.envlist, self)
+			table.sort(ent.tk_env.envlist, EnvPrioritySort)
 			local newenv = ent:GetEnv()
 			
 			if oldenv != newenv then
@@ -67,8 +67,8 @@ function ENT:StartTouch(ent)
 		self.inside[ent:EntIndex()] = ent
 		
 		local oldenv = ent:GetEnv()
-		table.insert(ent.auenv.envlist, self.auenv.ship)
-		table.sort(ent.auenv.envlist, EnvPrioritySort)
+		table.insert(ent.tk_env.envlist, self.tk_env.ship)
+		table.sort(ent.tk_env.envlist, EnvPrioritySort)
 		local newenv = ent:GetEnv()
 		
 		if oldenv != newenv then
@@ -79,14 +79,14 @@ function ENT:StartTouch(ent)
 end
 
 function ENT:EndTouch(ent)
-	if !ent.auenv then return end
+	if !ent.tk_env then return end
 	local entid = ent:EntIndex()
 	
 	if self.inside[entid] == ent then
 		local oldenv = ent:GetEnv()
-		for k,v in pairs(ent.auenv.envlist) do
+		for k,v in pairs(ent.tk_env.envlist) do
 			if v == self then
-				table.remove(ent.auenv.envlist, k)
+				table.remove(ent.tk_env.envlist, k)
 				break
 			end
 		end
@@ -112,8 +112,8 @@ function ENT:Think()
 					self.inside[idx] = ent
 					
 					local oldenv = ent:GetEnv()
-					table.insert(ent.auenv.envlist, self)
-					table.sort(ent.auenv.envlist, EnvPrioritySort)
+					table.insert(ent.tk_env.envlist, self)
+					table.sort(ent.tk_env.envlist, EnvPrioritySort)
 					local newenv = ent:GetEnv()
 					
 					if oldenv != newenv then
@@ -133,9 +133,9 @@ function ENT:Think()
 					self.inside[idx] = nil
 					
 					local oldenv = ent:GetEnv()
-					for k,v in pairs(ent.auenv.envlist) do
+					for k,v in pairs(ent.tk_env.envlist) do
 						if v == self then
-							table.remove(ent.auenv.envlist, k)
+							table.remove(ent.tk_env.envlist, k)
 							break
 						end
 					end
@@ -160,9 +160,9 @@ function ENT:OnRemove()
 	for idx,ent in pairs(self.inside) do
 		if IsValid(ent) then
 			local oldenv = ent:GetEnv()
-			for k,v in pairs(ent.auenv.envlist) do
+			for k,v in pairs(ent.tk_env.envlist) do
 				if v == self then
-					table.remove(ent.auenv.envlist, k)
+					table.remove(ent.tk_env.envlist, k)
 					break
 				end
 			end
@@ -197,17 +197,6 @@ function ENT:DefaultAtmosphere()
 	self.atmosphere.temphot		= 3
 	
 	self.atmosphere.resources 	= {}
-	self.atmosphere.resources.empty = 100
-	self.atmosphere.resources.oxygen = 0
-	self.atmosphere.resources.carbon_dioxide = 0
-	self.atmosphere.resources.nitrogen = 0
-	self.atmosphere.resources.hydrogen = 0
-	self.atmosphere.percent = {}
-	self.atmosphere.percent.empty = 100
-	self.atmosphere.percent.oxygen = 0
-	self.atmosphere.percent.carbon_dioxide = 0
-	self.atmosphere.percent.nitrogen = 0
-	self.atmosphere.percent.hydrogen = 0
 end
 
 function ENT:PhysicsSetup()
@@ -257,17 +246,12 @@ function ENT:GetVolume()
 	end
 end
 
-function ENT:GetAtmosphereResource(res)
-	return self.atmosphere.resources[res] || 0
+function ENT:HasResource(res)
+    return self.atmosphere.resources[res] && self.atmosphere.resources[res] > 0
 end
 
-function ENT:GetBaseAtmospherePercent(res)
-	return self.atmosphere.percent[res] || 0
-end
-
-function ENT:GetTrueAtmospherePercent(res)
-	if !self.atmosphere.resources[res] then return 0 end
-	return (self.atmosphere.resources[res] / self:GetVolume()) * 100
+function ENT:GetResourcePercent(res)
+    return self.atmosphere.resources[res] || 0
 end
 
 function ENT:SetAtomsphere(data)
@@ -275,7 +259,7 @@ function ENT:SetAtomsphere(data)
 	self:SetATRadius(data["radius"])
 	self:SetATGravity(data["gravity"])
 	self:SetATTempurature(data["tempcold"], data["temphot"])
-	self:SetATAir(data["oxygen"], data["carbon_dioxide"], data["nitrogen"], data["hydrogen"])
+	self:SetATAir(data["resources"])
 	self:SetATName(data["name"])
 	self:SetATFlags(data["flags"])
 	self:SetATSphere(data["sphere"])
@@ -288,7 +272,6 @@ function ENT:SetATRadius(num)
 	if !num || self.atmosphere.radius == num then return end
 	self.atmosphere.radius = num
 	self:PhysicsSetup()
-	self:FixAir()
 end
 
 function ENT:SetATGravity(num)
@@ -304,24 +287,16 @@ function ENT:SetATTempurature(tpc, tph)
 	self.atmosphere.temphot = tph || tpc
 end
 
-function ENT:SetATAir(oxygen, carbon_dioxide, nitrogen, hydrogen)
-	if oxygen then
-		self.atmosphere.percent.oxygen = oxygen
-		self.atmosphere.resources.oxygen = math.floor(self:GetVolume() * oxygen * 0.01)
-	end
-	if carbon_dioxide then
-		self.atmosphere.percent.carbon_dioxide = carbon_dioxide
-		self.atmosphere.resources.carbon_dioxide = math.floor(self:GetVolume() * carbon_dioxide * 0.01)
-	end
-	if nitrogen then
-		self.atmosphere.percent.nitrogen = nitrogen
-		self.atmosphere.resources.nitrogen = math.floor(self:GetVolume() * nitrogen * 0.01)
-	end
-	if hydrogen then
-		self.atmosphere.percent.hydrogen = hydrogen
-		self.atmosphere.resources.hydrogen = math.floor(self:GetVolume() * hydrogen * 0.01)
-	end
-	self:FixAir()
+function ENT:SetATAir(data)
+    local total = 0
+    for k,v in pairs(data) do
+        self.atmosphere.resources[k] = v
+        total = total + v
+    end
+    
+    for k,v in pairs(self.atmosphere.resources) do
+        self.atmosphere.resources[k] = v * (1 + (100 - total) / 100)
+    end
 end
 
 function ENT:SetATName(str)
@@ -351,31 +326,6 @@ function ENT:SetATNoclip(bool)
 	self.atmosphere.noclip = tobool(bool)
 end
 
-function ENT:FixAir()
-	local total = 0
-	for k,v in pairs(self.atmosphere.percent) do
-		total = total + v
-	end
-	
-	local fix = (total - 100) / table.Count(self.atmosphere.percent)
-	if fix > 0 && self.atmosphere.percent.empty > 0 then
-		local space = math.min(self.atmosphere.percent.empty, total - 100)
-		self.atmosphere.percent.empty = self.atmosphere.percent.empty - space
-		fix = (total - 100 - space) / table.Count(self.atmosphere.percent)
-	elseif fix < 0 then
-		local space = total - 100
-		self.atmosphere.percent.empty = self.atmosphere.percent.empty - space
-		fix = (total - 100 - space) / table.Count(self.atmosphere.percent)
-	end
-	
-	local vol = self:GetVolume()
-	
-	for k,v in pairs(self.atmosphere.percent) do
-		self.atmosphere.percent[k] = v - fix
-		self.atmosphere.resources[k] = math.max(math.floor((self.atmosphere.resources[k] || 0) - vol * fix * 0.01), 0)
-	end
-end
-
 function ENT:InAtmosphere(pos)
 	if self.atmosphere.sphere then
 		if (pos - self:GetPos()):LengthSqr() < self:GetRadius() * self:GetRadius() then
@@ -391,25 +341,25 @@ function ENT:InAtmosphere(pos)
 end
 
 function ENT:DoGravity(ent)
-	if !IsValid(ent) || !ent.auenv then return end
+	if !IsValid(ent) || !ent.tk_env then return end
 	local phys = ent:GetPhysicsObject()
 	if !IsValid(phys) then return end
 
 	local grav = self.atmosphere.gravity
-	if !ent.auenv.gravity != grav then
-		local bool = grav > 0
-		phys:EnableGravity(bool)
-		phys:EnableDrag(bool)
-		ent:SetGravity(grav + 0.0001)
-		ent.auenv.gravity = grav
-	end
+	if !ent.tk_env.gravity == grav then return end
+    
+    local bool = grav > 0
+    phys:EnableGravity(bool)
+    phys:EnableDrag(bool)
+    ent:SetGravity(grav + 0.0001)
+    ent.tk_env.gravity = grav
 end
 
 function ENT:InSun(ent)
 	if !IsValid(ent) then return false end
 	local pos = ent:LocalToWorld(ent:OBBCenter())
     
-	for k,v in pairs(TK.AT.GetSuns()) do
+	for k,v in pairs(TK.AT:GetSuns()) do
 		local trace = {}
 		trace.start = pos - (pos - v):GetNormal() * 2048
 		trace.endpos = pos
@@ -427,48 +377,8 @@ function ENT:DoTemp(ent)
 	if !IsValid(ent) then return 3, false end
 
 	if self:InSun(ent) then
-		return math.floor(self.atmosphere.temphot + (self.atmosphere.temphot * ((self:GetTrueAtmospherePercent("carbon_dioxide") - self:GetBaseAtmospherePercent("carbon_dioxide")) * 0.01)) * 0.5), true
+		return self.atmosphere.temphot, true
 	end
-	return math.floor(self.atmosphere.tempcold + (self.atmosphere.tempcold * ((self:GetTrueAtmospherePercent("carbon_dioxide") - self:GetBaseAtmospherePercent("carbon_dioxide")) * 0.01)) * 0.5), false
-end
-
-local function ValidAmount(amt)
-	amt = math.floor(amt)
-	return amt < 0 && 0 || amt
-end
-
-function ENT:SupplyAtmosphere(idx, amt)
-	if !self.atmosphere.resources[idx] then return 0 end
-	local iamt = ValidAmount(amt)
-	if iamt == 0 || self.atmosphere.resources.empty == 0 then return 0 end
-	
-	if iamt > self.atmosphere.resources.empty then
-		iamt = self.atmosphere.resources.empty
-		if !self.atmosphere.static then
-			self.atmosphere.resources[idx] = self.atmosphere.resources[idx] + iamt
-			self.atmosphere.resources.empty = 0
-		end
-	elseif !self.atmosphere.static then
-		self.atmosphere.resources[idx] = self.atmosphere.resources[idx] + iamt
-		self.atmosphere.resources.empty = self.atmosphere.resources.empty - iamt
-	end
-	return iamt
-end
-
-function ENT:ConsumeAtmosphere(idx, amt)
-	if !self.atmosphere.resources[idx] then return 0 end
-	local iamt = ValidAmount(amt)
-	if iamt == 0 then return 0 end
-	
-	if iamt > self.atmosphere.resources[idx] then
-		iamt = self.atmosphere.resources[idx]
-		if !self.atmosphere.static then
-			self.atmosphere.resources[idx] = 0
-			self.atmosphere.resources.empty = self.atmosphere.resources.empty - iamt
-		end
-	elseif !self.atmosphere.static then
-		self.atmosphere.resources[idx] = self.atmosphere.resources[idx] - iamt
-		self.atmosphere.resources.empty = self.atmosphere.resources.empty + iamt
-	end
-	return iamt
+    
+	return self.atmosphere.tempcold, false
 end

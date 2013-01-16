@@ -227,7 +227,7 @@ concommand.Add("pp_cleanup", PP.CleanUp)
 
 ///--- Can Do Stuff Hooks ---\\\
 function PP.CanToolEnt(ply, toolmode, ent)
-	if !IsValid then return end
+	if !IsValid(ent) then return end
 	if ent:IsPlayer() then return false end
 	
 	local owner, uid = PP.GetOwner(ent)
