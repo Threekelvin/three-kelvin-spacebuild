@@ -7,7 +7,6 @@ local MySQL = {}
 local PlayerData = {}
 
 ///--- MySql Settings ---\\\
---[[
 MySQL.SQLSettings = {
 	Host = "127.0.0.1",
 	Port = 3306,
@@ -15,7 +14,7 @@ MySQL.SQLSettings = {
 	Username = "gmod_dev",
 	Password = "zKKZ8KSHCmx4Rzve"
 }
---]]
+--[[
 MySQL.SQLSettings = {
 	Host = "127.0.0.1",
 	Port = 3306,
@@ -23,6 +22,7 @@ MySQL.SQLSettings = {
 	Username = "root",
 	Password = "password"
 }
+--]]
 
 MySQL.DataBase = nil
 MySQL.ConnectionID = 0

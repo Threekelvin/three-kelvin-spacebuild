@@ -36,15 +36,29 @@ local function SetSpawnPoint(ply, side)
 	ply:SetPos(Spawn)
 end
 
+local AllowedWeapons = {
+	["weapon_physcannon"]	=	true,
+	["weapon_physgun"]		=	true,
+	["hands"]				=	true,
+	["gmod_camera"]			=	true,
+	["gmod_tool"]			=	true,
+	["remotecontroller"]	=	true,
+	["laserpointer"]		=	true
+}
+function GM:PlayerCanPickupWeapon(ply, wep)
+   if ( AllowedWeapons[wep:GetClass()] != nil || ply:IsAdmin() ) then return true end
+   return false
+end
+
 function GM:PlayerLoadout(ply)
 	ply:StripWeapons()
 	ply:StripAmmo()
 	
 	ply:Give("weapon_physcannon")
 	ply:Give("weapon_physgun")
+	ply:Give("hands")
 	ply:Give("gmod_camera")
 	ply:Give("gmod_tool")
-	ply:Give("hands")
 	
 	local cl_defaultweapon = ply:GetInfo("cl_defaultweapon")
 
