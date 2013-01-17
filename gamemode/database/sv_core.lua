@@ -14,15 +14,6 @@ MySQL.SQLSettings = {
 	Username = "gmod_dev",
 	Password = "zKKZ8KSHCmx4Rzve"
 }
---[[
-MySQL.SQLSettings = {
-	Host = "127.0.0.1",
-	Port = 3306,
-	Name = "threekelvin",
-	Username = "root",
-	Password = "password"
-}
---]]
 
 MySQL.DataBase = nil
 MySQL.ConnectionID = 0
@@ -192,7 +183,7 @@ end
 ///--- Update ---\\\
 function TK.DB:UpdatePlayerData(ply, dbtable, update)
 	if !IsValid(ply) then return end
-	
+
 	TK.DB:MakeQuery(TK.DB:FormatUpdateQuery(dbtable, update, {"steamid = %s", ply:SteamID()}))
 	
 	local data = {}
@@ -223,7 +214,7 @@ function MySQL.LoadPlayerData(ply, steamid, ip, uid)
 	MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("player_record", {"ip"}, {"steamid = %s", steamid}), function(exists, ply, steamid, ip, uid)
 		if !IsValid(ply) then return end
 		if exists[1] then
-			if exists[1].ip != ip then TK.DB:MakeQuery(TK.DB:FormatUpdateQuery("player_record", {{"ip", ip}}, {"steamid = %s", steamid})) end
+			if exists[1].ip != ip then TK.DB:MakeQuery(TK.DB:FormatUpdateQuery("player_record", {ip = ip}, {"steamid = %s", steamid})) end
 		else
 			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_record", {steamid = steamid, ip = ip, uniqueid = uid}))
 			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_info", {steamid = steamid, name = ply:Name()}))

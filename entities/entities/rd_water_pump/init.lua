@@ -42,7 +42,7 @@ function ENT:TurnOff()
 	WireLib.TriggerOutput(self, "Output", 0)
 end
 
-function ENT:DoThink()
+function ENT:DoThink(eff)
 	if !self:GetActive() then return end
 
 	local water = self.data.water * self.mult * eff

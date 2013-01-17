@@ -10,12 +10,11 @@ function ENT:Initialize()
 	self.Stable = true
 	self.PowerLevel = 0
 	
-	self.data.yield = self:ExtractorPower()
-	self.data.power = self:ExtractorEnergy()
+	self.data.yield = 0
+	self.data.power = 0
 	
 	self:SetNWBool("Generator", true)
 	self:AddResource("raw_tiberium", 0, true)
-	self:AddResource("energy", 0)
 	self:AddSound("a", 4, 75)
 	self:AddSound("l", 8, 75)
 	self:AddSound("d", 4, 100)
@@ -129,7 +128,7 @@ function ENT:UpdateValues()
 
 end
 
-function ENT:Update()
+function ENT:Update(ply)
     local data = TK.TD:GetItem(self.itemid).data
     local upgrades = TK.TD:GetUpgradeStats(ply, "tiberium")
     

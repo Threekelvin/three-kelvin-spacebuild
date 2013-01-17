@@ -13,7 +13,8 @@ function ENT:Draw()
 	if LocalPlayer():GetEyeTrace().Entity != self then return end
 	
 	local entdata = self:GetEntTable()
-	local power, res, gen = self:GetUnitPowerGrid(), {}, {}
+    entdata.powergrid = entdata.powergrid || 0
+	local res, gen = {}, {}
 	for k,v in pairs(entdata.res) do
 		if v.gen then
 			gen[TK.RD:GetResourceName(k)] = k
@@ -39,20 +40,19 @@ function ENT:Draw()
 	end
 	Add(OverlayText, "Owner: ")
 	Add(OverlayText, name)
-	Add(OverlayText, "\n")
     
 	if self:IsGenerator() then
-		Add(OverlayText, "Status: ")
+		Add(OverlayText, "\nStatus: ")
 		Add(OverlayText, self:GetActive() && "On" || "Off")
 		Add(OverlayText, "\nPower Grid: ")
         
-        if power > 0 then
+        if entdata.powergrid > 0 then
             Add(OverlayText, "+")
-            Add(OverlayText, power)
-            Add(OverlayText, "MW")
+            Add(OverlayText, entdata.powergrid)
+            Add(OverlayText, "KW")
         else
-            Add(OverlayText, power)
-            Add(OverlayText, "MW")
+            Add(OverlayText, entdata.powergrid)
+            Add(OverlayText, "KW")
         end
 	end
     

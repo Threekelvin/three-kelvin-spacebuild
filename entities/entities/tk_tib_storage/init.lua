@@ -22,7 +22,7 @@ function ENT:UpdateValues()
 	WireLib.TriggerOutput(self, "MaxRawTiberium", self:GetResourceCapacity("raw_tiberium"))
 end
 
-function ENT:Update()
+function ENT:Update(ply)
 	local data = TK.TD:GetItem(self.itemid).data
     local upgrades = TK.TD:GetUpgradeStats(ply, "tiberium")
     

@@ -17,7 +17,7 @@ function ENT:Draw()
     if LocalPlayer():GetEyeTrace().Entity != self then return end
     
     local entdata = self:GetEntTable()
-    local owner , uid = self:CPPIGetOwner()
+    local owner, uid = self:CPPIGetOwner()
     local name = "World"
     if IsValid(owner) then
         name = owner:Name()
@@ -40,6 +40,16 @@ function ENT:Draw()
     
     if self:GetActive() then
         Add(OverlayText, "On")
+        Add(OverlayText, "\nPower Grid: ")
+        if entdata.powergrid > 0 then
+            Add(OverlayText, "+")
+            Add(OverlayText, entdata.powergrid)
+            Add(OverlayText, "KW")
+        else
+            Add(OverlayText, entdata.powergrid)
+            Add(OverlayText, "KW")
+        end
+        
         Add(OverlayText, "\n\nAtmosphere Info")
         
         Add(OverlayText, "\nName: ")
@@ -48,7 +58,7 @@ function ENT:Draw()
         Add(OverlayText, entdata.data.temp || 3)
         Add(OverlayText, "\nGravity: ")
         Add(OverlayText, entdata.data.gravity || 0)
-        for k,v in pairs(entdata.data.resources) do
+        for k,v in pairs(entdata.data.resources || {}) do
             Add(OverlayText, "\n")
             Add(OverlayText, TK.RD:GetResourceName(k))
             Add(OverlayText, ": ")

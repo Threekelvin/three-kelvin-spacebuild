@@ -7,7 +7,18 @@ end
 
 function ENT:Draw()
 	self:DrawModel()
-    if (self:GetPos() - LocalPlayer():GetPos()):LengthSqr() > 262144 then return end
+    if (self:GetPos() - LocalPlayer():GetPos()):LengthSqr() > 262144 then 
+        local size = self:OBBMaxs() - self:OBBMins()
+        local width, height = 0.8*size.x, 0.7*size.y
+        local pos = self:LocalToWorld( self:OBBCenter() + 0.5*Vector( -width, height, size.z-0.75 ) )
+        local scale = 10.0
+        
+        cam.Start3D2D( pos, self:GetAngles(), 1.0/scale )
+            surface.SetDrawColor( 0, 0, 0, 255 )
+            surface.DrawRect( 0, 0, width*scale, height*scale )
+        cam.End3D2D()
+        return 
+    end
     
 	local netdata = self:GetNetTable()
 	local owner , uid = self:CPPIGetOwner()
@@ -25,10 +36,10 @@ function ENT:Draw()
     if netdata.powergrid > 0 then
         Add(OverlayText, "+")
         Add(OverlayText, netdata.powergrid)
-        Add(OverlayText, "MW")
+        Add(OverlayText, "KW")
     else
         Add(OverlayText, netdata.powergrid)
-        Add(OverlayText, "MW")
+        Add(OverlayText, "KW")
     end
 
 	if table.Count(netdata.res) > 0 then

@@ -104,7 +104,7 @@ function Terminal.EndRefine(ply)
 	for k,v in pairs(refinery) do
 		if v > 0 then
 			local value = TK.TD:Ore(ply, k)
-			table.insert(newrefinery, {k, 0})
+			newrefinery[k] = 0
 			totalvalue = totalvalue + (v * value)
 		end
 	end
