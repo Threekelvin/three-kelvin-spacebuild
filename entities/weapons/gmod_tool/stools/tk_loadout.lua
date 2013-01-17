@@ -29,7 +29,6 @@ function TOOL:LeftClick(trace)
     
     local ply = self:GetOwner()
     local item = self:GetClientNumber("item", 0)
-    print(ply, item)
     if !TK.LO:CanSpawn(ply, item) then return end
     
     local ent = TK.LO:SpawnItem(ply, item, trace)
