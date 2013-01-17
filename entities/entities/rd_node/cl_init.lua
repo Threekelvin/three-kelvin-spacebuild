@@ -32,7 +32,7 @@ function ENT:Draw()
     end
 
 	if table.Count(netdata.res) > 0 then
-		Add(OverlayText, "\n\nResources:\n\n")
+		Add(OverlayText, "\n\n\nResources:\n\n")
 		for k,v in pairs(netdata.res) do
 			Add(OverlayText, TK.RD:GetResourceName(k))
 			Add(OverlayText, ": ")

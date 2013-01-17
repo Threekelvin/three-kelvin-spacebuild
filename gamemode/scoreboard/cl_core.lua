@@ -257,7 +257,7 @@ local SCORE_BOARD =
 
 		Players = player.GetAll()
 		table.sort( Players, function(a, b)
-			if ( a:Team() < b:Team() ) then return true end
+			if ( a:Team() > b:Team() ) then return true end
 			if ( a:Team() == b:Team() ) then
 				if ( a:GetNWInt("TKRank", 0) > b:GetNWInt("TKRank", 0) ) then return true end
 				if ( a:GetNWInt("TKRank", 0) == b:GetNWInt("TKRank", 0) ) then
