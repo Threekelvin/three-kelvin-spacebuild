@@ -5,7 +5,6 @@ local function MakePanel(res, val)
 	local btn = vgui.Create("DButton")
 	btn:SetSkin("Terminal")
 	btn:SetSize(0, 65)
-	btn.active = true
 	btn.res = res
 	btn.pres = TK.RD:GetResourceName(res)
 	btn.val = val
@@ -278,9 +277,11 @@ function PANEL:PerformLayout()
 	self.refineall:SetPos(265, 470)
 end
 
-function PANEL:Think()
-	if CurTime() < self.NextThink then return end
-	self.NextThink = CurTime() + 1
+function PANEL:Think(force)
+	if !force then
+        if CurTime() < self.NextThink then return end
+        self.NextThink = CurTime() + 1
+    end
 	
 	local Refinery = TK.DB:GetPlayerData("terminal_refinery")
 	self.OreCost = TK.TD:Ore("asteroid_ore")
@@ -327,6 +328,10 @@ function PANEL:Think()
 			end
 		end
 	end
+end
+
+function PANEL:Update()
+    self:Think(true)
 end
 
 function PANEL.Paint(self, w, h)

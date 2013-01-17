@@ -19,10 +19,10 @@ end
 
 function ENT:Use(ply, caller)
 	if !ply:IsPlayer() then return end
-	if !ply.hev then return end
-    ply:AddhevRes("energy", ply.hev.energymax - ply.hev.energy)
-	ply:AddhevRes("water", self:ConsumeResource("water", ply.hev.watermax - ply.hev.water))
-	ply:AddhevRes("oxygen", self:ConsumeResource("oxygen", ply.hev.oxygenmax - ply.hev.oxygen))
+	if !ply.tk_hev then return end
+    ply:AddhevRes("energy", ply.tk_hev.energymax - ply.tk_hev.energy)
+	ply:AddhevRes("water", self:ConsumeResource("water", ply.tk_hev.watermax - ply.tk_hev.water))
+	ply:AddhevRes("oxygen", self:ConsumeResource("oxygen", ply.tk_hev.oxygenmax - ply.tk_hev.oxygen))
 end
 
 function ENT:DoThink()

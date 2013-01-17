@@ -2,30 +2,16 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
-function ENT:ExtractorPower()
-    
-end
-
-function ENT:ExtractorEnergy()
-	if self.upgrades then
-		local Power = self:ExtractorPower() * 20
-		local Energy = Power - (Power * ((self.upgrades.r2 * 0.1) + (self.upgrades.r3 * 0.1) + (self.upgrades.r6 * 0.1)) / 100)
-		return math.floor(Energy)
-	else
-		return 2000
-	end
-end
 
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
-	self.device = {2, 1}
 	
 	self:GetNWInt("crystal", 0)
 	self.Stable = true
 	self.PowerLevel = 0
 	
-	self.power = self:ExtractorPower()
-	self.energy = self:ExtractorEnergy()
+	self.data.yield = self:ExtractorPower()
+	self.data.power = self:ExtractorEnergy()
 	
 	self:SetNWBool("Generator", true)
 	self:AddResource("raw_tiberium", 0, true)
@@ -36,7 +22,7 @@ function ENT:Initialize()
 	self:AddSound("s", 4, 75)
 	
 	self.Inputs = Wire_CreateInputs(self, {"On"})
-	self.Outputs = Wire_CreateOutputs(self, {"On", "Output", "EnergyUsage"})
+	self.Outputs = Wire_CreateOutputs(self, {"On", "Output"})
 end
 
 function ENT:UpdateTransmitState() 
@@ -45,15 +31,12 @@ end
 
 function ENT:TurnOn()
 	if self:GetActive() || !self:IsLinked() then return end
-	if self:GetResourceAmount("energy") > self.energy then
-		self:SetActive(true)
-		self:SoundPlay(1)
-		self:SoundPlay(2)
-		self.PowerLevel = 0
-		
-		WireLib.TriggerOutput(self, "On", 1)
-		WireLib.TriggerOutput(self, "EnergyUsage", self.energy)
-	end
+    self:SetActive(true)
+    self:SoundPlay(1)
+    self:SoundPlay(2)
+    self.PowerLevel = 0
+    
+    WireLib.TriggerOutput(self, "On", 1)
 end
 
 function ENT:TurnOff()
@@ -65,7 +48,6 @@ function ENT:TurnOff()
 	self.PowerLevel = 0
 	
 	WireLib.TriggerOutput(self, "On", 0)
-	WireLib.TriggerOutput(self, "EnergyUsage", 0)
 end
 
 function ENT:TriggerInput(iname, value)
@@ -78,17 +60,11 @@ function ENT:TriggerInput(iname, value)
 	end
 end
 
-function ENT:DoThink()
+function ENT:DoThink(eff)
 	if !self:GetActive() then return end
-
-	if self.energy > self:GetResourceAmount("energy") then
-		self:TurnOff()
-		return
-	end
+    if !self:Work() then return end
 	
 	local crystal
-	self:ConsumeResource("energy", self.energy)
-	
 	for k,v in pairs(ents.FindInCone(self:GetPos(), self:GetForward(), 100, 45)) do
 		if v:GetClass() == "tk_tib_crystal" then
 			crystal = v
@@ -101,7 +77,7 @@ function ENT:DoThink()
 		if !IsValid(owner) then return end
 		
 		if self.PowerLevel < 1 then
-			self.PowerLevel = self.PowerLevel + (1/15)
+			self.PowerLevel = self.PowerLevel + (1/10)
 		else
 			self.PowerLevel = 1
 		end
@@ -109,7 +85,7 @@ function ENT:DoThink()
 			self:SetNWInt("crystal", crystal:EntIndex())
 			self.PowerLevel = 0
 		end
-		local Speed = math.floor(self.power * self.PowerLevel)
+		local yield = math.floor(self.data.yield * self.PowerLevel * eff)
 		
 		
 		if self.Stable != crystal.Stable then
@@ -123,17 +99,15 @@ function ENT:DoThink()
 			end
 		end
 		
-		if crystal.Tib > Speed then
-			self:SupplyResource("raw_tiberium", Speed)
-			owner.tkstats.score = owner.tkstats.score + (Speed * TK.TD:Ore(owner, "raw_tiberium") * 0.375)
-			WireLib.TriggerOutput(self, "Output", Speed)
-			crystal.Tib = crystal.Tib - Speed
-		else
-			self:SupplyResource("raw_tiberium", crystal.Tib)
-			owner.tkstats.score = owner.tkstats.score + (crystal.Tib * TK.TD:Ore(owner, "raw_tiberium") * 0.375)
-			WireLib.TriggerOutput(self, "Output", crystal.Tib)
-			crystal.Tib = 0
-		end
+		
+        yield = math.min(yield, crystal.Tib)
+        self:SupplyResource("raw_tiberium", yield)
+        WireLib.TriggerOutput(self, "Output", yield)
+        
+        owner.tk_cache.score = math.floor((owner.tk_cache.score || 0) + yield * 0.75)
+            owner.tk_cache.exp = math.floor((owner.tk_cache.exp || 0) + yield * 0.375)
+        
+        crystal.Tib = crystal.Tib - yield
 	else
 		if self:GetCrystal() != 0 then
 			self:SetNWInt("crystal", 0)
@@ -156,8 +130,11 @@ function ENT:UpdateValues()
 end
 
 function ENT:Update()
-	self.power = self:ExtractorPower()
-	self.energy = self:ExtractorEnergy()
+    local data = TK.TD:GetItem(self.itemid).data
+    local upgrades = TK.TD:GetUpgradeStats(ply, "tiberium")
+    
+    self.data.yield = data.yield + (data.yield * upgrades.yield)
+	self.data.power = data.power - (data.power * upgrades.power)
 end
 
 function ENT:UpdateTransmitState() 

@@ -25,7 +25,6 @@ end
 function ENT:TurnOff()
 	if !self:GetActive() then return end
 	self:SetActive(false)
-    self:SetPower(0)
 	self:SoundStop(1)
 	WireLib.TriggerOutput(self, "On", 0)
 end

@@ -95,14 +95,14 @@ function TK.DB:SendGlobalMsg(ply, msg, flag)
 	end
 	
 	TK.DB:MakeQuery(TK.DB:FormatInsertQuery("server_globalchat", {
-		{"msg_conection_id", false},
-		{"msg_key", 0},
-		{"msg_origin", TK:HostName()},
-		{"msg_flag", flag},
-		{"msg_data", msg},
-		{"sender_rank", ply:GetRank()},
-		{"sender_faction", ply:Team()},
-		{"sender_name", ply:Name()}
+		msg_conection_id = false,
+		msg_key = 0,
+		msg_origin = TK:HostName(),
+		msg_flag = flag,
+		msg_data = msg,
+		sender_rank = ply:GetRank(),
+		sender_faction = ply:Team(),
+		sender_name = ply:Name()
 	}))
 	
 	GlobalChat:SendPlyMsg(flag, TK:HostName(), ply:GetRank(), ply:Team(), ply:Name(), msg)	
@@ -110,10 +110,10 @@ end
 
 function TK.DB:SendGlobalSystemMsg(msg)
 	TK.DB:MakeQuery(TK.DB:FormatInsertQuery("server_globalchat", {
-		{"msg_conection_id", false},
-		{"msg_key", 1},
-		{"msg_origin", TK:HostName()},
-		{"msg_data", msg}
+		msg_conection_id = false,
+		msg_key = 1,
+		msg_origin = TK:HostName(),
+		msg_data = msg
 	}))
 	
 	GlobalChat:SendSysMsg(TK:HostName(), msg)
@@ -121,21 +121,32 @@ end
 
 function TK.DB:SendRemoteCmd(ply, svr, cmd)
 	TK.DB:MakeQuery(TK.DB:FormatInsertQuery("server_globalchat", {
-		{"msg_conection_id", false},
-		{"msg_key", 2},
-		{"msg_origin", TK:HostName()},
-		{"msg_recipient", svr},
-		{"msg_data", cmd},
-		{"sender_rank", ply:GetRank()},
-		{"sender_faction", ply:Team()},
-		{"sender_name", ply:Name()}
+		msg_conection_id = false,
+		msg_key = 2,
+		msg_origin = TK:HostName(),
+		msg_recipient = svr,
+		msg_data = cmd,
+		sender_rank = ply:GetRank(),
+		sender_faction = ply:Team(),
+		sender_name = ply:Name()
 	}))
 end
 
 hook.Add("Initialize", "TKGlobalChat", function()
 	timer.Create("TKGlobalChat", 15, 0, function()
-		if !TK.DB:IsConnected() || GlobalChat.LastMsg == -1 then return end
-
+		if !TK.DB:IsConnected() then return end
+        
+        if GlobalChat.LastMsg == -1 then
+            TK.DB:MakeQuery(TK.DB:FormatSelectQuery("server_globalchat", {"msg_idx"}, {"msg_idx > %s", 0}, {"msg_idx"}), function(data)
+                for k,v in ipairs(data) do
+                    GlobalChat.LastMsg = v.msg_idx
+                end
+            end)
+            
+            return 
+        end
+        
+        
 		TK.DB:MakeQuery(TK.DB:FormatSelectQuery("server_globalchat", {}, {"msg_idx > %s", GlobalChat.LastMsg}, {"msg_idx"}), function(data)
 			for k,v in ipairs(data) do
 				GlobalChat.LastMsg = v.msg_idx
@@ -151,7 +162,6 @@ hook.Add("Initialize", "TKGlobalChat", function()
 			end
 		end)
 		
-		print("clear")
 		GlobalChat.Flood = {}
 	end)
 end)

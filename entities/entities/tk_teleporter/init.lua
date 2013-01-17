@@ -24,6 +24,16 @@ function ENT:Use(act, call)
 	umsg.End()
 end
 
+function ENT:Think()
+    if self:GetNWString("Name", "Space") == "Space" then
+        local env = TK.AT:GetAtmosphereOnPos(self:GetPos())
+        self:SetNWString("Name", env.atmosphere.name)
+    end
+    
+    self:NextThink(CurTime() + 10)
+    return true
+end
+
 function ENT:UpdateTransmitState() 
 	return TRANSMIT_ALWAYS 
 end
@@ -55,11 +65,5 @@ concommand.Add("3k_teleporter_send", function(ply, cmd, args)
 				end
 			end
 		end
-	end
-end)
-
-hook.Add("OnAtmosphereChange", "TK_Tele_Name", function(ent, old, new)
-	if ent:GetClass() == "tk_teleporter" then
-		ent:SetNWString("Name", new.atmosphere.name)
 	end
 end)

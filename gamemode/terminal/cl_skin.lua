@@ -311,9 +311,9 @@ end
 ///--- Panels ---\\\
 function SKIN:PaintTKResPanel(btn, w, h)
 	draw.RoundedBox(4, 0, 0, w, h, self.light)
-	draw.RoundedBox(4, h, 5, w - 65, 25, self.dark)
+	draw.RoundedBoxEx(4, h, 5, w - 65, 25, self.dark, true, false, true)
 	draw.SimpleText(btn.pres || "", "TKFont20", h + 5, 17.5, self.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-	draw.RoundedBox(4, h, 40, w - 65, 20, self.dim)
+	draw.RoundedBoxEx(4, h, 40, w - 65, 20, self.dim, true, false, true)
 	draw.SimpleText(TK:Format(btn.val), "TKFont18", w - 10, 50, self.text, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 	
 	surface.SetMaterial(TK.TD:GetIcon(btn.res || "default"))

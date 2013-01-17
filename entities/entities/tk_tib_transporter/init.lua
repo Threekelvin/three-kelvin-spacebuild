@@ -59,7 +59,7 @@ function ENT:SendResources(ent)
 			ent:Unlink()
 			local Tib = ent:GetResourceAmount("raw_tiberium")
 			local storage = TK.DB:GetPlayerData(owner, "terminal_storage")
-			TK.DB:UpdatePlayerData(owner, "terminal_storage", {"raw_tiberium", math.floor((storage.raw_tiberium || 0) + Tib)})
+			TK.DB:UpdatePlayerData(owner, "terminal_storage", {raw_tiberium = math.floor((storage.raw_tiberium || 0) + Tib)})
 			
 			self:EmitSound(Sounds["Send"..math.random(1, 4)], 75, 100)
 			ent:Remove()

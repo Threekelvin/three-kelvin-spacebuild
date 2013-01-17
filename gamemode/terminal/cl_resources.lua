@@ -18,7 +18,7 @@ local function MakePanel(res, val, btnl, btnr)
 		btn.txtbox:SetMultiline(false)
 		btn.txtbox:SetText(tostring(btn.val))
 		btn.txtbox:SetSize(btn:GetWide() - 65, 20) 
-		btn.txtbox:SetPos(60, 35)
+		btn.txtbox:SetPos(65, 40)
 		btn.txtbox:RequestFocus()
 		btn.txtbox.OnLoseFocus = function()
 			btn.txtbox:Remove()
@@ -229,9 +229,11 @@ function PANEL:PerformLayout()
 	self.node:SetSize(245, 395)
 end
 
-function PANEL:Think()
-	if CurTime() < self.NextThink && !IsValid(self.Terminal) then return end
-	self.NextThink = CurTime() + 1
+function PANEL:Think(force)
+	if !force then
+        if CurTime() < self.NextThink then return end
+        self.NextThink = CurTime() + 1
+    end
 	
 	local Storage = TK.DB:GetPlayerData("terminal_storage")
 	
@@ -260,7 +262,7 @@ function PANEL:Think()
 	end
 	
 	for k,v in pairs(Storage) do
-		if v > 0 && table.HasValue(TK.TD.Resources, k) then
+		if v > 0 && TK.TD:AcceptResource(k) then
 			if !self.storage.list[k] then
 				local panel = MakePanel(k, v, function(panel)
 					if !IsValid(self.Terminal) then return end
@@ -306,7 +308,7 @@ function PANEL:Think()
 		end
 		
 		for k,v in pairs(Resources) do
-			if v.cur > 0 && table.HasValue(TK.TD.Resources, k) then
+			if v.cur > 0 && TK.TD:AcceptResource(k) then
 				if !self.node.list[k] then
 					local panel = MakePanel(k, v.cur, function(panel)
 						if !IsValid(self.Terminal) then return end
@@ -338,6 +340,10 @@ function PANEL:Think()
 		self.node:Clear(true)
 		self.node.list = {}
 	end
+end
+
+function PANEL:Update()
+    self:Think(force)
 end
 
 function PANEL.Paint(self, w, h)

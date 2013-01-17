@@ -36,7 +36,7 @@ MySQL.NextConnect = CurTime() + 60
 
 util.AddNetworkString( "HUD_WARNING" )
 function MySQL.Msg(msg)
-	ErrorNoHalt(msg.."\n")
+	print(msg)
 	net.Start( "HUD_WARNING" )
 		net.WriteString( "database" )
 		net.WriteString( MySQL.Connected && "" || "No database connection" )
@@ -157,52 +157,50 @@ end
 
 function TK.DB:SetPlayerData(ply, dbtable, content)
 	if !IsValid(ply) then return end
-	
+    
 	PlayerData[ply.uid][dbtable] = PlayerData[ply.uid][dbtable] || {}
 	local data = PlayerData[ply.uid][dbtable]
 
 	for k,v in pairs(content) do
-		if data[k] != v then
-			net.Start("DB_Sync")
-				net.WriteString(dbtable)
-				net.WriteString(k)
-                
-                local typ = type(v)
-                if typ == "number" then
-                    net.WriteInt(1, 4)
-                    net.WriteFloat(tonumber(v))
-                elseif typ == "string" then
-                    net.WriteInt(2, 4)
-                    net.WriteString(tostring(v))
-                elseif typ == "table" then
-                    net.WriteInt(3, 4)
-                    net.WriteTable(v)
-                end
-			net.Send(ply)
-			
-			MySQL.NetworkValue(ply, k, v)
-			
-			data[k] = v
+		if data[k] == v then continue end
+        net.Start("DB_Sync")
+            net.WriteString(dbtable)
+            net.WriteString(k)
             
-            gamemode.Call("TKDBPlayerData", ply, dbtable, k, v)
-		end
+            local typ = type(v)
+            if typ == "number" then
+                net.WriteInt(1, 4)
+                net.WriteFloat(tonumber(v))
+            elseif typ == "string" then
+                net.WriteInt(2, 4)
+                net.WriteString(tostring(v))
+            elseif typ == "table" then
+                net.WriteInt(3, 4)
+                net.WriteTable(v)
+            end
+        net.Send(ply)
+        
+        MySQL.NetworkValue(ply, k, v)
+        
+        data[k] = v
+        
+        gamemode.Call("TKDBPlayerData", ply, dbtable, k, v)
 	end
 end
 ///--- ---\\\
 
 ///--- Update ---\\\
-function TK.DB:UpdatePlayerData(ply, dbtable, ...)
+function TK.DB:UpdatePlayerData(ply, dbtable, update)
 	if !IsValid(ply) then return end
-	local arg = {...}
 	
-	TK.DB:MakeQuery(TK.DB:FormatUpdateQuery(dbtable, arg, {"steamid = %s", ply:SteamID()}))
+	TK.DB:MakeQuery(TK.DB:FormatUpdateQuery(dbtable, update, {"steamid = %s", ply:SteamID()}))
 	
 	local data = {}
-	for k,v in pairs(arg) do
-		if type(v[2]) == "boolean" then
-			data[v[1]] = TK.DB:OSTime()
+	for k,v in pairs(update) do
+		if type(v) == "boolean" then
+			data[k] = TK.DB:OSTime()
 		else
-			data[v[1]] = v[2]
+			data[k] = v
 		end
 	end
 	
@@ -227,15 +225,15 @@ function MySQL.LoadPlayerData(ply, steamid, ip, uid)
 		if exists[1] then
 			if exists[1].ip != ip then TK.DB:MakeQuery(TK.DB:FormatUpdateQuery("player_record", {{"ip", ip}}, {"steamid = %s", steamid})) end
 		else
-			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_record", {{"steamid", steamid}, {"ip", ip}, {"uniqueid", uid}}))
-			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_info", {{"steamid", steamid}, {"name", ply:Name()}}))
-			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_team", {{"steamid", steamid}}))
-            MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_loadout", {{"steamid", steamid}}))
-            MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_inventory", {{"steamid", steamid}, {"inventory", util.TableToJSON({1, 2, 3, 4})}}))
-			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_setting", {{"steamid", steamid}}))
-			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_storage", {{"steamid", steamid}}))
-			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_refinery", {{"steamid", steamid}}))
-			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_upgrades", {{"steamid", steamid}}))
+			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_record", {steamid = steamid, ip = ip, uniqueid = uid}))
+			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_info", {steamid = steamid, name = ply:Name()}))
+			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_team", {steamid = steamid}))
+            MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_loadout", {steamid = steamid}))
+            MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_inventory", {steamid = steamid, inventory = util.TableToJSON({1, 2, 3, 4})}))
+			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_setting", {steamid = steamid}))
+			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_storage", {steamid = steamid}))
+			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_refinery", {steamid = steamid}))
+			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_upgrades", {steamid = steamid}))
 		end
 		
 		MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("player_info", {}, {"steamid = %s", steamid}), function(data, ply, uid)
@@ -329,10 +327,15 @@ end)
 	
 hook.Add("Initialize", "MySQLLoad", function()
 	timer.Create("TK.DB_Stats_Update", 60, 0, function()
-		for k,v in pairs(player.GetAll()) do
-			local data = TK.DB:GetPlayerData(v, "player_info")
-			TK.DB:UpdatePlayerData(v, "player_info", {"playtime", data.playtime + 1}, {"score", math.floor(data.score + v.tkstats.score)})
-			v.tkstats.score = 0
+		for _,ply in pairs(player.GetAll()) do
+			local data = TK.DB:GetPlayerData(ply, "player_info")
+            local update = {playtime = data.playtime + 1}
+            
+            for k,v in pairs(ply.tk_cache) do
+                update[k] = data[k] + v
+                ply.tk_cache[k] = nil
+            end
+			TK.DB:UpdatePlayerData(ply, "player_info", update)
 		end
 	end)
     
@@ -385,9 +388,7 @@ end)
 hook.Add("PlayerAuthed", "TKLoadPlayer", function(ply, steamid, uid)
 	local ip = TK.AM:GetIP(ply)
 	ply.uid = uid
-	ply.tkstats = {}
-	ply.tkstats.score = 0
-	ply.tkstats.paydelay = 0
+    ply.tk_cache = {}
 	
 	PlayerData[uid] = TK.DB:MakePlayerData()
     
@@ -410,8 +411,14 @@ end)
 
 hook.Add("PlayerDisconnected", "TKDisUpdate", function(ply)
 	if !IsValid(ply) then return end
-	local data = TK.DB:GetPlayerData(ply, "player_info")
-	TK.DB:MakeQuery(TK.DB:FormatUpdateQuery("player_info", {{"score", math.floor(data.score + ply.tkstats.score)}}, {"steamid = %s", ply:SteamID()}))
+    local data = TK.DB:GetPlayerData(ply, "player_info")
+    local update = {}
+    for k,v in pairs(ply.tk_cache) do
+        table.insert(update, {k, data[k] + v})
+    end
+    
+    TK.DB:MakeQuery(TK.DB:FormatUpdateQuery("player_info", update, {"steamid = %s", ply:SteamID()}))
+	
 	PlayerData[ply:GetNWString("UID")] = nil
 end)
 ///--- ---\\\

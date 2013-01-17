@@ -13,7 +13,7 @@ function ENT:Draw()
 	if LocalPlayer():GetEyeTrace().Entity != self then return end
 	
 	local entdata = self:GetEntTable()
-	local power, res, gen = self:GetPowerGrid(), {}, {}
+	local power, res, gen = self:GetUnitPowerGrid(), {}, {}
 	for k,v in pairs(entdata.res) do
 		if v.gen then
 			gen[TK.RD:GetResourceName(k)] = k

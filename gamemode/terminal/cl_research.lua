@@ -259,11 +259,17 @@ function PANEL:PerformLayout()
 	self.scrollright:SetSize(40, 40)
 end
 
-function PANEL:Think()
-	if CurTime() < self.NextThink then return end
-	self.NextThink = CurTime() + 1
+function PANEL:Think(force)
+	if !force then
+        if CurTime() < self.NextThink then return end
+        self.NextThink = CurTime() + 1
+    end
     
 	self.exp = TK:Format(TK.DB:GetPlayerData("player_info").exp)
+end
+
+function PANEL:Update()
+    self:Think(true)
 end
 
 function PANEL.Paint(self, w, h)

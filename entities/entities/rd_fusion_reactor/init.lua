@@ -75,7 +75,7 @@ function ENT:DoThink()
 	if !self:GetActive() then return end
 	
 	local hydrogen = self:ConsumeResource("hydrogen", self.data.hydrogen)
-	if hydrogen <= 0 then self:TurnOff() return end
+	if hydrogen < self.data.hydrogen then self:TurnOff() return end
     if !self:Work() then return end
 
 	self.heat = math.floor(self.heat + (hydrogen * 2))

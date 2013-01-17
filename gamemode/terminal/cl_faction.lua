@@ -17,8 +17,12 @@ function PANEL:PerformLayout()
 
 end
 
-function PANEL:Think()
+function PANEL:Think(force)
 
+end
+
+function PANEL:Update()
+    self:Think(true)
 end
 
 function PANEL.Paint(self, w, h)

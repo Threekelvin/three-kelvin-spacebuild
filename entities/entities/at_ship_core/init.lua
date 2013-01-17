@@ -110,7 +110,6 @@ end
 function ENT:TurnOff()
 	if !self:GetActive() then return end
 	self:SetActive(false)
-    self:SetPower(0)
 	
 	for k,v in pairs(self.brushes) do
 		SafeRemoveEntity(v)

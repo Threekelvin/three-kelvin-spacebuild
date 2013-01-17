@@ -5,10 +5,8 @@ include('shared.lua')
 
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
-	self.device = {1, 3}
 
 	self:SetNWBool("Generator", true)
-	self:AddResource("energy", 0)
 	
 	self.Inputs = Wire_CreateInputs(self, {"On"})
 	self.Outputs = Wire_CreateOutputs(self, {"On", "Remaining", "Max"})
@@ -16,7 +14,6 @@ end
 
 function ENT:TurnOn()
 	if self:GetActive() || !self:IsLinked() then return end
-	if self:GetResourceAmount("energy") < 100 then return end
 	self:SetActive(true)
 	WireLib.TriggerOutput(self, "On", 1)
 end
@@ -39,24 +36,20 @@ function ENT:TriggerInput(iname, value)
 	end
 end
 
-function ENT:DoThink()
+function ENT:DoThink(eff)
 	if !self:GetActive() then return end
-	
-	if self:GetResourceAmount("energy") < 100 then
-		self:TurnOff()
-		return true
-	else
-		self:ConsumeResource("energy", 100)
-	end
+	if !self:Work() then return end
+    eff = eff == 1
 	
 	local trace = util.QuickTrace(self:LocalToWorld(Vector(0,0,30)), self:GetUp() * 1000, self)
 	
 	if IsValid(trace.Entity) then
 		local ent = trace.Entity
 		if ent:GetClass() == "tk_roid" then
-			WireLib.TriggerOutput(self, "Remaining", ent.Ore)
-			WireLib.TriggerOutput(self, "Max", ent.MaxOre)
-			return true
+            local ore = eff && ent.Ore || math.random(0, 10000)
+			WireLib.TriggerOutput(self, "Remaining", ore)
+			WireLib.TriggerOutput(self, "Max", eff && ent.MaxOre || math.max(math.random(0, 10000), ore))
+			return
 		end
 	end
 	

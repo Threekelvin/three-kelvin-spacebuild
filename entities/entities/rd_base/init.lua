@@ -118,7 +118,10 @@ function ENT:SoundStop(id)
 end
 
 function ENT:SetActive(val)
-    self:SetNWBool("Active", tobool(val))
+    val = tobool(val)
+    self:SetNWBool("Active", val)
+    if val then return end
+    self:SetPower(0)
 end
 
 function ENT:Work()

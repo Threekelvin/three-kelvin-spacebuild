@@ -90,7 +90,7 @@ function ENT:Think()
             comsume = comsume - power
         end
     end
-    local efficenty = math.min((produce / comsume)^2, 1)
+    local efficenty = produce == 1 && 0 || math.min((produce / comsume)^2, 1)
 
 	for k,v in ipairs(self.netdata.entities) do
 		local valid, info = pcall(v.DoThink, v, efficenty)

@@ -131,6 +131,10 @@ function Terminal:Create()
 			propertysheet:AddSheet(v[2], page, v[4], false, false)
 		end
 	end
+    
+    frame.Update = function(self)
+        propertysheet:GetActiveTab():GetPanel():Update()
+    end
 end
 
 function Terminal:Rebuild()
@@ -188,6 +192,11 @@ end
 
 usermessage.Hook("3k_terminal_open", function(msg)
 	Terminal:Open()
+end)
+
+hook.Add("TKDBPlayerData", "UpdateTerm", function(dbtable, idx, data)
+    if !Terminal.Menu then return end
+    Terminal.Menu:Update()
 end)
 
 hook.Add("TKafk", "CloseTerm", function(isAFK)

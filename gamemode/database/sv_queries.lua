@@ -267,15 +267,15 @@ end
 
 function TK.DB:FormatInsertQuery(dbtable, values)
 	if !Queries.insert[dbtable] then return end
-	if !values || #values == 0 then return end
+	if !values || table.Count(values) == 0 then return end
 	
 	local query_idx = {"INSERT INTO ", dbtable, "("}
 	local query_values = {"VALUES("}
-	for _,data in pairs(values) do
-		table.insert(query_idx, StopInjection(data[1], true))
+	for idx,data in pairs(values) do
+		table.insert(query_idx, StopInjection(idx, true))
 		table.insert(query_idx, ", ")
 		
-		table.insert(query_values, StopInjection(data[2]))
+		table.insert(query_values, StopInjection(data))
 		table.insert(query_values, ", ")
 	end
 	
@@ -289,7 +289,7 @@ function TK.DB:FormatSelectQuery(dbtable, values, where, order)
 	if !where || #where == 0 then return end
 	
 	local query = {"SELECT "}
-	if !values || #values == 0 then
+	if !values || table.Count(values) == 0 then
 		table.insert(query, "*")
 		table.insert(query, ", ")
 	else
@@ -321,13 +321,13 @@ end
 
 function TK.DB:FormatUpdateQuery(dbtable, values, where)
 	if !Queries.update[dbtable] then return end
-	if !values || #values == 0 then return end
+	if !values || table.Count(values) == 0 then return end
 	if !where || #where == 0 then return end
 
 	
 	local query = {"UPDATE ", dbtable, " SET "}
-	for _,data in pairs(values) do
-		table.insert(query, StopInjection(data[1], true) .." = ".. StopInjection(ShouldJson(dbtable, data[1]) && util.TableToJSON(data[2]) || data[2]))
+	for idx,data in pairs(values) do
+		table.insert(query, StopInjection(idx, true) .." = ".. StopInjection(ShouldJson(dbtable, idx) && util.TableToJSON(data) || data))
 		table.insert(query, ", ")
 	end
 	

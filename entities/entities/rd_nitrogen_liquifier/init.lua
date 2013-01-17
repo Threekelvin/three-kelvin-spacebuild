@@ -38,7 +38,6 @@ end
 function ENT:TurnOff()
 	if !self:GetActive() then return end
 	self:SetActive(false)
-    self:SetPower(0)
 	self:SoundStop(1)
 	WireLib.TriggerOutput(self, "On", 0)
 	WireLib.TriggerOutput(self, "Output", 0)
@@ -48,8 +47,6 @@ function ENT:DoThink(eff)
 	if !self:GetActive() then return end
 
 	local liquid_nitrogen = math.min(self:GetResourceAmount("nitrogen"), self.data.liquid_nitrogen * self.mult * eff)
-	
-	if liquid_nitrogen <= 0 then self:TurnOff() return end
     if !self:Work() then return end
 	
 	liquid_nitrogen = self:ConsumeResource("nitrogen", liquid_nitrogen)
