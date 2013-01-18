@@ -144,7 +144,8 @@ TK.PP.EntityBlackList = {
     "tk_tib_transporter",
     "grenade_helicopter",
     "combine_mine",
-    "weapon_striderbuster"
+    "weapon_striderbuster",
+    "prop_thumper"
 }
 
 TK.PP.BadTools = {
