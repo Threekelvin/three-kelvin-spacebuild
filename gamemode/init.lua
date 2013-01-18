@@ -44,7 +44,7 @@ function GM:PlayerLoadout(ply)
 	ply:Give("weapon_physgun")
 	ply:Give("gmod_camera")
 	ply:Give("gmod_tool")
-	ply:Give("hands")
+	--ply:Give("hands")
 	
 	local cl_defaultweapon = ply:GetInfo("cl_defaultweapon")
 
