@@ -59,10 +59,7 @@ function GM:PlayerLoadout(ply)
 	ply:Give("hands")
 	ply:Give("gmod_camera")
 	ply:Give("gmod_tool")
-<<<<<<< HEAD
 	--ply:Give("hands")
-=======
->>>>>>> remotes/randomic/three-kelvin-spacebuild/master
 	
 	local cl_defaultweapon = ply:GetInfo("cl_defaultweapon")
 
