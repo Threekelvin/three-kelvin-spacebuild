@@ -56,8 +56,9 @@ function ENT:Draw()
         end
 	end
     
+    Add(OverlayText, "\n")
 	if table.Count(res) > 0 then
-		Add(OverlayText, "\n\nResources:\n")
+		Add(OverlayText, "\nResources:\n")
 		for k,v in pairs(res) do
 			Add(OverlayText, k)
 			Add(OverlayText, ": ")

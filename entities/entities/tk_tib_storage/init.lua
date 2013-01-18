@@ -26,5 +26,5 @@ function ENT:Update(ply)
 	local data = TK.TD:GetItem(self.itemid).data
     local upgrades = TK.TD:GetUpgradeStats(ply, "tiberium")
     
-    self:AddResource("asteroid_ore", data.capacity + (data.capacity * upgrades.capacity))
+    self:AddResource("raw_tiberium", data.capacity + (data.capacity * upgrades.capacity))
 end

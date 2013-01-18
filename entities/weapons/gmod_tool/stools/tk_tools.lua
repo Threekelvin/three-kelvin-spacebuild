@@ -9,8 +9,8 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 	TOOL.Limit 		= 6
 	TOOL.Data 	= {}
 	
-	TOOL.ClientConVar["dontweld"] = 0
-	TOOL.ClientConVar["allowweldingtoworld"] = 0
+	TOOL.ClientConVar["weld"] = 0
+	TOOL.ClientConVar["weldingtoworld"] = 0
 	TOOL.ClientConVar["makefrozen"] = 1
 	TOOL.ClientConVar["model"] = ""
 	
@@ -35,11 +35,11 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 		ent:Spawn()
 		ent:SetPos(trace.HitPos + trace.HitNormal * ((ent:OBBMaxs().z - ent:OBBMins().z) / 2 - ent:OBBCenter().z))
 		
-		if self:GetClientNumber("dontweld", 0) == 0 then
+		if self:GetClientNumber("weld", 0) == 1 then
 			local hit = trace.Entity
 			if hit then
 				if hit:IsWorld() then
-					if self:GetClientNumber("allowweldingtoworld", 0) == 1 then
+					if self:GetClientNumber("weldingtoworld", 0) == 1 then
 						constraint.Weld(ent, hit, 0, 0, 0, true)
 					end
 				else
@@ -48,7 +48,7 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 			end
 		end
 		
-		if self:GetClientNumber("makefrozen", 0) == 1 then
+		if self:GetClientNumber("makefrozen", 1) == 1 then
 			local phys = ent:GetPhysicsObject()
 			if phys:IsValid() then
 				phys:Wake()
@@ -88,16 +88,16 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 
 	if CLIENT then
 		function TOOL.BuildCPanel(CPanel)
-			local DontWeld = vgui.Create("DCheckBoxLabel")
-			DontWeld:SetText("Don't Weld")
-			DontWeld:SetConVar(class.."_dontweld")
-			DontWeld:SetValue(1)
-			DontWeld:SizeToContents()
-			CPanel:AddItem(DontWeld)
+			local Weld = vgui.Create("DCheckBoxLabel")
+			Weld:SetText("Weld")
+			Weld:SetConVar(class.."_weld")
+			Weld:SetValue(1)
+			Weld:SizeToContents()
+			CPanel:AddItem(Weld)
 			
 			local AllowWeldingToWorld = vgui.Create("DCheckBoxLabel")
-			AllowWeldingToWorld:SetText("Allow Welding To World")
-			AllowWeldingToWorld:SetConVar(class.."_allowweldingtoworld")
+			AllowWeldingToWorld:SetText("Weld To World")
+			AllowWeldingToWorld:SetConVar(class.."_weldingtoworld")
 			AllowWeldingToWorld:SetValue(0)
 			AllowWeldingToWorld:SizeToContents()
 			CPanel:AddItem(AllowWeldingToWorld)

@@ -60,7 +60,7 @@ function ENT:DoThink(eff)
 		if ent:GetClass() == "tk_roid" then
 
             yield = math.min(yield, ent.Ore)
-            self:SupplyResource("asteroid_ore", yield)
+            yield = self:SupplyResource("asteroid_ore", yield)
             WireLib.TriggerOutput(self, "Output", yield)
             
             owner.tk_cache.score = math.floor((owner.tk_cache.score || 0) + yield * 0.75)

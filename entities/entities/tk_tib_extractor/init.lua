@@ -100,11 +100,11 @@ function ENT:DoThink(eff)
 		
 		
         yield = math.min(yield, crystal.Tib)
-        self:SupplyResource("raw_tiberium", yield)
+        yield = self:SupplyResource("raw_tiberium", yield)
         WireLib.TriggerOutput(self, "Output", yield)
         
         owner.tk_cache.score = math.floor((owner.tk_cache.score || 0) + yield * 0.75)
-            owner.tk_cache.exp = math.floor((owner.tk_cache.exp || 0) + yield * 0.375)
+        owner.tk_cache.exp = math.floor((owner.tk_cache.exp || 0) + yield * 0.375)
         
         crystal.Tib = crystal.Tib - yield
 	else

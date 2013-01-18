@@ -110,9 +110,9 @@ function Terminal.EndRefine(ply)
 	end
 
 	if totalvalue > 0 then
-		local credits = math.floor(totalvalue)
-        local score = math.floor(totalvalue * 0.25)
-        local exp = math.floor(totalvalue * 0.125)
+		local credits = math.floor(info.credits + totalvalue)
+        local score = math.floor(info.score + totalvalue * 0.25)
+        local exp = math.floor(info.exp + totalvalue * 0.125)
         
 		TK.DB:UpdatePlayerData(ply, "player_info", {credits = credits, score = score, exp = exp})
 		
