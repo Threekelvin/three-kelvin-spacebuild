@@ -141,7 +141,10 @@ TK.PP.EntityBlackList = {
     "tk_tib_crystal",
     "tk_roid",
     "tk_teleporter",
-    "tk_tib_transporter"
+    "tk_tib_transporter",
+    "grenade_helicopter",
+    "combine_mine",
+    "weapon_striderbuster"
 }
 
 TK.PP.BadTools = {
