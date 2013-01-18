@@ -63,7 +63,7 @@ function TK.AM:NameMakeSafe(str)
 	if safestr == "" then
 		safestr = "[Too Many Invalid Characters]"
 	end
-	return safestr
+	return string.sub(safestr, 1, 125)
 end
 
 function _R.Entity:GetSafeName()

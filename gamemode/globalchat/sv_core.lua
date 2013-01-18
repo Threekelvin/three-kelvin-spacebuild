@@ -1,21 +1,19 @@
 
-local GlobalChat = {}
-GlobalChat.LastMsg = -1
-GlobalChat.Flood = {}
+local TKGC = {}
+TKGC.LastMsg = -1
+TKGC.Flood = {}
 
-umsg.PoolString("TKGlobalChatSetup")
-umsg.PoolString("TKGlobalChatMsg")
-umsg.PoolString("TKGlobalSystem")
+util.AddNetworkString("TKGC_Msg")
 
-function GlobalChat:CanSendMsg(ply)
+function TKGC:CanSendMsg(ply)
 	local uid = ply:GetNWString("UID")
-	GlobalChat.Flood[uid] = (GlobalChat.Flood[uid] || 0) + 1
+	TKGC.Flood[uid] = (TKGC.Flood[uid] || 0) + 1
 
-	if GlobalChat.Flood[uid] >= 6 then return false end
+	if TKGC.Flood[uid] >= 6 then return false end
 	return true
 end
 
-function GlobalChat:ExtractFlag(num, flag)
+function TKGC:ExtractFlag(num, flag)
 	if flag > 7 || num > 4 then return false end
 	if flag >= 4 then
 		flag = flag - 4
@@ -32,55 +30,49 @@ function GlobalChat:ExtractFlag(num, flag)
 	return false
 end
 
-function GlobalChat:SendPlyMsg(flag, server, rank, faction, name, msg)
-	toteam, toadmin, faction = tobool(toteam), tobool(toadmin), tonumber(faction) || 1
-	local plys = {}
+function TKGC:SendPlyMsg(flag, server, rank, faction, name, msg)
+	local plys = player.GetAll()
 	
-	if GlobalChat:ExtractFlag(1, flag)  then
-		print(server .."[Team]", TK.AM.Rank.Tag[rank]..name, msg)
-		for k,v in pairs(player.GetAll()) do
-			if v:Team() == faction then
-				table.insert(plys, v)
-			end
-		end
-	elseif GlobalChat:ExtractFlag(2, flag) then
+    if TKGC:ExtractFlag(4, flag) then
 		print(server .."[Admin]", TK.AM.Rank.Tag[rank]..name, msg)
-		for k,v in pairs(player.GetAll()) do
-			if v:GetRank() >= 3 then
-				table.insert(plys, v)
-			end
+        
+		for k,v in pairs(plys) do
+			if v:IsModerator() then continue end
+			plys[k] = nil
+		end
+	elseif TKGC:ExtractFlag(2, flag)  then
+		print(server .."[Team]", TK.AM.Rank.Tag[rank]..name, msg)
+        
+		for k,v in pairs(plys) do
+			if v:Team() == faction then continue end
+			plys[k] = nil
 		end
 	else
 		print(server, TK.AM.Rank.Tag[rank]..name, msg)
-		plys = nil
 	end
 	
-	local id = util.CRC(server.. name .. msg)
-	
-	umsg.Start("TKGlobalChatSetup", plys)
-		umsg.String(id)
-		umsg.Char(flag)
-		umsg.String(tostring(server) || "")
-		umsg.Char(tonumber(rank) || 1)
-		umsg.Char(faction)
-	umsg.End()
-	
-	umsg.Start("TKGlobalChatMsg", plys)
-		umsg.String(id)
-		umsg.String(tostring(name) || "")
-		umsg.String(tostring(msg) || "")
-	umsg.End()
+	net.Start("TKGC_Msg")
+        net.WriteFloat(1)
+        net.WriteFloat(flag)
+        net.WriteString(server)
+        net.WriteFloat(rank)
+        net.WriteFloat(faction)
+        net.WriteString(name)
+        net.WriteString(msg)
+    net.Send(plys)
 end
 
-function GlobalChat:SendSysMsg(server, msg)
+function TKGC:SendSysMsg(server, msg)
 	print(server, msg)
-	umsg.Start("TKGlobalSystem")
-		umsg.String(tostring(server) || "")
-		umsg.String(tostring(msg) || "")
-	umsg.End()
+    
+    net.Start("TKGC_Msg")
+        net.WriteFloat(2)
+        net.WriteString(server)
+        net.WriteString(msg)
+    net.Broadcast()
 end
 
-function GlobalChat:RemoteFunction(server, toserver, cmd, rank, faction, name)
+function TKGC:RemoteFunction(server, toserver, cmd, rank, faction, name)
 	if toserver != "*" && !string.find(string.lower(TK.HostName()), string.lower(toserver)) then return end
 	
 	print(server, " Remote Command From "..TK.AM.Rank.Tag[rank]..name, cmd)
@@ -89,7 +81,7 @@ end
 
 function TK.DB:SendGlobalMsg(ply, msg, flag)
 	if !IsValid(ply) || !ply:IsPlayer() then return end
-	if !GlobalChat:CanSendMsg(ply) then
+	if !TKGC:CanSendMsg(ply) then
 		TK.AM:SystemMessage({"Global Message Limit, please wait"}, {ply}, 2)
 		return
 	end
@@ -105,7 +97,7 @@ function TK.DB:SendGlobalMsg(ply, msg, flag)
 		sender_name = ply:Name()
 	}))
 	
-	GlobalChat:SendPlyMsg(flag, TK:HostName(), ply:GetRank(), ply:Team(), ply:Name(), msg)	
+	TKGC:SendPlyMsg(flag, TK:HostName(), ply:GetRank(), ply:Team(), ply:Name(), msg)	
 end
 
 function TK.DB:SendGlobalSystemMsg(msg)
@@ -116,7 +108,7 @@ function TK.DB:SendGlobalSystemMsg(msg)
 		msg_data = msg
 	}))
 	
-	GlobalChat:SendSysMsg(TK:HostName(), msg)
+	TKGC:SendSysMsg(TK:HostName(), msg)
 end
 
 function TK.DB:SendRemoteCmd(ply, svr, cmd)
@@ -132,56 +124,52 @@ function TK.DB:SendRemoteCmd(ply, svr, cmd)
 	}))
 end
 
-hook.Add("Initialize", "TKGlobalChat", function()
-	timer.Create("TKGlobalChat", 15, 0, function()
+hook.Add("Initialize", "TKGC", function()
+    TK.DB:MakeQuery(TK.DB:FormatSelectQuery("server_globalchat", {"msg_idx"}, {"msg_idx > %s", TKGC.LastMsg}, {"msg_idx"}), function(data)
+        TKGC.LastMsg = data[#data].msg_idx || 0
+    end)
+
+	timer.Create("TKTKGC", 15, 0, function()
 		if !TK.DB:IsConnected() then return end
-        
-        if GlobalChat.LastMsg == -1 then
-            TK.DB:MakeQuery(TK.DB:FormatSelectQuery("server_globalchat", {"msg_idx"}, {"msg_idx > %s", 0}, {"msg_idx"}), function(data)
-                for k,v in ipairs(data) do
-                    GlobalChat.LastMsg = v.msg_idx
-                end
-            end)
-            
-            return 
-        end
-        
-        
-		TK.DB:MakeQuery(TK.DB:FormatSelectQuery("server_globalchat", {}, {"msg_idx > %s", GlobalChat.LastMsg}, {"msg_idx"}), function(data)
+        if TKGC.LastMsg == -1 then return end
+
+		TK.DB:MakeQuery(TK.DB:FormatSelectQuery("server_globalchat", {}, {"msg_idx > %s", TKGC.LastMsg}, {"msg_idx"}), function(data)
 			for k,v in ipairs(data) do
-				GlobalChat.LastMsg = v.msg_idx
-				if v.msg_conection_id == MySQL.ConnectionID then return end
-				
+				TKGC.LastMsg = v.msg_idx
+				if v.msg_conection_id == TK.DB:ConnectionID() then return end
+
 				if v.msg_key == 0 then
-					GlobalChat:SendPlyMsg(v.msg_flag, v.msg_origin, v.sender_rank, v.sender_faction, v.sender_name, v.msg_data)
+					TKGC:SendPlyMsg(v.msg_flag, v.msg_origin, v.sender_rank, v.sender_faction, v.sender_name, v.msg_data)
 				elseif v.msg_key == 1 then
-					GlobalChat:SendSysMsg(v.msg_origin, v.msg_data)
+					TKGC:SendSysMsg(v.msg_origin, v.msg_data)
 				elseif v.msg_key == 2 then
-					GlobalChat:RemoteFunction(v.msg_origin, v.msg_recipient, v.msg_data, v.sender_rank, v.sender_faction, v.sender_name)
+					TKGC:RemoteFunction(v.msg_origin, v.msg_recipient, v.msg_data, v.sender_rank, v.sender_faction, v.sender_name)
 				end
 			end
 		end)
 		
-		GlobalChat.Flood = {}
+		TKGC.Flood = {}
 	end)
 end)
 
-hook.Add("PlayerSay", "TKGlobalChat", function(ply, text, toteam)
-	if string.sub(text, 1, 1) != ";" then return end
-	local flag, msg = toteam && 1 || 0, ""
-	if string.sub(text, 2, 2) == "@" then
-		flag = flag + 2
-		msg = string.Trim(string.sub(text, 3))
-	else
-		if string.sub(text, 2, 4) == "/me" then
-			flag = flag + 4
-			msg = string.Trim(string.sub(text, 5))
+hook.Add("PlayerSay", "TKGC", function(ply, text, toteam)
+	if string.sub(text, 1, 2) == "; " then 
+        local flag, msg = toteam && 2 || 0, ""
+        if string.sub(text, 3, 5) == "/me" then
+			flag = flag + 1
+			msg = string.Trim(string.sub(text, 6))
 		else
-			msg = string.Trim(string.sub(text, 2))
+			msg = string.Trim(string.sub(text, 3))
 		end
-	end
-	if string.len(msg) < 2 then return end
-
-	TK.DB:SendGlobalMsg(ply, msg, flag)
-	return false
+        
+        if msg == "" then return end
+        TK.DB:SendGlobalMsg(ply, msg, flag)
+        return false
+    elseif string.sub(text, 1, 2) == ";@" then
+        local flag, msg = 4, string.Trim(string.sub(text, 3))
+        
+        if msg == "" then return end
+        TK.DB:SendGlobalMsg(ply, msg, flag)
+        return false
+    end
 end)

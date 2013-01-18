@@ -14,12 +14,12 @@ TK.HEV.Sounds = {
 }
 
 local HEVData = {
-    energy = 600,
-    energymax = 600,
-    water = 600,
-    watermax = 600,
-    oxygen = 600,
-    oxygenmax = 600,
+    energy = 300,
+    energymax = 300,
+    water = 300,
+    watermax = 300,
+    oxygen = 300,
+    oxygenmax = 300,
     temp = 290,
     airper = 5
 }

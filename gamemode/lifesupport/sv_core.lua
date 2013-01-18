@@ -124,12 +124,12 @@ hook.Add("PlayerInitialSpawn", "TKLS", function(ply)
 	ply:GetEnv():DoGravity(ply)
 	
     ply.tk_hev = {}
-    ply.tk_hev.energy = 600
-    ply.tk_hev.energymax = 600
-    ply.tk_hev.oxygen = 600
-    ply.tk_hev.oxygenmax = 600
-    ply.tk_hev.water = 600
-    ply.tk_hev.watermax = 600
+    ply.tk_hev.energy = 300
+    ply.tk_hev.energymax = 300
+    ply.tk_hev.oxygen = 300
+    ply.tk_hev.oxygenmax = 300
+    ply.tk_hev.water = 300
+    ply.tk_hev.watermax = 300
     ply.tk_hev.temp = 290
     ply.tk_hev.airper = 5
     ply.tk_hev.health = 100
@@ -138,9 +138,9 @@ end)
 
 hook.Add("PlayerSpawn", "TKLS", function(ply)
 	ply.tk_hev = ply.tk_hev || {}
-	ply.tk_hev.energy = 600
-	ply.tk_hev.oxygen = 600
-	ply.tk_hev.water = 600
+	ply.tk_hev.energy = 300
+	ply.tk_hev.oxygen = 300
+	ply.tk_hev.water = 300
 	ply.tk_hev.temp = 290
 	ply.tk_hev.airper = 5
 	ply.tk_hev.update = true

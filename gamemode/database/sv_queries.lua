@@ -26,13 +26,12 @@ local Queries = {
 		server_globalchat = [[CREATE TABLE IF NOT EXISTS
 		server_globalchat(
 			msg_idx INT PRIMARY KEY AUTO_INCREMENT,
-			msg_created INT,
 			msg_conection_id INT DEFAULT 0,
 			msg_key TINYINT DEFAULT 0,
 			msg_origin VARCHAR(127),
 			msg_recipient VARCHAR(127),
 			msg_flag TINYINT DEFAULT 0,
-			msg_data VARCHAR(127),
+			msg_data LONGBLOB,
 			sender_rank TINYINT DEFAULT 1,
 			sender_faction TINYINT DEFAULT 1,
 			sender_name VARCHAR(127)

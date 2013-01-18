@@ -12,7 +12,6 @@ end
 function ENT:Draw()
 	self:DrawModel()
 	
-	if !self:GetOverlay() then return end
 	if (self:GetPos() - LocalPlayer():GetPos()):LengthSqr() > 262144 then return end
 	if LocalPlayer():GetEyeTrace().Entity != self then return end
 	

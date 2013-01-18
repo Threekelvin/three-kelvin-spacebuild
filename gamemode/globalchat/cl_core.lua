@@ -1,8 +1,7 @@
 
-local GlobalChat = {}
-GlobalChat.Cache = {}
+local TKGC = {}
 
-function GlobalChat:ExtractFlag(num, flag)
+function TKGC:ExtractFlag(num, flag)
 	if flag > 7 || num > 4 then return false end
 	if flag >= 4 then
 		flag = flag - 4
@@ -19,64 +18,50 @@ function GlobalChat:ExtractFlag(num, flag)
 	return false
 end
 
-function GlobalChat:WriteMessage(id)
-	if !GlobalChat.Cache[id] then return end
-	data = GlobalChat.Cache[id]
-	
-	if GlobalChat:ExtractFlag(2, data.flag) then
+function TKGC:WriteMessage()
+	if TKGC:ExtractFlag(2, data.flag) then
 		chat.AddText(Color(255,140,0), data.server.." [Admin] ", TK.AM.Rank.RGBA[data.rank], TK.AM.Rank.Tag[data.rank], team.GetColor(data.faction), data.name, Color(255,255,255), ": "..data.text)
-	elseif GlobalChat:ExtractFlag(1, data.flag) then
-		if GlobalChat:ExtractFlag(4, data.flag) then
+	elseif TKGC:ExtractFlag(1, data.flag) then
+		if TKGC:ExtractFlag(4, data.flag) then
 			chat.AddText(Color(255,140,0), data.server, Color(30,160,40), " (Team) ", TK.AM.Rank.RGBA[data.rank], TK.AM.Rank.Tag[data.rank], team.GetColor(data.faction), data.name, " "..data.text)
 		else
 			chat.AddText(Color(255,140,0), data.server, Color(30,160,40), " (Team) ", TK.AM.Rank.RGBA[data.rank], TK.AM.Rank.Tag[data.rank], team.GetColor(data.faction), data.name, Color(255,255,255), ": "..data.text)
 		end	
-	elseif GlobalChat:ExtractFlag(4, data.flag) then
+	elseif TKGC:ExtractFlag(4, data.flag) then
 		chat.AddText(Color(255,140,0), data.server.." ", TK.AM.Rank.RGBA[data.rank], TK.AM.Rank.Tag[data.rank], team.GetColor(data.faction), data.name, " "..data.text)
 	else
 		chat.AddText(Color(255,140,0), data.server.." ", TK.AM.Rank.RGBA[data.rank], TK.AM.Rank.Tag[data.rank], team.GetColor(data.faction), data.name, Color(255,255,255), ": "..data.text)
 	end
-	
-	GlobalChat.Cache[id] = nil
 end
 
-usermessage.Hook("TKGlobalChatSetup", function(msg)
-	local id, flag, server, rank, faction = tonumber(msg:ReadString()), msg:ReadChar(), msg:ReadString(), msg:ReadChar(), msg:ReadChar()
-	
-	if !GlobalChat.Cache[id] then
-		GlobalChat.Cache[id] = {
-			flag = flag,
-			server = server,
-			rank = rank,
-			faction = faction
-		}
-	else
-		GlobalChat.Cache[id].flag = flag
-		GlobalChat.Cache[id].server = server
-		GlobalChat.Cache[id].rank = rank
-		GlobalChat.Cache[id].faction = faction
-	
-		GlobalChat:WriteMessage(id)
-	end
+net.Receive("TKGC_Msg", function()
+    local key = net.ReadFloat()
+    if key == 1 then
+        local flag = net.ReadFloat()
+        local server = net.ReadString()
+        local rank = net.ReadFloat()
+        local faction = net.ReadFloat()
+        local name = net.ReadString()
+        local msg = net.ReadString()
+        
+        if TKGC:ExtractFlag(4, flag) then
+            chat.AddText(Color(255,140,0), server.." [Admin] ", TK.AM.Rank.RGBA[rank], TK.AM.Rank.Tag[rank], team.GetColor(faction), name, Color(255,255,255), ": "..msg)
+        elseif TKGC:ExtractFlag(2, flag) then
+            if TKGC:ExtractFlag(1, flag) then
+                chat.AddText(Color(255,140,0), server, Color(30,160,40), " (Team) ", TK.AM.Rank.RGBA[rank], TK.AM.Rank.Tag[rank], team.GetColor(faction), name, " "..msg)
+            else
+                chat.AddText(Color(255,140,0), server, Color(30,160,40), " (Team) ", TK.AM.Rank.RGBA[rank], TK.AM.Rank.Tag[rank], team.GetColor(faction), name, Color(255,255,255), ": "..msg)
+            end	
+        elseif TKGC:ExtractFlag(1, flag) then
+            chat.AddText(Color(255,140,0), server.." ", TK.AM.Rank.RGBA[rank], TK.AM.Rank.Tag[rank], team.GetColor(faction), name, " "..msg)
+        else
+            chat.AddText(Color(255,140,0), server.." ", TK.AM.Rank.RGBA[rank], TK.AM.Rank.Tag[rank], team.GetColor(faction), name, Color(255,255,255), ": "..msg)
+        end        
+    elseif key == 2 then
+        local server = net.ReadString()
+        local msg = net.ReadString()
+        
+        chat.AddText(Color(255,140,0), server.." ", Color(255,255,255), msg)
+    end
 end)
 
-usermessage.Hook("TKGlobalChatMsg", function(msg)
-	local id, name, text = tonumber(msg:ReadString()), msg:ReadString(), msg:ReadString()
-	if !GlobalChat.Cache[id] then
-		GlobalChat.Cache[id] = {
-			name = name,
-			text = text
-		}
-	else
-		GlobalChat.Cache[id].name = name
-		GlobalChat.Cache[id].text = text
-		
-		GlobalChat:WriteMessage(id)
-	end
-end)
-
-usermessage.Hook("TKGlobalSystem", function(msg)
-	local server, text = msg:ReadString(), msg:ReadString()
-	
-	chat.AddText(Color(255,140,0), server.." ", Color(255,255,255), text)
-end)
