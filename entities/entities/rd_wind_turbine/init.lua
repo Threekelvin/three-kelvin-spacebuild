@@ -12,10 +12,8 @@ function ENT:Initialize()
 	if phys:IsValid() then
 		phys:Wake()
 	end
-	
-	self:SetPowered(true)
-	self:AddResource("energy", 0, true)
-	
+    
+	self:SetNWBool("Generator", true)
 	WireLib.CreateOutputs(self, {"On", "Output"})
 end
 
@@ -28,13 +26,13 @@ function ENT:Think()
 end
 
 function ENT:TurnOn()
-	if self.Active then return end
+	if self:GetActive() then return end
 	self:SetActive(true)
 	WireLib.TriggerOutput(self, "On", 1)
 end
 
 function ENT:TurnOff()
-	if !self.Active then return end
+	if !self:GetActive() then return end
 	self:SetActive(false)
 	self.windspeed = 0
 	WireLib.TriggerOutput(self, "On", 0)
@@ -48,13 +46,10 @@ end
 function ENT:DoThink()
 	local env = self:GetEnv()
 	if !env.atmosphere.wind then self:TurnOff() return end
-	
-	self.windspeed = env.atmosphere.windspeed / 100
-	local output = math.floor(self.data.energy * self.windspeed)
-	if output < 1 then self:TurnOff() return end
+    self.windspeed = env.atmosphere.windspeed / 100
 	self:TurnOn()
-	self:SupplyResource("energy", output)
-	WireLib.TriggerOutput(self, "Output", output)
+    self:SetPower(self.data.power)
+    WireLib.TriggerOutput(self, "Output", self:GetPowerGrid())
 end
 
 function ENT:NewNetwork(netid)

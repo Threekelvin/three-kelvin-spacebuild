@@ -2,7 +2,7 @@
 function EFFECT:Init(data)
 	local pos = data:GetOrigin()
 
-	sound.Play("/ambient/energy/ion_cannon_shot"..math.random(1, 3)..".wav", pos, 75, 100)
+	sound.Play("ambient/energy/ion_cannon_shot"..math.random(1, 3)..".wav", pos, 75, 100)
 	
 	local emitter = ParticleEmitter( pos )
 		

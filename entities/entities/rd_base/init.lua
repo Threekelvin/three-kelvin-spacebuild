@@ -52,17 +52,14 @@ function ENT:Initialize()
 	self.soundlib = {
 		[0] = CreateSound(self, SoundLib.d[5])
 	}
-	self.Mult = 1
-	self.Mute = false
-	self.IsActive = false
-	self.IsIdle = false
+    self.mult = 1
+	self.mute = false
+    self.data = {}
 	
-	TK.RD.Register(self)
+	TK.RD:Register(self)
 	self:SetSkin(self.data.skin || 0)
-	self:SetNWBool("Actived", false)
-	self:SetNWBool("Idle", false)
-	self:SetNWBool("Powered", false)
-	self:SetNWBool("Overlay", true)
+	self:SetNWBool("Active", false)
+    self:SetNWBool("Generator", false)
 	
 	self.WireDebugName = self.PrintName
 end
@@ -72,7 +69,7 @@ function ENT:OnRemove()
 		v:Stop()
 	end
 	
-	TK.RD.RemoveEnt(self)
+	TK.RD:RemoveEnt(self)
 	
 	if WireLib then WireLib.Remove(self) end
 end
@@ -107,7 +104,7 @@ function ENT:SoundLevel(id, level)
 end
 
 function ENT:SoundPlay(id)
-	if self.Mute then return end
+	if self.mute then return end
 	if !self.soundlib[id] then return end
 	if self.soundlib[id]:IsPlaying() then
 		self.soundlib[id]:Stop()
@@ -120,47 +117,36 @@ function ENT:SoundStop(id)
 	self.soundlib[id]:Stop()
 end
 
-function ENT:SetActive(bool)
-	self.IsActive = tobool(bool)
-	self:SetNWBool("Actived", self.IsActive)
-end
-
-function ENT:SetIdle(bool)
-	self.IsIdle = tobool(bool)
-	self:SetNWBool("Idle", self.IsIdle)
-end
-
-function ENT:SetPowered(bool)
-	self:SetNWBool("Powered", tobool(bool))
-end
-
-function ENT:SetOverlay(bool)
-	self:SetNWBool("Overlay", tobool(bool))
-end
-
-function ENT:TurnOn()
-	if self.IsActive || !self:IsLinked() then return end
-	self:SetActive(true)
-end
-
-function ENT:TurnOff()
-	if !self.IsActive then return end
-	self:SetActive(false)
-end
-
-function ENT:Idle()
-	if self.IsIdle then return end
-	self:SetIdle(true)
+function ENT:SetActive(val)
+    val = tobool(val)
+    self:SetNWBool("Active", val)
+    if val then return end
+    self:SetPower(0)
 end
 
 function ENT:Work()
-	if !self.IsIdle then return end
-	self:SetIdle(false)
+    if !self:GetActive() then return false end
+    if self:GetUnitPowerGrid() != self.data.power * self.mult then
+        self:SetPower(self.data.power * self.mult)
+        return false
+    end
+    
+    return true
+end
+
+function ENT:TurnOn()
+	if self:GetActive() || !self:IsLinked() then return end
+    self:SetActive(true)
+end
+
+function ENT:TurnOff()
+	if !self:GetActive() then return end
+    self:SetActive(false)
 end
 
 function ENT:Use(ply)
 	if !IsValid(ply) || !ply:IsPlayer() then return end
-	if self.IsActive then
+	if self:GetActive() then
 		self:TurnOff()
 	else
 		self:TurnOn()
@@ -178,7 +164,7 @@ function ENT:DoCommand(ply, cmd, arg)
 
 end
 
-function ENT:DoThink()
+function ENT:DoThink(eff)
 
 end
 
@@ -191,45 +177,57 @@ function ENT:UpdateValues()
 end
 
 function ENT:AddResource(idx, max, gen)
-	return TK.RD.EntAddResource(self, idx, max, gen)
+	return TK.RD:EntAddResource(self, idx, max, gen)
+end
+
+function ENT:SetPower(power)
+    return TK.RD:SetPower(self, power)
 end
 
 function ENT:IsLinked()
-	return TK.RD.IsLinked(self)
+	return TK.RD:IsLinked(self)
 end
 
 function ENT:Link(netid)
-	return TK.RD.Link(self, netid)
+	return TK.RD:Link(self, netid)
 end
 
 function ENT:Unlink()
-	return TK.RD.Unlink(self)
+	return TK.RD:Unlink(self)
 end
 
 function ENT:GetEntTable()
-	return TK.RD.GetEntTable(self:EntIndex())
+	return TK.RD:GetEntTable(self:EntIndex())
 end
 
 function ENT:SupplyResource(idx, amt)
-	return TK.RD.EntSupplyResource(self, idx, amt)
+	return TK.RD:EntSupplyResource(self, idx, amt)
 end
 
 function ENT:ConsumeResource(idx, amt)
-	return TK.RD.EntConsumeResource(self, idx, amt)
+	return TK.RD:EntConsumeResource(self, idx, amt)
+end
+
+function ENT:GetPowerGrid()
+    return TK.RD:GetEntPowerGrid(self)
 end
 
 function ENT:GetResourceAmount(idx)
-	return TK.RD.GetEntResourceAmount(self, idx)
+	return TK.RD:GetEntResourceAmount(self, idx)
+end
+
+function ENT:GetUnitPowerGrid()
+    return TK.RD:GetUnitPowerGrid(self)
 end
 
 function ENT:GetUnitResourceAmount(idx)
-	return TK.RD.GetUnitResourceAmount(self, idx)
+	return TK.RD:GetUnitResourceAmount(self, idx)
 end
 
 function ENT:GetResourceCapacity(idx)
-	return TK.RD.GetEntResourceCapacity(self, idx)
+	return TK.RD:GetEntResourceCapacity(self, idx)
 end
 
 function ENT:GetUnitResourceCapacity(idx)
-	return TK.RD.GetUnitResourceCapacity(self, idx)
+	return TK.RD:GetUnitResourceCapacity(self, idx)
 end

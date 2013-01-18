@@ -24,17 +24,14 @@ if SERVER then
 					return
 				end
 				
-				if CurTime() < ply.tkstats.paydelay then return end
-				
 				amount = math.floor(amount)
 				
 				local credits = TK.DB:GetPlayerData(ply, "player_info").credits
 				if amount > credits then return end
 				
-				ply.tkstats.paydelay = CurTime() + 4
-				TK.DB:UpdatePlayerData(ply, "player_info", {"credits", credits - amount})
+				TK.DB:UpdatePlayerData(ply, "player_info", {credits = credits - amount})
 				local credits = TK.DB:GetPlayerData(tar, "player_info").credits
-				TK.DB:UpdatePlayerData(tar, "player_info", {"credits", credits + amount})
+				TK.DB:UpdatePlayerData(tar, "player_info", {credits = credits + amount})
 				
 				TK.AM:SystemMessage({"Given ", tar, " "..TK:Format(amount).." Credits"}, {ply}, 2)
 				TK.AM:SystemMessage({"Recived ", TK:Format(amount).." Credits From ", ply}, {tar}, 2)

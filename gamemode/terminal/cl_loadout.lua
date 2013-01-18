@@ -54,7 +54,7 @@ local function MakeSlot(panel, slot, id)
         
         local validitems = {}
         for k,v in pairs(TK.DB:GetPlayerData("player_inventory").inventory) do
-            if !TK.IL:IsSlot(btn.slot, v) then continue end
+            if !TK.TD:IsSlot(btn.slot, v) then continue end
             table.insert(validitems, v)
         end
         
@@ -69,15 +69,18 @@ local function MakeSlot(panel, slot, id)
         end
         
         for k,v in pairs(validitems) do
-            panel.items:AddItem(MakePanel(panel, btn.slot, btn.id, TK.IL:GetItem(v)))
+            panel.items:AddItem(MakePanel(panel, btn.slot, btn.id, TK.TD:GetItem(v)))
         end
     end
     
     btn.Think = function()
+        
+    end
+    btn.Update = function()
         local itemid = btn.loadout[btn.slot.. "_" ..btn.id.. "_item"]
         if !itemid || itemid == btn.item then return end
         btn.item = itemid
-        local item = TK.IL:GetItem(itemid)
+        local item = TK.TD:GetItem(itemid)
         
         btn:SetToolTip(item.name)
         btn:SetModel(item.mdl)
@@ -155,24 +158,33 @@ function PANEL:PerformLayout()
     self.items:SetSize(260, 395)
 end
 
-function PANEL:Think()
-	if CurTime() < self.NextThink then return end
-	self.NextThink = CurTime() + 1
+function PANEL:Think(force)
+    if !force then
+        if CurTime() < self.NextThink then return end
+        self.NextThink = CurTime() + 1
+    end
 	
 	self.score = TK:Format(TK.DB:GetPlayerData("player_info").score)
     self.loadout = TK.DB:GetPlayerData("player_loadout")
     
     for k,v in pairs(self.mining) do
         v.loadout = self.loadout
+        v:Update()
     end
     
     for k,v in pairs(self.storage) do
         v.loadout = self.loadout
+        v:Update()
     end
     
     for k,v in pairs(self.weapon) do
         v.loadout = self.loadout
+        v:Update()
     end
+end
+
+function PANEL:Update()
+    self:Think(true)
 end
 
 function PANEL.Paint(self, w, h)

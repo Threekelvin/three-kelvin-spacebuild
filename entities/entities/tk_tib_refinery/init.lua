@@ -5,7 +5,7 @@ include('shared.lua')
 function ENT:Initialize()
 	self.Entity:SetModel("models/Techbot/ref/ref.mdl")
 	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetMoveType(MOVETYPE_VPHYSICS)
+	self.Entity:SetMoveType(MOVETYPE_NONE)
 	self.Entity:SetSolid(SOLID_VPHYSICS)
 
 	local phys = self.Entity:GetPhysicsObject()

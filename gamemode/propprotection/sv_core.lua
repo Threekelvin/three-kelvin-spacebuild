@@ -227,7 +227,7 @@ concommand.Add("pp_cleanup", PP.CleanUp)
 
 ///--- Can Do Stuff Hooks ---\\\
 function PP.CanToolEnt(ply, toolmode, ent)
-	if !IsValid then return end
+	if !IsValid(ent) then return end
 	if ent:IsPlayer() then return false end
 	
 	local owner, uid = PP.GetOwner(ent)
@@ -386,7 +386,7 @@ hook.Add("CanPlayerUnfreeze", 		"PP_CPU",   PP.CanPhysGun)
 hook.Add("OnPhysgunReload",         "PP_OPR",   PP.CanPhysGunReload)
 hook.Add("CanPlayerEnterVehicle",   "PP_CPEV",  PP.CanUse)
 hook.Add("PlayerUse",				"PP_PU",    PP.CanUse)
-hook.Add("CanDrive",                "PP_CD",    PP.CanUse)
+hook.Add("CanDrive",                "PP_CD",    function() return false end)
 ///--- ---\\\
 
 ///--- Find Owner Functions ---\\\

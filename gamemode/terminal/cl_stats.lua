@@ -18,11 +18,17 @@ function PANEL:PerformLayout()
 	self.webpage:SetSize(self:GetWide() - 25, self:GetTall() - 140)
 end
 
-function PANEL:Think()
-	if CurTime() < self.NextThink then return end
-	self.NextThink = CurTime() + 1
+function PANEL:Think(force)
+	if !force then
+        if CurTime() < self.NextThink then return end
+        self.NextThink = CurTime() + 1
+    end
 	
 	self.score = TK:Format(TK.DB:GetPlayerData("player_info").score)
+end
+
+function PANEL:Update()
+    self:Think(true)
 end
 
 function PANEL.Paint(self, w, h)

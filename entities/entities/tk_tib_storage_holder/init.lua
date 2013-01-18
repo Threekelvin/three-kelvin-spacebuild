@@ -7,7 +7,7 @@ function ENT:Initialize()
 	
 	self.Storage = {}
 
-	self:SetPowered(true)
+	self:SetNWBool("Generator", true)
 	self:AddResource("raw_tiberium", 0)
 	
 	WireLib.CreateInputs(self, {"On"})

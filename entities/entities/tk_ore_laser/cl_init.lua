@@ -8,20 +8,26 @@ local Glow = CreateMaterial("blueglow1", "UnlitGeneric", {
     ["$additive"] = 1
 })
 
+function ENT:Initialize()
+    self.range = 0
+    self.rmin, self.rmax = self:GetRenderBounds()
+end
+
 function ENT:Draw()
 	self.BaseClass.Draw(self)
 	
 	if self:GetActive() then
 		local trace = util.QuickTrace(self:LocalToWorld(Vector(0,0,32)), self:GetUp() * (self:GetNWInt("range", 0) + 32), self)
-
+        
 		render.SetMaterial(Laser)
 		render.DrawBeam(self:LocalToWorld(Vector(0,0,32)), trace.HitPos, 20, 0, 1, Color(255,255,255,255))
+        render.DrawBeam(trace.HitPos, self:LocalToWorld(Vector(0,0,32)), 20, 0, 1, Color(255,255,255,255))
 		render.SetMaterial(Glow)
 		render.DrawSprite(self:LocalToWorld(Vector(0,0,32)), 25, 25, Color(255,255,255,255))
 		
 		if IsValid(trace.Entity) then
 			local ent = trace.Entity
-			if ent:GetClass() == "tk_roid" || ent:GetClass() == "tk_orestorage" then
+			if ent:GetClass() == "tk_roid" then
 				render.StartBeam(14)
 					render.AddBeam(self:LocalToWorld(Vector(0,0,32)), 40, CurTime(), Color(255,255,255,255))
 					
@@ -42,4 +48,11 @@ function ENT:Draw()
 			end
 		end
 	end
+end
+
+function ENT:Think()
+    if self.range == self:GetNWInt("range", 0) then return end
+    self.range = self:GetNWInt("range", 0)
+    
+    self:SetRenderBounds(self.rmin, self.rmax + Vector(0, 0, self.range))
 end

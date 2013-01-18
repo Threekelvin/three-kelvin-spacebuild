@@ -11,10 +11,7 @@ function ENT:Initialize()
     entdata.data.id = "Space"
     entdata.data.temp = 3
     entdata.data.gravity = 0
-    entdata.data.oxygen = 0
-    entdata.data.carbon_dioxide = 0
-    entdata.data.nitrogen = 0
-    entdata.data.hydrogen = 0
+    entdata.data.resources = {}
     entdata.update = {}
     
     self.Inputs = WireLib.CreateInputs(self, {"On"})
@@ -22,13 +19,13 @@ function ENT:Initialize()
 end
 
 function ENT:TurnOn()
-    if self.IsActive || !self:IsLinked() then return end
+    if self:GetActive()|| !self:IsLinked() then return end
     self:SetActive(true)
     WireLib.TriggerOutput(self, "On", 1)
 end
 
 function ENT:TurnOff()
-    if !self.IsActive then return end
+    if !self:GetActive() then return end
     self:SetActive(false)
     WireLib.TriggerOutput(self, "On", 0)
 end
@@ -43,10 +40,10 @@ function ENT:TriggerInput(iname, value)
     end
 end
 
-function ENT:DoThink()
-    if !self.IsActive then return end
-    if self:GetResourceAmount("energy") < 100 then self:TurnOff() return end
-    self:ConsumeResource("energy", 100)
+function ENT:DoThink(eff)
+    if !self:GetActive() then return end
+    if !self:Work() then return end
+    eff = eff == 1
     
     local env = self:GetEnv()
     local entdata = self:GetEntTable()
@@ -56,39 +53,31 @@ function ENT:DoThink()
         entdata.update = {}
     end
     
-    local temp = env:DoTemp(self)
+    local temp = eff && env:DoTemp(self) || "NA"
     if entdata.data.temp != temp then
         entdata.data.temp = temp
         entdata.update = {}
     end
     
-    if entdata.data.gravity != env.atmosphere.gravity then
-        entdata.data.gravity = env.atmosphere.gravity
+    local gravity = eff && env.atmosphere.gravity || "NA"
+    if entdata.data.gravity != gravity then
+        entdata.data.gravity = gravity
         entdata.update = {}
     end
-    
-    local oxygen = math.Round(env:GetTrueAtmospherePercent("oxygen"), 3)
-    if entdata.data.oxygen != oxygen then
-        entdata.data.oxygen = oxygen
-        entdata.update = {}
+
+    for k,v in pairs(env.atmosphere.resources) do
+        local val = eff && v || "NA"
+        if !entdata.data.resources[k] || entdata.data.resources[k] != val then
+            entdata.data.resources[k] = val
+            entdata.update = {}
+        end
     end
     
-    local carbon_dioxide = math.Round(env:GetTrueAtmospherePercent("carbon_dioxide"), 3)
-    if entdata.data.carbon_dioxide != carbon_dioxide then
-        entdata.data.carbon_dioxide = carbon_dioxide
-        entdata.update = {}
-    end
-    
-    local nitrogen = math.Round(env:GetTrueAtmospherePercent("nitrogen"), 3)
-    if entdata.data.nitrogen != nitrogen then
-        entdata.data.nitrogen = nitrogen
-        entdata.update = {}
-    end
-    
-    local hydrogen = math.Round(env:GetTrueAtmospherePercent("hydrogen"), 3)
-    if entdata.data.hydrogen != hydrogen then
-        entdata.data.hydrogen = hydrogen
-        entdata.update = {}
+    for k,v in pairs(entdata.data.resources) do
+        if !env.atmosphere.resources[k] then
+            entdata.data.resources[k] = nil
+            entdata.update = {}
+        end
     end
 end
 

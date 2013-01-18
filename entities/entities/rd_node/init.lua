@@ -17,7 +17,7 @@ function ENT:Initialize()
 	self.range =  0
 	self.rangesqr =  0
 	self.netdata = {res = {}, entities = {}, update = {}, node = self}
-	TK.RD.Register(self, true)
+	TK.RD:Register(self, true)
 	self:SetRange(self.data.range)
 end
 
@@ -37,19 +37,27 @@ function ENT:GetNetTable()
 end
 
 function ENT:Unlink()
-	return TK.RD.Unlink(self)
+	return TK.RD:Unlink(self)
 end
 
 function ENT:SupplyResource(idx, amt)
-	return TK.RD.NetSupplyResource(self.netid, idx, amt)
+	return TK.RD:NetSupplyResource(self.netid, idx, amt)
 end
 
 function ENT:ConsumeResource(idx, amt)
-	return TK.RD.NetConsumeResource(self.netid, idx, amt)
+	return TK.RD:NetConsumeResource(self.netid, idx, amt)
+end
+
+function ENT:GetPowerGrid()
+    return TK.RD:GetNetPowerGrid(self.netid)
 end
 
 function ENT:GetResourceAmount(idx)
-	return TK.RD.GetNetResourceAmount(self.netid, idx)
+	return TK.RD:GetNetResourceAmount(self.netid, idx)
+end
+
+function ENT:GetUnitPowerGrid()
+    return 0
 end
 
 function ENT:GetUnitResourceAmount(idx)
@@ -57,7 +65,7 @@ function ENT:GetUnitResourceAmount(idx)
 end
 
 function ENT:GetResourceCapacity(idx)
-	return TK.RD.GetNetResourceCapacity(self.netid, idx)
+	return TK.RD:GetNetResourceCapacity(self.netid, idx)
 end
 
 function ENT:GetUnitResourceCapacity(idx)
@@ -71,9 +79,21 @@ function ENT:Think()
 			v:SoundPlay(0)
 		end
 	end
-	
+    
+    local produce = 1
+    local comsume = 1
+    for k,v in pairs(self.netdata.entities) do
+        local power = v:GetUnitPowerGrid()
+        if power > 0 then
+            produce = produce + power
+        else
+            comsume = comsume - power
+        end
+    end
+    local efficenty = produce == 1 && 0 || math.min((produce / comsume)^2, 1)
+
 	for k,v in ipairs(self.netdata.entities) do
-		local valid, info = pcall(v.DoThink, v)
+		local valid, info = pcall(v.DoThink, v, efficenty)
 		if !valid then print(info) end
 	end
 	
@@ -91,13 +111,13 @@ function ENT:Think()
 end
 
 function ENT:OnRemove()
-	TK.RD.RemoveNet(self)
+	TK.RD:RemoveNet(self)
 end
 
 function ENT:PreEntityCopy()
-	TK.RD.MakeDupeInfo(self)
+	TK.RD:MakeDupeInfo(self)
 end
 
 function ENT:PostEntityPaste(ply, ent, CreatedEntities)
-	TK.RD.ApplyDupeInfo(ent, CreatedEntities)
+	TK.RD:ApplyDupeInfo(ent, CreatedEntities)
 end

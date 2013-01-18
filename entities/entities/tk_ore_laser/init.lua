@@ -2,70 +2,37 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
-function ENT:LaserPower()
-	if self.upgrades then
-		local Power = 10 + (10 * ((self.upgrades.r1 * 5) + (self.upgrades.r2 * 5) + (self.upgrades.r3 * 10) + (self.upgrades.r4 * 5) + (self.upgrades.r7 * 10) + (self.upgrades.r9 * 15)) / 100)
-		return math.floor(Power)
-	else
-		return 10
-	end
-end
-
-function ENT:LaserRange()
-	if self.upgrades then
-		local Range = 1000 + (1000 * (self.upgrades.r2 + (self.upgrades.r4 * 0.5) + (self.upgrades.r6 * 0.5) + (self.upgrades.r7 * 0.5) + self.upgrades.r9) / 100)
-		return math.floor(Range)
-	else 
-		return 1000
-	end	
-end
-
-function ENT:LaserEnergy()
-	if self.upgrades then
-		local Power = self:LaserPower()
-		local Energy = Power - (Power * ((self.upgrades.r3 * 0.05) + (self.upgrades.r5 * 0.1) + (self.upgrades.r6 * 0.05) + (self.upgrades.r8 * 0.15) + (self.upgrades.r9 * 0.05)) / 100)
-		return math.floor(Energy)
-	else
-		return 100
-	end
-end
-
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
-	self.device = {1, 1}
+    
+    self.data = {}
+	self.data.yield = 0
+	self.data.range = 0
+	self.data.power = 0
+	self:SetNWInt("range", 0)
 
-	self.power = self:LaserPower()
-	self.range = self:LaserRange()
-	self.energy = self:LaserEnergy()
-	self:SetNWInt("range", self.range)
-
-	self:SetPowered(true)
-	self:AddResource("energy", 0)
+	self:SetNWBool("Generator", true)
 	self:AddResource("asteroid_ore", 0, true)
 	self:AddSound("l", 7, 65)
 	
 	self.Inputs = WireLib.CreateInputs(self, {"On"})
-	self.Outputs = WireLib.CreateOutputs(self, {"On", "Output", "Range", "EnergyUsage"})
+	self.Outputs = WireLib.CreateOutputs(self, {"On", "Output", "Range"})
 end
 
 function ENT:TurnOn()
-	if self.IsActive || !self:IsLinked() then return end
-	if self:GetResourceAmount("energy") > self.energy then
-		self:SetActive(true)
-		WireLib.TriggerOutput(self, "On", 1)
-		WireLib.TriggerOutput(self, "Range", self.range)
-		WireLib.TriggerOutput(self, "EnergyUsage", self.energy)
-		self:SoundPlay(1)
-	end
+	if self:GetActive() || !self:IsLinked() then return end
+    self:SetActive(true)
+    WireLib.TriggerOutput(self, "On", 1)
+    WireLib.TriggerOutput(self, "Range", self.range)
+    self:SoundPlay(1)
 end
 
 function ENT:TurnOff()
-	if !self.IsActive then return end
+	if !self:GetActive() then return end
 	self:SetActive(false)
 	WireLib.TriggerOutput(self, "On", 0)
 	WireLib.TriggerOutput(self, "Output", 0)
 	WireLib.TriggerOutput(self, "Range", 0)
-	WireLib.TriggerOutput(self, "EnergyUsage", 0)
 	self:SoundStop(1)
 end
 
@@ -79,39 +46,27 @@ function ENT:TriggerInput(iname, value)
 	end
 end
 
-function ENT:DoThink()
-	if !self.IsActive then return end
+function ENT:DoThink(eff)
+	if !self:GetActive() then return end
+    if !self:Work() then return end
 	
-	if self.energy > self:GetResourceAmount("energy") then
-		self:TurnOff()
-		return true
-	end
-	
-	self:ConsumeResource("energy", self.energy)
-	local trace = util.QuickTrace(self:LocalToWorld(Vector(0,0,32)), self:GetUp() * (self.range + 32), self)
+	local trace = util.QuickTrace(self:LocalToWorld(Vector(0,0,32)), self:GetUp() * (self.data.range + 32), self)
 	if IsValid(trace.Entity) then
 		local ent = trace.Entity
 		local owner, uid = self:CPPIGetOwner()
 		if !IsValid(owner) then return end
 		
+        local yield = math.floor(self.data.yield * eff)
 		if ent:GetClass() == "tk_roid" then
-			if ent.Ore > self.power then
-				self:SupplyResource("asteroid_ore", self.power)
-				owner.tkstats.score = owner.tkstats.score + (self.power * TerminalData:Ore(owner, "asteroid_ore") * 0.375)
-				WireLib.TriggerOutput(self, "Output", self.power)
-				ent.Ore = ent.Ore - self.power
-			else
-				self:SupplyResource("asteroid_ore", ent.Ore)
-				owner.tkstats.score = owner.tkstats.score + (ent.Ore * TerminalData:Ore(owner, "asteroid_ore") * 0.375)
-				WireLib.TriggerOutput(self, "Output", ent.Ore)
-				ent.Ore = 0
-			end
-		elseif ent:GetClass() == "tk_orestorage" then
-			if ent:GetEntTable().netid == self:GetEntTable().netid then return end
-			local ore = ent:ConsumeResource("asteroid_ore", self.power)
-			self:SupplyResource("asteroid_ore", ore)
-			owner.tkstats.score = owner.tkstats.score + (ore * TerminalData:Ore(owner, "asteroid_ore") * 0.375)
-			WireLib.TriggerOutput(self, "Output", ore)
+
+            yield = math.min(yield, ent.Ore)
+            yield = self:SupplyResource("asteroid_ore", yield)
+            WireLib.TriggerOutput(self, "Output", yield)
+            
+            owner.tk_cache.score = math.floor((owner.tk_cache.score || 0) + yield * 0.75)
+            owner.tk_cache.exp = math.floor((owner.tk_cache.exp || 0) + yield * 0.375)
+            
+            ent.Ore = ent.Ore - yield
 		elseif ent:IsPlayer() || ent:IsNPC() then
 			local dmginfo = DamageInfo()
 			dmginfo:SetDamage(math.random(5, 25))
@@ -134,11 +89,14 @@ function ENT:UpdateValues()
 
 end
 
-function ENT:Update()
-	self.power = self:LaserPower()
-	self.range = self:LaserRange()
-	self.energy = self:LaserEnergy()
-	self:SetNWInt("range", self.range)
+function ENT:Update(ply)
+	local data = TK.TD:GetItem(self.itemid).data
+    local upgrades = TK.TD:GetUpgradeStats(ply, "asteroid")
+    
+    self.data.yield = data.yield + (data.yield * upgrades.yield)
+	self.data.range = data.range + (data.range * upgrades.range)
+	self.data.power = data.power - (data.power * upgrades.power)
+	self:SetNWInt("range", self.data.range)
 end
 
 function ENT:UpdateTransmitState() 

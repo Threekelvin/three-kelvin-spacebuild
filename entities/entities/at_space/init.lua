@@ -47,16 +47,12 @@ function ENT:GetVolume()
 	return 1
 end
 
-function ENT:GetResourceAmount(res)
-	return 0
+function ENT:HasResource(res)
+    return false
 end
 
 function ENT:GetResourcePercent(res)
-	return 0
-end
-
-function ENT:GetTrueResourcePercent(res)
-	return 0
+    return 0
 end
 
 function ENT:DoTemp(ent)

@@ -11,6 +11,7 @@ if SERVER then
 	util.AddNetworkString( "HUD_WARNING" )
 	local function HUDwarning( ply, message )
 		net.Start( "HUD_WARNING" )
+			net.WriteString( "admin" )
 			net.WriteString( message )
 		net.Send( ply )
 	end

@@ -1,45 +1,49 @@
 
-TK.IL = {}
+TK.TD = TK.TD || {}
 
 local Items = {
     mining = {
         {
             idx = 1,
             name = "Basic Asteroid Mining Laser",
+            class = "tk_ore_laser",
             mdl = "models/props_phx/life_support/crylaser_small.mdl",
+            data = {yield = 10, range = 1000, power = -50},
             r = 19,
             buy = 10000,
-            sell = 7500,
-            data = {}
+            sell = 7500
         },
         {
             idx = 2,
             name = "Basic Tiberium Extractor",
+            class = "tk_tib_extractor",
             mdl = "models/techbot/sonic_thingy.mdl",
+            data = {yield = 2, power = -50},
             r = 28,
             buy = 10000,
-            sell = 7500,
-            data = {}
+            sell = 7500
         },
     },
     storage = {
         {
             idx = 3,
             name = "Basic Asteroid Ore Storage",
+            class = "tk_ore_storage",
             mdl = "models/slyfo/nacshortsleft.mdl",
+            data = {capacity = 1000},
             r = 73,
             buy = 10000,
-            sell = 7500,
-            data = {}
+            sell = 7500
         },
         {
             idx = 4,
             name = "Basic Raw Tiberium Storage",
+            class = "tk_tib_storage",
             mdl = "models/slyfo/sat_resourcetank.mdl",
+            data = {capacity = 200},
             r = 47,
             buy = 10000,
             sell = 7500,
-            data = {}
         }
     },
     weapon = {
@@ -47,7 +51,7 @@ local Items = {
     }
 }
 
-function TK.IL:GetItem(id)
+function TK.TD:GetItem(id)
     for _,slot in pairs(Items) do
         for k,v in pairs(slot) do
             if v.idx != tonumber(id) then continue end
@@ -55,14 +59,14 @@ function TK.IL:GetItem(id)
         end
     end
     
-    return {}
+    return false
 end
 
-function TK.IL:GetSlotItems(idx)
+function TK.TD:GetSlotItems(idx)
     return Items[idx]
 end
 
-function TK.IL:IsSlot(idx, id)
+function TK.TD:IsSlot(idx, id)
     for k,v in pairs(Items[idx]) do
         if v.idx == tonumber(id) then return true end
     end

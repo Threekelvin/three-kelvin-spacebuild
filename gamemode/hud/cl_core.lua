@@ -41,17 +41,18 @@ TK.HUD.Colors = {
     bar = Color(0,0,0,125)
 }
 
-TK.HUD.WARNING = false
+TK.HUD.WARNING = {}
 
 net.Receive( "HUD_WARNING", function()
-	local message = net.ReadString()
-	if message:gsub("%s+", "") != "" then
-		TK.HUD.WARNING = message
-        TK.HUD.Time.MOTD:SetText(TK.HUD.NextMOTD())
-	else
-		TK.HUD.WARNING = false
-		TK.HUD.Time.MOTD:SetText(TK.HUD.NextMOTD())
+	local sender, message = net.ReadString(), net.ReadString()
+	for i=1,#TK.HUD.WARNING do
+		if TK.HUD.WARNING[i][1] == sender then
+			table.remove( TK.HUD.WARNING, i )
+			break
+		end
 	end
+	if message:gsub("%s+", "") != "" then table.insert( TK.HUD.WARNING, { sender, message } ) end
+	if IsValid(TK.HUD.Time.MOTD) then TK.HUD.Time.MOTD:SetText(TK.HUD.NextMOTD()) end
 end)
 
 local index = 0
@@ -61,8 +62,8 @@ TK.HUD.MOTDs = {
 }
 
 function TK.HUD.NextMOTD()
-    if TK.HUD.WARNING then
-        return TK.HUD.WARNING
+    if #TK.HUD.WARNING > 0 then
+        return TK.HUD.WARNING[#TK.HUD.WARNING][2]
     else
         index = (index % #TK.HUD.MOTDs) + 1
         return TK.HUD.MOTDs[index]
@@ -72,7 +73,7 @@ end
 hook.Add("HUDPaint", "TKHUD_Admin", function()
     if !IsValid(LocalPlayer()) then return end
 	local teamcol = team.GetColor(LocalPlayer():Team())
-    TK.HUD.Colors.border = TK.HUD.WARNING && Color(255, 0, 0, 191 + 64*math.sin( math.pi*RealTime() )) || teamcol
+    TK.HUD.Colors.border = (#TK.HUD.WARNING > 0) && Color(255, 0, 0, 191 + 64*math.sin( math.pi*RealTime() )) || teamcol
     TK.HUD.Colors.bar = Color(teamcol.r, teamcol.g, teamcol.b, 100)
     
     if !LocalPlayer():Alive() || !LocalPlayer():IsModerator() then return end
@@ -86,7 +87,7 @@ hook.Add("HUDPaint", "TKHUD_Admin", function()
 
 			local textPos = (vec + Vector( 0, 0, 0.9 * ply:BoundingRadius())):ToScreen()
 			local boxPos = vec:ToScreen()
-			textPos.y = math.Clamp( textPos.y, 0, boxPos.y - 18 )
+			textPos.y = math.min( textPos.y, boxPos.y - 18 )
 
             draw.SimpleText(ply:Name(), "TKFont15", textPos.x, textPos.y, teamCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             

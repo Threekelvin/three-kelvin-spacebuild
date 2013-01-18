@@ -43,7 +43,7 @@ function ENT:Draw()
 	
 	Add(OverlayText, "\nTransfer:\n")
 	for k,v in pairs(entdata.data) do
-		Add(OverlayText, TK.RD.GetResourceName(k))
+		Add(OverlayText, TK.RD:GetResourceName(k))
 		Add(OverlayText, ": ")
 		Add(OverlayText, v)
 		Add(OverlayText, "\n")
@@ -132,8 +132,8 @@ function ENT:DoMenu()
 		usage_input:SetText(tostring(energy))
 	end
 	
-	for k,v in pairs(TK.RD.GetResources()) do
-		resources:AddLine(TK.RD.GetResourceName(v), v)
+	for k,v in pairs(TK.RD:GetResources()) do
+		resources:AddLine(TK.RD:GetResourceName(v), v)
 	end
 	
 	local rate = vgui.Create("DButton", self.Menu)

@@ -5,9 +5,8 @@ local function MakePanel(res, val)
 	local btn = vgui.Create("DButton")
 	btn:SetSkin("Terminal")
 	btn:SetSize(0, 65)
-	btn.active = true
 	btn.res = res
-	btn.pres = TK.RD.GetResourceName(res)
+	btn.pres = TK.RD:GetResourceName(res)
 	btn.val = val
 	btn:SetText("")
 	
@@ -102,7 +101,7 @@ usermessage.Hook("3k_terminal_refinery_start", function(msg)
 end)
 
 usermessage.Hook("3k_terminal_refinery_finish", function(msg)
-	--- Ghost Hook
+	-- Ghost Hook
 end)
 
 function PANEL:Init()
@@ -278,16 +277,18 @@ function PANEL:PerformLayout()
 	self.refineall:SetPos(265, 470)
 end
 
-function PANEL:Think()
-	if CurTime() < self.NextThink then return end
-	self.NextThink = CurTime() + 1
+function PANEL:Think(force)
+	if !force then
+        if CurTime() < self.NextThink then return end
+        self.NextThink = CurTime() + 1
+    end
 	
 	local Refinery = TK.DB:GetPlayerData("terminal_refinery")
-	self.OreCost = TerminalData:Ore("asteroid_ore")
-	self.OreSpeed = TerminalData:Refine("asteroid_ore")
+	self.OreCost = TK.TD:Ore("asteroid_ore")
+	self.OreSpeed = TK.TD:Refine("asteroid_ore")
 	self.OreAmount = math.floor(600 * self.OreSpeed)
-	self.TibCost = TerminalData:Ore("raw_tiberium")
-	self.TibSpeed = TerminalData:Refine("raw_tiberium")
+	self.TibCost = TK.TD:Ore("raw_tiberium")
+	self.TibSpeed = TK.TD:Refine("raw_tiberium")
 	self.TibAmount = math.floor(600 * self.TibSpeed)
 	
 	local settings = TK.DB:GetPlayerData("terminal_setting")
@@ -327,6 +328,10 @@ function PANEL:Think()
 			end
 		end
 	end
+end
+
+function PANEL:Update()
+    self:Think(true)
 end
 
 function PANEL.Paint(self, w, h)

@@ -1,6 +1,5 @@
 
 TK.AT = {}
-TK.AT.NextUpdate = 0
 TK.AT.IsSpacebuild = false
 
 local Suns = {}
@@ -33,10 +32,12 @@ local function DecodeKeyValues(values)
 		data["gravity"] = tonumber(values.Case03)
 		data["tempcold"] = tonumber(values.Case05)
 		data["temphot"] = tonumber(values.Case06)
-		data["oxygen"] = 20
-		data["carbon_dioxide"] = 5
-		data["nitrogen"] = 70
-		data["hydrogen"] = 5
+        data["resources"] = {
+            oxygen = 20,
+            carbon_dioxide = 5,
+            nitrogen = 70,
+            hydrogen = 5
+        }
 		data["name"] = "Planet"
 		data["flags"] = tonumber(values.Case16)
 		data["sphere"] = 1
@@ -48,10 +49,12 @@ local function DecodeKeyValues(values)
 		data["gravity"] = tonumber(values.Case03)
 		data["tempcold"] = tonumber(values.Case06)
 		data["temphot"] = tonumber(values.Case07)
-		data["oxygen"] = tonumber(values.Case09)
-		data["carbon_dioxide"] = tonumber(values.Case10)
-		data["nitrogen"] = tonumber(values.Case11)
-		data["hydrogen"] = tonumber(values.Case12)
+        data["resources"] = {
+            oxygen = tonumber(values.Case09),
+            carbon_dioxide = tonumber(values.Case10),
+            nitrogen = tonumber(values.Case11),
+            hydrogen = tonumber(values.Case12)
+        }
 		data["name"] = values.Case13
 		data["flags"] = tonumber(values.Case08)
 		data["sphere"] = 1
@@ -63,10 +66,12 @@ local function DecodeKeyValues(values)
 		data["gravity"] = tonumber(values.Case03)
 		data["tempcold"] = tonumber(values.Case06)
 		data["temphot"] = tonumber(values.Case07)
-		data["oxygen"] = tonumber(values.Case09)
-		data["carbon_dioxide"] = tonumber(values.Case10)
-		data["nitrogen"] = tonumber(values.Case11)
-		data["hydrogen"] = tonumber(values.Case12)
+		data["resources"] = {
+            oxygen = tonumber(values.Case09),
+            carbon_dioxide = tonumber(values.Case10),
+            nitrogen = tonumber(values.Case11),
+            hydrogen = tonumber(values.Case12)
+        }
 		data["name"] = values.Case13
 		data["flags"] = tonumber(values.Case08)
 		data["sphere"] = 0
@@ -75,15 +80,23 @@ local function DecodeKeyValues(values)
 	elseif values.Case01 == "star" then
 		cat = "star"
 		data["radius"] = tonumber(values.Case02)
-		data["tempcold"] = 1000
-		data["temphot"] = 1000
+		data["tempcold"] = 1000000
+		data["temphot"] = 1000000
+        data["resources"] = {
+            hydrogen = 80,
+            helium = 20
+        }
 		data["name"] = "Star"
 		data["noclip"] = 0
 	elseif values.Case01 == "star2" then
 		cat = "star"
 		data["radius"] = tonumber(values.Case02)
-		data["tempcold"] = tonumber(values.Case03)
-		data["temphot"] = tonumber(values.Case04)
+		data["tempcold"] = 1000000
+		data["temphot"] = 1000000
+        data["resources"] = {
+            hydrogen = 80,
+            helium = 20
+        }
 		data["name"] = values.Case06
 		data["noclip"] = 0
 	end
@@ -157,20 +170,10 @@ local function RegisterSuns()
 	end
 	
 	if #Suns == 0 then
-		table.insert(Suns, Vector(0,0,50000))
+		table.insert(Suns, Vector(50000, 50000, 50000))
 		print("No Sun Found, Default Added")
 	end
 	print("-------------------------------")
-end
-
-local function HEVSound(ply, idx, amt)
-	if !IsValid(ply) || !ply:Alive() then return end
-	if ply.hev.sound > CurTime() then return end
-	ply.hev.sound = CurTime() + 10
-	umsg.Start("TKAT_HEV", ply)
-		umsg.Char(idx)
-		umsg.Short(math.Clamp(amt || 0, 0, 32767))
-	umsg.End()
 end
 
 local function EnvPrioritySort(a, b)
@@ -180,27 +183,27 @@ local function EnvPrioritySort(a, b)
 	return a.atmosphere.priority < b.atmosphere.priority
 end
 
-function TK.AT.GetSpace()
+function TK.AT:GetSpace()
 	return Space
 end
 
-function TK.AT.GetPlanets()
+function TK.AT:GetPlanets()
 	return Planets
 end
 
-function TK.AT.GetShips()
+function TK.AT:GetShips()
 	return Ships
 end
 
-function TK.AT.GetStars()
+function TK.AT:GetStars()
 	return Stars
 end
 
-function TK.AT.GetSuns()
+function TK.AT:GetSuns()
 	return Suns
 end
 
-function TK.AT.GetAtmosphereOnPos(pos)
+function TK.AT:GetAtmosphereOnPos(pos)
 	local env = Space
 	for k,v in pairs(Stars) do
 		if IsValid(v) then
@@ -229,32 +232,12 @@ function TK.AT.GetAtmosphereOnPos(pos)
 	return env
 end
 
-hook.Add("Initialize", "TK.AT", function()
+hook.Add("Initialize", "TKAT", function()
 	GAMEMODE.OnAtmosphereChange = function()
 	end
 	
-	local CleanUpMap = game.CleanUpMap
-	function game.CleanUpMap(bool, filters)
-		filters = filters || {}
-		table.insert(filters, "at_space")
-		table.insert(filters, "at_planet")
-		table.insert(filters, "at_star")
-		CleanUpMap(bool, filters)
-	end
-	
-	local Spawn = _R.Entity.Spawn
-	function _R.Entity:Spawn()
-		Spawn(self)
-		if !self:GetPhysicsObject():IsValid() then return end
-		if self:GetClass() == "at_brush" then return end
-		self.auenv = {}
-		self.auenv.envlist = {Space}
-		self.auenv.gravity = -1
-		self:GetEnv():DoGravity(self)
-	end
-	
 	function _R.Entity:GetEnv()
-		return self.auenv.envlist[1] || Space
+		return self.tk_env.envlist[1] || Space
 	end
 	
 	function _R.Player:AddhevRes(res, amt)
@@ -268,7 +251,7 @@ hook.Add("Initialize", "TK.AT", function()
 	end
 end)
 
-hook.Add("InitPostEntity", "TK.AT", function()
+hook.Add("InitPostEntity", "TKAT", function()
 	print("---- TK Atmospheres Loading ---")
 	LoadMapData()	
 	RegisterSpace()
@@ -276,32 +259,41 @@ hook.Add("InitPostEntity", "TK.AT", function()
 	RegisterSuns()
 	print("---- TK Atmospheres Loaded ----")
 	
-	if !TK.AT.IsSpacebuild then
-		print("------ Not Spacebuild Map -----")
-		hook.Remove("EntitySpawned", "TK.AT")
-		hook.Remove("PlayerInitialSpawn", "TK.AT")
-		hook.Remove("PlayerSpawn", "TK.AT")
-		hook.Remove("PlayerNoClip", "TK.AT")
-		hook.Remove("SetupMove", "TK.AT")
-		hook.Remove("EntityTakeDamage", "TK.AT")
-		print("--- TK Atmospheres Disabled ---")
-	end
+	if TK.AT.IsSpacebuild then return end
+    
+    print("------ Not Spacebuild Map -----")
+    hook.Remove("EntitySpawned", "TKAT")
+    hook.Remove("PlayerInitialSpawn", "TKAT")
+    hook.Remove("PlayerSpawn", "TKAT")
+    hook.Remove("PlayerNoClip", "TKAT")
+    hook.Remove("SetupMove", "TKAT")
+    print("--- TK Atmospheres Disabled ---")
 end)
 
-hook.Add("PlayerInitialSpawn", "TK.AT", function(ply)
-	ply.auenv = {}
-	ply.auenv.envlist = {Space}
-	ply.auenv.gravity = -1
+hook.Add("PlayerInitialSpawn", "TKAT", function(ply)
+	ply.tk_env = {}
+	ply.tk_env.envlist = {Space}
+	ply.tk_env.gravity = -1
 	ply:GetEnv():DoGravity(ply)
 end)
 
-hook.Add("EntitySpawned", "TK.AT", function(ent)
+hook.Add("EntitySpawned", "TKAT", function(ent)
 	local class = ent:GetClass()
+
 	if class == "at_planet" then
 		table.insert(Planets, ent)
 	elseif class == "at_star" then
 		table.insert(Stars, ent)
-	elseif class == "at_atmosphere_regulator" then
+	elseif class == "at_ship_core" then
 		table.insert(Ships, ent)
-	end
+    end
+    
+    if ent.Type == "brush" || ent.Type == "point" then return end
+    if ent:GetMoveType() == 0 then return end
+    if !IsValid(ent:GetPhysicsObject()) then return end
+    
+    ent.tk_env = {}
+    ent.tk_env.envlist = {Space}
+    ent.tk_env.gravity = -1
+    ent:GetEnv():DoGravity(ent)
 end)

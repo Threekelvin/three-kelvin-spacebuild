@@ -33,7 +33,7 @@ local function CanInfect(ent)
 end
 
 local function ScanNetwork(netid, entlist)
-	local node = TK.RD.GetNetTable(netid).node
+	local node = TK.RD:GetNetTable(netid).node
 	if IsValid(node) then
 		if !entlist[node:EntIndex()] then
 			entlist[node:EntIndex()] = node
@@ -42,7 +42,7 @@ local function ScanNetwork(netid, entlist)
 			end
 		end
 		
-		for k,v in pairs(TK.RD.GetConnectedEnts(netid)) do
+		for k,v in pairs(TK.RD:GetConnectedEnts(netid)) do
 			if !entlist[v:EntIndex()] then
 				entlist[v:EntIndex()] = b
 				for l,b in pairs(constraint.GetAllConstrainedEntities(v) || {}) do
@@ -63,20 +63,19 @@ local function ScanForEntities(ent)
 	end
 	
 	for k,v in pairs(entlist) do
-		if v.IsTKRD then
-			local netid = v:GetEntTable().netid
-			if !table.HasValue(nets, netid) then
-				table.insert(nets, netid)
-				ScanNetwork(netid, entlist)
-				
-				for l,b in pairs(TK.RD.GetConnectedEnts(netid)) do
-					if !table.HasValue(nets, b) then
-						table.insert(nets, b)
-						ScanNetwork(b, entlist)
-					end
-				end
-			end
-		end
+		if !v.IsTKRD || v.IsNode then continue end
+        local netid = v:GetEntTable().netid
+        if !table.HasValue(nets, netid) then
+            table.insert(nets, netid)
+            ScanNetwork(netid, entlist)
+            
+            for l,b in pairs(TK.RD:GetConnectedEnts(netid)) do
+                if !table.HasValue(nets, b) then
+                    table.insert(nets, b)
+                    ScanNetwork(b, entlist)
+                end
+            end
+        end
 	end
 	return entlist
 end
@@ -100,22 +99,22 @@ local function GetContraption(ent)
 end
 
 local function SpawnInfetion(ent)
-	if ent:BoundingRadius() > 35 then
-		local pos = Vector(1,1,1) * (ent:BoundingRadius() + 250)
-		pos:Rotate(Angle(math.random(-180,180), math.random(-180,180), math.random(-180,180)))
-		local tracedata = {}
-		tracedata.start = ent:LocalToWorld(ent:OBBCenter() + pos)
-		tracedata.endpos = ent:LocalToWorld(ent:OBBCenter())
-		local trace = util.TraceLine(tracedata)
-		
-		if IsValid(trace.Entity) && (Tib:IsInfected(trace.Entity) || ent.TibContraption[trace.Entity:EntIndex()] == trace.Entity) then
-			local inf = ents.Create("tk_tib_infection")
-			inf:SetPos(trace.HitPos)
-			inf:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
-			inf:Spawn()
-			inf:SetParent(trace.Entity)
-		end
-	end
+	if ent:BoundingRadius() < 35 then return end
+    
+    local pos = Vector(1,1,1) * (ent:BoundingRadius() + 250)
+    pos:Rotate(Angle(math.random(-180,180), math.random(-180,180), math.random(-180,180)))
+    local tracedata = {}
+    tracedata.start = ent:LocalToWorld(ent:OBBCenter() + pos)
+    tracedata.endpos = ent:LocalToWorld(ent:OBBCenter())
+    local trace = util.TraceLine(tracedata)
+    
+    if IsValid(trace.Entity) && (Tib:IsInfected(trace.Entity) || ent.TibContraption[trace.Entity:EntIndex()] == trace.Entity) then
+        local inf = ents.Create("tk_tib_infection")
+        inf:SetPos(trace.HitPos)
+        inf:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
+        inf:Spawn()
+        inf:SetParent(trace.Entity)
+    end
 end
 
 local function GarbageCollection()

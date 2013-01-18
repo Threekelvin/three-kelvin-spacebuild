@@ -17,6 +17,7 @@ if SERVER then
 	util.AddNetworkString("HUD_WARNING")
 	local function HUDwarning( ply, message )
 		net.Start( "HUD_WARNING" )
+			net.WriteString( "restart" )
 			net.WriteString( message )
 		net.Send( ply )
 	end
@@ -25,7 +26,7 @@ if SERVER then
 		if ply:HasAccess(PLUGIN.Level) then
 			if !Restart then
 				if table.Count(player.GetAll()) == 0 then
-					RunConsoleCommand("changegamemode", game.GetMap(), string.match(GAMEMODE.Folder, "[%w_]+$"))
+					RunConsoleCommand("changelevel", game.GetMap())
 					return
 				end
 				Restart = true

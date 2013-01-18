@@ -17,11 +17,7 @@ function ENT:Initialize()
 	self.atmosphere.tempcold 	= 290
 	self.atmosphere.temphot 	= 290
 
-	self.atmosphere.percent.empty = 0
-	self.atmosphere.percent.oxygen = 20
-	self.atmosphere.percent.carbon_dioxide = 5
-	self.atmosphere.percent.nitrogen = 70
-	self.atmosphere.percent.hydrogen = 5
+    self.atmosphere.resources 	= {}
 	
 	timer.Create(tostring(self).."_windspeed", 10, 0, function()
 		if self.atmosphere.wind then

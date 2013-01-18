@@ -49,7 +49,7 @@ function SKIN:PaintTKUpFrame(panel, w, h)
 	draw.SimpleText("Bonuses", "TKFont18", 142.5, 171, self.text, TEXT_ALIGN_CENTER)
 	
 	draw.RoundedBox(4, 285, 25, 210, 65, self.light)
-	surface.SetMaterial(TerminalData.Icons[panel.btn.data.icon || "default"])
+	surface.SetMaterial(TK.TD:GetIcon(panel.btn.data.icon))
 	surface.SetDrawColor(255, 255, 255, 255)
 	surface.DrawTexturedRect(357.5, 25, 64, 64)
 	
@@ -61,7 +61,7 @@ function SKIN:PaintTKUpFrame(panel, w, h)
 	draw.RoundedBox(4, 285, 170, 210, 25, self.normal)
 	draw.SimpleText("Cost", "TKFont18", 390, 171, self.text, TEXT_ALIGN_CENTER)
 	draw.RoundedBoxEx(4, 285, 190, 210, 50, self.dark, false, false, true, true)
-	draw.SimpleText(TK:Format(panel.btn.cost), "TKFont25", 390, 202.5, self.text, TEXT_ALIGN_CENTER)
+	draw.SimpleText(TK:Format(panel.btn.cost).. " XP", "TKFont25", 390, 202.5, self.text, TEXT_ALIGN_CENTER)
 end
 ///--- ---\\\
 
@@ -168,11 +168,11 @@ function SKIN:PaintTKResearch(panel, w, h)
 	
 	draw.RoundedBox(4, 5, 75, 765, 450, self.normal)
 	draw.RoundedBox(4, 55, 80, 665, 40, self.dark)
-	if panel.ResearchSetting == "ore" then
+	if panel.ResearchSetting == "asteroid" then
 		draw.SimpleText("Asteroid Mining Research", "TKFont25", 390, 87.5, self.text, TEXT_ALIGN_CENTER)
-	elseif panel.ResearchSetting == "tib" then
+	elseif panel.ResearchSetting == "tiberium" then
 		draw.SimpleText("Tiberium Mining Research", "TKFont25", 390, 87.5, self.text, TEXT_ALIGN_CENTER)
-	elseif panel.ResearchSetting == "ref" then
+	elseif panel.ResearchSetting == "refinery" then
 		draw.SimpleText("Refinery Research", "TKFont25", 390, 87.5, self.text, TEXT_ALIGN_CENTER)
 	end
 	
@@ -181,7 +181,7 @@ function SKIN:PaintTKResearch(panel, w, h)
 		draw.SimpleText(panel.Error, "TKFont20", 10, 47.5, self.text)
 	else
 		draw.RoundedBox(4, 5, 45, 765, 25, self.normal)
-		draw.SimpleText("Credits: "..panel.credits, "TKFont20", 10, 47.5, self.text)
+		draw.SimpleText("Experience: "..panel.exp, "TKFont20", 10, 47.5, self.text)
 	end
 end
 
@@ -311,12 +311,12 @@ end
 ///--- Panels ---\\\
 function SKIN:PaintTKResPanel(btn, w, h)
 	draw.RoundedBox(4, 0, 0, w, h, self.light)
-	draw.RoundedBox(4, h, 5, w - 65, 25, self.dark)
+	draw.RoundedBoxEx(4, h, 5, w - 65, 25, self.dark, true, false, true)
 	draw.SimpleText(btn.pres || "", "TKFont20", h + 5, 17.5, self.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-	draw.RoundedBox(4, h, 40, w - 65, 20, self.dim)
+	draw.RoundedBoxEx(4, h, 40, w - 65, 20, self.dim, true, false, true)
 	draw.SimpleText(TK:Format(btn.val), "TKFont18", w - 10, 50, self.text, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 	
-	surface.SetMaterial(TerminalData.Icons[btn.res || "default"])
+	surface.SetMaterial(TK.TD:GetIcon(btn.res || "default"))
 	surface.SetDrawColor(255, 255, 255, 255)
 	surface.DrawTexturedRect(0.5, 0.5, 64, 64)
 end
@@ -329,7 +329,7 @@ function SKIN:PaintTKUpPanel(btn, w, h)
 	draw.SimpleText("Level", "TKFont20", h + 5, 45, self.text)
 	draw.SimpleText(btn.rank.." / "..btn.data.maxlvl, "TKFont20", w - 10, 45, self.text, TEXT_ALIGN_RIGHT)
 	
-	surface.SetMaterial(TerminalData.Icons[btn.data.icon || "default"])
+	surface.SetMaterial(TK.TD:GetIcon(btn.data.icon))
 	surface.SetDrawColor(255, 255, 255, 255)
 	surface.DrawTexturedRect(5, 5, 64, 64)
 end
@@ -347,13 +347,13 @@ function SKIN:PaintTKContainer(panel, w, h)
 
 	for k,v in pairs(panel.children) do
 		v:SetPos(panel.scrollx + v.posx, panel.scrolly + v.posy)
-		for l,b in pairs(v.data.req || {}) do
-			local req = TerminalData.ResearchData[v.root[1]][b].pos
+		for _,req in pairs(v.data.req || {}) do
+			local pos = TK.TD:GetUpgrade(req).pos
 			local w, h = v:GetSize()
-			local X, Y = 5 + ((w + 100) * (req[1] - 1)), 5 + ((h + 10) * (req[2] - 1))
-			local Offset = 12.5 + 50 * (req[2] - 1) / panel.ResearchMax
+			local X, Y = 5 + ((w + 100) * (pos[1] - 1)), 5 + ((h + 10) * (pos[2] - 1))
+			local Offset = 12.5 + 50 * (pos[2] - 1) / panel.ResearchMax
 
-			surface.SetDrawColor(self["link"..req[2]])
+			surface.SetDrawColor(self["link"..pos[2]])
 			surface.DrawLine(panel.scrollx + v.posx, panel.scrolly + v.posy + Offset, panel.scrollx + X + w + 12.5 + Offset, panel.scrolly + v.posy + Offset)
 			surface.DrawLine(panel.scrollx + X + w, panel.scrolly + Y + Offset, panel.scrollx + X + w + 12.5 + Offset, panel.scrolly + Y + Offset)
 			if Y != v.ypos then

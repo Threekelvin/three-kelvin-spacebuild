@@ -36,15 +36,33 @@ local function SetSpawnPoint(ply, side)
 	ply:SetPos(Spawn)
 end
 
+local AllowedWeapons = {
+	["weapon_physcannon"]	=	true,
+	["weapon_physgun"]		=	true,
+	["hands"]				=	true,
+	["gmod_camera"]			=	true,
+	["gmod_tool"]			=	true,
+	["remotecontroller"]	=	true,
+	["laserpointer"]		=	true
+}
+function GM:PlayerCanPickupWeapon(ply, wep)
+   if ( AllowedWeapons[wep:GetClass()] != nil || ply:IsAdmin() ) then return true end
+   return false
+end
+
 function GM:PlayerLoadout(ply)
 	ply:StripWeapons()
 	ply:StripAmmo()
 	
 	ply:Give("weapon_physcannon")
 	ply:Give("weapon_physgun")
+	ply:Give("hands")
 	ply:Give("gmod_camera")
 	ply:Give("gmod_tool")
+<<<<<<< HEAD
 	--ply:Give("hands")
+=======
+>>>>>>> remotes/randomic/three-kelvin-spacebuild/master
 	
 	local cl_defaultweapon = ply:GetInfo("cl_defaultweapon")
 
@@ -60,15 +78,8 @@ function GM:PlayerSpawn(ply)
     
 	self:SetPlayerSpeed(ply, 250, 500)
 	
-	if ply:Team() == 4 then
-		SetSpawnPoint(ply, 4)
-	elseif ply:Team() == 3 then
-		SetSpawnPoint(ply, 3)
-	elseif ply:Team() == 2 then 
-		SetSpawnPoint(ply, 2)
-	else
-		SetSpawnPoint(ply, 1)
-	end
+	if ply:Team() == 1001 then ply:SetTeam(1) end
+	SetSpawnPoint(ply, ply:Team())
 	
 	ply:TakeDamage(0)
     
@@ -86,118 +97,6 @@ function GM:PlayerSpawn(ply)
 end
 ///--- ---\\\
 
-///--- Entity Tracking ---\\\
-local Tracking = {}
-local Devices = {"tk_ore_laser", "tk_ore_storage", "tk_ore_scanner", "tk_tib_extractor", "tk_tib_storage"}
-
-local function Compare(tab1, tab2)
-	for k,v in pairs(tab1) do
-		if !tab2[k] || tab2[k] != v then
-			return false
-		end
-	end
-	return true
-end
-
-function TK:CanSpawnDevice(ply, ent)
-	if !IsValid(ply) then return false end
-	local uid = ply:GetNWString("UID")
-	local count = 0
-	Tracking[uid] = Tracking[uid] || {}
-	
-	for k,v in pairs(Tracking[uid]) do
-		if IsValid(v) then
-			if v.device[1] == ent.device[1] then
-				if v.device[2] == ent.device[2] then
-					count = count + 1
-				end
-			else
-				ply:SendLua("GAMEMODE:AddNotify('Can Not Spawn Different Devices', NOTIFY_GENERIC, 5)")
-				return false
-			end
-		else
-			Tracking[uid][k] = nil
-		end
-	end
-	
-	if Compare(ent.device, {1, 1}) then
-		if count >= 1 then
-			ply:SendLua("GAMEMODE:AddNotify('Maximum Mining Devices', NOTIFY_GENERIC, 5)")
-		else
-			return true
-		end
-	elseif Compare(ent.device, {1, 2}) then
-		if count >= 4 then
-			ply:SendLua("GAMEMODE:AddNotify('Maximum Storage Devices', NOTIFY_GENERIC, 5)")
-		else
-			return true
-		end
-	elseif Compare(ent.device, {1, 3}) then
-		if count >= 1 then
-			ply:SendLua("GAMEMODE:AddNotify('Maximum Asteroid Scanners', NOTIFY_GENERIC, 5)")
-		else
-			return true
-		end
-	elseif Compare(ent.device, {2, 1}) then
-		if count >= 1 then
-			ply:SendLua("GAMEMODE:AddNotify('Maximum Mining Devices', NOTIFY_GENERIC, 5)")
-		else
-			return true
-		end
-	elseif Compare(ent.device, {2, 2}) then
-		if count >= 4 then
-			ply:SendLua("GAMEMODE:AddNotify('Maximum Storage Devices', NOTIFY_GENERIC, 5)")
-		else
-			return true
-		end
-	end
-	
-	return false
-end
-
-function TK:LoadDeviceData(ply, ent)
-	if ent.device[1] == 1 then
-		ent.upgrades = TK.DB:GetPlayerData(ply, "terminal_upgrades_ore")
-		ent:Update()
-	elseif ent.device[1] == 2 then
-		ent.upgrades = TK.DB:GetPlayerData(ply, "terminal_upgrades_tib")
-		ent:Update()
-	end
-end
-
-function TK:UpdateDeviceData(ply, device)
-	local uid = ply:GetNWString("UID")
-	Tracking[uid] = Tracking[uid] || {}
-	
-	if device == 1 then
-		for k,v in pairs(Tracking[uid]) do
-			if IsValid(v) && v.device[1] == 1 then
-				v.upgrades = TK.DB:GetPlayerData(ply, "terminal_upgrades_ore")
-				v:Update()
-			end
-		end
-	elseif device == 2 then
-		for k,v in pairs(Tracking[uid]) do
-			if IsValid(v) && v.device[1] == 2 then
-				v.upgrades = TK.DB:GetPlayerData(ply, "terminal_upgrades_tib")
-				v:Update()
-			end
-		end
-	end
-end
-
-hook.Add("CPPIAssignOwnership", "TKTracking", function(ply, ent)
-	if table.HasValue(Devices, ent:GetClass()) then
-		if !TK:CanSpawnDevice(ply, ent) then 
-			SafeRemoveEntity(ent)
-		else
-			TK:LoadDeviceData(ply, ent)
-			table.insert(Tracking[ply:GetNWString("UID")], ent)
-		end
-	end
-end)
-///--- ---\\\
-
 ///--- Map Setup ---\\\
 hook.Add("InitPostEntity", "TKSetup", function()
 	timer.Simple(1, function()
@@ -209,17 +108,18 @@ hook.Add("InitPostEntity", "TKSetup", function()
 
 		for k,v in pairs(TK.Ents) do
 			local ent = ents.Create(v.ent)
-			if v.model then
-				ent:SetModel(v.model)
-			end
+			if v.model then ent:SetModel(v.model) end
+
 			ent:SetPos(v.pos)
 			ent:SetAngles(v.ang)
 			ent:Spawn()
 			ent:SetUnFreezable(true)
+            
 			local phys = ent:GetPhysicsObject()
-			if phys:IsValid() then
-				phys:EnableMotion(false)
-			end
+			if phys:IsValid() then phys:EnableMotion(false) end
+            if v.notsolid then ent:SetNotSolid(true) end
+            if v.color then ent:SetColor(v.color) end
+            
 			table.insert(TK.SpawnedEnts, ent)
 		end
 	end)
@@ -264,40 +164,39 @@ hook.Add("Tick", "TKSpawning", function()
 	end
 	
 	for k,v in pairs(TK.TibFields) do
-		if CurTime() > v.NextSpawn && table.Count(v.Ents) < 10 then
-			local pos = Vector(math.random(0, 1100),0,0)
-			pos:Rotate(Angle(0,math.random(0, 360),0))
-			
-			local rand = v.Pos + pos + Vector(0,0,260)
-			local trace =  util.QuickTrace(rand, Vector(0,0,-520))
-			if trace.HitWorld then
-				local CanSpawn = true
-				for k2,v2 in pairs(v.Ents) do
-					if v2:GetPos():Distance(trace.HitPos) < 400 then
-						CanSpawn = false
-						break
-					end
-				end
-				
-				if CanSpawn then
-					local ent = ents.Create("tk_tib_crystal")
-					ent:SetPos(trace.HitPos)
-					ent:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
-					ent:Spawn()
-					ent.GetField = function()
-						return v.Ents || {}
-					end
-					ent:CallOnRemove("UpdateList", function()
-						v.Ents[ent:EntIndex()] = nil
-					end)
-					
-					v.Ents[ent:EntIndex()] = ent
-					v.NextSpawn = CurTime() + 60 * (table.Count(v.Ents)/10) + 5
-				else
-					v.NextSpawn = CurTime() + 1
-				end
-			end
-		end
+		if CurTime() < v.NextSpawn || table.Count(v.Ents) >= 10 then continue end
+        local pos = Vector(math.random(0, 1100),0,0)
+        pos:Rotate(Angle(0,math.random(0, 360),0))
+        
+        local rand = v.Pos + pos + Vector(0,0,260)
+        local trace =  util.QuickTrace(rand, Vector(0,0,-520))
+        if !trace.HitWorld then continue end
+        
+        local CanSpawn = true
+        for k2,v2 in pairs(v.Ents) do
+            if v2:GetPos():Distance(trace.HitPos) < 400 then
+                CanSpawn = false
+                break
+            end
+        end
+        
+        if CanSpawn then
+            local ent = ents.Create("tk_tib_crystal")
+            ent:SetPos(trace.HitPos)
+            ent:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
+            ent:Spawn()
+            ent.GetField = function()
+                return v.Ents || {}
+            end
+            ent:CallOnRemove("UpdateList", function()
+                v.Ents[ent:EntIndex()] = nil
+            end)
+            
+            v.Ents[ent:EntIndex()] = ent
+            v.NextSpawn = CurTime() + 60 * (table.Count(v.Ents)/10) + 5
+        else
+            v.NextSpawn = CurTime() + 1
+        end
 	end
 end)
 ///--- ---\\\

@@ -52,9 +52,9 @@ local PLAYER_LINE =
 		self.Name:SetTextColor( TextCol )
 		self.Name:SetContentAlignment( 4 )
 
-		self.Mute		= self:Add( "DImageButton" )
-		self.Mute:SetSize( 32, 32 )
-		self.Mute:Dock( RIGHT )
+		self.mute		= self:Add( "DImageButton" )
+		self.mute:SetSize( 32, 32 )
+		self.mute:Dock( RIGHT )
 
 		self.Ping		= self:Add( "DLabel" )
 		self.Ping:Dock( RIGHT )
@@ -128,16 +128,16 @@ local PLAYER_LINE =
 		--
 		-- Change the icon of the mute button based on state
 		--
-		if ( self.Muted == nil || self.Muted != self.Player:IsMuted() ) then
+		if ( self.muted == nil || self.muted != self.Player:IsMuted() ) then
 
-			self.Muted = self.Player:IsMuted()
-			if ( self.Muted ) then
-				self.Mute:SetImage( "icon32/muted.png" )
+			self.muted = self.Player:IsMuted()
+			if ( self.muted ) then
+				self.mute:SetImage( "icon32/muted.png" )
 			else
-				self.Mute:SetImage( "icon32/unmuted.png" )
+				self.mute:SetImage( "icon32/unmuted.png" )
 			end
 
-			self.Mute.DoClick = function() self.Player:SetMuted( !self.Muted ) end
+			self.mute.DoClick = function() self.Player:SetMuted( !self.muted ) end
 
 		end
 
@@ -257,7 +257,7 @@ local SCORE_BOARD =
 
 		Players = player.GetAll()
 		table.sort( Players, function(a, b)
-			if ( a:Team() < b:Team() ) then return true end
+			if ( a:Team() > b:Team() ) then return true end
 			if ( a:Team() == b:Team() ) then
 				if ( a:GetNWInt("TKRank", 0) > b:GetNWInt("TKRank", 0) ) then return true end
 				if ( a:GetNWInt("TKRank", 0) == b:GetNWInt("TKRank", 0) ) then
