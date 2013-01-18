@@ -20,7 +20,7 @@ team.SetUp(4, "The Changelings", Color(175,235,75))
 ///--- ---\\\
 
 function TK:HostName()
-	return string.match(GetHostName(), "%[%w+%]$") || "[Server]"
+	return string.match(GetHostName(), "%[%w+%]") || "[Server]"
 end
 
 function TK:Format(num)

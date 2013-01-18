@@ -207,6 +207,10 @@ end
 function TK.DB:OSTime()
 	return os.time() - MySQL.OSTime
 end
+
+function TK.DB:ConnectionID()
+    return MySQL.ConnectionID
+end
 ///--- ---\\\
 
 ///--- Load Player Data ---\\\

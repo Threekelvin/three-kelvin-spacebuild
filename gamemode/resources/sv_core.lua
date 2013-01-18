@@ -662,7 +662,7 @@ hook.Add("PlayerSpawnedVehicle", "TKRD", function(ply, ent)
 		return TK.RD:GetEntResourceAmount(self, idx)
 	end
     
-    function ENT:GetUnitPowerGrid()
+    function ent:GetUnitPowerGrid()
         return TK.RD:GetUnitPowerGrid(self)
     end
 
