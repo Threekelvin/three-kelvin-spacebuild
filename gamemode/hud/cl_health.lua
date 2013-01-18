@@ -32,15 +32,15 @@ function Hud:CreateData()
 
 	self.energyLost = 0
 	self.oldEnergyRatio = 0
-	self.energyDrainRate = 0.01
+	self.energyDrainRate = 0.1
 
 	self.oxygenLost = 0
 	self.oldOxygenRatio = 0
-	self.oxygenDrainRate = 0.01
+	self.oxygenDrainRate = 0.1
 
 	self.waterLost = 0
 	self.oldWaterRatio = 0
-	self.waterDrainRate = 0.01
+	self.waterDrainRate = 0.1
 
 	self.maxang = math.atan(self.tallEdge / (0.2 * self.longEdge))
     self.points = {

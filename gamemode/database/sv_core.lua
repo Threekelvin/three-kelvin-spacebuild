@@ -409,9 +409,9 @@ hook.Add("PlayerDisconnected", "TKDisUpdate", function(ply)
     local data = TK.DB:GetPlayerData(ply, "player_info")
     local update = {}
     for k,v in pairs(ply.tk_cache) do
-        table.insert(update, {k, data[k] + v})
+        update[k] =data[k] + v
     end
-    if #update > 0 then
+    if table.Count(update) > 0 then
         TK.DB:MakeQuery(TK.DB:FormatUpdateQuery("player_info", update, {"steamid = %s", ply:SteamID()}))
     end
     

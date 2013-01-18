@@ -39,7 +39,6 @@ end
 local AllowedWeapons = {
 	["weapon_physcannon"]	=	true,
 	["weapon_physgun"]		=	true,
-	["hands"]				=	true,
 	["gmod_camera"]			=	true,
 	["gmod_tool"]			=	true,
 	["remotecontroller"]	=	true,
@@ -56,7 +55,6 @@ function GM:PlayerLoadout(ply)
 	
 	ply:Give("weapon_physcannon")
 	ply:Give("weapon_physgun")
-	ply:Give("hands")
 	ply:Give("gmod_camera")
 	ply:Give("gmod_tool")
 	

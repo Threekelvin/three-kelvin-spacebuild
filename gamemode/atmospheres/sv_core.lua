@@ -1,27 +1,112 @@
 
 TK.AT = {}
-TK.AT.IsSpacebuild = false
 
 local Suns = {}
 local Stars = {}
 local Ships = {}
 local Planets = {}
 local MapData
-local Space
+
+///--- SPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACE ---\\\
+local Space = {}
+
+Space.atmosphere = {}
+Space.atmosphere.name = "Space"
+
+Space.atmosphere.sphere	    = true
+Space.atmosphere.noclip 	= false
+Space.atmosphere.sunburn	= false
+Space.atmosphere.wind 	    = false
+
+Space.atmosphere.priority	= 4
+Space.atmosphere.radius 	= 0
+Space.atmosphere.gravity 	= 0
+Space.atmosphere.windspeed 	= 0
+Space.atmosphere.tempcold	= 3
+Space.atmosphere.temphot	= 3
+
+Space.atmosphere.resources 	= {}
+
+function Space:IsStar()
+	return false
+end
+
+function Space:IsShip()
+	return false
+end
+
+function Space:IsPlanet()
+	return false
+end
+
+function Space:IsSpace()
+	return false
+end
+
+function Space:GetRadius()
+	return 0
+end
+
+function Space:GetVolume()
+	return 0
+end
+
+function Space:HasResource(res)
+    return false
+end
+
+function Space:GetResourcePercent(res)
+    return 0
+end
+
+function Space:InAtmosphere(pos)
+	return true
+end
+
+function Space:DoGravity(ent)
+	if !IsValid(ent) || !ent.tk_env then return end
+	local phys = ent:GetPhysicsObject()
+	if !IsValid(phys) then return end
+
+	local grav = self.atmosphere.gravity
+	if !ent.tk_env.gravity == grav then return end
+    
+    local bool = grav > 0
+    phys:EnableGravity(bool)
+    phys:EnableDrag(bool)
+    ent:SetGravity(grav + 0.0001)
+    ent.tk_env.gravity = grav
+end
+
+function Space:InSun(ent)
+	if !IsValid(ent) then return false end
+	local pos = ent:LocalToWorld(ent:OBBCenter())
+    
+	for k,v in pairs(TK.AT:GetSuns()) do
+		local trace = {}
+		trace.start = pos - (pos - v):GetNormal() * 2048
+		trace.endpos = pos
+		trace.filter = {ent, ent:GetParent()}
+		local tr = util.TraceLine(trace)
+		if !tr.Hit then
+			return true
+		end
+	end
+    
+	return false
+end
+
+function Space:DoTemp(ent)
+	if !IsValid(ent) then return 3, false end
+    
+	return 3, self:InSun(ent)
+end
+///---   ---\\\
 
 local function LoadMapData()
 	local map = game.GetMap()
 	if !file.Exists("TKSB/Atmospheres/"..map..".txt", "DATA") then return end
 	MapData = util.KeyValuesToTable(file.Read("TKSB/Atmospheres/"..map..".txt")) || {}
-end
-
-local function RegisterSpace()
-	print("------ Registering Space ------")
-	Space = ents.Create("at_space")
-	Space:SetPos(Vector(0,0,0))
-	Space:Spawn()
-	print(Space, "Created")
-	print("-------------------------------")
 end
 
 local function DecodeKeyValues(values)
@@ -41,7 +126,6 @@ local function DecodeKeyValues(values)
 		data["name"] = "Planet"
 		data["flags"] = tonumber(values.Case16)
 		data["sphere"] = 1
-		data["static"] = 0
 		data["noclip"] = 1
 	elseif values.Case01 == "planet2" then
 		cat = "planet"
@@ -58,7 +142,6 @@ local function DecodeKeyValues(values)
 		data["name"] = values.Case13
 		data["flags"] = tonumber(values.Case08)
 		data["sphere"] = 1
-		data["static"] = 0
 		data["noclip"] = 1
 	elseif values.Case01 == "cube" then
 		cat = "planet"
@@ -75,7 +158,6 @@ local function DecodeKeyValues(values)
 		data["name"] = values.Case13
 		data["flags"] = tonumber(values.Case08)
 		data["sphere"] = 0
-		data["static"] = 0
 		data["noclip"] = 1
 	elseif values.Case01 == "star" then
 		cat = "star"
@@ -115,14 +197,12 @@ local function RegisterAtmospheres()
 				planet:Spawn()
 				planet:SetAtomsphere(v.data)
 				print(planet, "Created")
-				TK.AT.IsSpacebuild = true
 			elseif v.cat == "star" then
 				local star = ents.Create("at_star")
 				star:SetPos(Vector(v.x, v.y, v.z))
 				star:Spawn()
 				star:SetAtomsphere(v.data)
 				print(star, "Created")
-				TK.AT.IsSpacebuild = true
 				table.insert(Suns, Vector(v.x, v.y, v.z))
 			end
 		end
@@ -140,7 +220,6 @@ local function RegisterAtmospheres()
 				planet:Spawn()
 				planet:SetAtomsphere(data)
 				print(planet, "Created")
-				TK.AT.IsSpacebuild = true
 				
 				table.insert(MapData, {cat = "planet", x = pos.x, y = pos.y, z = pos.z, data = data})
 			elseif cat == "star" then
@@ -149,7 +228,7 @@ local function RegisterAtmospheres()
 				star:Spawn()
 				star:SetAtomsphere(data)
 				print(star, "Created")
-				TK.AT.IsSpacebuild = true
+
 				table.insert(Suns, pos)
 				table.insert(MapData, {cat = "star", x = pos.x, y = pos.y, z = pos.z, data = data})
 			end
@@ -253,21 +332,10 @@ end)
 
 hook.Add("InitPostEntity", "TKAT", function()
 	print("---- TK Atmospheres Loading ---")
-	LoadMapData()	
-	RegisterSpace()
+	LoadMapData()
 	RegisterAtmospheres()
 	RegisterSuns()
 	print("---- TK Atmospheres Loaded ----")
-	
-	if TK.AT.IsSpacebuild then return end
-    
-    print("------ Not Spacebuild Map -----")
-    hook.Remove("EntitySpawned", "TKAT")
-    hook.Remove("PlayerInitialSpawn", "TKAT")
-    hook.Remove("PlayerSpawn", "TKAT")
-    hook.Remove("PlayerNoClip", "TKAT")
-    hook.Remove("SetupMove", "TKAT")
-    print("--- TK Atmospheres Disabled ---")
 end)
 
 hook.Add("PlayerInitialSpawn", "TKAT", function(ply)

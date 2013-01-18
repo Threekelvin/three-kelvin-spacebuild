@@ -9,7 +9,6 @@ function ENT:Initialize()
 	self.atmosphere.noclip 	= true
 	self.atmosphere.sunburn = false
 	self.atmosphere.wind 	= true
-	self.atmosphere.static 	= false
 	
 	self.atmosphere.priority	= 3
 	self.atmosphere.gravity 	= 1

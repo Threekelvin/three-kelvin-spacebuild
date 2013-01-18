@@ -186,12 +186,10 @@ function ENT:DefaultAtmosphere()
 	self.atmosphere.noclip 	= false
 	self.atmosphere.sunburn	= false
 	self.atmosphere.wind 	= false
-	self.atmosphere.static 	= false
 	
 	self.atmosphere.priority	= 5
 	self.atmosphere.radius 		= 0
 	self.atmosphere.gravity 	= 0
-	self.atmosphere.pressure 	= 0
 	self.atmosphere.windspeed 	= 0
 	self.atmosphere.tempcold	= 3
 	self.atmosphere.temphot		= 3
@@ -263,7 +261,6 @@ function ENT:SetAtomsphere(data)
 	self:SetATName(data["name"])
 	self:SetATFlags(data["flags"])
 	self:SetATSphere(data["sphere"])
-	self:SetATStatic(data["static"])
 	self:SetATNoclip(data["noclip"])
 end
 
@@ -314,11 +311,6 @@ end
 function ENT:SetATSphere(bool)
 	if bool == nil then return end
 	self.atmosphere.sphere = tobool(bool)
-end
-
-function ENT:SetATStatic(bool)
-	if bool == nil then return end
-	self.atmosphere.static = tobool(bool)
 end
 
 function ENT:SetATNoclip(bool)

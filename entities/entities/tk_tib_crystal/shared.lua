@@ -7,5 +7,3 @@ ENT.Author = "Ghost400"
 
 ENT.Spawnable = false
 ENT.AdminSpawnable = false 
-
-game.AddParticles("particles/electrical_arc_01_system")

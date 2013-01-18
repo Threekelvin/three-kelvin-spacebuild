@@ -15,7 +15,6 @@ local function PlayerUpdate(ply)
 end
 
 local function PlayerLSCheck()
-	if !TK.AT.IsSpacebuild then return end
 	for _,ply in pairs(player.GetAll()) do
 		if !IsValid(ply) || !ply.tk_hev || !ply:Alive() then continue end
         
