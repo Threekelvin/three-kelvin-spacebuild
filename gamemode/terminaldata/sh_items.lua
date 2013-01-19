@@ -8,7 +8,7 @@ local Items = {
             name = "Basic Asteroid Mining Laser",
             class = "tk_ore_laser",
             mdl = "models/props_phx/life_support/crylaser_small.mdl",
-            data = {yield = 10, range = 1000, power = -50},
+            data = {yield = 100, range = 1000, power = -50},
             r = 19,
             buy = 10000,
             sell = 7500
@@ -18,7 +18,7 @@ local Items = {
             name = "Basic Tiberium Extractor",
             class = "tk_tib_extractor",
             mdl = "models/techbot/sonic_thingy.mdl",
-            data = {yield = 2, power = -50},
+            data = {yield = 20, power = -50},
             r = 28,
             buy = 10000,
             sell = 7500
@@ -30,7 +30,7 @@ local Items = {
             name = "Basic Asteroid Ore Storage",
             class = "tk_ore_storage",
             mdl = "models/slyfo/nacshortsleft.mdl",
-            data = {capacity = 1000},
+            data = {capacity = 10000},
             r = 73,
             buy = 10000,
             sell = 7500
@@ -40,7 +40,7 @@ local Items = {
             name = "Basic Raw Tiberium Storage",
             class = "tk_tib_storage",
             mdl = "models/slyfo/sat_resourcetank.mdl",
-            data = {capacity = 200},
+            data = {capacity = 2000},
             r = 47,
             buy = 10000,
             sell = 7500,

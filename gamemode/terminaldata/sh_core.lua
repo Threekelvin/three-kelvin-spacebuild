@@ -3,9 +3,9 @@ TK.TD = TK.TD || {}
 
 TK.TD.Settings = {
     upgrade_base = 10000,
-    asteroid_price = 1,
-    asteroid_refine = 20,
-    tiberium_price = 10,
+    asteroid_price = 0.05,
+    asteroid_refine = 50,
+    tiberium_price = 0.5,
     tiberium_refine = 5
 }
 
@@ -27,13 +27,13 @@ end
 if SERVER then
     function TK.TD:ResearchCost(ply, idx)
         if !IsValid(ply) then return 0 end
-        local upgrades = self:GetPlayerData(ply, "terminal_upgrades")
+        local upgrades = TK.DB:GetPlayerData(ply, "terminal_upgrades")
         local lvl = upgrades[idx] + 1
-        local data =  self:GetUpgrade(idx)
+        local data =  TK.TD:GetUpgrade(idx)
         if lvl > data.maxlvl then 
             return 0
         else
-            return math.Round(self.Settings.upgrade_base * data.cost * lvl)
+            return math.Round(TK.TD.Settings.upgrade_base * data.cost * lvl)
         end
     end
 

@@ -23,7 +23,8 @@ function Hud:CreateData()
 	self.longEdge = self.width / 4
 	self.shortEdge = self.longEdge * 0.8
 	self.iconSize = 18
-	self.barSpacing = 5
+    self.barSize = 16
+	self.barSpacing = 6
 	self.tallEdge = 5*self.barSpacing + 4*self.iconSize
 
 	self.healthLost = 0
@@ -127,12 +128,12 @@ hook.Add("HUDPaint", "TKPH_Health", function()
     surface.SetMaterial(Hud.mats[1])
     surface.DrawTexturedRect(5, Hud.height - Hud.tallEdge + yOffset, Hud.iconSize, Hud.iconSize)
     surface.SetDrawColor(TK.HUD.Colors.bar)
-    surface.DrawOutlinedRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset, Hud.shortEdge - 33, Hud.iconSize)
-    surface.DrawRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset, (Hud.shortEdge - 33) * HealthRatio, Hud.iconSize)
+    surface.DrawOutlinedRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset + 1, Hud.shortEdge - 33, Hud.barSize)
+    surface.DrawRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset + 1, (Hud.shortEdge - 33) * HealthRatio, Hud.barSize)
     surface.SetDrawColor(Color(255, 255, 255, 255))
 
 	Hud.healthLost = math.Clamp( Hud.healthLost - HealthRatio + Hud.oldHealthRatio - Hud.healthDrainRate*FrameTime(), 0, 1 )
-	surface.DrawRect(10 + Hud.iconSize + (Hud.shortEdge - 33) * HealthRatio, Hud.height - Hud.tallEdge + yOffset, (Hud.shortEdge - 33) * Hud.healthLost, Hud.iconSize)
+	surface.DrawRect(10 + Hud.iconSize + (Hud.shortEdge - 33) * HealthRatio, Hud.height - Hud.tallEdge + yOffset + 1, (Hud.shortEdge - 33) * Hud.healthLost, Hud.barSize)
 	Hud.oldHealthRatio = HealthRatio
 	yOffset = yOffset + Hud.barSpacing + Hud.iconSize
 
@@ -142,12 +143,12 @@ hook.Add("HUDPaint", "TKPH_Health", function()
     surface.SetMaterial(Hud.mats[2])
     surface.DrawTexturedRect(5, Hud.height - Hud.tallEdge + yOffset, Hud.iconSize, Hud.iconSize)
     surface.SetDrawColor(TK.HUD.Colors.bar)
-    surface.DrawOutlinedRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset, Hud.shortEdge - 33, Hud.iconSize)
-    surface.DrawRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset, (Hud.shortEdge - 33) * EnergyRatio, Hud.iconSize)
+    surface.DrawOutlinedRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset + 1, Hud.shortEdge - 33, Hud.barSize)
+    surface.DrawRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset + 1, (Hud.shortEdge - 33) * EnergyRatio, Hud.barSize)
     surface.SetDrawColor(Color(255, 255, 255, 255))
 
 	Hud.energyLost = math.Clamp( Hud.energyLost - EnergyRatio + Hud.oldEnergyRatio - Hud.energyDrainRate*FrameTime(), 0, 1 )
-	surface.DrawRect(10 + Hud.iconSize + (Hud.shortEdge - 33) * EnergyRatio, Hud.height - Hud.tallEdge + yOffset, (Hud.shortEdge - 33) * Hud.energyLost, Hud.iconSize)
+	surface.DrawRect(10 + Hud.iconSize + (Hud.shortEdge - 33) * EnergyRatio, Hud.height - Hud.tallEdge + yOffset + 1, (Hud.shortEdge - 33) * Hud.energyLost, Hud.barSize)
 	Hud.oldEnergyRatio = EnergyRatio
 	yOffset = yOffset + Hud.barSpacing + Hud.iconSize
 
@@ -155,12 +156,12 @@ hook.Add("HUDPaint", "TKPH_Health", function()
     surface.SetMaterial(Hud.mats[3])
     surface.DrawTexturedRect(5, Hud.height - Hud.tallEdge + yOffset, Hud.iconSize, Hud.iconSize)
     surface.SetDrawColor(TK.HUD.Colors.bar)
-    surface.DrawOutlinedRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset, Hud.shortEdge - 33, Hud.iconSize)
-    surface.DrawRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset, (Hud.shortEdge - 33) * OxygenRatio, Hud.iconSize)
+    surface.DrawOutlinedRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset + 1, Hud.shortEdge - 33, Hud.barSize)
+    surface.DrawRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset + 1, (Hud.shortEdge - 33) * OxygenRatio, Hud.barSize)
     surface.SetDrawColor(Color(255, 255, 255, 255))
 	
 	Hud.oxygenLost = math.Clamp( Hud.oxygenLost - OxygenRatio + Hud.oldOxygenRatio - Hud.oxygenDrainRate*FrameTime(), 0, 1 )
-	surface.DrawRect(10 + Hud.iconSize + (Hud.shortEdge - 33) * OxygenRatio, Hud.height - Hud.tallEdge + yOffset, (Hud.shortEdge - 33) * Hud.oxygenLost, Hud.iconSize)
+	surface.DrawRect(10 + Hud.iconSize + (Hud.shortEdge - 33) * OxygenRatio, Hud.height - Hud.tallEdge + yOffset + 1, (Hud.shortEdge - 33) * Hud.oxygenLost, Hud.barSize)
 	Hud.oldOxygenRatio = OxygenRatio
 	yOffset = yOffset + Hud.barSpacing + Hud.iconSize
 
@@ -168,12 +169,12 @@ hook.Add("HUDPaint", "TKPH_Health", function()
     surface.SetMaterial(Hud.mats[4])
     surface.DrawTexturedRect(5, Hud.height - Hud.tallEdge + yOffset, Hud.iconSize, Hud.iconSize)
     surface.SetDrawColor(TK.HUD.Colors.bar)
-    surface.DrawOutlinedRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset, Hud.shortEdge - 33, Hud.iconSize)
-    surface.DrawRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset, (Hud.shortEdge - 33) * WaterRatio, Hud.iconSize)
+    surface.DrawOutlinedRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset + 1, Hud.shortEdge - 33, Hud.barSize)
+    surface.DrawRect(10 + Hud.iconSize, Hud.height - Hud.tallEdge + yOffset + 1, (Hud.shortEdge - 33) * WaterRatio, Hud.barSize)
 	surface.SetDrawColor(Color(255, 255, 255, 255))
 	
 	Hud.waterLost = math.Clamp( Hud.waterLost - WaterRatio + Hud.oldWaterRatio - Hud.waterDrainRate*FrameTime(), 0, 1 )
-	surface.DrawRect(10 + Hud.iconSize + (Hud.shortEdge - 33) * WaterRatio, Hud.height - Hud.tallEdge + yOffset, (Hud.shortEdge - 33) * Hud.waterLost, Hud.iconSize)
+	surface.DrawRect(10 + Hud.iconSize + (Hud.shortEdge - 33) * WaterRatio, Hud.height - Hud.tallEdge + yOffset + 1, (Hud.shortEdge - 33) * Hud.waterLost, Hud.barSize)
 	Hud.oldWaterRatio = WaterRatio
 
     local info = TK.DB:GetPlayerData("player_info")

@@ -325,7 +325,7 @@ hook.Add("Initialize", "MySQLLoad", function()
 		for _,ply in pairs(player.GetAll()) do
 			local data = TK.DB:GetPlayerData(ply, "player_info")
             local update = {playtime = data.playtime + 1}
-            
+
             for k,v in pairs(ply.tk_cache) do
                 update[k] = data[k] + v
                 ply.tk_cache[k] = nil
@@ -408,9 +408,11 @@ hook.Add("PlayerDisconnected", "TKDisUpdate", function(ply)
 	if !IsValid(ply) then return end
     local data = TK.DB:GetPlayerData(ply, "player_info")
     local update = {}
+    
     for k,v in pairs(ply.tk_cache) do
-        update[k] =data[k] + v
+        update[k] = data[k] + v
     end
+    
     if table.Count(update) > 0 then
         TK.DB:MakeQuery(TK.DB:FormatUpdateQuery("player_info", update, {"steamid = %s", ply:SteamID()}))
     end

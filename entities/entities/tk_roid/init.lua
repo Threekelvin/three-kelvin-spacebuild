@@ -26,7 +26,7 @@ function ENT:Initialize()
 	if IsValid(phys) then
 		phys:EnableMotion(false)
 		phys:Wake()
-		self.MaxOre = math.Round((phys:GetVolume() / 2000) * math.Rand(0.75, 1.25))
+		self.MaxOre = math.Round((phys:GetVolume() / 10000) * math.Rand(0.75, 1.25))
 		self.Ore = self.MaxOre
 	else
 		self.MaxOre = 0

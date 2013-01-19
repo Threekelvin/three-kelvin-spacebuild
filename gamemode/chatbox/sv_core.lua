@@ -8,8 +8,11 @@ net.Receive("3k_chat_r", function(len, ply)
     local msg = net.ReadString()
     
     local rtn = gamemode.Call("PlayerSay", ply, msg, toTeam)
-    if rtn != nil && type(rtn) != "string" then return end
-    if rtn != nil then msg = rtn end
+    if rtn != nil then
+        if type(rtn) != "string" then return end
+        if rtn == "" then return end
+        msg = rtn
+    end
     
     local plys = {}
     if toTeam then

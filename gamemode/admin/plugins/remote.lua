@@ -25,7 +25,7 @@ if SERVER then
 				end
 			end
 			
-			TK:SendRemoteCmd(svr, table.concat(arg, " ", 2))
+			TK.DB:SendRemoteCmd(ply, svr, table.concat(arg, " ", 2))
 			TK.AM:SystemMessage({"Remote Command Sent To ", svr}, {ply}, 2)
 		else
 			TK.AM:SystemMessage({"Access Denied!"}, {ply}, 1)

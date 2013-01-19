@@ -63,8 +63,9 @@ function ENT:DoThink(eff)
             yield = self:SupplyResource("asteroid_ore", yield)
             WireLib.TriggerOutput(self, "Output", yield)
             
-            owner.tk_cache.score = math.floor((owner.tk_cache.score || 0) + yield * 0.75)
-            owner.tk_cache.exp = math.floor((owner.tk_cache.exp || 0) + yield * 0.375)
+            local value = TK.TD:Ore(owner, "asteroid_ore")
+            owner.tk_cache.score = math.floor((owner.tk_cache.score || 0) + value * yield * 0.75)
+            owner.tk_cache.exp = math.floor((owner.tk_cache.exp || 0) + value * yield * 0.375)
             
             ent.Ore = ent.Ore - yield
 		elseif ent:IsPlayer() || ent:IsNPC() then
