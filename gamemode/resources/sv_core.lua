@@ -265,6 +265,12 @@ function TK.RD:EntAddResource(ent, idx, max, gen)
 				entdata.res[idx].cur = max
 				entdata.res[idx].max = max
 				entdata.res[idx].gen = tobool(gen)
+                
+                if !netdata.res[idx] then
+                    netdata.res[idx] = {}
+                    netdata.res[idx].cur = 0
+                    netdata.res[idx].max = 0
+                end
 				
 				netdata.res[idx].max = netdata.res[idx].max + diff
 				if netdata.res[idx].cur > netdata.res[idx].max then
@@ -276,6 +282,12 @@ function TK.RD:EntAddResource(ent, idx, max, gen)
 				entdata.res[idx].max = max
 				entdata.res[idx].gen = tobool(gen)
 				
+                if !netdata.res[idx] then
+                    netdata.res[idx] = {}
+                    netdata.res[idx].cur = 0
+                    netdata.res[idx].max = 0
+                end
+                
 				netdata.res[idx].max = netdata.res[idx].max + diff
 			end
 		else
@@ -287,10 +299,10 @@ function TK.RD:EntAddResource(ent, idx, max, gen)
 			if !netdata.res[idx] then
 				netdata.res[idx] = {}
 				netdata.res[idx].cur = 0
-				netdata.res[idx].max = max
-			else
-				netdata.res[idx].max = netdata.res[idx].max + max
+				netdata.res[idx].max = 0
 			end
+            
+			netdata.res[idx].max = netdata.res[idx].max + max
 		end
 		
 		netdata.update = {}
