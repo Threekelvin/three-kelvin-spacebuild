@@ -23,7 +23,6 @@ function ENT:TurnOn()
 	if self:GetActive() || !self:IsLinked() then return end
     self:SetActive(true)
     WireLib.TriggerOutput(self, "On", 1)
-    WireLib.TriggerOutput(self, "Range", self.range)
     self:SoundPlay(1)
 end
 
@@ -32,7 +31,6 @@ function ENT:TurnOff()
 	self:SetActive(false)
 	WireLib.TriggerOutput(self, "On", 0)
 	WireLib.TriggerOutput(self, "Output", 0)
-	WireLib.TriggerOutput(self, "Range", 0)
 	self:SoundStop(1)
 end
 
@@ -75,9 +73,14 @@ function ENT:DoThink(eff)
 			dmginfo:SetAttacker(self:CPPIGetOwner())
 			dmginfo:SetInflictor(self)
 			ent:TakeDamageInfo(dmginfo)
-		end
-	end
-	WireLib.TriggerOutput(self, "Output", 0)
+            
+            WireLib.TriggerOutput(self, "Output", 0)
+		else
+            WireLib.TriggerOutput(self, "Output", 0)
+        end
+	else
+        WireLib.TriggerOutput(self, "Output", 0)
+    end
 end
 
 function ENT:NewNetwork(netid)
@@ -97,7 +100,17 @@ function ENT:Update(ply)
     self.data.yield = data.yield + (data.yield * upgrades.yield)
 	self.data.range = data.range + (data.range * upgrades.range)
 	self.data.power = data.power - (data.power * upgrades.power)
+    
 	self:SetNWInt("range", self.data.range)
+    WireLib.TriggerOutput(self, "Range", self.data.range)
+end
+
+function ENT:PreEntityCopy()
+	TK.LO:MakeDupeInfo(self)
+end
+
+function ENT:PostEntityPaste(ply, ent, CreatedEntities)
+	TK.LO:ApplyDupeInfo(ply, ent, CreatedEntities)
 end
 
 function ENT:UpdateTransmitState() 

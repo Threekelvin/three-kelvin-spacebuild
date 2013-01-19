@@ -289,7 +289,7 @@ local SCORE_BOARD =
 
 		local z = 0
 		for id, pl in ipairs( self.plyrs ) do
-
+            if !IsValid(pl) then continue end
 			if ( !IsValid( pl.ScoreEntry ) ) then
 				pl.ScoreEntry = vgui.CreateFromTable( PLAYER_LINE, pl.ScoreEntry )
 				pl.ScoreEntry:Setup( pl )

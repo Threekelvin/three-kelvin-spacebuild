@@ -25,3 +25,11 @@ function ENT:Update(ply)
     
     self:AddResource("asteroid_ore", data.capacity + (data.capacity * upgrades.capacity))
 end
+
+function ENT:PreEntityCopy()
+	TK.LO:MakeDupeInfo(self)
+end
+
+function ENT:PostEntityPaste(ply, ent, CreatedEntities)
+	TK.LO:ApplyDupeInfo(ply, ent, CreatedEntities)
+end

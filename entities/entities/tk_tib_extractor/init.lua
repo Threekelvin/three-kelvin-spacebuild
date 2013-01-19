@@ -86,7 +86,6 @@ function ENT:DoThink(eff)
 		end
 		local yield = math.floor(self.data.yield * self.PowerLevel * eff)
 		
-		
 		if self.Stable != crystal.Stable then
 			self.Stable = crystal.Stable
 			if self.Stable then
@@ -97,7 +96,6 @@ function ENT:DoThink(eff)
 				self:SoundPlay(3)
 			end
 		end
-		
 		
         yield = math.min(yield, crystal.Tib)
         yield = self:SupplyResource("raw_tiberium", yield)
@@ -135,6 +133,14 @@ function ENT:Update(ply)
     
     self.data.yield = data.yield + (data.yield * upgrades.yield)
 	self.data.power = data.power - (data.power * upgrades.power)
+end
+
+function ENT:PreEntityCopy()
+	TK.LO:MakeDupeInfo(self)
+end
+
+function ENT:PostEntityPaste(ply, ent, CreatedEntities)
+	TK.LO:ApplyDupeInfo(ply, ent, CreatedEntities)
 end
 
 function ENT:UpdateTransmitState() 
