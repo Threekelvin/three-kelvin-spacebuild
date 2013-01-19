@@ -69,7 +69,6 @@ end)
 
 hook.Add("player_connect", "TKChatBox", function(data)
     print("Client '" ..data.name.. "' connected (" ..data.networkid.. ")")
-    PrintTable(data)
     
     net.Start("3k_chat_g")
         net.WriteInt(1, 4)
