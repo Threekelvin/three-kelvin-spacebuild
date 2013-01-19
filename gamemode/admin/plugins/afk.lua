@@ -26,7 +26,9 @@ if SERVER then
 				umsg.End()
 				timer.Remove("TK AFK "..tostring(ply))
 				TK.AM:AddAFKBubble(ply)
-				TK.AM:SystemMessage({ply, " Is AFK '"..table.concat(arg || {}, "' ")})
+                
+                local msg = '"..table.concat(arg || {}, " ").."'"
+				TK.AM:SystemMessage({ply, " Is AFK ".. msg == "''" && "" || msg})
 			end
 		end
 	end

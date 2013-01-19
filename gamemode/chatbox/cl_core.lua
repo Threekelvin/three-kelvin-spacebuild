@@ -30,9 +30,11 @@ net.Receive("3k_chat_g", function()
     local typ = net.ReadInt(4)
     
     if typ == 1 then
-        chat.AddText(Color(161,255,161), "Player " .. net.ReadString() .. " has connected from " .. net.ReadString())
+        chat.AddText(Color(161,255,161), "Player " ..net.ReadString().. " has connected (" ..net.ReadString().. ")")
     elseif typ == 2 then
-        chat.AddText(Color(161,255,161), "Player " .. net.ReadString() .. " has joined the game")
+        chat.AddText(Color(161,255,161), "Player " ..net.ReadString().. " has joined the game")
+    elseif typ == 3 then
+        chat.AddText(Color(161,255,161), "Player " ..net.ReadString().. " has left the game (" ..net.ReadString().. ")")
     end
 end)
 
@@ -79,7 +81,8 @@ hook.Add("Initialize", "TKChatBox", function()
 end)
 
 hook.Add("ChatText", "TKChatBox", function(plyidx, plyname, txt, msgtyp)
-    chat.AddText(msgtyp == "joinleave" && Color(161,255,161) || Color(255,255,255), txt)
+    if msgtyp == "joinleave" then return end
+    chat.AddText(Color(255,255,255), txt)
     return true
 end)
 

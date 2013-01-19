@@ -5,6 +5,9 @@ AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
 ///--- Player Spawning ---\\\
+gameevent.Listen("player_connect")
+gameevent.Listen("player_disconnect")
+
 local function SetSpawnPoint(ply, side)
 	local Spawn = TK.SpawnPoints[side]
     

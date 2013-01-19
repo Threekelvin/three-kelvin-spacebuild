@@ -133,7 +133,8 @@ TK.PP.PropBlackList = {
     "models/Tiberium/tiberium_crystal2.mdl",
     "models/Tiberium/tiberium_crystal3.mdl",
     "models/chipstiks_mining_models/SmallBlueCrystal/smallbluecrystal.mdl",
-    "models/chipstiks_mining_models/SmallBlueTower/smallbluetower.mdl"
+    "models/chipstiks_mining_models/SmallBlueTower/smallbluetower.mdl",
+    "models/ce_miningmodels/mininglasers/laser_mk1_standard.mdl"
 }
 
 TK.PP.EntityBlackList = {
