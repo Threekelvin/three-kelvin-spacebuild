@@ -64,8 +64,6 @@ end
 function Build.GetOptions(ply)
 	local data = {}
 	data.enable = ply:GetInfoNum("3k_sbep_build_mode_enabled", 0)
-	data.weld = ply:GetInfoNum("3k_sbep_build_mode_weld", 0)
-	data.nocollide = ply:GetInfoNum("3k_sbep_build_mode_nocollide", 0)
 	data.skinmatch = ply:GetInfoNum("3k_sbep_build_mode_skinmatch", 0)
 	return data
 end
@@ -110,22 +108,6 @@ function Build.OnDrop(ply, ent)
 		ent:SetCollisionGroup(Build.snaped[entid][2])
 		
 		if IsValid(eir) then
-			if plydata.weld != 0 then
-				local weld = constraint.Weld(ent, eir, 0, 0, 0, tobool(plydata.nocollide))
-				
-				undo.Create("Weld")
-					undo.AddEntity(weld)
-					undo.SetPlayer(ply)
-				undo.Finish()
-			elseif plydata.nocollide != 0 then
-				local nocollide = constraint.NoCollide(ent, eir, 0, 0)
-				
-				undo.Create("NoCollide")
-					undo.AddEntity(nocollide)
-					undo.SetPlayer(ply)
-				undo.Finish()
-			end
-
 			if plydata.skinmatch != 0 then
 				local skins1, skins2 = ent:SkinCount(), eir:SkinCount()
 				if skins1 == skins2 then

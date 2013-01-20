@@ -2,8 +2,6 @@
 local Build = {}
 local concmd = "3k_sbep_build_mode_"
 Build.enable = CreateClientConVar(concmd.."enabled", 0, true, true)
-CreateClientConVar(concmd.."weld", 0, true, true)
-CreateClientConVar(concmd.."nocollide", 0, true, true)
 CreateClientConVar(concmd.."skinmatch", 0, true, true)
 Build.sprites = CreateClientConVar(concmd.."sprites", 1, true, false)
 Build.orientation = CreateClientConVar(concmd.."orientation", 0, true, false)
@@ -46,20 +44,6 @@ function Build.MakeMenu(Panel)
 	Enable:SetValue(1)
 	Enable:SizeToContents()
 	Panel:AddItem(Enable)
-    
-	local Weld = vgui.Create("DCheckBoxLabel")
-	Weld:SetText("Weld Props")
-	Weld:SetConVar(concmd.."weld")
-	Weld:SetValue(1)
-	Weld:SizeToContents()
-	Panel:AddItem(Weld)
-	
-	local Nocollide = vgui.Create("DCheckBoxLabel")
-	Nocollide:SetText("Nocollide Props")
-	Nocollide:SetConVar(concmd.."nocollide")
-	Nocollide:SetValue(1)
-	Nocollide:SizeToContents()
-	Panel:AddItem(Nocollide)
 	
 	local SkinMatch = vgui.Create("DCheckBoxLabel")
 	SkinMatch:SetText("Skin Match")
@@ -133,16 +117,6 @@ hook.Add("PopulateToolMenu", "TK_SBEPBuild", function()
 	spawnmenu.AddToolMenuOption("Options", "Player", "SBEPBuildMode", "SBEP Build Mode", "", "", Build.MakeMenu, {SwitchConVar = "3k_sbep_build_mode_enabled"})
 end)
 
-hook.Add("PhysgunPickup", "TK_SBEPBuild", function(ply, ent)
-	local valid, status = pcall(Build.OnPickUp, ply, ent)
-	if !valid then print(status) end
-end)
-
-hook.Add("PhysgunDrop", "TK_SBEPBuild", function(ply, ent)
-	local valid, status = pcall(Build.OnDrop, ply, ent)
-	if !valid then print(status) end
-end)
-
 hook.Add("Initialize", "TK_SBEPBuild", function()
 	timer.Create("SBEP_Build_Mode", 1, 0, function()
 		if !IsValid(Build.prop) then return end
@@ -156,7 +130,6 @@ hook.Add("Initialize", "TK_SBEPBuild", function()
 	end)
 end)
 
-hook.Add("HUDPaint", "TK_SBEPBuild", function()
-	local valid, status = pcall(Build.HUDPaint)
-	if !valid then print(status) end
-end)
+hook.Add("PhysgunPickup", "TK_SBEPBuild", Build.OnPickUp)
+hook.Add("PhysgunDrop", "TK_SBEPBuild", Build.OnDrop)
+hook.Add("HUDPaint", "TK_SBEPBuild", Build.HUDPaint)

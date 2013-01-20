@@ -49,10 +49,10 @@ function ENT:Draw()
         if entdata.powergrid > 0 then
             Add(OverlayText, "+")
             Add(OverlayText, entdata.powergrid)
-            Add(OverlayText, "KW")
+            Add(OverlayText, "kW")
         else
             Add(OverlayText, entdata.powergrid)
-            Add(OverlayText, "KW")
+            Add(OverlayText, "kW")
         end
 	end
     

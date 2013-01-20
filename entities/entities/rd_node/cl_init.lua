@@ -36,10 +36,10 @@ function ENT:Draw()
     if netdata.powergrid > 0 then
         Add(OverlayText, "+")
         Add(OverlayText, netdata.powergrid)
-        Add(OverlayText, "KW")
+        Add(OverlayText, "kW")
     else
         Add(OverlayText, netdata.powergrid)
-        Add(OverlayText, "KW")
+        Add(OverlayText, "kW")
     end
 
 	if table.Count(netdata.res) > 0 then

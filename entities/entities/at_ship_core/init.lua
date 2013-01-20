@@ -8,6 +8,7 @@ local math = math
 
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
+    self.power = self.data.power
 	
 	self.atmosphere = {}
 	
@@ -17,7 +18,6 @@ function ENT:Initialize()
 	self.atmosphere.noclip 	= false
 	self.atmosphere.sunburn	= false
 	self.atmosphere.wind 	= false
-	self.atmosphere.static 	= false
 	
 	self.atmosphere.priority	= 2
 	self.atmosphere.radius 		= 0
@@ -27,27 +27,13 @@ function ENT:Initialize()
 	self.atmosphere.temphot		= 3
 	
 	self.atmosphere.resources 	= {}
-	self.atmosphere.resources.empty = 100
-	self.atmosphere.resources.oxygen = 0
-	self.atmosphere.resources.carbon_dioxide = 0
-	self.atmosphere.resources.nitrogen = 0
-	self.atmosphere.resources.hydrogen = 0
-	self.atmosphere.percent = {}
-	self.atmosphere.percent.empty = 0
-	self.atmosphere.percent.oxygen = 20
-	self.atmosphere.percent.carbon_dioxide = 5
-	self.atmosphere.percent.nitrogen = 70
-	self.atmosphere.percent.hydrogen = 5
 	
 	self:SetNWBool("Generator", true)
-	self:AddResource("energy", 0)
 	self:AddResource("oxygen", 0)
 	self:AddResource("nitrogen", 0)
 	self:AddResource("water", 0)
-	
-	self.hullents = {}
+
 	self.brushes = {}
-	self.volume = 0
 end
 
 function ENT:OnRemove()
@@ -61,32 +47,22 @@ end
 function ENT:TurnOn()
 	if self:GetActive() || !self:IsLinked() then return end
 	
-	local entlist, hull = {}, {}
-	local vol = 0
+	local hull = {}
+    
 	for k,v in pairs(constraint.GetAllConstrainedEntities(self)) do
-		if v:BoundingRadius() > 100 then
-			entlist[v:EntIndex()] = v
-		end
-	end
-	
-	for k,v in pairs(self.hullents) do
-		if entlist[v:EntIndex()] then
-			table.insert(hull, v)
-			vol = vol + v:GetPhysicsObject():GetVolume()
-		end
+		if v:BoundingRadius() < 135 then continue end
+        if v.IsTKRD then continue end
+        
+        table.insert(hull, v)
 	end
 	
 	if #hull == 0 then
 		local owner = self:CPPIGetOwner()
-		owner:SendLua("GAMEMODE:AddNotify(\"No Props Linked\", NOTIFY_ERROR, 5)")
+		owner:SendLua("GAMEMODE:AddNotify(\"No Vaild Hull Found\", NOTIFY_ERROR, 5)")
 		return
 	end
 	
-	if self:GetResourceAmount("energy") < #hull * 2500 then return end
-	self:ConsumeResource("energy", #hull * 2500)
-	self.volume = math.floor(vol * 0.0025)
 	self:SetActive(true)
-	
 	
 	for k,v in pairs(hull) do
 		local brush = ents.Create("at_brush")
@@ -98,13 +74,11 @@ function ENT:TurnOn()
 		
 		table.insert(self.brushes, brush)
 	end
-	
-	local env = self:GetEnv()
-	self.atmosphere.tempcold = env.atmosphere.tempcold
-	self.atmosphere.temphot	= self.atmosphere.tempcold
-	for k,v in pairs(env.atmosphere.percent) do
-		self.atmosphere.resources[k] = self.volume * v * 0.01
-	end
+    
+    local env = self:GetEnv()
+    self.atmosphere.tempcold	= env.atmosphere.tempcold
+	self.atmosphere.temphot		= env.atmosphere.temphot
+    self.atmosphere.resources = table.Copy(env.atmosphere.resources)
 end
 
 function ENT:TurnOff()
@@ -114,87 +88,26 @@ function ENT:TurnOff()
 	for k,v in pairs(self.brushes) do
 		SafeRemoveEntity(v)
 	end
-	self.volume = 0
 end
 
-function ENT:DoThink()
+function ENT:DoThink(eff)
 	if !self:GetActive() then return end
+    
 	local env
 	local size = table.Count(self.brushes)
-	local rate = math.max(math.floor(self.volume / 30), 50 * size)
+	local rate = 20 * size
+    
+    self.data.power = self.power - (5 * size)
+    if !self:Work() then return end
 	
 	for k,v in ipairs(self.tk_env.envlist) do
-		if v != self then 
+		if v != self then
 			env = v
 			break
 		end
 	end
 	
 	self.atmosphere.noclip = env.atmosphere.noclip
-	if env.atmosphere.tempcold < 307 then
-		self.atmosphere.tempcold = math.floor(self.atmosphere.tempcold + 0.1 * (env.atmosphere.tempcold - self.atmosphere.tempcold))
-		self.atmosphere.temphot = self.atmosphere.tempcold
-	elseif env.atmosphere.temphot > 273 then
-		self.atmosphere.tempcold = math.floor(self.atmosphere.tempcold + 0.1 * (env.atmosphere.temphot - self.atmosphere.tempcold))
-		self.atmosphere.temphot = self.atmosphere.tempcold
-	end
-	
-	self.atmosphere.resources.oxygen = math.max(self.atmosphere.resources.oxygen - 5 * size, 0)
-	self.atmosphere.resources.carbon_dioxide = math.max(self.atmosphere.resources.carbon_dioxide - 5 * size, 0)
-	self.atmosphere.resources.nitrogen = math.max(self.atmosphere.resources.nitrogen - 5 * size, 0)
-	self.atmosphere.resources.hydrogen = math.max(self.atmosphere.resources.hydrogen - 5 * size, 0)
-	
-	if self.atmosphere.tempcold  < 290 then
-		local energy = math.ceil((290 - self.atmosphere.tempcold) / 34) * size
-		self.atmosphere.tempcold = self.atmosphere.tempcold + (self:ConsumeResource("energy", energy) * 34 / size)
-		self.atmosphere.temphot = self.atmosphere.tempcold
-	elseif self.atmosphere.temphot > 290 then
-		local water = math.ceil((self.atmosphere.tempcold - 290) / 34) * size
-		self.atmosphere.tempcold = self.atmosphere.tempcold - (self:ConsumeResource("water", water) * 34 / size)
-		self.atmosphere.temphot = self.atmosphere.tempcold
-	end
-
-	if self.atmosphere.resources.oxygen / self.volume < 0.2 then
-		local oxygen = math.floor(math.min(self.volume * 0.2 - self.atmosphere.resources.oxygen, rate))
-		self.atmosphere.resources.oxygen = self.atmosphere.resources.oxygen + self:ConsumeResource("oxygen", oxygen)
-	elseif self.atmosphere.resources.oxygen / self.volume > 0.2 then
-		local oxygen = math.floor(math.min(self.atmosphere.resources.oxygen - self.volume * 0.2, rate))
-		self.atmosphere.resources.oxygen = self.atmosphere.resources.oxygen - oxygen
-	end
-
-	if self.atmosphere.resources.carbon_dioxide > 0 then
-		local carbon_dioxide = math.floor(math.min(self.atmosphere.resources.carbon_dioxide, rate))
-		self.atmosphere.resources.carbon_dioxide = self.atmosphere.resources.carbon_dioxide - carbon_dioxide
-	end
-
-	if self.atmosphere.resources.nitrogen / self.volume < 0.8 then
-		local nitrogen = math.floor(math.min(self.volume * 0.8 - self.atmosphere.resources.nitrogen, rate))
-		self.atmosphere.resources.nitrogen = self.atmosphere.resources.nitrogen + self:ConsumeResource("nitrogen", nitrogen)
-	elseif self.atmosphere.resources.nitrogen / self.volume > 0.8 then
-		local nitrogen = math.floor(math.min(self.atmosphere.resources.nitrogen - self.volume * 0.8, rate))
-		self.atmosphere.resources.nitrogen = self.atmosphere.resources.nitrogen - nitrogen
-	end
-	
-	if self.atmosphere.resources.hydrogen > 0 then
-		hydrogen = math.floor(math.min(self.atmosphere.resources.hydrogen, rate))
-		self.atmosphere.resources.hydrogen = self.atmosphere.resources.hydrogen - hydrogen
-	end
-	
-	local total = 0
-	for k,v in pairs(self.atmosphere.resources) do
-		if k != "empty" then
-			total = total + v
-		end
-	end
-	
-	if total > self.volume then
-		self.atmosphere.resources.empty = 0
-		print("Ship Core Error: 1", total, self.volume)
-	else
-		self.atmosphere.resources.empty = self.volume - total
-	end
-    
-    self:SetPower(1 * size)
 end
 
 function ENT:NewNetwork(netid)
@@ -228,20 +141,15 @@ function ENT:GetRadius()
 end
 
 function ENT:GetVolume()
-	return self.volume
+	return 0
 end
 
-function ENT:GetAtmosphereResource(res)
-	return self.atmosphere.resources[res] || 0
+function ENT:HasResource(res)
+    return self.atmosphere.resources[res] && self.atmosphere.resources[res] > 0
 end
 
-function ENT:GetBaseAtmospherePercent(res)
-	return self.atmosphere.percent[res] || 0
-end
-
-function ENT:GetTrueAtmospherePercent(res)
-	if !self.atmosphere.resources[res] then return 0 end
-	return (self.atmosphere.resources[res] / self:GetVolume()) * 100
+function ENT:GetResourcePercent(res)
+    return self.atmosphere.resources[res] || 0
 end
 
 function ENT:InAtmosphere(pos)
@@ -292,46 +200,4 @@ function ENT:DoTemp(ent)
 		return self.atmosphere.temphot, true
 	end
 	return self.atmosphere.tempcold, false
-end
-
-local function ValidAmount(amt)
-	amt = math.floor(amt)
-	amt = math.max(0, amt)
-	return amt
-end
-
-function ENT:SupplyAtmosphere(idx, amt)
-	if !self.atmosphere.resources[idx] then return 0 end
-	local iamt = ValidAmount(amt)
-	if iamt == 0 || self.atmosphere.resources.empty == 0 then return 0 end
-	
-	if iamt > self.atmosphere.resources.empty then
-		iamt = self.atmosphere.resources.empty
-		if !self.atmosphere.static then
-			self.atmosphere.resources[idx] = self.atmosphere.resources[idx] + iamt
-			self.atmosphere.resources.empty = 0
-		end
-	elseif !self.atmosphere.static then
-		self.atmosphere.resources[idx] = self.atmosphere.resources[idx] + iamt
-		self.atmosphere.resources.empty = self.atmosphere.resources.empty - iamt
-	end
-	return iamt
-end
-
-function ENT:ConsumeAtmosphere(idx, amt)
-	if !self.atmosphere.resources[idx] then return 0 end
-	local iamt = ValidAmount(amt)
-	if iamt == 0 then return 0 end
-	
-	if iamt > self.atmosphere.resources[idx] then
-		iamt = self.atmosphere.resources[idx]
-		if !self.atmosphere.static then
-			self.atmosphere.resources[idx] = 0
-			self.atmosphere.resources.empty = self.atmosphere.resources.empty - iamt
-		end
-	elseif !self.atmosphere.static then
-		self.atmosphere.resources[idx] = self.atmosphere.resources[idx] - iamt
-		self.atmosphere.resources.empty = self.atmosphere.resources.empty + iamt
-	end
-	return iamt
 end

@@ -28,7 +28,7 @@ if SERVER then
 				TK.AM:AddAFKBubble(ply)
                 
                 local msg = "'"..table.concat(arg || {}, " ").."'"
-				TK.AM:SystemMessage({ply, " Is AFK ".. msg == "''" && "" || msg})
+				TK.AM:SystemMessage({ply, " Is AFK ".. (msg == "''" && "" || msg)})
 			end
 		end
 	end
