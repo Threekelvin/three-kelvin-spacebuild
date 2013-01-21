@@ -30,7 +30,6 @@ function ENT:Initialize()
 	self:SetNWBool("Generator", true)
 	self:AddResource("oxygen", 0)
 	self:AddResource("nitrogen", 0)
-	--self:AddResource("water", 0)
 
 	self.brushes = {}
 end
@@ -93,7 +92,7 @@ function ENT:DoThink(eff)
     
 	local env
 	local size = table.Count(self.brushes)
-    local rate = 10 * size
+    local rate = 5 * size
     
     self.data.power = -rate
     if !self:Work() then return end
@@ -110,14 +109,14 @@ function ENT:DoThink(eff)
                 self.atmosphere.resources[k] = math.floor(v - 1)
             elseif v < 20 then
                 local o2 = self:ConsumeResource("oxygen", rate)
-                self.atmosphere.resources[k] = math.floor(v + 1 * o2 / rate)
+                self.atmosphere.resources[k] = math.floor(v + (v < 19 && 2 || 1) * o2 / rate)
             end
         elseif k == "nitrogen" then
-            if v > 70 then
+            if v > 80 then
                 self.atmosphere.resources[k] = math.floor(v - 1)
-            elseif v < 70 then
+            elseif v < 80 then
                 local n2 = self:ConsumeResource("nitrogen", rate)
-                self.atmosphere.resources[k] = math.floor(v + 1 * n2 / rate)
+                self.atmosphere.resources[k] = math.floor(v + (v < 79 && 2 || 1) * n2 / rate)
             end
         elseif v > 0 then
             self.atmosphere.resources[k] = math.floor(v - 1)

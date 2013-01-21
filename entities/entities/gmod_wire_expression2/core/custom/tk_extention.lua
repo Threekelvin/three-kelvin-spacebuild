@@ -1,12 +1,62 @@
 
 local function ValidAction(self, ent)
-	if !validEntity(ent) || ent:IsPlayer() then return false end
+	if !IsValid(ent) || ent:IsPlayer() then return false end
 	if !E2Lib.isOwner(self, ent) then return false end
 	
 	return true
 end
 
 __e2setcost(5)
+
+///--- Resources ---\\\
+e2function number entity:link(entity ent)
+    if !ValidAction(self, this) || ValidAction(self, ent) then return 0 end
+    if !this.IsTKRD || !ent:IsNode then return 0 end
+    return this:Link(ent.netid) && 1 || 0
+end
+
+e2function number entity:unLink()
+    if !ValidAction(self, this) then return 0 end
+    if !this.IsTKRD then return 0 end
+    return this:UnLink() && 1 || 0
+end
+
+e2function number entity:getPowerGrid()
+    if !ValidAction(self, this) then return 0 end
+    if !this.IsTKRD then return 0 end
+    return this:GetPowerGrid()
+end
+
+e2function number entity:getResourceAmount(string res)
+    if !ValidAction(self, this) then return 0 end
+    if !this.IsTKRD then return 0 end
+    return this:GetResourceAmount(res)
+end
+
+e2function number entity:getUnitPowerGrid()
+    if !ValidAction(self, this) then return 0 end
+    if !this.IsTKRD then return 0 end
+    return this:GetUnitPowerGrid()
+end
+
+e2function number entity:getUnitResourceAmount(string res)
+    if !ValidAction(self, this) then return 0 end
+    if !this.IsTKRD then return 0 end
+    return this:GetUnitResourceAmount(res)
+end
+
+e2function number entity:getResourceCapacity(string res)
+    if !ValidAction(self, this) then return 0 end
+    if !this.IsTKRD then return 0 end
+    return this:GetResourceCapacity(res)
+end
+
+e2function number entity:getUnitResourceCapacity(string res)
+    if !ValidAction(self, this) then return 0 end
+    if !this.IsTKRD then return 0 end
+    return this:GetUnitResourceCapacity(res)
+end
+///--- ---\\\
 
 ///--- Format ---\\\
 e2function string format(number num)

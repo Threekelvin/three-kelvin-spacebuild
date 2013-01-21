@@ -4,7 +4,7 @@ usermessage.Hook("particlebeam", function(msg)
 	local particle = msg:ReadString()
 	local this = Entity(msg:ReadShort())
 	local ent = Entity(msg:ReadShort())
-	if !ValidEntity(this) || !ValidEntity(ent) then return end
+	if !IsValid(this) || !IsValid(ent) then return end
 	
 	local CP1 = {
 		["entity"] = this,
