@@ -11,7 +11,7 @@ __e2setcost(5)
 ///--- Resources ---\\\
 e2function number entity:link(entity ent)
     if !ValidAction(self, this) || ValidAction(self, ent) then return 0 end
-    if !this.IsTKRD || !ent:IsNode then return 0 end
+    if !this.IsTKRD || !ent.IsNode then return 0 end
     return this:Link(ent.netid) && 1 || 0
 end
 
