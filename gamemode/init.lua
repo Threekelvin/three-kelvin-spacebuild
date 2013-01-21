@@ -115,7 +115,10 @@ hook.Add("InitPostEntity", "TKSetup", function()
 			local phys = ent:GetPhysicsObject()
 			if phys:IsValid() then phys:EnableMotion(false) end
             if v.notsolid then ent:SetNotSolid(true) end
-            if v.color then ent:SetColor(v.color) end
+            if v.color then 
+                ent:SetColor(v.color) 
+                ent:SetRenderMode(RENDERMODE_TRANSALPHA)
+            end
             
 			table.insert(TK.SpawnedEnts, ent)
 		end

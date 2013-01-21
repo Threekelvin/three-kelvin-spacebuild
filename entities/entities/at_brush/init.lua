@@ -1,5 +1,5 @@
 
-DEFINE_BASECLASS("base_brush")
+DEFINE_BASECLASS("base_anim")
 
 local IsValid = IsValid
 local pairs = pairs
@@ -8,8 +8,24 @@ local table = table
 function ENT:Initialize()
 	self:SetMoveType(MOVETYPE_NONE)
 	self:SetSolid(SOLID_NONE)
-	self:PhysicsSetup()
-	self:DrawShadow(false)
+	
+    local parent = self:GetParent()
+    if !IsValid(parent) then self:Remove() return end
+	local min, max = parent:GetCollisionBounds()
+    
+	self:SetModel(parent:GetModel())
+	self:PhysicsInit(SOLID_OBB)
+	
+	local phys = self:GetPhysicsObject()
+	if IsValid(phys) then
+		phys:EnableMotion(false)
+		phys:Wake()
+	end
+
+	self:SetTrigger(true)
+	self:SetNotSolid(true)
+    self:DrawShadow(false)
+	self:SetCollisionBounds(min - Vector(5,5,5), max + Vector(5,5,5))
 	
 	self.inside = {}
 end
@@ -22,7 +38,7 @@ local function EnvPrioritySort(a, b)
 end
 
 function ENT:StartTouch(ent)
-	if !ent.tk_env || !IsValid(self.env) then return end
+	if !IsValid(self.env) || !ent.tk_env then return end
 	
 	self.inside[ent:EntIndex()] = ent
 	
@@ -38,7 +54,6 @@ function ENT:StartTouch(ent)
 end
 
 function ENT:EndTouch(ent)
-	if !ent.tk_env then return end
 	local entid = ent:EntIndex()
 	
 	if self.inside[entid] && IsValid(self.env) then
@@ -64,39 +79,24 @@ function ENT:OnRemove()
 	if !IsValid(self.env) then return end
 	
 	for idx,ent in pairs(self.inside) do
-		if IsValid(ent) then
-			local oldenv = ent:GetEnv()
-			for k,v in pairs(ent.tk_env.envlist) do
-				if v == self.env then
-					table.remove(ent.tk_env.envlist, k)
-					break
-				end
-			end
-			local newenv = ent:GetEnv()
-			
-			if oldenv != newenv then
-				newenv:DoGravity(ent)
-				gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
-			end
-		end
+		if !IsValid(ent) then continue end
+        
+        local oldenv = ent:GetEnv()
+        for k,v in pairs(ent.tk_env.envlist) do
+            if v == self.env then
+                table.remove(ent.tk_env.envlist, k)
+                break
+            end
+        end
+        local newenv = ent:GetEnv()
+        
+        if oldenv != newenv then
+            newenv:DoGravity(ent)
+            gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
+        end
 	end
 end
 
-function ENT:PhysicsSetup()
-	local parent = self:GetParent()
-	if !IsValid(parent) then return end
-	local min, max = parent:GetCollisionBounds()
-	
-	self:SetModel(parent:GetModel())
-	self:PhysicsInit(SOLID_OBB)
-	
-	local phys = self:GetPhysicsObject()
-	if IsValid(phys) then
-		phys:EnableMotion(false)
-		phys:Wake()
-	end
-
-	self:SetTrigger(true)
-	self:SetNotSolid(true)
-	self:SetCollisionBounds(min - Vector(5,5,5), max + Vector(5,5,5))
+function ENT:UpdateTransmitState()
+    return TRANSMIT_NEVER
 end

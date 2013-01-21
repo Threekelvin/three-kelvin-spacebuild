@@ -6,9 +6,10 @@ function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	
 	self:AddResource("oxygen", self.data.oxygen)
+    self:AddResource("water", self.data.nitrogen)
 	self:AddResource("water", self.data.water)
 	
-	WireLib.CreateOutputs(self, {"Oxygen", "MaxOxygen", "Water", "MaxWater"})
+	WireLib.CreateOutputs(self, {"Oxygen", "MaxOxygen", "Nitrogen", "MaxNitrogen", "Water", "MaxWater"})
 	self:UpdateValues()
 end
 
@@ -35,6 +36,8 @@ end
 function ENT:UpdateValues()
 	WireLib.TriggerOutput(self, "Oxygen", self:GetResourceAmount("oxygen"))
 	WireLib.TriggerOutput(self, "MaxOxygen", self:GetResourceCapacity("oxygen"))
+    WireLib.TriggerOutput(self, "Nitrogen", self:GetResourceAmount("nitrogen"))
+	WireLib.TriggerOutput(self, "MaxNitrogen", self:GetResourceCapacity("nitrogen"))
 	WireLib.TriggerOutput(self, "Water", self:GetResourceAmount("water"))
 	WireLib.TriggerOutput(self, "MaxWater", self:GetResourceCapacity("water"))
 end

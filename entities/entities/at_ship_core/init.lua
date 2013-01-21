@@ -8,7 +8,6 @@ local math = math
 
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
-    self.power = self.data.power
 	
 	self.atmosphere = {}
 	
@@ -23,15 +22,15 @@ function ENT:Initialize()
 	self.atmosphere.radius 		= 0
 	self.atmosphere.gravity 	= 1
 	self.atmosphere.windspeed 	= 0
-	self.atmosphere.tempcold	= 3
-	self.atmosphere.temphot		= 3
+	self.atmosphere.tempcold	= 290
+	self.atmosphere.temphot		= 290
 	
 	self.atmosphere.resources 	= {}
 	
 	self:SetNWBool("Generator", true)
 	self:AddResource("oxygen", 0)
 	self:AddResource("nitrogen", 0)
-	self:AddResource("water", 0)
+	--self:AddResource("water", 0)
 
 	self.brushes = {}
 end
@@ -76,8 +75,6 @@ function ENT:TurnOn()
 	end
     
     local env = self:GetEnv()
-    self.atmosphere.tempcold	= env.atmosphere.tempcold
-	self.atmosphere.temphot		= env.atmosphere.temphot
     self.atmosphere.resources = table.Copy(env.atmosphere.resources)
 end
 
@@ -87,6 +84,7 @@ function ENT:TurnOff()
 	
 	for k,v in pairs(self.brushes) do
 		SafeRemoveEntity(v)
+        self.brushes[k] = nil
 	end
 end
 
@@ -95,10 +93,38 @@ function ENT:DoThink(eff)
     
 	local env
 	local size = table.Count(self.brushes)
-	local rate = 20 * size
+    local rate = 10 * size
     
-    self.data.power = self.power - (5 * size)
+    self.data.power = -rate
     if !self:Work() then return end
+    rate = rate * math.min(1 / eff, 5)
+
+    self.atmosphere.resources.oxygen = self.atmosphere.resources.oxygen || 0
+    self.atmosphere.resources.oxygen = math.max(self.atmosphere.resources.oxygen - 1, 0)
+    self.atmosphere.resources.nitrogen = self.atmosphere.resources.nitrogen || 0
+    self.atmosphere.resources.nitrogen = math.max(self.atmosphere.resources.nitrogen - 1, 0)
+    
+    for k,v in pairs(self.atmosphere.resources) do
+        if k == "oxygen" then
+            if v > 20 then
+                self.atmosphere.resources[k] = math.floor(v - 1)
+            elseif v < 20 then
+                local o2 = self:ConsumeResource("oxygen", rate)
+                self.atmosphere.resources[k] = math.floor(v + 1 * o2 / rate)
+            end
+        elseif k == "nitrogen" then
+            if v > 70 then
+                self.atmosphere.resources[k] = math.floor(v - 1)
+            elseif v < 70 then
+                local n2 = self:ConsumeResource("nitrogen", rate)
+                self.atmosphere.resources[k] = math.floor(v + 1 * n2 / rate)
+            end
+        elseif v > 0 then
+            self.atmosphere.resources[k] = math.floor(v - 1)
+        else
+            self.atmosphere.resources[k] = nil
+        end
+    end
 	
 	for k,v in ipairs(self.tk_env.envlist) do
 		if v != self then
@@ -108,6 +134,8 @@ function ENT:DoThink(eff)
 	end
 	
 	self.atmosphere.noclip = env.atmosphere.noclip
+    self.atmosphere.tempcold = 290 - (290 - env.atmosphere.tempcold) * (1 - eff)
+    self.atmosphere.temphot = 290 - (290 - env.atmosphere.temphot) * (1 - eff)
 end
 
 function ENT:NewNetwork(netid)
