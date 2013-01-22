@@ -263,48 +263,48 @@ end
 
 ///--- Admin ---\\\
 e2function number entity:isVip()
-	if !validEntity(this) then return 0 end
+	if !IsValid(this) then return 0 end
 	if !this:IsPlayer() then return 0 end
 	if this:IsVip() then return 1 else return 0 end
 end
 
 e2function number entity:isDJ()
-	if !validEntity(this) then return 0 end
+	if !IsValid(this) then return 0 end
 	if !this:IsPlayer() then return 0 end
 	if this:IsDJ() then return 1 else return 0 end
 end
 
 e2function number entity:isModerator()
-	if !validEntity(this) then return 0 end
+	if !IsValid(this) then return 0 end
 	if !this:IsPlayer() then return 0 end
 	if this:IsModerator() then return 1 else return 0 end
 end
 
 e2function number entity:isAdmin()
-	if !validEntity(this) then return 0 end
+	if !IsValid(this) then return 0 end
 	if !this:IsPlayer() then return 0 end
 	if this:IsAdmin() then return 1 else return 0 end
 end
 
 e2function number entity:isSuperAdmin()
-	if !validEntity(this) then return 0 end
+	if !IsValid(this) then return 0 end
 	if !this:IsPlayer() then return 0 end
 	if this:IsSuperAdmin() then return 1 else return 0 end
 end
 
 e2function number entity:isOwner()
-	if !validEntity(this) then return 0 end
+	if !IsValid(this) then return 0 end
 	if !this:IsPlayer() then return 0 end
 	if this:IsOwner() then return 1 else return 0 end
 end
 
 ///--- 3k ---\\\
 e2function number entity:credits()
-	if !validEntity(this) || !this:IsPlayer() then return 0 end
+	if !IsValid(this) || !this:IsPlayer() then return 0 end
 	return TK.DB:GetPlayerData(this, "player_info").credits
 end
 
 e2function number entity:score()
-	if !validEntity(this) || !this:IsPlayer() then return 0 end
+	if !IsValid(this) || !this:IsPlayer() then return 0 end
 	return TK.DB:GetPlayerData(this, "player_info").score
 end
