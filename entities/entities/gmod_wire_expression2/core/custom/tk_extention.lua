@@ -60,7 +60,7 @@ end
 
 ///--- Format ---\\\
 e2function string format(number num)
-	return AU:Format(num)
+	return TK:Format(num)
 end
 
 ///--- Sequence ---\\\
@@ -301,12 +301,10 @@ end
 ///--- 3k ---\\\
 e2function number entity:credits()
 	if !validEntity(this) || !this:IsPlayer() then return 0 end
-	local credits = AU:GetPlayerData(this:GetNWString("UID"), "credits")
-	return credits
+	return TK.DB:GetPlayerData(this, "player_info").credits
 end
 
 e2function number entity:score()
 	if !validEntity(this) || !this:IsPlayer() then return 0 end
-	local score = AU:GetPlayerData(this:GetNWString("UID"), "score")
-	return score
+	return TK.DB:GetPlayerData(this, "player_info").score
 end
