@@ -116,6 +116,42 @@ hook.Add("Initialize", "EntSpawn", function()
         Spawn(self)
         gamemode.Call("EntitySpawned", self)
     end
+    
+    local CleanUp = game.CleanUpMap
+    function game.CleanUpMap(bln, filters)
+        local data = filters || {}
+        table.insert(data, "at_planet")
+        table.insert(data, "at_star")
+        
+        CleanUp(bln, data)
+        
+        if !SERVER then return end
+        
+        for k,v in pairs(TK.SpawnedEnts) do
+            if IsValid(v) then v:Remove() end
+            TK.SpawnedEnts[k] = nil
+        end
+        
+        for k,v in pairs(TK.Ents) do
+            local ent = ents.Create(v.ent)
+            if v.model then ent:SetModel(v.model) end
+
+            ent:SetPos(v.pos)
+            ent:SetAngles(v.ang)
+            ent:Spawn()
+            ent:SetUnFreezable(true)
+            
+            local phys = ent:GetPhysicsObject()
+            if phys:IsValid() then phys:EnableMotion(false) end
+            if v.notsolid then ent:SetNotSolid(true) end
+            if v.color then 
+                ent:SetColor(v.color) 
+                ent:SetRenderMode(RENDERMODE_TRANSALPHA)
+            end
+            
+            table.insert(TK.SpawnedEnts, ent)
+        end
+    end
 end)
 
 LoadModules()

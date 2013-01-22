@@ -96,33 +96,7 @@ end
 
 ///--- Map Setup ---\\\
 hook.Add("InitPostEntity", "TKSetup", function()
-	timer.Simple(1, function()
-		for k,v in pairs(ents.GetAll()) do
-			if v:GetClass() == "prop_physics" then
-				v:Remove()
-			end
-		end
-
-		for k,v in pairs(TK.Ents) do
-			local ent = ents.Create(v.ent)
-			if v.model then ent:SetModel(v.model) end
-
-			ent:SetPos(v.pos)
-			ent:SetAngles(v.ang)
-			ent:Spawn()
-			ent:SetUnFreezable(true)
-            
-			local phys = ent:GetPhysicsObject()
-			if phys:IsValid() then phys:EnableMotion(false) end
-            if v.notsolid then ent:SetNotSolid(true) end
-            if v.color then 
-                ent:SetColor(v.color) 
-                ent:SetRenderMode(RENDERMODE_TRANSALPHA)
-            end
-            
-			table.insert(TK.SpawnedEnts, ent)
-		end
-	end)
+    game.CleanUpMap()
 end)
 ///--- ---\\\
 

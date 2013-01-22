@@ -17,12 +17,6 @@ function ENT:Initialize()
 	self.atmosphere.temphot 	= 290
 
     self.atmosphere.resources 	= {}
-	
-	timer.Create(tostring(self).."_windspeed", 10, 0, function()
-		if self.atmosphere.wind then
-			self.atmosphere.windspeed = math.random(0, 100)
-		end
-	end)
 end
 
 function ENT:IsPlanet()
