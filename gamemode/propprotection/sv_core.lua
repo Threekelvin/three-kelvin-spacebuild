@@ -450,6 +450,7 @@ end)
 
 hook.Add("EntitySpawned", "PP_OEC", function(ent)
     timer.Simple(0.1, function()
+        if !IsValid(ent) then return end
         local owner, id = PP.GetOwner(ent)
         if !owner && !id then
             local Parent = ent:GetParent()
