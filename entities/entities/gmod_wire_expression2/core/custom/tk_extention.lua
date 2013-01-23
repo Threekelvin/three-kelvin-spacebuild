@@ -59,7 +59,7 @@ end
 
 ///--- Loadouts ---\\\
 e2function array getLoadout()
-	local loadout = TK.DB:GetPlayerData(ply, "player_loadout")
+	local loadout = TK.DB:GetPlayerData(self.player, "player_loadout")
 	local validents = {}
 	for k,v in pairs(loadout) do
 		if string.match(k, "[%w]+$") != "item" then continue end
