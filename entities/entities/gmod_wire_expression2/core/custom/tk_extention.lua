@@ -56,7 +56,17 @@ e2function number entity:getUnitResourceCapacity(string res)
     if !this.IsTKRD then return 0 end
     return this:GetUnitResourceCapacity(res)
 end
-///--- ---\\\
+
+///--- Loadouts ---\\\
+e2function array getLoadout()
+	local loadout = TK.DB:GetPlayerData(ply, "player_loadout")
+	local validents = {}
+	for k,v in pairs(loadout) do
+		if string.match(k, "[%w]+$") != "item" then continue end
+		table.insert(validents, v)
+	end
+	return validents
+end
 
 ///--- RD Spawning ---\\\
 local function CreateRD(self,class,model,pos,angles,freeze)
@@ -126,7 +136,6 @@ e2function entity rdSpawn(entity template, vector pos, angle rot, number frozen)
 	if not IsValid(template) then return nil end
 	return CreateRD(self,template:GetClass(),template:GetModel(),Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
 end
-///--- ---\\\
 
 ///--- Format ---\\\
 e2function string format(number num)
