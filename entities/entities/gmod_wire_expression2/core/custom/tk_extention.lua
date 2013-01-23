@@ -92,39 +92,39 @@ local function CreateRD(self,class,model,pos,angles,freeze)
 end
 
 e2function entity rdSpawn(string class, string model, number frozen)
-	return PropCore.CreateProp(self,class,model,self.entity:GetPos()+self.entity:GetUp()*25,self.entity:GetAngles(),frozen)
+	return CreateRD(self,class,model,self.entity:GetPos()+self.entity:GetUp()*25,self.entity:GetAngles(),frozen)
 end
 
 e2function entity rdSpawn(entity template, number frozen)
 	if not IsValid(template) then return nil end
-	return PropCore.CreateProp(self,template:GetClass(),template:GetModel(),self.entity:GetPos()+self.entity:GetUp()*25,self.entity:GetAngles(),frozen)
+	return CreateRD(self,template:GetClass(),template:GetModel(),self.entity:GetPos()+self.entity:GetUp()*25,self.entity:GetAngles(),frozen)
 end
 
 e2function entity rdSpawn(string class, string model, vector pos, number frozen)
-	return PropCore.CreateProp(self,class,model,Vector(pos[1],pos[2],pos[3]),self.entity:GetAngles(),frozen)
+	return CreateRD(self,class,model,Vector(pos[1],pos[2],pos[3]),self.entity:GetAngles(),frozen)
 end
 
 e2function entity rdSpawn(entity template, vector pos, number frozen)
 	if not IsValid(template) then return nil end
-	return PropCore.CreateProp(self,template:GetClass(),template:GetModel(),Vector(pos[1],pos[2],pos[3]),self.entity:GetAngles(),frozen)
+	return CreateRD(self,template:GetClass(),template:GetModel(),Vector(pos[1],pos[2],pos[3]),self.entity:GetAngles(),frozen)
 end
 
 e2function entity rdSpawn(string class, string model, angle rot, number frozen)
-	return PropCore.CreateProp(self,class,model,self.entity:GetPos()+self.entity:GetUp()*25,Angle(rot[1],rot[2],rot[3]),frozen)
+	return CreateRD(self,class,model,self.entity:GetPos()+self.entity:GetUp()*25,Angle(rot[1],rot[2],rot[3]),frozen)
 end
 
 e2function entity rdSpawn(entity template, angle rot, number frozen)
 	if not IsValid(template) then return nil end
-	return PropCore.CreateProp(self,template:GetClass(),template:GetModel(),self.entity:GetPos()+self.entity:GetUp()*25,Angle(rot[1],rot[2],rot[3]),frozen)
+	return CreateRD(self,template:GetClass(),template:GetModel(),self.entity:GetPos()+self.entity:GetUp()*25,Angle(rot[1],rot[2],rot[3]),frozen)
 end
 
 e2function entity rdSpawn(string class, string model, vector pos, angle rot, number frozen)
-	return PropCore.CreateProp(self,class,model,Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
+	return CreateRD(self,class,model,Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
 end
 
 e2function entity rdSpawn(entity template, vector pos, angle rot, number frozen)
 	if not IsValid(template) then return nil end
-	return PropCore.CreateProp(self,template:GetClass(),template:GetModel(),Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
+	return CreateRD(self,template:GetClass(),template:GetModel(),Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
 end
 ///--- ---\\\
 
