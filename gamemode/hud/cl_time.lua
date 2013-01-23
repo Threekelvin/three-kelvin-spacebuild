@@ -8,6 +8,7 @@ Hud.show = CreateClientConVar("3k_show_hud_time", "1", true, false)
 Hud.angleRatio = 100
 Hud.moving = true
 Hud.width = 0
+self.verticies = {}
 Hud.font = "TKFont18"
 
 function Hud:CreateData()
@@ -23,7 +24,6 @@ function Hud:CreateData()
 		{x = self.width - self.shortEdge, y =  self.tallEdge},
 		{x = self.width - self.longEdge, y = 0}
 	}
-	self.verticies = {}
     
     surface.SetFont(self.font)
     local w, h = surface.GetTextSize("TEST")

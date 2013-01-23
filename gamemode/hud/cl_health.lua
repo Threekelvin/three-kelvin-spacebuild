@@ -9,6 +9,7 @@ Hud.angleRatio = 100
 Hud.moving = true
 Hud.width = 0
 Hud.font = "TKFont18"
+self.verticies = {}
 Hud.mats = {
     Material("icon18/heart.png"),
     Material("icon18/lightning.png"),
@@ -50,7 +51,6 @@ function Hud:CreateData()
 		{x = self.shortEdge, y = self.height - self.tallEdge - 1},
 		{x = self.longEdge, y = self.height}
 	}
-	self.verticies = {}
 end
 
 function Hud:RotateVerticies(angle)
