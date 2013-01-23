@@ -6,7 +6,7 @@ function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	
 	self:AddResource("oxygen", self.data.oxygen)
-    self:AddResource("water", self.data.nitrogen)
+    self:AddResource("nitrogen", self.data.nitrogen)
 	self:AddResource("water", self.data.water)
 	
 	WireLib.CreateOutputs(self, {"Oxygen", "MaxOxygen", "Nitrogen", "MaxNitrogen", "Water", "MaxWater"})

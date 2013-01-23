@@ -149,6 +149,10 @@ TK.PP.EntityBlackList = {
     "prop_thumper"
 }
 
+TK.PP.ToolsBlackList = {
+    "localphysics"
+}
+
 TK.PP.BadTools = {
     "wire_winch",
     "wire_hydraulic",

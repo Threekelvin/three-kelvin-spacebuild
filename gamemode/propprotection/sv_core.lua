@@ -229,6 +229,7 @@ concommand.Add("pp_cleanup", PP.CleanUp)
 function PP.CanToolEnt(ply, toolmode, ent)
 	if !IsValid(ent) then return end
 	if ent:IsPlayer() then return false end
+    if table.HasValue(TK.PP.ToolsBlackList, toolmode) then return false end
 	
 	local owner, uid = PP.GetOwner(ent)
 	if IsValid(owner) then
@@ -263,6 +264,7 @@ function PP.CanTool(ply, tr, toolmode)
 
 	local ent = tr.Entity
 	if ent:IsPlayer() then return false end
+    if table.HasValue(TK.PP.ToolsBlackList, toolmode) then return false end
 
 	local owner, uid = PP.GetOwner(ent)
 	if IsValid(owner) then
@@ -447,25 +449,28 @@ hook.Add("Initialize", "PP_FO", function()
 end)
 
 hook.Add("EntitySpawned", "PP_OEC", function(ent)
-	local owner, id = PP.GetOwner(ent)
-	if !owner && !id then
-		local Parent = ent:GetParent()
-		if IsValid(Parent) then
-			local owner, id = PP.GetOwner(Parent)
-			if id then 
-				PP.SetOwner(owner, ent, id)
-				return
-			end
-		end
-		
-		for k,v in pairs(constraint.GetAllConstrainedEntities(ent) || {}) do
-			local owner, id = PP.GetOwner(v)
-			if id then 
-				PP.SetOwner(owner, ent, id)
-				break
-			end
-		end
-	end
+    timer.Simple(0.1, function()
+        if !IsValid(ent) then return end
+        local owner, id = PP.GetOwner(ent)
+        if !owner && !id then
+            local Parent = ent:GetParent()
+            if IsValid(Parent) then
+                local owner, id = PP.GetOwner(Parent)
+                if id then 
+                    PP.SetOwner(owner, ent, id)
+                    return
+                end
+            end
+            
+            for k,v in pairs(constraint.GetAllConstrainedEntities(ent) || {}) do
+                local owner, id = PP.GetOwner(v)
+                if id then 
+                    PP.SetOwner(owner, ent, id)
+                    break
+                end
+            end
+        end
+    end)
 end)
 ///--- ---\\\
 
