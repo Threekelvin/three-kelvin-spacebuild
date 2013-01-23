@@ -109,6 +109,11 @@ local PLAYER_LINE =
 			self.Rank:SetMaterial( self.Player:GetIcon() )
 			self.Rank:SetToolTip( self.Player:GetGroup() )
 		end
+		
+		if ( self.StrName == nil || self.StrName != self.Player:Name() ) then
+			self.StrName		=	self.Player:Name()
+			self.Name:SetText( self.StrName )
+		end
 
 		if ( self.NumScore == nil || self.NumScore != self.Player:GetNWInt("TKScore", 0) ) then
 			self.NumScore		=	self.Player:GetNWInt("TKScore", 0)
