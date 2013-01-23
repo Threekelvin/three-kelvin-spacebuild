@@ -8,7 +8,7 @@ Hud.show = CreateClientConVar("3k_show_hud_time", "1", true, false)
 Hud.angleRatio = 100
 Hud.moving = true
 Hud.width = 0
-self.verticies = {}
+Hud.verticies = {}
 Hud.font = "TKFont18"
 
 function Hud:CreateData()

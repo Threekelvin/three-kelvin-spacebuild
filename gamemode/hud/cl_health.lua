@@ -9,7 +9,7 @@ Hud.angleRatio = 100
 Hud.moving = true
 Hud.width = 0
 Hud.font = "TKFont18"
-self.verticies = {}
+Hud.verticies = {}
 Hud.mats = {
     Material("icon18/heart.png"),
     Material("icon18/lightning.png"),
