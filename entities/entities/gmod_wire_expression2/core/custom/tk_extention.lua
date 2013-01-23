@@ -82,7 +82,7 @@ local function CreateRD(self,class,model,pos,angles,freeze)
 	
 	ply:AddCount(class, ent)
 	
-	undo.Create(self.Name)
+	undo.Create(class)
 		undo.AddEntity(ent)
 		undo.SetPlayer(ply)
 	undo.Finish()
