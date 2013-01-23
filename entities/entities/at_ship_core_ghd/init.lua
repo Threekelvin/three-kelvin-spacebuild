@@ -46,7 +46,7 @@ function ENT:TurnOn()
 	if self:GetActive() || !self:IsLinked() then return end
 	
 	GH.RegisterHull(self, 0)
-    GH.UpdateHull(self)
+    GH.UpdateHull(self, self:GetUp())
 	self:SetActive(true)
     
     local env = self:GetEnv()
@@ -64,6 +64,13 @@ function ENT:DoThink(eff)
     if !GH.SHIPS[self] then return end
     
 	local env
+    for k,v in ipairs(self.tk_env.envlist) do
+		if v != self then
+			env = v
+			break
+		end
+	end
+    
 	local size = table.Count(GH.SHIPS[self].Welds)
     local rate = 5 * size
     
@@ -97,13 +104,6 @@ function ENT:DoThink(eff)
             self.atmosphere.resources[k] = nil
         end
     end
-	
-	for k,v in ipairs(self.tk_env.envlist) do
-		if v != self then
-			env = v
-			break
-		end
-	end
 	
 	self.atmosphere.noclip = env.atmosphere.noclip
     self.atmosphere.tempcold = 290 - (290 - env.atmosphere.tempcold) * (1 - eff)
