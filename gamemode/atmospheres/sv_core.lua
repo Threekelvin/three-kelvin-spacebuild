@@ -336,6 +336,13 @@ hook.Add("InitPostEntity", "TKAT", function()
 	RegisterAtmospheres()
 	RegisterSuns()
 	print("---- TK Atmospheres Loaded ----")
+    
+    timer.Create("TKAT_wind", 10, 0, function()
+        for k,v in pairs(Planets) do
+            if !IsValid(v) || !v.atmosphere.wind then continue end
+            v.atmosphere.windspeed = math.random(0, 100)
+        end
+    end)
 end)
 
 hook.Add("PlayerInitialSpawn", "TKAT", function(ply)

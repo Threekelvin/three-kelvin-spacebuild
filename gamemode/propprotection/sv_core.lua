@@ -447,25 +447,27 @@ hook.Add("Initialize", "PP_FO", function()
 end)
 
 hook.Add("EntitySpawned", "PP_OEC", function(ent)
-	local owner, id = PP.GetOwner(ent)
-	if !owner && !id then
-		local Parent = ent:GetParent()
-		if IsValid(Parent) then
-			local owner, id = PP.GetOwner(Parent)
-			if id then 
-				PP.SetOwner(owner, ent, id)
-				return
-			end
-		end
-		
-		for k,v in pairs(constraint.GetAllConstrainedEntities(ent) || {}) do
-			local owner, id = PP.GetOwner(v)
-			if id then 
-				PP.SetOwner(owner, ent, id)
-				break
-			end
-		end
-	end
+    timer.Simple(0.1, function()
+        local owner, id = PP.GetOwner(ent)
+        if !owner && !id then
+            local Parent = ent:GetParent()
+            if IsValid(Parent) then
+                local owner, id = PP.GetOwner(Parent)
+                if id then 
+                    PP.SetOwner(owner, ent, id)
+                    return
+                end
+            end
+            
+            for k,v in pairs(constraint.GetAllConstrainedEntities(ent) || {}) do
+                local owner, id = PP.GetOwner(v)
+                if id then 
+                    PP.SetOwner(owner, ent, id)
+                    break
+                end
+            end
+        end
+    end)
 end)
 ///--- ---\\\
 
