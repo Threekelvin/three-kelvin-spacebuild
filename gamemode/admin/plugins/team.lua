@@ -17,7 +17,7 @@ if SERVER then
 				TK.AM:SystemMessage({"Multiple Targets Found"}, {ply}, 2)
 			else
 				local tar = targets[1]
-				local faction = math.Clamp(math.Round(tonumber(arg[2])), 0, 4)
+				local faction = math.Clamp(math.Round(tonumber(arg[2])), 1, 4)
 				
 				if tar:IsListenServerHost() then
 					TK.AM:SystemMessage({"You Can Not Change", tar, "'s Rank"}, {ply}, 2)
