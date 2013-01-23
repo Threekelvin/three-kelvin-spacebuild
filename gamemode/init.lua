@@ -85,7 +85,8 @@ function GM:PlayerSpawn(ply)
     ply:SetPlayerColor(Vector(col))
 
     --local col = ply:GetInfo("cl_weaponcolor")
-    ply:SetWeaponColor(team.GetColor(ply:Team()))
+    local col = team.GetColor(ply:Team())
+    ply:SetWeaponColor(Vector(col.r / 255, col.g / 255, col.b / 255))
 
     player_manager.OnPlayerSpawn(ply)
 	player_manager.RunClass(ply, "Spawn")
