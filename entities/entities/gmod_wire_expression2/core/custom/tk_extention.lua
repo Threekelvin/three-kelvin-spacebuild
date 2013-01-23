@@ -58,6 +58,76 @@ e2function number entity:getUnitResourceCapacity(string res)
 end
 ///--- ---\\\
 
+///--- RD Spawning ---\\\
+local function CreateRD(self,class,model,pos,angles,freeze)
+	if !TK.RD.EntityData[class] then return nil end
+	if !TK.RD.EntityData[class][model] then
+		model = table.GetFirstKey(TK.RD.EntityData[class])
+	end
+
+	local ply = self.player
+	if !ply:CheckLimit(class) then return false end
+	local ent = ents.Create(class)
+	ent:SetModel(model)
+	ent:SetPos(pos)
+	ent:SetAngles(angles)
+	ent:Spawn()
+
+	local phys = ent:GetPhysicsObject()
+	if phys:IsValid() then
+		if(angles!=nil) then phys:SetAngles( angles ) end
+		phys:Wake()
+		if(freeze>0) then phys:EnableMotion( false ) end
+	end
+	
+	ply:AddCount(class, ent)
+	
+	undo.Create(self.Name)
+		undo.AddEntity(ent)
+		undo.SetPlayer(ply)
+	undo.Finish()
+
+	ply:AddCleanup(self.Name, ent)
+	return ent
+end
+
+e2function entity rdSpawn(string class, string model, number frozen)
+	return PropCore.CreateProp(self,class,model,self.entity:GetPos()+self.entity:GetUp()*25,self.entity:GetAngles(),frozen)
+end
+
+e2function entity rdSpawn(entity template, number frozen)
+	if not IsValid(template) then return nil end
+	return PropCore.CreateProp(self,template:GetClass(),template:GetModel(),self.entity:GetPos()+self.entity:GetUp()*25,self.entity:GetAngles(),frozen)
+end
+
+e2function entity rdSpawn(string class, string model, vector pos, number frozen)
+	return PropCore.CreateProp(self,class,model,Vector(pos[1],pos[2],pos[3]),self.entity:GetAngles(),frozen)
+end
+
+e2function entity rdSpawn(entity template, vector pos, number frozen)
+	if not IsValid(template) then return nil end
+	return PropCore.CreateProp(self,template:GetClass(),template:GetModel(),Vector(pos[1],pos[2],pos[3]),self.entity:GetAngles(),frozen)
+end
+
+e2function entity rdSpawn(string class, string model, angle rot, number frozen)
+	return PropCore.CreateProp(self,class,model,self.entity:GetPos()+self.entity:GetUp()*25,Angle(rot[1],rot[2],rot[3]),frozen)
+end
+
+e2function entity rdSpawn(entity template, angle rot, number frozen)
+	if not IsValid(template) then return nil end
+	return PropCore.CreateProp(self,template:GetClass(),template:GetModel(),self.entity:GetPos()+self.entity:GetUp()*25,Angle(rot[1],rot[2],rot[3]),frozen)
+end
+
+e2function entity rdSpawn(string class, string model, vector pos, angle rot, number frozen)
+	return PropCore.CreateProp(self,class,model,Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
+end
+
+e2function entity rdSpawn(entity template, vector pos, angle rot, number frozen)
+	if not IsValid(template) then return nil end
+	return PropCore.CreateProp(self,template:GetClass(),template:GetModel(),Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
+end
+///--- ---\\\
+
 ///--- Format ---\\\
 e2function string format(number num)
 	return TK:Format(num)

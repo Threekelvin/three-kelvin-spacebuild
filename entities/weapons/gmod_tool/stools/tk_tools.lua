@@ -31,7 +31,8 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 		local ent = ents.Create(class)
 		ent:SetModel(self:SelectModel())
 		ent:SetPos(trace.HitPos)
-		ent:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
+		local angles = trace.HitNormal:Angle() + Angle(90,0,0)
+		ent:SetAngles(angles)
 		ent:Spawn()
 		ent:SetPos(trace.HitPos + trace.HitNormal * ((ent:OBBMaxs().z - ent:OBBMins().z) / 2 - ent:OBBCenter().z))
 		
@@ -48,10 +49,12 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 			end
 		end
 		
-		if self:GetClientNumber("makefrozen", 1) == 1 then
-			local phys = ent:GetPhysicsObject()
-			if phys:IsValid() then
-				phys:Wake()
+		
+		local phys = ent:GetPhysicsObject()
+		if phys:IsValid() then
+			if(angles!=nil) then phys:SetAngles( angles ) end
+			phys:Wake()
+			if self:GetClientNumber("makefrozen", 1) == 1 then
 				phys:EnableMotion(false)
 			end
 		end
