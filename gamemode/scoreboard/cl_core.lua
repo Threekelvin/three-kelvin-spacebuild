@@ -259,14 +259,11 @@ local SCORE_BOARD =
 		table.sort( Players, function(a, b)
 			if ( a:Team() > b:Team() ) then return true end
 			if ( a:Team() == b:Team() ) then
-				if ( a:GetNWInt("TKRank", 0) > b:GetNWInt("TKRank", 0) ) then return true end
-				if ( a:GetNWInt("TKRank", 0) == b:GetNWInt("TKRank", 0) ) then
-					if ( a:GetNWInt("TKScore", 0) > b:GetNWInt("TKScore", 0) ) then return true end
-					if ( a:GetNWInt("TKScore", 0) == b:GetNWInt("TKScore", 0) ) then
-						if ( a:GetNWInt("TKPlaytime", 0) > b:GetNWInt("TKPlaytime", 0) ) then return true end
-						if ( a:GetNWInt("TKPlaytime", 0) == b:GetNWInt("TKPlaytime", 0) ) then
-							return a:Name() < b:Name()
-                        end
+				if ( a:GetNWInt("TKScore", 0) > b:GetNWInt("TKScore", 0) ) then return true end
+				if ( a:GetNWInt("TKScore", 0) == b:GetNWInt("TKScore", 0) ) then
+					if ( a:GetNWInt("TKPlaytime", 0) > b:GetNWInt("TKPlaytime", 0) ) then return true end
+					if ( a:GetNWInt("TKPlaytime", 0) == b:GetNWInt("TKPlaytime", 0) ) then
+						return a:Name() < b:Name()
 					end
 				end
 			end
