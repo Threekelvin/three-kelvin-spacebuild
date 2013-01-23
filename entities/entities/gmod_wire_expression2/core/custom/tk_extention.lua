@@ -66,7 +66,7 @@ local function CreateRD(self,class,model,pos,angles,freeze)
 	end
 
 	local ply = self.player
-	if !ply:CheckLimit(class) then return false end
+	if !ply:CheckLimit(class) then return nil end
 	local ent = ents.Create(class)
 	ent:SetModel(model)
 	ent:SetPos(pos)
