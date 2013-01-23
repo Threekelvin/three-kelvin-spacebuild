@@ -17,12 +17,11 @@ if SERVER then
 				TK.AM:SystemMessage({"Multiple Targets Found"}, {ply}, 2)
 			else
 				local tar = targets[1]
-				local faction = math.Clamp(math.Round(tonumber(arg[2])), 1, 4)
+				local faction = math.floor(tonumber(arg[2]))
+                local teams = team.GetAllTeams()
 				
-				if tar:IsListenServerHost() then
-					TK.AM:SystemMessage({"You Can Not Change", tar, "'s Rank"}, {ply}, 2)
-				elseif !faction then
-					TK.AM:SystemMessage({"No Team Selected"}, {ply}, 2)
+				if !teams[faction] || !teams[faction].Joinable then
+					TK.AM:SystemMessage({"No Valid Team Selected"}, {ply}, 2)
 				else
 					TK.DB:UpdatePlayerData(tar, "player_team", {team = faction})
 					TK.AM:SystemMessage({ply, " has added ", tar, " to the ", team.GetColor(faction), team.GetName(faction)})

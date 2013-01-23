@@ -79,22 +79,21 @@ hook.Add("HUDPaint", "TKHUD_Admin", function()
     if !LocalPlayer():Alive() || !LocalPlayer():IsModerator() then return end
     
     for k,ply in pairs(player.GetAll()) do
-        if ply != LocalPlayer() then
-			local vec = ply:LocalToWorld( ply:OBBCenter() )
-			local localvec = LocalPlayer():LocalToWorld( LocalPlayer():OBBCenter() )
-			local boxAlpha = math.Clamp( (localvec - vec):LengthSqr()/4000, 45, 300 ) - 45
-			local teamCol = team.GetColor(ply:Team())
+        if ply == LocalPlayer() || !ply:Alive() then continue end
+        local vec = ply:LocalToWorld( ply:OBBCenter() )
+        local localvec = LocalPlayer():LocalToWorld( LocalPlayer():OBBCenter() )
+        local boxAlpha = math.Clamp( (localvec - vec):LengthSqr()/4000, 45, 300 ) - 45
+        local teamCol = team.GetColor(ply:Team())
 
-			local textPos = (vec + Vector( 0, 0, 0.9 * ply:BoundingRadius())):ToScreen()
-			local boxPos = vec:ToScreen()
-			textPos.y = math.min( textPos.y, boxPos.y - 18 )
+        local textPos = (vec + Vector( 0, 0, 0.9 * ply:BoundingRadius())):ToScreen()
+        local boxPos = vec:ToScreen()
+        textPos.y = math.min( textPos.y, boxPos.y - 18 )
 
-            draw.SimpleText(ply:Name(), "TKFont15", textPos.x, textPos.y, teamCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-            
-            surface.SetDrawColor(Color(255, 255, 255, boxAlpha))
-			surface.SetMaterial(ply:GetIcon())
-			surface.DrawTexturedRect(boxPos.x - 8, boxPos.y - 8, 16, 16)
-        end
+        draw.SimpleText(ply:Name(), "TKFont15", textPos.x, textPos.y, teamCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        
+        surface.SetDrawColor(Color(255, 255, 255, boxAlpha))
+        surface.SetMaterial(ply:GetIcon())
+        surface.DrawTexturedRect(boxPos.x - 8, boxPos.y - 8, 16, 16)
     end
 end)
 

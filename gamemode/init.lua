@@ -10,6 +10,7 @@ gameevent.Listen("player_disconnect")
 
 local function SetSpawnPoint(ply, side)
 	local Spawn = TK.SpawnPoints[side]
+    if !Spawn then Spawn = TK.SpawnPoints[1] end
     
 	for I=1, 8 do
 		local RotVec = Vector(100, 0, 36)
@@ -83,8 +84,8 @@ function GM:PlayerSpawn(ply)
     local col = ply:GetInfo("cl_playercolor")
     ply:SetPlayerColor(Vector(col))
 
-    local col = ply:GetInfo("cl_weaponcolor")
-    ply:SetWeaponColor(Vector(col))
+    --local col = ply:GetInfo("cl_weaponcolor")
+    ply:SetWeaponColor(team.GetColor(ply:Team()))
 
     player_manager.OnPlayerSpawn(ply)
 	player_manager.RunClass(ply, "Spawn")
