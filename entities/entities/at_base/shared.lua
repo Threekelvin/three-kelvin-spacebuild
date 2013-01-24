@@ -1,5 +1,5 @@
 
-DEFINE_BASECLASS("gmod_base")
+DEFINE_BASECLASS("base_anim")
 
 ENT.PrintName	= "TK Atmosphere"
 ENT.Author		= "Ghost400"

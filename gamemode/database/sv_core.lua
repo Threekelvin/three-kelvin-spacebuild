@@ -45,6 +45,9 @@ function MySQL.NetworkValue(ply, idx, data)
 		TK.AM:SetRank(ply, tonumber(data))
 	elseif idx == "team" then
 		ply:SetTeam(tonumber(data))
+        
+        local col = team.GetColor(ply:Team())
+        ply:SetWeaponColor(Vector(col.r / 255, col.g / 255, col.b / 255))
 	end
 end
 

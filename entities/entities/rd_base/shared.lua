@@ -1,5 +1,5 @@
 
-DEFINE_BASECLASS("base_wire_entity")
+DEFINE_BASECLASS("base_anim")
 
 ENT.Category = "3K Spacebuild"
 ENT.PrintName = "3K RD Base Ent"

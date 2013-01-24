@@ -19,7 +19,7 @@ if SERVER then
 			if #targets == 0 then
 				TK.AM:SystemMessage({"No Admins Found"}, {ply}, 2)
 			else
-				msgdata = {Color(255,140,0), "[Admin] ", ply}
+				msgdata = {false, Color(255,140,0), "[Admin] ", ply}
 				table.insert(msgdata, ": "..table.concat(arg, " "))
 				TK.AM:SystemMessage(msgdata, targets)
 			end

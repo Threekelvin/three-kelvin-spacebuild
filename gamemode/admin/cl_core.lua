@@ -6,7 +6,11 @@ TK.AM = TK.AM || {}
 
 ///--- Messages ---\\\
 local function MessageSetup(arg)
-	local Table = {Color(255,140,0), "[3K] "}
+    local Table = {}
+    if arg[1] then
+        table.insert(Table, Color(255,140,0))
+		table.insert(Table, "[3K] ")
+    end
 	
 	for k,v in ipairs(arg) do
 		if type(v) == "table" then

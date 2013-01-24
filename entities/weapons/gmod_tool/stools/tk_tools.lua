@@ -94,7 +94,7 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 			local Weld = vgui.Create("DCheckBoxLabel")
 			Weld:SetText("Weld")
 			Weld:SetConVar(class.."_weld")
-			Weld:SetValue(1)
+			Weld:SetValue(0)
 			Weld:SizeToContents()
 			CPanel:AddItem(Weld)
 			
