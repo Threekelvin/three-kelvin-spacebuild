@@ -122,7 +122,7 @@ hook.Add("Initialize", "TK_SBEPBuild", function()
 		if !IsValid(Build.prop) then return end
 		
 		Build.targets = {}
-		for k,v in pairs(ents.FindInSphere(Build.prop:GetPos(), Build.prop:BoundingRadius() + 250)) do
+		for k,v in pairs(TK:FindInSphere(Build.prop:GetPos(), Build.prop:BoundingRadius() + 250)) do
 			if Build.partdata[v:GetModel()] then
 				table.insert(Build.targets, v)
 			end
