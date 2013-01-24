@@ -63,7 +63,7 @@ local function GetLoadout(self)
 	local validents = {}
 	local key
 	for k,v in pairs(loadout) do
-		if string.match(k, "[%w]+$") != "item" then continue end
+		if string.match(k, "[%w]+$") != "item" || v == 0 then continue end
 		key = string.sub( k, 1, -6 )
 		validents[key] = v
 	end
