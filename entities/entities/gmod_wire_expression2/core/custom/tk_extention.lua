@@ -123,7 +123,7 @@ e2function entity loSpawn(number item, angle rot, number frozen)
 	return CreateRD(self,item,self.entity:GetPos()+self.entity:GetUp()*25,Angle(rot[1],rot[2],rot[3]),frozen)
 end
 
-e2function entity loSpawn(string class, string model, vector pos, angle rot, number frozen)
+e2function entity loSpawn(string slot, string model, vector pos, angle rot, number frozen)
 	local loadout = GetLoadout(self)
 	return CreateRD(self,loadout[slot],Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
 end
