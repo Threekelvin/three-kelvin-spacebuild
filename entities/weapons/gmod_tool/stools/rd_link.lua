@@ -4,7 +4,7 @@ TOOL.Command		= nil
 TOOL.ConfigName		= nil
 TOOL.Tab = "3K Spacebuild"
 TOOL.Selected = {}
-TOOL.SelectedColor = {}
+TOOL.OldColor = {}
 
 if CLIENT then
 	language.Add("tool.rd_link.name", "Network Link Tool")
@@ -15,17 +15,22 @@ else
 		if !IsValid(ent) then return end
 		local entid = ent:EntIndex()
 		self.Selected[entid] = ent
-		self.SelectedColor[entid] = {ent:GetColor()}
-		ent:SetColor(0, 0, 200, 200)
+		self.OldColor[entid] = ent:GetColor()
+		ent:SetColor(Color(0, 0, 200, 200))
 	end
 
 	function TOOL:UnSelectEnt(ent)
-		if !IsValid(ent) then return end
+		if !IsValid(ent) then 
+            self.Selected[idx] = nil
+            self.OldColor[idx] = nil
+            return 
+        end
+        
 		local entid = ent:EntIndex()
 		self.Selected[entid] = nil
-		local col = self.SelectedColor[entid]
-		ent:SetColor(col[1], col[2], col[3], col[4])
-		self.SelectedColor[entid] = nil
+		local col = self.OldColor[entid]
+		ent:SetColor(col)
+		self.OldColor[entid] = nil
 	end
 
 	function TOOL:IsEntSelected(ent)
@@ -77,7 +82,7 @@ function TOOL:RightClick(trace)
 	end
 	
 	self.Selected = {}
-	self.SelectedColor = {}
+	self.OldColor = {}
 	return true
 end
 

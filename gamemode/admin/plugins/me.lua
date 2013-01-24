@@ -8,7 +8,7 @@ PLUGIN.Level      = 1
 if SERVER then
 	function PLUGIN.Call(ply, arg)
 		if ply:HasAccess(PLUGIN.Level) then
-			local msgdata = {ply, team.GetColor(ply:Team())}
+			local msgdata = {false, ply, team.GetColor(ply:Team())}
 			
 			table.insert(msgdata, table.concat(arg, " "))
 			TK.AM:SystemMessage(msgdata)
