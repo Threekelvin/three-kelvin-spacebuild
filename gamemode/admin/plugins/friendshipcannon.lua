@@ -83,7 +83,7 @@ if SERVER then
 				
 				local radius = 200
 				hook.Add("Tick", "OFCThink", function()
-					for k, v in pairs(ents.FindInSphere(HitPos, radius)) do
+					for k, v in pairs(TK:FindInSphere(HitPos, radius)) do
 						if IsValid(v) then
 							if v:IsPlayer() && v:Alive() then
 								v:GodDisable()

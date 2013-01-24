@@ -110,7 +110,7 @@ hook.Add("Tick", "TKSpawning", function()
 			pos:Rotate(Angle(math.random(0, 360), math.random(0, 360), 0))
 			
 			local rand = v.Pos + pos
-			local space = ents.FindInSphere(rand, 1000)
+			local space = TK:FindInSphere(rand, 1000)
 			local CanSpawn = true
 			for k2,v2 in pairs(space) do
 				if IsValid(v2) && IsValid(v2:GetPhysicsObject()) then

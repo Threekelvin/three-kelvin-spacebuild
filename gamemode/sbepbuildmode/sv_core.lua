@@ -170,7 +170,7 @@ function Build.Tick()
 		local ent, ply = tbl[1], tbl[3]
 		if IsValid(ent) && IsValid(ply) then
 			local entdata = Build.partdata[ent:GetModel()]
-			for _,eir in pairs(ents.FindInSphere(ent:LocalToWorld(ent:OBBCenter()), ent:BoundingRadius())) do
+			for _,eir in pairs(TK:FindInSphere(ent:LocalToWorld(ent:OBBCenter()), ent:BoundingRadius())) do
 				if Build.CanAttach(ent, ply, eir) then
 					local point1, point2 = Build.CheckPoints(ent, entdata, eir)
 					if point1 && point2 then
@@ -193,12 +193,12 @@ end
 ///--- Hooks ---\\\
 hook.Add("PhysgunPickup", "TK_SBEPBuild", function(ply, ent)
 	local valid, status = pcall(Build.OnPickUp, ply, ent)
-	if !valid then print(status) end
+	if !valid then print(status) return end
 end)
 
 hook.Add("PhysgunDrop", "TK_SBEPBuild", function(ply, ent)
 	local valid, status = pcall(Build.OnDrop, ply, ent)
-	if !valid then print(status) end
+	if !valid then print(status) return end
 end)
 
 hook.Add("OnPhysgunReload", "TK_SBEPBuild", function(wep, ply)
@@ -206,7 +206,8 @@ hook.Add("OnPhysgunReload", "TK_SBEPBuild", function(wep, ply)
 	if !IsValid(ent) then return end
 	
 	local valid, status = pcall(Build.OnReload, ply, ent)
-	if !valid then print(status) end
+	if !valid then print(status) return end
+    return status
 end)
 
 hook.Add("KeyRelease", "TK_SBEPBuild", function(ply, key)
@@ -214,11 +215,11 @@ hook.Add("KeyRelease", "TK_SBEPBuild", function(ply, key)
 	if !IsValid(ent) then return end
 	
 	local valid, status = pcall(Build.KeyRelease, ply, ent, key)
-	if !valid then print(status) end
+	if !valid then print(status) return end
 end)
 
 hook.Add("Tick", "TK_SBEPBuild", function()
 	local valid, status = pcall(Build.Tick)
-	if !valid then print(status) end
+	if !valid then print(status) return end
 end)
 ///--- ---\\\

@@ -155,4 +155,19 @@ hook.Add("Initialize", "EntSpawn", function()
     end
 end)
 
+
+///--- GHD Fix ---\\\
+function TK:FindInSphere(pos, rad)
+    if ents.RealFindInSphere then
+        local res = ents.RealFindInSphere(pos, rad)
+        for k,v in pairs(res) do
+            if !v.SLIsGhost then continue end
+            table.remove(res, k)
+        end
+        return res
+    end
+    return ents.FindInSphere(pos, rad)
+end
+///--- ---\\\
+
 LoadModules()

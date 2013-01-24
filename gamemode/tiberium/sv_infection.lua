@@ -181,7 +181,7 @@ function Tib:Infect(ent)
 end
 
 function Tib:InfectBlast(ent, radius)
-	for k,v in pairs(ents.FindInSphere(ent:GetPos(), radius)) do
+	for k,v in pairs(TK:FindInSphere(ent:GetPos(), radius)) do
 		Tib:Infect(v)
 	end
 end
