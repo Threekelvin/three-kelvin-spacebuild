@@ -24,7 +24,7 @@ if SERVER then
 					TK.AM:SystemMessage({"No Valid Team Selected"}, {ply}, 2)
 				else
 					TK.DB:UpdatePlayerData(tar, "player_team", {team = faction})
-					TK.AM:SystemMessage({ply, " has added ", tar, " to the ", team.GetColor(faction), team.GetName(faction)})
+					TK.AM:SystemMessage({ply, " has added ", tar, " to ", team.GetColor(faction), team.GetName(faction)})
 				end
 			end
 			
