@@ -56,7 +56,81 @@ e2function number entity:getUnitResourceCapacity(string res)
     if !this.IsTKRD then return 0 end
     return this:GetUnitResourceCapacity(res)
 end
-///--- ---\\\
+
+///--- Loadouts ---\\\
+local function GetLoadout(self)
+	local loadout = TK.DB:GetPlayerData(self.player, "player_loadout")
+	local validents = {}
+	local key
+	for k,v in pairs(loadout) do
+		if string.match(k, "[%w]+$") != "item" || v == 0 then continue end
+		key = string.sub( k, 1, -6 )
+		validents[key] = v
+	end
+	return validents
+end
+
+e2function array getLoadout()
+	return GetLoadout(self)
+end
+
+local function CreateLOent(self,item,pos,angles,freeze)
+	local ply = self.player
+	if !TK.LO:CanSpawn(ply, item) then return nil end
+
+	local ent = TK.LO:SpawnItem(ply, item, pos, angles)
+
+	local phys = ent:GetPhysicsObject()
+	if phys:IsValid() then
+		if(angles!=nil) then phys:SetAngles( angles ) end
+		phys:Wake()
+		if(freeze>0) then phys:EnableMotion( false ) end
+	end
+	
+	undo.Create(ent.PrintName)
+        undo.AddEntity(ent)
+        undo.SetPlayer(ply)
+    undo.Finish()
+	
+	ply:AddCleanup(ent.PrintName, ent)
+    return ent
+end
+
+e2function entity loSpawn(string slot, number frozen)
+	local loadout = GetLoadout(self)
+	return CreateLOent(self,loadout[slot],self.entity:GetPos()+self.entity:GetUp()*25,self.entity:GetAngles(),frozen)
+end
+
+e2function entity loSpawn(number item, number frozen)
+	return CreateLOent(self,item,self.entity:GetPos()+self.entity:GetUp()*25,self.entity:GetAngles(),frozen)
+end
+
+e2function entity loSpawn(string slot, vector pos, number frozen)
+	local loadout = GetLoadout(self)
+	return CreateLOent(self,loadout[slot],Vector(pos[1],pos[2],pos[3]),self.entity:GetAngles(),frozen)
+end
+
+e2function entity loSpawn(number item, vector pos, number frozen)
+	return CreateLOent(self,item,Vector(pos[1],pos[2],pos[3]),self.entity:GetAngles(),frozen)
+end
+
+e2function entity loSpawn(string slot, angle rot, number frozen)
+	local loadout = GetLoadout(self)
+	return CreateRD(self,loadout[slot],self.entity:GetPos()+self.entity:GetUp()*25,Angle(rot[1],rot[2],rot[3]),frozen)
+end
+
+e2function entity loSpawn(number item, angle rot, number frozen)
+	return CreateRD(self,item,self.entity:GetPos()+self.entity:GetUp()*25,Angle(rot[1],rot[2],rot[3]),frozen)
+end
+
+e2function entity loSpawn(string class, string model, vector pos, angle rot, number frozen)
+	local loadout = GetLoadout(self)
+	return CreateRD(self,loadout[slot],Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
+end
+
+e2function entity loSpawn(number item, vector pos, angle rot, number frozen)
+	return CreateRD(self,item,Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
+end
 
 ///--- RD Spawning ---\\\
 local function CreateRD(self,class,model,pos,angles,freeze)
@@ -126,7 +200,6 @@ e2function entity rdSpawn(entity template, vector pos, angle rot, number frozen)
 	if not IsValid(template) then return nil end
 	return CreateRD(self,template:GetClass(),template:GetModel(),Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
 end
-///--- ---\\\
 
 ///--- Format ---\\\
 e2function string format(number num)

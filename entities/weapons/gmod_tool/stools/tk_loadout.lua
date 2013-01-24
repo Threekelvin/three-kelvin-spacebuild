@@ -31,7 +31,10 @@ function TOOL:LeftClick(trace)
     local item = self:GetClientNumber("item", 0)
     if !TK.LO:CanSpawn(ply, item) then return end
     
-    local ent = TK.LO:SpawnItem(ply, item, trace)
+	local pos = trace.HitPos
+	local angles = trace.HitNormal:Angle() + Angle(90,0,0)
+    local ent = TK.LO:SpawnItem(ply, item, pos, angles)
+	ent:SetPos(trace.HitPos + trace.HitNormal * ((ent:OBBMaxs().z - ent:OBBMins().z) / 2 - ent:OBBCenter().z))
     
     if self:GetClientNumber("dontweld", 0) == 0 then
         local hit = trace.Entity
@@ -46,13 +49,14 @@ function TOOL:LeftClick(trace)
         end
     end
     
-    if self:GetClientNumber("makefrozen", 0) == 1 then
-        local phys = ent:GetPhysicsObject()
-        if phys:IsValid() then
-            phys:Wake()
-            phys:EnableMotion(false)
-        end
-    end
+	local phys = ent:GetPhysicsObject()
+	if phys:IsValid() then
+		if(angles!=nil) then phys:SetAngles( angles ) end
+		phys:Wake()
+		if(self:GetClientNumber("makefrozen", 0) == 1) then
+			phys:EnableMotion( false )
+		end
+	end
     
     undo.Create(ent.PrintName)
         undo.AddEntity(ent)
