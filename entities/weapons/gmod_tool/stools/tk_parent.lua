@@ -44,11 +44,7 @@ function TOOL:SelectEnt(ent, ply)
 end
 
 function TOOL:UnSelectEnt(ent)
-    if !IsValid(ent) then 
-        self.Selected[idx] = nil
-        self.OldColor[idx] = nil
-        return 
-    end
+    if !IsValid(ent) then return end
     
     local idx = ent:EntIndex()
     ent:SetColor(self.OldColor[idx])
@@ -88,6 +84,7 @@ function TOOL:RightClick(trace)
     end
     
     for idx,ent in pairs(self.Selected) do
+        if !IsValid(ent) then continue end
         if ent == self.Parent then
             if self:GetClientNumber("mass", 1) == 1 then
                 ent:GetPhysicsObject():SetMass(5000)
@@ -126,6 +123,8 @@ function TOOL:RightClick(trace)
     end
     
     self:UnSelectEnt(self.Parent)
+    self.Selected = {}
+	self.OldColor = {}
     ply:SendLua('GAMEMODE:AddNotify("Parenting Completed", NOTIFY_HINT, 3)')
 end
 
@@ -136,6 +135,9 @@ function TOOL:Reload(trace)
     for idx,ent in pairs(self.Selected) do
         self:UnSelectEnt(ent)
     end
+    
+    self.Selected = {}
+	self.OldColor = {}
 end
 
 if SERVER then return end

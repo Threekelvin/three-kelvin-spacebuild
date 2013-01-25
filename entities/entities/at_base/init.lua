@@ -36,10 +36,21 @@ local function EnvPrioritySort(a, b)
 end
 
 function ENT:Initialize()
-	self:DefaultAtmosphere()
 	self:SetMoveType(MOVETYPE_NONE)
 	self:SetSolid(SOLID_NONE)
-	self:PhysicsSetup()
+    
+    self.atmosphere = {}
+	self.atmosphere.name = "Base Atmosphere"
+	self.atmosphere.sphere	= true
+	self.atmosphere.noclip 	= false
+	self.atmosphere.priority	= 5
+	self.atmosphere.radius 		= 0
+	self.atmosphere.gravity 	= 0
+	self.atmosphere.windspeed 	= 0
+	self.atmosphere.tempcold	= 3
+	self.atmosphere.temphot		= 3
+    self.atmosphere.flags       = 0
+	self.atmosphere.resources 	= {}
 	
 	self.outside = {}
 	self.inside = {}
@@ -176,29 +187,8 @@ function ENT:OnRemove()
 	end
 end
 
-function ENT:DefaultAtmosphere()
-	if self.atmosphere then return end
-	self.atmosphere = {}
-	
-	self.atmosphere.name = "Atmosphere"
-	
-	self.atmosphere.sphere	= true
-	self.atmosphere.noclip 	= false
-	self.atmosphere.sunburn	= false
-	self.atmosphere.wind 	= false
-	
-	self.atmosphere.priority	= 5
-	self.atmosphere.radius 		= 0
-	self.atmosphere.gravity 	= 0
-	self.atmosphere.windspeed 	= 0
-	self.atmosphere.tempcold	= 3
-	self.atmosphere.temphot		= 3
-	
-	self.atmosphere.resources 	= {}
-end
-
 function ENT:PhysicsSetup()
-	local radius = self:GetRadius()
+	local radius = self.atmosphere.radius
 	if radius <= 0 then return end
 	local min, max = Vector(-radius,-radius,-radius), Vector(radius,radius,radius)
 	
@@ -210,10 +200,26 @@ function ENT:PhysicsSetup()
 		phys:Wake()
 	end
 
-	self:DrawShadow(false)
 	self:SetTrigger(true)
 	self:SetNotSolid(true)
+    self:DrawShadow(false)
 	self:SetCollisionBounds(min, max)
+end
+
+function ENT:SetupAtomsphere(data)
+    for k,v in pairs(data || {}) do
+        local typ = type(self.atmosphere[k])
+        
+        if typ == "number" then
+            self.atmosphere[k] = tonumber(v)
+        elseif typ == "boolean" then
+            self.atmosphere[k] = tobool(v)
+        else
+            self.atmosphere[k] = v
+        end
+    end
+    
+    self:PhysicsSetup()
 end
 
 function ENT:IsStar()
@@ -244,78 +250,16 @@ function ENT:GetVolume()
 	end
 end
 
+function ENT:Sunburn()
+    return Extract_Bit(2, self.atmosphere.flags)
+end
+
 function ENT:HasResource(res)
     return self.atmosphere.resources[res] && self.atmosphere.resources[res] > 0
 end
 
 function ENT:GetResourcePercent(res)
     return self.atmosphere.resources[res] || 0
-end
-
-function ENT:SetAtomsphere(data)
-	self:DefaultAtmosphere()
-	self:SetATRadius(data["radius"])
-	self:SetATGravity(data["gravity"])
-	self:SetATTempurature(data["tempcold"], data["temphot"])
-	self:SetATAir(data["resources"])
-	self:SetATName(data["name"])
-	self:SetATFlags(data["flags"])
-	self:SetATSphere(data["sphere"])
-	self:SetATNoclip(data["noclip"])
-end
-
-function ENT:SetATRadius(num)
-	num = tonumber(num)
-	if !num || self.atmosphere.radius == num then return end
-	self.atmosphere.radius = num
-	self:PhysicsSetup()
-end
-
-function ENT:SetATGravity(num)
-	num = tonumber(num)
-	if !num then return end
-	self.atmosphere.gravity = num
-end
-
-function ENT:SetATTempurature(tpc, tph)
-	tpc, tph = tonumber(tpc), tonumber(tph)
-	if !tpc then return end
-	self.atmosphere.tempcold = tpc
-	self.atmosphere.temphot = tph || tpc
-end
-
-function ENT:SetATAir(data)
-    local total = 0
-    for k,v in pairs(data) do
-        self.atmosphere.resources[k] = v
-        total = total + v
-    end
-    
-    for k,v in pairs(self.atmosphere.resources) do
-        self.atmosphere.resources[k] = v * (1 + (100 - total) / 100)
-    end
-end
-
-function ENT:SetATName(str)
-	str = tostring(str)
-	if !str then return end
-	self.atmosphere.name = str
-end
-
-function ENT:SetATFlags(num)
-	num = tonumber(num)
-	if !num then return end
-	self.atmosphere.sunburn = Extract_Bit(2, num)
-end
-
-function ENT:SetATSphere(bool)
-	if bool == nil then return end
-	self.atmosphere.sphere = tobool(bool)
-end
-
-function ENT:SetATNoclip(bool)
-	if bool == nil then return end
-	self.atmosphere.noclip = tobool(bool)
 end
 
 function ENT:InAtmosphere(pos)

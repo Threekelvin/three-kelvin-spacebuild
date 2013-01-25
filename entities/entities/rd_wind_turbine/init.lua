@@ -45,7 +45,7 @@ end
 
 function ENT:DoThink()
 	local env = self:GetEnv()
-	if !env.atmosphere.wind then self:TurnOff() return end
+	if !env:IsPlanet() then self:TurnOff() return end
     self.windspeed = env.atmosphere.windspeed / 100
 	self:TurnOn()
     self:SetPower(self.data.power)

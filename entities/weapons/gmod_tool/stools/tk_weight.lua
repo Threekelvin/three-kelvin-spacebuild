@@ -1,5 +1,5 @@
 TOOL.Category		= "Construction"
-TOOL.Name			= "#Weight Tool"
+TOOL.Name			= "#Weight"
 TOOL.Command		= nil
 TOOL.ConfigName		= ""
 
@@ -90,7 +90,7 @@ function TOOL.BuildCPanel( cp )
 	table.insert( params.CVars, "weight_set" )
 	
 	cp:AddControl("ComboBox", params )
-	cp:AddControl("Slider", { Label = "#Tool_weight_set", Type = "Numeric", Min = "1", Max = "50000", Command = "weight_set" } )
+	cp:AddControl("Slider", { Label = "#Tool_weight_set", Type = "Numeric", Min = "1", Max = "50000", Command = "tk_weight_set" } )
 end
 
 if CLIENT then

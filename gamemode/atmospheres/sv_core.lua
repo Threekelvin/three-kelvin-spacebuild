@@ -12,19 +12,14 @@ local Space = {}
 
 Space.atmosphere = {}
 Space.atmosphere.name = "Space"
-
 Space.atmosphere.sphere	    = true
 Space.atmosphere.noclip 	= false
-Space.atmosphere.sunburn	= false
-Space.atmosphere.wind 	    = false
-
 Space.atmosphere.priority	= 4
 Space.atmosphere.radius 	= 0
 Space.atmosphere.gravity 	= 0
 Space.atmosphere.windspeed 	= 0
 Space.atmosphere.tempcold	= 3
 Space.atmosphere.temphot	= 3
-
 Space.atmosphere.resources 	= {}
 
 function Space:IsStar()
@@ -49,6 +44,10 @@ end
 
 function Space:GetVolume()
 	return 0
+end
+
+function Space:Sunburn()
+    return false
 end
 
 function Space:HasResource(res)
@@ -195,13 +194,13 @@ local function RegisterAtmospheres()
 				local planet = ents.Create("at_planet")
 				planet:SetPos(Vector(v.x, v.y, v.z))
 				planet:Spawn()
-				planet:SetAtomsphere(v.data)
+				planet:SetupAtomsphere(v.data)
 				print(planet, "Created")
 			elseif v.cat == "star" then
 				local star = ents.Create("at_star")
 				star:SetPos(Vector(v.x, v.y, v.z))
 				star:Spawn()
-				star:SetAtomsphere(v.data)
+				star:SetupAtomsphere(v.data)
 				print(star, "Created")
 				table.insert(Suns, Vector(v.x, v.y, v.z))
 			end
@@ -218,7 +217,7 @@ local function RegisterAtmospheres()
 				local planet = ents.Create("at_planet")
 				planet:SetPos(pos)
 				planet:Spawn()
-				planet:SetAtomsphere(data)
+				planet:SetupAtomsphere(data)
 				print(planet, "Created")
 				
 				table.insert(MapData, {cat = "planet", x = pos.x, y = pos.y, z = pos.z, data = data})
@@ -226,7 +225,7 @@ local function RegisterAtmospheres()
 				local star = ents.Create("at_star")
 				star:SetPos(pos)
 				star:Spawn()
-				star:SetAtomsphere(data)
+				star:SetupAtomsphere(data)
 				print(star, "Created")
 
 				table.insert(Suns, pos)
@@ -339,7 +338,7 @@ hook.Add("InitPostEntity", "TKAT", function()
     
     timer.Create("TKAT_wind", 10, 0, function()
         for k,v in pairs(Planets) do
-            if !IsValid(v) || !v.atmosphere.wind then continue end
+            if !IsValid(v) then continue end
             v.atmosphere.windspeed = math.random(0, 100)
         end
     end)

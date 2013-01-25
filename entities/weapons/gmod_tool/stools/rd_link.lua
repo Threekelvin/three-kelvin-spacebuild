@@ -20,11 +20,7 @@ else
 	end
 
 	function TOOL:UnSelectEnt(ent)
-		if !IsValid(ent) then 
-            self.Selected[idx] = nil
-            self.OldColor[idx] = nil
-            return 
-        end
+		if !IsValid(ent) then return end
         
 		local entid = ent:EntIndex()
 		self.Selected[entid] = nil

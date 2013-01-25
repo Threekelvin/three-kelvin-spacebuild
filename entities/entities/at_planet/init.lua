@@ -5,18 +5,7 @@ include('shared.lua')
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	self.atmosphere.name = "Planet"
-	
-	self.atmosphere.noclip 	= true
-	self.atmosphere.sunburn = false
-	self.atmosphere.wind 	= true
-	
-	self.atmosphere.priority	= 3
-	self.atmosphere.gravity 	= 1
-	self.atmosphere.windspeed 	= 0
-	self.atmosphere.tempcold 	= 290
-	self.atmosphere.temphot 	= 290
-
-    self.atmosphere.resources 	= {}
+    self.atmosphere.priority = 3
 end
 
 function ENT:IsPlanet()

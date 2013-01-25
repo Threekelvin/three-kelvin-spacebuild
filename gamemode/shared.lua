@@ -135,6 +135,7 @@ hook.Add("Initialize", "EntSpawn", function()
         
         for k,v in pairs(TK.Ents) do
             local ent = ents.Create(v.ent)
+            if !IsValid(ent) then continue end
             if v.model then ent:SetModel(v.model) end
 
             ent:SetPos(v.pos)
