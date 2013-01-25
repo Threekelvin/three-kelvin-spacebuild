@@ -2,19 +2,29 @@
 local function GetLegacyAddons()
 	local _,dirs = file.Find( "addons/*", "GAME" )
 	local info
+	local f
 	local addons = {}
 	for _,dir in pairs( dirs ) do
-		info = file.Read( "addons/"..dir.."/addon.txt", "GAME" )
-		if info != nil then
-			table.insert( addons, util.KeyValuesToTable( info ) )
+	
+		print( dir )
+		if !file.Exists( "addons/"..dir.."/addon.txt", "GAME" ) && file.Exists( "addons/"..dir.."/info.txt", "GAME" ) then
+			info = util.KeyValuesToTable( file.Read( "addons/"..dir.."/info.txt", "GAME" ) )
+			Derma_Message( "Create a copy of 'info.txt'. Rename the copy 'addon.txt'", info.name.." is not correctly installed." )
+		else
+			info = util.KeyValuesToTable( file.Read( "addons/"..dir.."/addon.txt", "GAME" ) )
 		end
+		
+		if info != nil then
+			table.insert( addons,  info )
+		end
+		
 	end
 	
 	return addons
 end
 
 local function CheckAddons()
-	local addons = {
+	local addons = { // List workshop addons by workshop ID rather than name.
 		["Advanced Duplicator"]								= "https://github.com/wiremod/AdvDuplicator/trunk/",
 		["SpaceBuild Enhancement Project"]					= "https://github.com/SnakeSVx/sbep/trunk/",
 		["Spacebuild"]										= "http://spacebuild.googlecode.com/svn/trunk/sb3/spacebuild_content/",
@@ -23,8 +33,12 @@ local function CheckAddons()
 		["Wiremod"]											= "https://github.com/wiremod/wire/trunk/",
 		["Wire Unofficial Extras"]							= "https://github.com/wiremod/wire-extras/trunk/",
 	}
+	
+	for k,v in pairs(engine.GetAddons()) do // Check Workshop Addons
+		addons[v.wsid] = nil
+	end
 
-	for k,v in pairs(GetLegacyAddons()) do
+	for k,v in pairs(GetLegacyAddons()) do // Check Legacy Addons
 		addons[v.name] = nil
 	end
 
