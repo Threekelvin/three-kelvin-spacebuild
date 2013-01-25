@@ -331,13 +331,13 @@ e2function void entity:particleBeam(string particle, entity ent)
 	if !ValidAction(self, ent) then return end
 	if !ValidParticle(particle) then return end
 	
-	timer.Simple(0.05, function(particle, this, ent)
+	timer.Simple(0.1, function()
 		umsg.Start("particlebeam", player.GetAll())
 			umsg.String(particle)
 			umsg.Short(this:EntIndex())
 			umsg.Short(ent:EntIndex())
 		umsg.End()
-	end, particle, this, ent)
+	end)
 end
 
 e2function void entity:particleStop()

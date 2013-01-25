@@ -59,7 +59,7 @@ end
 function ENT:StartTouch(ent)
 	if !ent.tk_env then return end
 	if self.atmosphere.sphere then
-		if (ent:GetPos() - self:GetPos()):LengthSqr() <= self.atmosphere.radius * self.atmosphere.radius then
+		if (ent:GetPos() - self:GetPos()):LengthSqr() <= self:GetRadius2() then
 			self.inside[ent:EntIndex()] = ent
 			
 			local oldenv = ent:GetEnv()
@@ -113,57 +113,58 @@ function ENT:EndTouch(ent)
 	self.inside[entid] = nil
 end
 
-function ENT:Think()
-	if self.atmosphere.sphere then
-		local radius = self:GetRadius() * self:GetRadius()
-		for idx,ent in pairs(self.outside) do
-			if IsValid(ent) then
-				if (ent:GetPos() - self:GetPos()):LengthSqr() <= radius then
-					self.outside[idx] = nil
-					self.inside[idx] = ent
-					
-					local oldenv = ent:GetEnv()
-					table.insert(ent.tk_env.envlist, self)
-					table.sort(ent.tk_env.envlist, EnvPrioritySort)
-					local newenv = ent:GetEnv()
-					
-					if oldenv != newenv then
-						newenv:DoGravity(ent)
-						gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
-					end
-				end
-			else
-				self.outside[idx] = nil
-			end
-		end
-		
-		for idx,ent in pairs(self.inside) do
-			if IsValid(ent) then
-				if (ent:GetPos() - self:GetPos()):LengthSqr() > radius then
-					self.outside[idx] = ent
-					self.inside[idx] = nil
-					
-					local oldenv = ent:GetEnv()
-					for k,v in pairs(ent.tk_env.envlist) do
-						if v == self then
-							table.remove(ent.tk_env.envlist, k)
-							break
-						end
-					end
-					local newenv = ent:GetEnv()
-					
-					if oldenv != newenv then
-						newenv:DoGravity(ent)
-						gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
-					end
-				end
-			else
-				self.inside[idx] = nil
-			end
-		end
-	end
+function ENT:PhysicsCollide(cdata, physobj)
+    PrintTable(cdata)
+end
 
-	self:NextThink(CurTime() + 1)
+function ENT:Think()
+	if !self.atmosphere.sphere then return end
+    
+    for idx,ent in pairs(self.outside) do
+        if IsValid(ent) then
+            if (ent:GetPos() - self:GetPos()):LengthSqr() > self:GetRadius2() then continue end
+            self.outside[idx] = nil
+            self.inside[idx] = ent
+            
+            local oldenv = ent:GetEnv()
+            table.insert(ent.tk_env.envlist, self)
+            table.sort(ent.tk_env.envlist, EnvPrioritySort)
+            local newenv = ent:GetEnv()
+            
+            if oldenv != newenv then
+                newenv:DoGravity(ent)
+                gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
+            end
+        else
+            self.outside[idx] = nil
+        end
+    end
+    
+    for idx,ent in pairs(self.inside) do
+        if IsValid(ent) then
+            if (ent:GetPos() - self:GetPos()):LengthSqr() < self:GetRadius2() then continue end
+            self.outside[idx] = ent
+            self.inside[idx] = nil
+            
+            local oldenv = ent:GetEnv()
+            for k,v in pairs(ent.tk_env.envlist) do
+                if v == self then
+                    table.remove(ent.tk_env.envlist, k)
+                    break
+                end
+            end
+            local newenv = ent:GetEnv()
+            
+            if oldenv != newenv then
+                newenv:DoGravity(ent)
+                gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
+            end
+        else
+            self.inside[idx] = nil
+        end
+    end
+
+	self:NextThink(CurTime() + 0.25)
 	return true
 end
 
@@ -190,9 +191,13 @@ end
 function ENT:PhysicsSetup()
 	local radius = self.atmosphere.radius
 	if radius <= 0 then return end
-	local min, max = Vector(-radius,-radius,-radius), Vector(radius,radius,radius)
-	
-	self:PhysicsInitBox(min, max)
+    local min, max = Vector(-radius,-radius,-radius), Vector(radius,radius,radius)
+    
+    if self.atmosphere.sphere then
+        self:PhysicsInitSphere(radius)
+    else
+        self:PhysicsInitBox(min, max)
+    end
 	
 	local phys = self:GetPhysicsObject()
 	if IsValid(phys) then
@@ -242,6 +247,10 @@ function ENT:GetRadius()
 	return self.atmosphere.radius
 end
 
+function ENT:GetRadius2()
+    return self.atmosphere.radius * self.atmosphere.radius
+end
+
 function ENT:GetVolume()
 	if self.atmosphere.sphere then
 		return math.floor(((4/3) * math.pi * self.atmosphere.radius ^ 3) * 0.001)
@@ -264,7 +273,7 @@ end
 
 function ENT:InAtmosphere(pos)
 	if self.atmosphere.sphere then
-		if (pos - self:GetPos()):LengthSqr() < self:GetRadius() * self:GetRadius() then
+		if (pos - self:GetPos()):LengthSqr() < self:GetRadius2() then
 			return true
 		end
 	else

@@ -2,29 +2,33 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
+local GH = GravHull
 local pairs = pairs
 local table = table
 local math = math
 
+local function EnvPrioritySort(a, b)
+	if a.atmosphere.priority == b.atmosphere.priority then
+		return a.atmosphere.radius < b.atmosphere.radius
+	end
+	return a.atmosphere.priority < b.atmosphere.priority
+end
+
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
+    self.ghd = false
 	
 	self.atmosphere = {}
 	
 	self.atmosphere.name = "Ship"
-	
 	self.atmosphere.sphere	= false
 	self.atmosphere.noclip 	= false
-	self.atmosphere.sunburn	= false
-	self.atmosphere.wind 	= false
-	
 	self.atmosphere.priority	= 2
 	self.atmosphere.radius 		= 0
 	self.atmosphere.gravity 	= 1
 	self.atmosphere.windspeed 	= 0
 	self.atmosphere.tempcold	= 290
 	self.atmosphere.temphot		= 290
-	
 	self.atmosphere.resources 	= {}
 	
 	self:SetNWBool("Generator", true)
@@ -34,44 +38,61 @@ function ENT:Initialize()
 	self.brushes = {}
 end
 
+function ENT:EnableGHD()
+    self.ghd = true
+end
+
 function ENT:OnRemove()
 	self.BaseClass.OnRemove(self)
 	
 	for k,v in pairs(self.brushes) do
+        local par = v:GetParent()
+        if IsValid(par) then
+            par.tk_env.disabled = nil
+        end
+        
 		SafeRemoveEntity(v)
+        self.brushes[k] = nil
 	end
 end
 
 function ENT:TurnOn()
 	if self:GetActive() || !self:IsLinked() then return end
-	
-	local hull = {}
-    
-	for k,v in pairs(constraint.GetAllConstrainedEntities(self)) do
-		if v:BoundingRadius() < 135 then continue end
-        if v.IsTKRD then continue end
+	if self.ghd then
+        GH.RegisterHull(self, 0)
+        GH.UpdateHull(self, self:GetUp())
+        self:SetActive(true)
+    else
+        local hull = {}
         
-        table.insert(hull, v)
-	end
-	
-	if #hull == 0 then
-		local owner = self:CPPIGetOwner()
-		owner:SendLua("GAMEMODE:AddNotify(\"No Vaild Hull Found\", NOTIFY_ERROR, 5)")
-		return
-	end
-	
-	self:SetActive(true)
-	
-	for k,v in pairs(hull) do
-		local brush = ents.Create("at_brush")
-		brush.env = self
-		brush:SetPos(v:GetPos())
-		brush:SetAngles(v:GetAngles())
-		brush:SetParent(v)
-		brush:Spawn()
-		
-		table.insert(self.brushes, brush)
-	end
+        for k,v in pairs(GH.ConstrainedEntities(self)) do
+            if v:BoundingRadius() < 135 then continue end
+            if v.IsTKRD then continue end
+            
+            table.insert(hull, v)
+        end
+        
+        if #hull == 0 then
+            local owner = self:CPPIGetOwner()
+            owner:SendLua("GAMEMODE:AddNotify(\"No Vaild Hull Found\", NOTIFY_ERROR, 5)")
+            return
+        end
+        
+        self:SetActive(true)
+        
+        for k,v in pairs(hull) do
+            v.tk_env.disabled = true
+            
+            local brush = ents.Create("at_brush")
+            brush.env = self
+            brush:SetPos(v:GetPos())
+            brush:SetAngles(v:GetAngles())
+            brush:SetParent(v)
+            brush:Spawn()
+            
+            table.insert(self.brushes, brush)
+        end
+    end
     
     local env = self:GetEnv()
     self.atmosphere.resources = table.Copy(env.atmosphere.resources)
@@ -81,10 +102,19 @@ function ENT:TurnOff()
 	if !self:GetActive() then return end
 	self:SetActive(false)
 	
-	for k,v in pairs(self.brushes) do
-		SafeRemoveEntity(v)
-        self.brushes[k] = nil
-	end
+    if self.ghd then
+        GH.UnHull(self)
+    else
+        for k,v in pairs(self.brushes) do
+            local par = v:GetParent()
+            if IsValid(par) then
+                par.tk_env.disabled = nil
+            end
+            
+            SafeRemoveEntity(v)
+            self.brushes[k] = nil
+        end
+    end
 end
 
 function ENT:DoThink(eff)
@@ -171,6 +201,10 @@ function ENT:GetVolume()
 	return 0
 end
 
+function ENT:Sunburn()
+    return false
+end
+
 function ENT:HasResource(res)
     return self.atmosphere.resources[res] && self.atmosphere.resources[res] > 0
 end
@@ -180,6 +214,12 @@ function ENT:GetResourcePercent(res)
 end
 
 function ENT:InAtmosphere(pos)
+    if !self:GetActive() then return false end
+    
+    if self.ghd then
+        return GH.PointInShip(self, pos)
+    end
+    
 	for k,v in pairs(self.brushes) do
 		local cen, min, max = v:GetPos(), v:GetCollisionBounds()
 		if pos.x < cen.x + min.x && pos.x > cen.x + max.x && pos.y < cen.y + min.y && pos.y > cen.y + max.y && pos.z < cen.z + min.z && pos.z > cen.z + max.z then
@@ -228,3 +268,35 @@ function ENT:DoTemp(ent)
 	end
 	return self.atmosphere.tempcold, false
 end
+
+hook.Add("EnterShip", "Ship Core", function(p, e, g)
+    if !p.tk_env || !e:IsShip() then return end
+    
+    local oldenv = p:GetEnv()
+	table.insert(p.tk_env.envlist, e)
+	table.sort(p.tk_env.envlist, EnvPrioritySort)
+	local newenv = p:GetEnv()
+	
+	if oldenv != newenv then
+		newenv:DoGravity(p)
+		gamemode.Call("OnAtmosphereChange", p, oldenv, newenv)
+	end
+end)
+
+hook.Add("ExitShip", "Ship Core", function(p, e, g)
+    if !p.tk_env || !e:IsShip() then return end
+    
+    local oldenv = p:GetEnv()
+    for k,v in pairs(p.tk_env.envlist) do
+        if v == e then
+            table.remove(p.tk_env.envlist, k)
+            break
+        end
+    end
+    local newenv = p:GetEnv()
+    
+    if oldenv != newenv then
+        newenv:DoGravity(p)
+        gamemode.Call("OnAtmosphereChange", p, oldenv, newenv)
+    end
+end)
