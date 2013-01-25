@@ -10,7 +10,7 @@ local function GetLegacyAddons()
 			info = file.Read( "addons/"..dir.."/info.txt", "GAME" )
 			if info != nil then
 				tInfo = util.KeyValuesToTable( info )
-				Derma_Message( "Create a copy of 'info.txt'. Rename the copy 'addon.txt'", info.name.." is not correctly installed." )
+				Derma_Message( "Create a copy of 'info.txt'. Rename the copy 'addon.txt'", tInfo.name.." is not correctly installed." )
 			end
 		else
 			info = file.Read( "addons/"..dir.."/addon.txt", "GAME" )
