@@ -29,7 +29,7 @@ local function GetLegacyAddons()
 end
 
 local function CheckAddons()
-	local addons = { // List workshop addons by workshop ID rather than name.
+	local addons = {
 		["Advanced Duplicator"]								= "https://github.com/wiremod/AdvDuplicator/trunk/",
 		["SpaceBuild Enhancement Project"]					= "https://github.com/SnakeSVx/sbep/trunk/",
 		["Spacebuild"]										= "http://spacebuild.googlecode.com/svn/trunk/sb3/spacebuild_content/",
@@ -38,12 +38,8 @@ local function CheckAddons()
 		["Wiremod"]											= "https://github.com/wiremod/wire/trunk/",
 		["Wire Unofficial Extras"]							= "https://github.com/wiremod/wire-extras/trunk/",
 	}
-	
-	for k,v in pairs(engine.GetAddons()) do // Check Workshop Addons
-		addons[v.wsid] = nil
-	end
 
-	for k,v in pairs(GetLegacyAddons()) do // Check Legacy Addons
+	for k,v in pairs(GetLegacyAddons()) do
 		addons[v.name] = nil
 	end
 
