@@ -1,13 +1,28 @@
 
 local function GetLegacyAddons()
 	local _,dirs = file.Find( "addons/*", "GAME" )
-	local info
 	local addons = {}
 	for _,dir in pairs( dirs ) do
-		info = file.Read( "addons/"..dir.."/addon.txt", "GAME" )
-		if info != nil then
-			table.insert( addons, util.KeyValuesToTable( info ) )
+
+		local info = nil
+		local tInfo = nil
+		if !file.Exists( "addons/"..dir.."/addon.txt", "GAME" ) && file.Exists( "addons/"..dir.."/info.txt", "GAME" ) then
+			info = file.Read( "addons/"..dir.."/info.txt", "GAME" )
+			if info != nil then
+				tInfo = util.KeyValuesToTable( info )
+				Derma_Message( "Create a copy of 'info.txt'. Rename the copy 'addon.txt'", tInfo.name.." is not correctly installed." )
+			end
+		else
+			info = file.Read( "addons/"..dir.."/addon.txt", "GAME" )
+			if info != nil then
+				tInfo = util.KeyValuesToTable( info )
+			end
 		end
+		
+		if tInfo != nil then
+			table.insert( addons,  tInfo )
+		end
+		
 	end
 	
 	return addons
