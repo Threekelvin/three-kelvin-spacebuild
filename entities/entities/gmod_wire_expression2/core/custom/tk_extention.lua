@@ -60,13 +60,18 @@ end
 ///--- Loadouts ---\\\
 local function GetLoadout(self)
 	local loadout = TK.DB:GetPlayerData(self.player, "player_loadout")
-	local validents = {}
-	local key
+	local validents = {n={},ntypes={},s={},stypes={},size=0}
+	local n = 0
 	for k,v in pairs(loadout) do
 		if string.match(k, "[%w]+$") != "item" || v == 0 then continue end
-		key = string.sub( k, 1, -6 )
-		validents[key] = v
+		n = n + 1
+		local key = string.sub( k, 1, -6 )
+		validents.n[n] = v
+		validents.ntypes[n] = "n"
+		validents.s[n] = key
+		validents.stypes[n] = "s"
 	end
+	validents.size = n
 	return validents
 end
 
