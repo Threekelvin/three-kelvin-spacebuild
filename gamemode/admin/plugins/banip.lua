@@ -16,16 +16,16 @@ if SERVER then
 				if count == 0 then
 					local length = tonumber(arg[2])
 					if length && length >= 0 then
-						length = math.ceil(length * 60)
+						length = math.ceil(length * 3600)
 						local reason = table.concat(arg, " ", 3)
 						
 						if length == 0 then
 							TK.AM:SystemMessage({ply, " Has Perma Banned ", ip})
 						else
-							TK.AM:SystemMessage({ply, " Has Banned ", ip, " For "..TK:FormatTime(length, 1)})
+							TK.AM:SystemMessage({ply, " Has Banned ", ip, " For "..TK:FormatTime(length / 60)})
 						end
 						
-						TK:AddBan(ply, nil, ip, length, reason)
+						TK.DB:AddBan(ply, nil, ip, length, reason)
 					else
 						TK.AM:SystemMessage({"Invalid Ban Length"}, {ply}, 2)
 					end
@@ -34,19 +34,19 @@ if SERVER then
 					if ply:CanRunOn(tar) && ply != tar then
 						local length = tonumber(arg[2])
 						if length && length >= 0 then
-							length = math.ceil(length * 60)
+							length = math.ceil(length * 3600)
 							local steamid = tar:SteamID()
 							local reason = table.concat(arg, " ", 3)
 							
 							if length == 0 then
 								TK.AM:SystemMessage({ply, " Has Perma IP Banned ", tar})
 							else
-								TK.AM:SystemMessage({ply, " Has IP Banned ", tar, " For "..TK:FormatTime(length, 1)})
+								TK.AM:SystemMessage({ply, " Has IP Banned ", tar, " For "..TK:FormatTime(length / 60)})
 							end
 							
-							TK:AddBan(ply, nil, TK.AM:GetIP(tar), length, reason, tar:Name())
+							TK.DB:AddBan(ply, nil, tar:Ip(), length, reason)
 							game.ConsoleCommand("banid 5 ".. steamid.."\n")
-							game.ConsoleCommand("kickid "..steamid.." [Banned For "..TK:FormatTime(length, 1).."] "..reason.."\n")
+							game.ConsoleCommand("kickid "..steamid.." [Banned For "..TK:FormatTime(length / 60).."]\n")
 						else
 							TK.AM:SystemMessage({"Invalid Ban Length"}, {ply}, 2)
 						end

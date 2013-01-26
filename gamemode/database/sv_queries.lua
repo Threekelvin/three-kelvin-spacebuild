@@ -6,21 +6,14 @@ local Queries = {
 		server_ban_data = [[CREATE TABLE IF NOT EXISTS 
 		server_ban_data(
 			idx INT PRIMARY KEY AUTO_INCREMENT,
-			steamid VARCHAR(20),
-			ip VARCHAR(40),
-			name VARCHAR(127),
-			start_time INT NOT NULL,
-			ban_length INT,
-			reason LONGTEXT,
-			admin_name VARCHAR(127),
-			admin_steamid VARCHAR(20),
-			admin_ip VARCHAR(40),
-			removed TINYINT DEFAULT 0,
-			remove_time INT,
-			remove_reason LONGTEXT,
-			remove_admin_name VARCHAR(127),
-			remove_admin_steamid VARCHAR(20),
-			remove_admin_ip VARCHAR(40)
+            ply_steamid VARCHAR(20),
+            ply_ip VARCHAR(40),
+            ban_start INT NOT NULL,
+            ban_lenght INT NOT NULL,
+            ban_reason LONGTEXT,
+            ban_lifted BIT DEFAULT 0,
+            adm_steamid VARCHAR(20),
+            adm_ip VARCHAR(40)
 		)]],
 		
 		server_globalchat = [[CREATE TABLE IF NOT EXISTS

@@ -5,10 +5,8 @@ local table = table
 TK.AM = TK.AM || {}
 
 ///--- FindTargets ---\\\
-function TK.AM:GetIP(ply)
-	if !IsValid(ply) then return end
-	local ip = string.match(ply:IPAddress(), "(%d+%.%d+%.%d+%.%d+)")
-	return ip
+function _R.Player:Ip()
+	return string.match(self:IPAddress(), "(%d+%.%d+%.%d+%.%d+)")
 end
 
 function TK.AM:Match(ply, name)
@@ -22,7 +20,7 @@ function TK.AM:Match(ply, name)
 		elseif string.match(name, "STEAM_[0-5]:[0-9]:[0-9]+") then
 			return ply:SteamID() == name
 		elseif string.match(name, "(%d+%.%d+%.%d+%.%d+)") then
-			return TK.AM:GetIP(ply) == string.match(name, "(%d+%.%d+%.%d+%.%d+)")
+			return ply:Ip() == string.match(name, "(%d+%.%d+%.%d+%.%d+)")
 		end
 	end
 	return false

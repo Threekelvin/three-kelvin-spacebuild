@@ -149,6 +149,22 @@ function TK.DB:GetPlayerData(ply, dbtable)
 	return PlayerData[ply.uid][dbtable] || {}
 end
 
+function TK.DB:AddBan(admin, tarid, tarip, length, reason)
+    local a_sid = IsValid(admin) && admin:SteamID() || "Console"
+    local a_ip = IsValid(admin) && admin:Ip() || TK:HostName()
+
+    MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("server_ban_data", 
+    {
+        ply_steamid = tarid,
+        ply_ip = tarip,
+        ban_start = true,
+        ban_lenght = length,
+        ban_reason = reason,
+        adm_steamid = a_sid,
+        adm_ip = a_ip
+    }))
+end
+
 function TK.DB:SetPlayerData(ply, dbtable, content)
 	if !IsValid(ply) then return end
     
@@ -384,7 +400,7 @@ hook.Add("InitPostEntity", "MySQLLoad", function()
 end)
 
 hook.Add("PlayerAuthed", "TKLoadPlayer", function(ply, steamid, uid)
-	local ip = TK.AM:GetIP(ply)
+	local ip = ply:Ip()
 	ply.uid = uid
     ply.tk_cache = {}
 	
@@ -394,7 +410,7 @@ hook.Add("PlayerAuthed", "TKLoadPlayer", function(ply, steamid, uid)
 	ply:SetNWInt("TKPlaytime", 0)
     ply:SetNWInt("TKScore", 0)
 
-	MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("server_ban_data", {"idx"}, {"steamid = %s OR ip = %s LIMIT 1", steamid, ip}), function(data, ply, steamid, uid, ip)
+	MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("server_ban_data", {"idx"}, {"ban_lifted = 0 AND (ban_lenght = 0 OR (ban_start + ban_lenght) > UNIX_TIMESTAMP()) AND (ply_steamid = %s OR ply_ip = %s) LIMIT 1", steamid, ip}), function(data, ply, steamid, uid, ip)
 		if !IsValid(ply) then return end
 		if !data[1] then
 			MySQL.Msg("[TK] Loading Player Data - ".. ply:Name() .." - ".. steamid)

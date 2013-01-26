@@ -98,7 +98,7 @@ local function CheckAddons()
 		copy.DoClick = function()
 			surface.PlaySound("ui/buttonclickrelease.wav")
 			local line = List:GetSelected()
-			if ValidEntity(line[1]) then
+			if IsValid(line[1]) then
 				SetClipboardText(line[1]:GetValue(2) || "")
 			end
 		end
