@@ -20,6 +20,7 @@ end
 
 function Build.CanAttach(ent, ply, eir)
 	if ent == eir then return false end
+    if ent.SLIsGhost || eir.SLIsGhost then return false end
 	if !eir:CPPICanTool(ply, "none") then return false end
 	return true
 end
