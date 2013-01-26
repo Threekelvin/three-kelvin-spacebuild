@@ -70,7 +70,7 @@ local function GetLoadout(self)
 	return validents
 end
 
-e2function array getLoadout()
+e2function table getLoadout()
 	return GetLoadout(self)
 end
 
