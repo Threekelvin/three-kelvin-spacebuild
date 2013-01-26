@@ -66,10 +66,8 @@ local function GetLoadout(self)
 		if string.match(k, "[%w]+$") != "item" || v == 0 then continue end
 		n = n + 1
 		local key = string.sub( k, 1, -6 )
-		validents.n[n] = v
-		validents.ntypes[n] = "n"
-		validents.s[n] = key
-		validents.stypes[n] = "s"
+		validents.s[key] = v
+		validents.stypes[key] = "n"
 	end
 	validents.size = n
 	return validents
