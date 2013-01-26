@@ -22,7 +22,7 @@ local function PlayerLSCheck()
         local temp, insun = env:DoTemp(ply)
         local airper = math.floor(env:GetResourcePercent("oxygen"))
         
-        if insun && env.atmosphere.sunburn then
+        if insun && env:Sunburn() then
             ply:TakeDamage(5)
         end
         

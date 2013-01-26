@@ -5,6 +5,7 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 	local class = string.match(v, "[%w_]+")
 	TOOL 			= ToolObj:Create()
 	TOOL.Name 		= class
+    TOOL.Mode       = class
 	TOOL.Category	= "Other"
 	TOOL.Limit 		= 6
 	TOOL.Data 	= {}
@@ -16,8 +17,8 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 	
 	function TOOL:SelectModel()
 		local str = self:GetClientInfo("model")
-        if !TK.RD.EntityData[class][str] then
-			return table.GetFirstKey(TK.RD.EntityData[class])
+        if !TK.RD.EntityData[self.Mode][str] then
+			return table.GetFirstKey(TK.RD.EntityData[self.Mode])
 		end
 		return str
 	end
@@ -27,8 +28,8 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 		if CLIENT then return true end
 		
 		local ply = self:GetOwner()
-		if !ply:CheckLimit(class) then return false end
-		local ent = ents.Create(class)
+		if !ply:CheckLimit(self.Mode) then return false end
+		local ent = ents.Create(self.Mode)
 		ent:SetModel(self:SelectModel())
 		ent:SetPos(trace.HitPos)
 		local angles = trace.HitNormal:Angle() + Angle(90,0,0)
@@ -52,21 +53,21 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 		
 		local phys = ent:GetPhysicsObject()
 		if phys:IsValid() then
-			if(angles!=nil) then phys:SetAngles( angles ) end
+			if angles != nil  then phys:SetAngles(angles) end
 			phys:Wake()
 			if self:GetClientNumber("makefrozen", 1) == 1 then
 				phys:EnableMotion(false)
 			end
 		end
 		
-		ply:AddCount(class, ent)
+		ply:AddCount(self.Mode, ent)
 		
-		undo.Create(self.Name)
+		undo.Create(self.Mode)
 			undo.AddEntity(ent)
 			undo.SetPlayer(ply)
 		undo.Finish()
 
-		ply:AddCleanup(self.Name, ent)
+		ply:AddCleanup(self.Mode, ent)
 		return true
 	end
 	
@@ -155,14 +156,13 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 	
 	cleanup.Register(TOOL.Name)
 
-	TOOL.Mode			= class
 	TOOL.Command		= nil
 	TOOL.ConfigName		= nil
 	TOOL.Tab 			= "3K Spacebuild"
 	TOOL.Data			= nil
 	
 	TOOL:CreateConVars()
-	SWEP.Tool[TOOL.Mode] = TOOL
+	SWEP.Tool[class] = TOOL
 	TOOL = nil
 end
 
