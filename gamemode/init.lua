@@ -73,30 +73,16 @@ end
 
 function GM:PlayerSetModel(ply)
 	local cl_playermodel = ply:GetInfo("cl_playermodel")
-	local modelname = player_manager.TranslatePlayerModel(cl_playermodel)
-    
-    if TK.PlyModels[modelname] then
-        local canuse = !TK.PlyModels[modelname].sid && true || false
-        
-        for k,v in pairs(TK.PlyModels[modelname].sid || {}) do
-            if ply:SteamID() != v then continue end
-            canuse = true
-            break
-        end
-        
-        if ply:GetRank() < (TK.PlyModels[modelname].rank || 1) then
-            canuse = false
-        end
-        
-        if !canuse then
-            modelname = player_manager.TranslatePlayerModel("")
-            ply:ConCommand("cl_playermodel kleiner")
-            ply:SendLua('GAMEMODE:AddNotify("You Can Not Use That Player Model", NOTIFY_ERROR, 3)')
+    if ply.last_playermodel != cl_playermodel then
+        local modelname = player_manager.TranslatePlayerModel(cl_playermodel)
+        if TK:CanUsePlayerModel(ply, cl_playermodel) then
+            ply.last_playermodel = cl_playermodel
         end
     end
     
-	util.PrecacheModel(modelname)
-	ply:SetModel(modelname)
+    local modelname = player_manager.TranslatePlayerModel(ply.last_playermodel)
+    util.PrecacheModel(modelname)
+    ply:SetModel(modelname)
 end
 
 function GM:PlayerSpawn(ply)
@@ -122,6 +108,14 @@ function GM:PlayerSpawn(ply)
 	hook.Call("PlayerSetModel", self, ply)
 end
 ///--- ---\\\
+
+hook.Add("Initialize", "PAC_Fix", function()
+    timer.Create("pac_playermodels", 0.5, 0, function()
+        for _,ply in pairs(player.GetAll()) do
+            gamemode.Call("PlayerSetModel", ply)
+        end
+    end)
+end)
 
 ///--- Map Setup ---\\\
 hook.Add("InitPostEntity", "TKSetup", function()

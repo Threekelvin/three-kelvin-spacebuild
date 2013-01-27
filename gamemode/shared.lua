@@ -69,6 +69,28 @@ function TK:FormatTime(num)
 	end
 end
 
+function TK:CanUsePlayerModel(ply, mdl)
+    local modelname = player_manager.TranslatePlayerModel(mdl)
+    
+    if TK.PlyModels[modelname] then
+        local canuse = !TK.PlyModels[modelname].sid && true || false
+        
+        for k,v in pairs(TK.PlyModels[modelname].sid || {}) do
+            if ply:SteamID() != v then continue end
+            canuse = true
+            break
+        end
+        
+        if ply:GetRank() < (TK.PlyModels[modelname].rank || 1) then
+            canuse = false
+        end
+        
+        return canuse
+    end
+    
+    return true
+end
+
 local function IsValidFolder(dir)
 	if dir == "." || dir == ".." then return false end
 	if string.GetExtensionFromFilename(dir) then return false end
