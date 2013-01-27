@@ -77,7 +77,8 @@ function GM:PlayerSetModel(ply)
     
     if TK.PlyModels[modelname] then
         local canuse = !TK.PlyModels[modelname].sid && true || false
-        for k,v in pairs(TK.PlyModels[modelname].sid || {})
+        
+        for k,v in pairs(TK.PlyModels[modelname].sid || {}) do
             if ply:SteamID() != v then continue end
             canuse = true
             break
