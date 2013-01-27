@@ -69,8 +69,6 @@ function GM:PlayerLoadout(ply)
 	end
 end
 
-util.AddNetworkString("TKPlyModel")
-
 function GM:PlayerSetModel(ply)
 	local cl_playermodel = ply:GetInfo("cl_playermodel")
     if ply.last_playermodel != cl_playermodel then
@@ -78,10 +76,6 @@ function GM:PlayerSetModel(ply)
         if TK:CanUsePlayerModel(ply, cl_playermodel) then
             util.PrecacheModel(modelname)
             ply:SetModel(modelname)
-            net.Start("TKPlyModel")
-                net.WriteEntity(ply)
-                net.WriteString(cl_playermodel)
-            net.Broadcast()
             ply.last_playermodel = cl_playermodel
         end
     end
@@ -107,6 +101,7 @@ function GM:PlayerSpawn(ply)
     local col = team.GetColor(ply:Team())
     ply:SetWeaponColor(Vector(col.r / 255, col.g / 255, col.b / 255))
 
+    player_manager.SetPlayerClass(ply, "player_sandbox")
     player_manager.OnPlayerSpawn(ply)
     
     hook.Call("PlayerLoadout", self, ply)

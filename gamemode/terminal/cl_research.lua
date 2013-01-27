@@ -106,7 +106,7 @@ local function MakeResearchBox(panel, idx, data)
             
 			local upgrades = TK.DB:GetPlayerData("terminal_upgrades")
 			for k,v in pairs(btn.data.req || {}) do
-                local updata = Tk.TD:GetUpgrade(v)
+                local updata = TK.TD:GetUpgrade(v)
 				if upgrades[v] != updata.maxlvl then
 					panel:ShowError("Requires " ..updata.name.. " Level ".. updata.maxlvl) 
 					return

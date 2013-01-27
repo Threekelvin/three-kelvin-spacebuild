@@ -2,64 +2,31 @@
 include('shared.lua')
 
 local ponies = CreateClientConVar("3k_show_ponies", 1, true, false)
-local realmodel = {}
+local truemodel = {}
 
-local function CanSeeModel(mdl)
-    if !util.IsValidModel(mdl) then return false end
-    if TK.PlyModels[mdl] && !ponies:GetBool() then return false end
-    return true
+local function ShouldChangeModel(ply)
+    local mdl = ply:GetModel()
+    if !util.IsValidModel(mdl) then return true end
+    if !ponies:GetBool() && TK.PlyModels[mdl] then return true end
+    return false
 end
 
-cvars.AddChangeCallback("3k_show_ponies", function(cvar, old, new)
-    for _,ply in pairs(player.GetAll()) do
-        local uid = ply:UserID()
-        local mdl = ply:GetModel()
-        if !CanSeeModel(mdl) then
-            realmodel[uid] = mdl
-            ply:SetModel("models/player/hostage/hostage_0"..math.random(1, 4)..".mdl")
-        end
-        
-        if !realmodel[uid] then continue end
-        if CanSeeModel(realmodel[uid]) then
-            ply:SetModel(realmodel[uid])
-            realmodel[uid] = nil
-        end
-    end
+hook.Add("PrePlayerDraw", "Model", function(ply)
+    if !ShouldChangeModel(ply) then return end
+    truemodel[ply:UserID()] = ply:GetModel()
+    ply:SetModel("models/player/kleiner")
 end)
 
-net.Receive("TKPlyModel", function()
-    local ply = net.ReadEntity()
-    local mdl = net.ReadString()
-    gamemode.Call("PlayerModelChanged", ply, mdl)
-end)
-
-hook.Add("PlayerModelChanged", "PlayerModels", function(ply, name)
-    local mdl = player_manager.TranslatePlayerModel(name)
+hook.Add("PostPlayerDraw", "Model", function(ply)
     local uid = ply:UserID()
-    if !CanSeeModel(mdl) then
-        realmodel[uid] = mdl
-        ply:SetModel("models/player/hostage/hostage_0"..math.random(1, 4)..".mdl")
+    local mdl = truemodel[uid]
+    if !mdl then return end
+    if ply:GetModel() != "models/player/kleiner" then 
+        truemodel[uid] = nil
+        return
     end
-end)
-
-hook.Add("HUDPaint", "PlayerModels", function()
-    timer.Simple(1, function()
-        for _,ply in pairs(player.GetAll()) do
-            local uid = ply:UserID()
-            local mdl = ply:GetModel()
-            if !CanSeeModel(mdl) then
-                realmodel[uid] = mdl
-                ply:SetModel("models/player/hostage/hostage_0"..math.random(1, 4)..".mdl")
-            end
-            
-            if !realmodel[uid] then continue end
-            if CanSeeModel(realmodel[uid]) then
-                ply:SetModel(realmodel[uid])
-                realmodel[uid] = nil
-            end
-        end
-    end)
-    hook.Remove("HUDPaint", "PlayerModels")
+    ply:SetModel(mdl)
+    truemodel[uid] = nil
 end)
 
 usermessage.Hook("TKOSSync", function(msg)
