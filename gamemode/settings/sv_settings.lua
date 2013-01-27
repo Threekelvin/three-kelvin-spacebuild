@@ -6,7 +6,7 @@ TK.Atmospheres = {}
 TK.Ents = {}
 TK.SpawnedEnts = {}
 	
-if game.GetMap() == "sb_twinsuns_fixed" then
+if string.find(game.GetMap(), "twinsuns") then
 	TK.SpawnPoints = {
 		[1] = Vector(-7848, -11093, 5),
 		[2] = Vector(-10740, 13045, 90),
@@ -98,7 +98,7 @@ if game.GetMap() == "sb_twinsuns_fixed" then
 			ang = Angle(0,90,0)
         }
 	}
-elseif game.GetMap() == "sb_forlorn_sb3_r3" then
+elseif string.find(game.GetMap(), "forlorn") then
 	TK.SpawnPoints = {
 		[1] = Vector(7400, -11150, -9233),
 		[2] = Vector(9420, 10910, 830),
@@ -180,11 +180,11 @@ elseif game.GetMap() == "sb_forlorn_sb3_r3" then
 			model = "models/dav0r/camera.mdl",
             color = Color(255, 255, 255, 1),
             notsolid = true,
-			pos = Vector(-9467, 9060, -611),
+			pos = Vector(9467, 9060, 611),
 			ang = Angle(0,0,180)
         }
 	}
-elseif game.GetMap() == "sb_lostinspace" then
+elseif string.find(game.GetMap(), "lostinspace") then
 	TK.SpawnPoints = {
 		[1] = Vector(-500, -1500, 2570),
 		[2] = Vector(5825, 6525, -8720),
