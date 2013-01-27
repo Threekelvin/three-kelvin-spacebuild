@@ -175,6 +175,14 @@ elseif game.GetMap() == "sb_forlorn_sb3_r3" then
 			pos = Vector(9134.9795,10233.0244,829.9916),
 			ang = Angle(0,66,0)
 		},
+        [9] = {
+            ent = "gmod_playx",
+			model = "models/dav0r/camera.mdl",
+            color = Color(255, 255, 255, 1),
+            notsolid = true,
+			pos = Vector(-9467, 9060, -611),
+			ang = Angle(0,0,180)
+        }
 	}
 elseif game.GetMap() == "sb_lostinspace" then
 	TK.SpawnPoints = {

@@ -1,116 +1,157 @@
+local Show = CreateClientConVar("3k_aoc_show", 1, true, false)
 
-local function GetLegacyAddons()
-	local _,dirs = file.Find( "addons/*", "GAME" )
-	local addons = {}
-	for _,dir in pairs( dirs ) do
+local AOC = {}
+AOC.Legacy = {
+    ["Advanced Duplicator"]								= "https://github.com/wiremod/AdvDuplicator/trunk/",
+    ["SpaceBuild Enhancement Project"]					= "https://github.com/SnakeSVx/sbep/trunk/",
+    ["Spacebuild"]										= "http://spacebuild.googlecode.com/svn/trunk/sb3/spacebuild_content/",
+    ["Shadowscion's Construction Props"]				= "http://shadowscions-construction-props.googlecode.com/svn/trunk/",
+    ["TKMP"]											= "http://3k-model-pack.googlecode.com/svn/trunk/",
+    ["Wiremod"]											= "https://github.com/wiremod/wire/trunk/",
+    ["Wire Unofficial Extras"]							= "https://github.com/wiremod/wire-extras/trunk/"
+}
+AOC.Workshop = {
+    ["104694154"]										= "104694154",
+    ["106904944"]										= "106904944",
+    ["107155115"]										= "107155115"
+}
+AOC.MountedLegacy = {}
 
-		local info = nil
-		local tInfo = nil
-		if !file.Exists( "addons/"..dir.."/addon.txt", "GAME" ) && file.Exists( "addons/"..dir.."/info.txt", "GAME" ) then
-			info = file.Read( "addons/"..dir.."/info.txt", "GAME" )
-			if info != nil then
-				tInfo = util.KeyValuesToTable( info )
-				Derma_Message( "Create a copy of 'info.txt'. Rename the copy 'addon.txt'", tInfo.name.." is not correctly installed." )
-			end
-		else
-			info = file.Read( "addons/"..dir.."/addon.txt", "GAME" )
-			if info != nil then
-				tInfo = util.KeyValuesToTable( info )
-			end
-		end
-		
-		if tInfo != nil then
-			table.insert( addons,  tInfo )
-		end
-		
-	end
-	
-	return addons
+function AOC:GetLegacyAddons()
+    local _,root = file.Find("addons/*", "GAME")
+    
+    for _,dir in pairs(root) do
+        if file.Exists("addons/" ..dir.. "/info.txt", "GAME") then
+            local data = util.KeyValuesToTable(file.Read("addons/"..dir.."/info.txt", "GAME") || "")
+            if data.name then
+                AOC.MountedLegacy[data.name] = false
+            end
+        end
+        
+        if file.Exists("addons/" ..dir.. "/addon.txt", "GAME") then
+            local data = util.KeyValuesToTable(file.Read("addons/"..dir.."/addon.txt", "GAME") || "")
+            if data.name then
+                AOC.MountedLegacy[data.name] = true
+            end
+        end
+    end
 end
 
-local function CheckAddons()
-	local addons = {
-		["Advanced Duplicator"]								= "https://github.com/wiremod/AdvDuplicator/trunk/",
-		["SpaceBuild Enhancement Project"]					= "https://github.com/SnakeSVx/sbep/trunk/",
-		["Spacebuild"]										= "http://spacebuild.googlecode.com/svn/trunk/sb3/spacebuild_content/",
-		["Shadowscion's Construction Props"]				= "http://shadowscions-construction-props.googlecode.com/svn/trunk/",
-		["TKMP"]											= "http://3k-model-pack.googlecode.com/svn/trunk/",
-		["Wiremod"]											= "https://github.com/wiremod/wire/trunk/",
-		["Wire Unofficial Extras"]							= "https://github.com/wiremod/wire-extras/trunk/",
-	}
-
-	for k,v in pairs(GetLegacyAddons()) do
-		addons[v.name] = nil
-	end
-
-	if( table.Count( addons ) > 0 ) then
-		local Panel = vgui.Create("DFrame")
-		Panel:SetSize(800, 300)
-		Panel:Center()
-		Panel:SetTitle( "" )
-		Panel:SetVisible( true )
-		Panel:SetDraggable( true )
-		Panel:ShowCloseButton( false )
-		Panel:SetScreenLock( true )
-		Panel:MakePopup()
-		Panel.Paint = function()
-			draw.RoundedBox(4, 0, 0, 800, 300, Color(50,50,50,255))
-			draw.RoundedBox(4, 1, 1, 798, 298, Color(100,100,100,255))
-			draw.RoundedBoxEx(4, 1, 1, 798, 20, Color(150,150,150,255), true, true)
-			draw.SimpleText("WARNING: Missing Addons", "TKFont18", 5, 2.5, Color(255,255,255,255))
-			draw.SimpleText("r", "Marlett", 790, 5, Color(255,255,255,255), TEXT_ALIGN_CENTER)
-		end
-		
-		local close = vgui.Create("DButton", Panel)
-		close:SetPos(780, 0)
-		close:SetSize(20, 20)
-		close:SetText("")
-		close.DoClick = function()
-			surface.PlaySound("ui/buttonclick.wav")
-			Panel:Remove()
-		end
-		close.Paint = function() end
-		
-		local List = vgui.Create( "DListView", Panel )
-		List:SetPos(10, 30)
-		List:SetSize(780, 215)
-		List:SetMultiSelect( false )
-		List:AddColumn("Addon Name"):SetFixedWidth( 300 )
-		List:AddColumn("SVN URL")	
-		for k,v in pairs(addons) do
-			List:AddLine(k, v)
-		end
-		
-		local copy = vgui.Create("DButton", Panel)
-		copy:SetPos(10, 255)
-		copy:SetSize(780, 35)
-		copy:SetText("")
-		copy.Paint = function()
-			if copy.Depressed then
-				draw.RoundedBox(4, 0, 0, 780, 35, Color(110,150,250,255))
-			elseif copy.Hovered then
-				draw.RoundedBox(4, 0, 0, 780, 35, Color(150,150,150,255))
-			else
-				draw.RoundedBox(4, 0, 0, 780, 35, Color(100,100,100,255))
-			end
-			draw.SimpleText("Copy Selected SVN Link", "TKFont25", 390, 5, Color(255,255,255,255), TEXT_ALIGN_CENTER)
-		end
-		copy.DoClick = function()
-			surface.PlaySound("ui/buttonclickrelease.wav")
-			local line = List:GetSelected()
-			if IsValid(line[1]) then
-				SetClipboardText(line[1]:GetValue(2) || "")
-			end
-		end
-	end
+function AOC:IsLegacyInstalled(id)
+    return AOC.MountedLegacy[id] != nil
 end
+
+function AOC:IsLegacyMounted(id)
+    return AOC.MountedLegacy[id] || false
+end
+
+function AOC:IsWorkshopInstalled(id)
+    return steamworks.IsSubscribed(id)
+end
+
+function AOC:IsWorkshopMounted(id)
+    for k,v in pairs(engine.GetAddons()) do
+        if v.wsid != id then continue end
+        return true
+    end
+    return false
+end
+
+function AOC:BuildMenu()
+    local Panel = vgui.Create("DFrame")
+    Panel:SetSize(535, 300)
+    Panel:Center()
+    Panel:SetTitle( "" )
+    Panel:SetVisible( true )
+    Panel:SetDraggable( true )
+    Panel:ShowCloseButton( false )
+    Panel:SetScreenLock( true )
+    Panel:MakePopup()
+    Panel.Paint = function(panel, w, h)
+        draw.RoundedBox(4, 0, 0, w, h, Color(50,50,50,255))
+        draw.RoundedBox(4, 1, 1, w - 2, h - 2, Color(100,100,100,255))
+        draw.RoundedBoxEx(4, 1, 1, w - 2, 20, Color(150,150,150,255), true, true)
+        draw.SimpleText("Server Addon List", "TKFont18", 5, 2.5, Color(255,255,255,255))
+        draw.SimpleText("r", "Marlett", w - 10, 5, Color(255,255,255,255), TEXT_ALIGN_CENTER)
+    end
+    
+    local close = vgui.Create("DButton", Panel)
+    close:SetPos(525, 0)
+    close:SetSize(20, 20)
+    close:SetText("")
+    close.DoClick = function()
+        surface.PlaySound("ui/buttonclick.wav")
+        Panel:Remove()
+    end
+    close.Paint = function() end
+    
+    local copy
+    local List = vgui.Create( "DListView", Panel )
+    List:SetPos(5, 30)
+    List:SetSize(525, 215)
+    List:SetMultiSelect( false )
+    List:AddColumn("Addon Name"):SetFixedWidth(300)
+    List:AddColumn("Type"):SetFixedWidth(75)
+    List:AddColumn("Installed"):SetFixedWidth(75)
+    List:AddColumn("Mounted"):SetFixedWidth(75)
+    
+    for k,v in pairs(self.Legacy) do
+        local line = List:AddLine(k, "SVN", tostring(self:IsLegacyInstalled(k)), tostring(self:IsLegacyMounted(k)), v)
+        line.OnSelect = function()
+            copy.txt = "Copy Selected Link"
+        end
+    end
+    
+    for k,v in pairs(self.Workshop) do
+        local line = List:AddLine(k, "Workshop", tostring(self:IsWorkshopInstalled(k)), tostring(self:IsWorkshopMounted(k)), v)
+        line.OnSelect = function()
+            copy.txt = "Open Workshop Page"
+        end
+        
+        steamworks.FileInfo(k, function(data) line:SetValue(1, data.title) end)
+    end
+    
+    copy = vgui.Create("DButton", Panel)
+    copy.txt = "Copy Selected Link"
+    copy:SetPos(5, 255)
+    copy:SetSize(525, 35)
+    copy:SetText("")
+    copy.Paint = function(panel, w, h)
+        if copy.Depressed then
+            draw.RoundedBox(4, 0, 0, w, h, Color(110,150,250,255))
+        elseif copy.Hovered then
+            draw.RoundedBox(4, 0, 0, w, h, Color(150,150,150,255))
+        else
+            draw.RoundedBox(4, 0, 0, w, h, Color(100,100,100,255))
+        end
+        draw.SimpleText(panel.txt, "TKFont25", w / 2, 5, Color(255,255,255,255), TEXT_ALIGN_CENTER)
+    end
+    copy.DoClick = function()
+        surface.PlaySound("ui/buttonclickrelease.wav")
+        local line = List:GetSelected()
+        if IsValid(line[1]) then
+            if line[1]:GetValue(2) == "SVN" then
+                SetClipboardText(line[1]:GetValue(5) || "")
+            elseif line[1]:GetValue(2) == "Workshop" then
+                steamworks.ViewFile(line[1]:GetValue(5))
+            end
+        end
+    end
+end
+
+hook.Add("Initialize", "AddonCheck", function()
+    AOC:GetLegacyAddons()
+end)
 
 hook.Add("Think", "AddonCheck", function()
 	if !LocalPlayer():IsValid() || !LocalPlayer():Alive() then return end
-	CheckAddons()
+    if Show:GetInt() == 1 then
+        RunConsoleCommand("3k_addon_check")
+        RunConsoleCommand("3k_aoc_show", 0)
+    end
 	hook.Remove("Think", "AddonCheck")
 end)
 
 concommand.Add("3k_addon_check", function(ply, cmd, arg)
-	CheckAddons()
+    AOC:BuildMenu()
 end)
