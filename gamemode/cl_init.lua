@@ -77,6 +77,8 @@ hook.Add("Initialize", "SWDownload", function()
             PanelSelect.OnActivePanelChanged	= function() timer.Simple( 0.1, UpdateFromConvars ) end
         end
     })
+    
+    RunConsoleCommand("r_eyemove", "0")
 end)
 
 player_manager.AddValidModel("Trixie", "models/trixie_player.mdl")
