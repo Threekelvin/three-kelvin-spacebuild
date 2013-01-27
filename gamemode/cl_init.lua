@@ -1,16 +1,6 @@
 
 include('shared.lua')
 
-local function BuildResearchTable(dir)
-	local Research = {}
-	
-	for k,v in pairs(TK.TD.ResearchData[dir] || {}) do
-		Research[k] = 0
-	end
-	
-	return Research
-end
-
 usermessage.Hook("TKOSSync", function(msg)
 	local servertime = tonumber(msg:ReadString())
 	TK.OSSync = math.ceil(servertime - os.time())
@@ -88,3 +78,21 @@ hook.Add("Initialize", "SWDownload", function()
         end
     })
 end)
+
+player_manager.AddValidModel("Trixie", "models/trixie_player.mdl")
+player_manager.AddValidModel("Derpy Hooves", "models/derpyhooves_player.mdl")
+player_manager.AddValidModel("Celestia", "models/celestia.mdl")
+player_manager.AddValidModel("Luna", "models/luna_player.mdl")
+player_manager.AddValidModel("Lyra", "models/lyra_player.mdl")
+player_manager.AddValidModel("Rainbow Dash", "models/rainbowdash_player.mdl")
+player_manager.AddValidModel("Fluttershy", "models/fluttershy_player.mdl")
+player_manager.AddValidModel("Pinkie Pie", "models/pinkiepie_player.mdl")
+player_manager.AddValidModel("Rarity", "models/rarity_player.mdl")
+player_manager.AddValidModel("Twilight Sparkle", "models/twilightsparkle_player.mdl")
+player_manager.AddValidModel("Applejack", "models/applejack_player.mdl")
+player_manager.AddValidModel("Bon Bon", "models/bonbon_player.mdl")
+player_manager.AddValidModel("Colgate (Minuette)", "models/colgate_player.mdl")
+player_manager.AddValidModel("Trixie (No Dress)", "models/trixienodress_player.mdl")
+player_manager.AddValidModel("Vinyl Scratch", "models/vinyl_player.mdl")
+player_manager.AddValidModel("Vinyl Scratch (Goggles)", "models/vinyl_goggles_player.mdl")
+player_manager.AddValidModel("Raindrops", "models/raindrops_player.mdl")

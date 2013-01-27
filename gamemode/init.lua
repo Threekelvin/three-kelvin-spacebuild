@@ -76,13 +76,16 @@ function GM:PlayerSetModel(ply)
     if ply.last_playermodel != cl_playermodel then
         local modelname = player_manager.TranslatePlayerModel(cl_playermodel)
         if TK:CanUsePlayerModel(ply, cl_playermodel) then
+            util.PrecacheModel(modelname)
+            ply:SetModel(modelname)
+            
             ply.last_playermodel = cl_playermodel
         end
     end
     
-    local modelname = player_manager.TranslatePlayerModel(ply.last_playermodel)
-    util.PrecacheModel(modelname)
-    ply:SetModel(modelname)
+    if !ply.last_playermodel then
+        ply:ConCommand("cl_playermodel, kleiner")
+    end
 end
 
 function GM:PlayerSpawn(ply)
