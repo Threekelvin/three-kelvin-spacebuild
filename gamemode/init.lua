@@ -90,6 +90,8 @@ function GM:PlayerSetModel(ply)
         
         if !canuse then
             modelname = player_manager.TranslatePlayerModel("")
+            ply:ConCommand("cl_playermodel kleiner")
+            ply:SendLua('GAMEMODE:AddNotify("You Can Not Use That Player Model", NOTIFY_ERROR, 3)')
         end
     end
     
