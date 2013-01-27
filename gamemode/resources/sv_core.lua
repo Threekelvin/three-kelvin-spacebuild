@@ -456,7 +456,7 @@ function TK.RD:EntConsumeResource(ent, idx, amt)
 end
 
 function TK.RD:GetNetPowerGrid(netid)
-    local netdata = net_table[entdata.netid]
+    local netdata = net_table[netid]
     if !netdata then return 0 end
     return netdata.powergrid || 0
 end
