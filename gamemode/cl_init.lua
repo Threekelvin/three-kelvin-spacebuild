@@ -34,7 +34,7 @@ hook.Add("TKDBPlayerData", "PlayerModels", function(dbtable, idx, data)
     local newlist = table.Copy(POM_copy)
     for k,v in pairs(newlist) do
         if !TK.PlyModels[v] then continue end
-        if LocalPlayer():GetRank() < TK.PlyModels[v].rank || 1 then
+        if LocalPlayer():GetNWInt("TKRank", 1) < TK.PlyModels[v].rank || 1 then
             newlist[k] = nil
         end
         

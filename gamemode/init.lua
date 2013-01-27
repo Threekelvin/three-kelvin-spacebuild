@@ -74,15 +74,17 @@ end
 function GM:PlayerSetModel(ply)
 	local cl_playermodel = ply:GetInfo("cl_playermodel")
 	local modelname = player_manager.TranslatePlayerModel(cl_playermodel)
+    
     if TK.PlyModels[modelname] then
-        if ply:GetRank() < (TK.PlyModels[modelname].rank || 1) then
-            modelname = player_manager.TranslatePlayerModel("")
-        end
-        
-        local canuse = false
-        for k,v in pairs(TK.PlyModels[modelname].sid || {}) do
+        local canuse = !TK.PlyModels[modelname].sid && true || false
+        for k,v in pairs(TK.PlyModels[modelname].sid || {})
             if ply:SteamID() != v then continue end
             canuse = true
+            break
+        end
+        
+        if ply:GetRank() < (TK.PlyModels[modelname].rank || 1) then
+            canuse = false
         end
         
         if !canuse then
