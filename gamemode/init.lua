@@ -49,7 +49,7 @@ local AllowedWeapons = {
 	["laserpointer"]		=	true
 }
 function GM:PlayerCanPickupWeapon(ply, wep)
-   if ( AllowedWeapons[wep:GetClass()] != nil || ply:IsAdmin() ) then return true end
+   if AllowedWeapons[wep:GetClass()] != nil || ply:IsAdmin() then return true end
    return false
 end
 
@@ -71,6 +71,29 @@ function GM:PlayerLoadout(ply)
     player_manager.RunClass(ply, "Loadout")
 end
 
+function GM:PlayerSetModel(ply)
+	local cl_playermodel = ply:GetInfo("cl_playermodel")
+	local modelname = player_manager.TranslatePlayerModel(cl_playermodel)
+    if TK.PlyModels[modelname] then
+        if ply:GetRank() < (TK.PlyModels[modelname].rank || 1) then
+            modelname = player_manager.TranslatePlayerModel("")
+        end
+        
+        local canuse = false
+        for k,v in pairs(TK.PlyModels[modelname].sid || {}) do
+            if ply:SteamID() != v then continue end
+            canuse = true
+        end
+        
+        if !canuse then
+            modelname = player_manager.TranslatePlayerModel("")
+        end
+    end
+    
+	util.PrecacheModel(modelname)
+	ply:SetModel(modelname)
+end
+
 function GM:PlayerSpawn(ply)
     ply:UnSpectate()
     
@@ -84,7 +107,6 @@ function GM:PlayerSpawn(ply)
     local col = ply:GetInfo("cl_playercolor")
     ply:SetPlayerColor(Vector(col))
 
-    --local col = ply:GetInfo("cl_weaponcolor")
     local col = team.GetColor(ply:Team())
     ply:SetWeaponColor(Vector(col.r / 255, col.g / 255, col.b / 255))
 
