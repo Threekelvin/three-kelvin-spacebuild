@@ -103,11 +103,11 @@ hook.Add("HUDShouldDraw", "TKChatBox", function(Element)
 end)
 
 hook.Add("StartChat", "TKChatBox", function()
-    RunConsoleCommand("3k_chat_bubble", "1")
+    RunConsoleCommand("tk_chat_bubble", "1")
 end)
 
 hook.Add("FinishChat", "TKChatBox", function()
-    RunConsoleCommand("3k_chat_bubble", "0")
+    RunConsoleCommand("tk_chat_bubble", "0")
 end)
 
 cvars.AddChangeCallback("3k_chatbox_enable", function(cvar)
@@ -116,7 +116,7 @@ cvars.AddChangeCallback("3k_chatbox_enable", function(cvar)
 	else
 		if IsValid(Chatbox) then
 			Chatbox:Delete()
-			RunConsoleCommand("3k_chat_bubble", "0")
+			RunConsoleCommand("tk_chat_bubble", "0")
 		end
 	end
 end)

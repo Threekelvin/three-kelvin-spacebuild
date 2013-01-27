@@ -58,7 +58,7 @@ local function RemoveChatBubble(ply)
 	ply.bubble:Remove()
 end
 
-concommand.Add("3k_chat_bubble", function(ply, cmd, arg)
+concommand.Add("tk_chat_bubble", function(ply, cmd, arg)
     if !IsValid(ply) then return end
 	if tobool(arg[1]) then
 		AddChatBubble(ply)

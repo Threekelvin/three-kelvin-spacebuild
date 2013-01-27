@@ -1,6 +1,67 @@
 
 include('shared.lua')
 
+local ponies = CreateClientConVar("3k_show_ponies", 1, true, false)
+local realmodel = {}
+
+local function CanSeeModel(mdl)
+    if !util.IsValidModel(mdl) then return false end
+    if TK.PlyModels[mdl] && !ponies:GetBool() then return false end
+    return true
+end
+
+cvars.AddChangeCallback("3k_show_ponies", function(cvar, old, new)
+    for _,ply in pairs(player.GetAll()) do
+        local uid = ply:UserID()
+        local mdl = ply:GetModel()
+        if !CanSeeModel(mdl) then
+            realmodel[uid] = mdl
+            ply:SetModel("models/player/hostage/hostage_0"..math.random(1, 4)..".mdl")
+        end
+        
+        if !realmodel[uid] then continue end
+        if CanSeeModel(realmodel[uid]) then
+            ply:SetModel(realmodel[uid])
+            realmodel[uid] = nil
+        end
+    end
+end)
+
+net.Receive("TKPlyModel", function()
+    local ply = net.ReadEntity()
+    local mdl = net.ReadString()
+    gamemode.Call("PlayerModelChanged", ply, mdl)
+end)
+
+hook.Add("PlayerModelChanged", "PlayerModels", function(ply, name)
+    local mdl = player_manager.TranslatePlayerModel(name)
+    local uid = ply:UserID()
+    if !CanSeeModel(mdl) then
+        realmodel[uid] = mdl
+        ply:SetModel("models/player/hostage/hostage_0"..math.random(1, 4)..".mdl")
+    end
+end)
+
+hook.Add("HUDPaint", "PlayerModels", function()
+    timer.Simple(1, function()
+        for _,ply in pairs(player.GetAll()) do
+            local uid = ply:UserID()
+            local mdl = ply:GetModel()
+            if !CanSeeModel(mdl) then
+                realmodel[uid] = mdl
+                ply:SetModel("models/player/hostage/hostage_0"..math.random(1, 4)..".mdl")
+            end
+            
+            if !realmodel[uid] then continue end
+            if CanSeeModel(realmodel[uid]) then
+                ply:SetModel(realmodel[uid])
+                realmodel[uid] = nil
+            end
+        end
+    end)
+    hook.Remove("HUDPaint", "PlayerModels")
+end)
+
 usermessage.Hook("TKOSSync", function(msg)
 	local servertime = tonumber(msg:ReadString())
 	TK.OSSync = math.ceil(servertime - os.time())

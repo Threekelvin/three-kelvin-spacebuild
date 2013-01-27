@@ -64,8 +64,8 @@ end
 
 function Build.GetOptions(ply)
 	local data = {}
-	data.enable = ply:GetInfoNum("3k_sbep_build_mode_enabled", 0)
-	data.skinmatch = ply:GetInfoNum("3k_sbep_build_mode_skinmatch", 0)
+	data.enable = ply:GetInfoNum("tk_sbep_build_mode_enabled", 0)
+	data.skinmatch = ply:GetInfoNum("tk_sbep_build_mode_skinmatch", 0)
 	return data
 end
 
@@ -87,7 +87,7 @@ function Build.AttachProps(ent, point1, eir, point2)
 end
 
 function Build.OnPickUp(ply, ent)
-	if ply:GetInfoNum("3k_sbep_build_mode_enabled", 0) == 0 then return end
+	if ply:GetInfoNum("tk_sbep_build_mode_enabled", 0) == 0 then return end
 	if !Build.CanPickUp(ply, ent) then return end
 	local Cgroup = ent:GetCollisionGroup()
 	ent:SetCollisionGroup(COLLISION_GROUP_WORLD)

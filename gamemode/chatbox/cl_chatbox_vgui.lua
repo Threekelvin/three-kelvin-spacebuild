@@ -221,7 +221,7 @@ function PANEL:Open()
 	self:SetVisible(true)
 	self:MakePopup()
 	self.textentry:RequestFocus()
-	RunConsoleCommand("3k_chat_bubble", "1")
+	RunConsoleCommand("tk_chat_bubble", "1")
 	
 	self:InvalidateLayout()
 end
@@ -231,7 +231,7 @@ function PANEL:Close()
 	self.msgbox:Release(self)
 	self:SetVisible(false)
 	RunConsoleCommand("cancelselect")
-	RunConsoleCommand("3k_chat_bubble", "0")
+	RunConsoleCommand("tk_chat_bubble", "0")
 	
 	self:InvalidateLayout()
 end

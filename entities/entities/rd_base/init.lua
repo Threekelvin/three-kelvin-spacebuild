@@ -54,6 +54,7 @@ function ENT:Initialize()
 	}
     self.mult = 1
 	self.mute = false
+    self.next_use = 0
     self.data = {}
 	
 	TK.RD:Register(self)
@@ -146,6 +147,9 @@ end
 
 function ENT:Use(ply)
 	if !IsValid(ply) || !ply:IsPlayer() then return end
+    if self.next_use > CurTime() then return end
+    self.next_use = CurTime() + 1
+    
 	if self:GetActive() then
 		self:TurnOff()
 	else

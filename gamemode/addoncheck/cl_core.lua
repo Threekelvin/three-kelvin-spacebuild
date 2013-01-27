@@ -1,8 +1,7 @@
-local Show = CreateClientConVar("3k_aoc_show", 1, true, false)
+local Show = CreateClientConVar("tk_aoc_show", 1, true, false)
 
 local AOC = {}
 AOC.Legacy = {
-    ["Advanced Duplicator"]								= "https://github.com/wiremod/AdvDuplicator/trunk/",
     ["SpaceBuild Enhancement Project"]					= "https://github.com/SnakeSVx/sbep/trunk/",
     ["Spacebuild"]										= "http://spacebuild.googlecode.com/svn/trunk/sb3/spacebuild_content/",
     ["Shadowscion's Construction Props"]				= "http://shadowscions-construction-props.googlecode.com/svn/trunk/",
@@ -147,7 +146,7 @@ hook.Add("Think", "AddonCheck", function()
 	if !LocalPlayer():IsValid() || !LocalPlayer():Alive() then return end
     if Show:GetInt() == 1 then
         RunConsoleCommand("3k_addon_check")
-        RunConsoleCommand("3k_aoc_show", 0)
+        RunConsoleCommand("tk_aoc_show", 0)
     end
 	hook.Remove("Think", "AddonCheck")
 end)

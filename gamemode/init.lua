@@ -67,9 +67,9 @@ function GM:PlayerLoadout(ply)
 	if ply:HasWeapon(cl_defaultweapon) then
 		ply:SelectWeapon(cl_defaultweapon) 
 	end
-    
-    player_manager.RunClass(ply, "Loadout")
 end
+
+util.AddNetworkString("TKPlyModel")
 
 function GM:PlayerSetModel(ply)
 	local cl_playermodel = ply:GetInfo("cl_playermodel")
@@ -78,7 +78,10 @@ function GM:PlayerSetModel(ply)
         if TK:CanUsePlayerModel(ply, cl_playermodel) then
             util.PrecacheModel(modelname)
             ply:SetModel(modelname)
-            
+            net.Start("TKPlyModel")
+                net.WriteEntity(ply)
+                net.WriteString(cl_playermodel)
+            net.Broadcast()
             ply.last_playermodel = cl_playermodel
         end
     end
@@ -105,7 +108,6 @@ function GM:PlayerSpawn(ply)
     ply:SetWeaponColor(Vector(col.r / 255, col.g / 255, col.b / 255))
 
     player_manager.OnPlayerSpawn(ply)
-	player_manager.RunClass(ply, "Spawn")
     
     hook.Call("PlayerLoadout", self, ply)
 	hook.Call("PlayerSetModel", self, ply)

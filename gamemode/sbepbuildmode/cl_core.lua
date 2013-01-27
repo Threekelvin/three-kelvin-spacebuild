@@ -1,6 +1,6 @@
 
 local Build = {}
-local concmd = "3k_sbep_build_mode_"
+local concmd = "tk_sbep_build_mode_"
 Build.enable = CreateClientConVar(concmd.."enabled", 0, true, true)
 CreateClientConVar(concmd.."skinmatch", 0, true, true)
 Build.sprites = CreateClientConVar(concmd.."sprites", 1, true, false)
