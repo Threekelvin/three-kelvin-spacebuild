@@ -45,6 +45,7 @@ local AllowedWeapons = {
 	["weapon_physgun"]		=	true,
 	["gmod_camera"]			=	true,
 	["gmod_tool"]			=	true,
+    ["hands"]               =   true,
 	["remotecontroller"]	=	true,
 	["laserpointer"]		=	true
 }
@@ -61,6 +62,7 @@ function GM:PlayerLoadout(ply)
 	ply:Give("weapon_physgun")
 	ply:Give("gmod_camera")
 	ply:Give("gmod_tool")
+    ply:Give("hands")
 	
 	local cl_defaultweapon = ply:GetInfo("cl_defaultweapon")
 

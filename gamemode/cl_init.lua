@@ -1,34 +1,6 @@
 
 include('shared.lua')
 
-local ponies = CreateClientConVar("3k_show_ponies", 1, true, false)
-local truemodel = {}
-
-local function ShouldChangeModel(ply)
-    local mdl = ply:GetModel()
-    if !util.IsValidModel(mdl) then return true end
-    if !ponies:GetBool() && TK.PlyModels[mdl] then return true end
-    return false
-end
-
-hook.Add("PrePlayerDraw", "Model", function(ply)
-    if !ShouldChangeModel(ply) then return end
-    truemodel[ply:UserID()] = ply:GetModel()
-    ply:SetModel("models/player/kleiner")
-end)
-
-hook.Add("PostPlayerDraw", "Model", function(ply)
-    local uid = ply:UserID()
-    local mdl = truemodel[uid]
-    if !mdl then return end
-    if ply:GetModel() != "models/player/kleiner" then 
-        truemodel[uid] = nil
-        return
-    end
-    ply:SetModel(mdl)
-    truemodel[uid] = nil
-end)
-
 usermessage.Hook("TKOSSync", function(msg)
 	local servertime = tonumber(msg:ReadString())
 	TK.OSSync = math.ceil(servertime - os.time())
