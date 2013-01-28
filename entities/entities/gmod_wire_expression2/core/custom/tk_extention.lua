@@ -110,7 +110,7 @@ end
 
 e2function entity loSpawn(string slot, vector pos, number frozen)
 	local loadout = GetLoadout(self)
-	return CreateLOent(self,loadout[slot],Vector(pos[1],pos[2],pos[3]),self.entity:GetAngles(),frozen)
+	return CreateLOent(self,loadout.s[slot],Vector(pos[1],pos[2],pos[3]),self.entity:GetAngles(),frozen)
 end
 
 e2function entity loSpawn(number item, vector pos, number frozen)
@@ -119,7 +119,7 @@ end
 
 e2function entity loSpawn(string slot, angle rot, number frozen)
 	local loadout = GetLoadout(self)
-	return CreateLOent(self,loadout[slot],self.entity:GetPos()+self.entity:GetUp()*25,Angle(rot[1],rot[2],rot[3]),frozen)
+	return CreateLOent(self,loadout.s[slot],self.entity:GetPos()+self.entity:GetUp()*25,Angle(rot[1],rot[2],rot[3]),frozen)
 end
 
 e2function entity loSpawn(number item, angle rot, number frozen)
@@ -128,7 +128,7 @@ end
 
 e2function entity loSpawn(string slot, string model, vector pos, angle rot, number frozen)
 	local loadout = GetLoadout(self)
-	return CreateLOent(self,loadout[slot],Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
+	return CreateLOent(self,loadout.s[slot],Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
 end
 
 e2function entity loSpawn(number item, vector pos, angle rot, number frozen)
