@@ -101,7 +101,7 @@ end
 
 e2function entity loSpawn(string slot, number frozen)
 	local loadout = GetLoadout(self)
-	return CreateLOent(self,loadout[slot],self.entity:GetPos()+self.entity:GetUp()*25,self.entity:GetAngles(),frozen)
+	return CreateLOent(self,loadout.s[slot],self.entity:GetPos()+self.entity:GetUp()*25,self.entity:GetAngles(),frozen)
 end
 
 e2function entity loSpawn(number item, number frozen)
