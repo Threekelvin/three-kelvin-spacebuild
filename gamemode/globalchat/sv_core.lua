@@ -127,6 +127,7 @@ end
 hook.Add("Initialize", "TKGC", function()
     TK.DB:MakeQuery(TK.DB:FormatSelectQuery("server_globalchat", {"msg_idx"}, {"msg_idx > %s", TKGC.LastMsg}, {"msg_idx"}), function(data)
         TKGC.LastMsg = data[#data].msg_idx || 0
+        TK.DB:SendGlobalSystemMsg("Server Has Started")
     end)
 
 	timer.Create("TKTKGC", 15, 0, function()

@@ -438,4 +438,8 @@ hook.Add("PlayerDisconnected", "TKDisUpdate", function(ply)
     
     PlayerData[ply:GetNWString("UID")] = nil
 end)
+
+hook.Add("ShutDown", "TKDatabaseDump", function()
+
+end)
 ///--- ---\\\

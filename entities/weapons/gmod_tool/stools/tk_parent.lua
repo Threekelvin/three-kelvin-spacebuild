@@ -8,6 +8,7 @@ TOOL.OldColor = {}
 
 TOOL.ClientConVar["physics"] = "1"
 TOOL.ClientConVar["mass"] = "1"
+TOOL.ClientConVar["pushaway"] = "1"
 
 function TOOL:CanSelectEnt(trace)
     if !IsValid(trace.Entity) then return false end
@@ -90,6 +91,12 @@ function TOOL:RightClick(trace)
                 ent:GetPhysicsObject():SetMass(5000)
                 duplicator.StoreEntityModifier(ent, "mass", {Mass = 5000})
             end
+            
+            if self:GetClientNumber("pushaway", 1) == 1 then
+                if !ent:IsVehicle() then
+                    ent:SetCollisionGroup(COLLISION_GROUP_PUSHAWAY)
+                end
+            end
             continue
         end
         
@@ -114,6 +121,12 @@ function TOOL:RightClick(trace)
                 phys:SetAngles(ent:GetAngles())
                 constraint.Weld(self.Parent, ent, 0, 0, 0, false)
                 phys:Wake()
+            end
+            
+            if self:GetClientNumber("pushaway", 1) == 1 then
+                if !ent:IsVehicle() then
+                    ent:SetCollisionGroup(COLLISION_GROUP_PUSHAWAY)
+                end
             end
         else
             ent:SetNotSolid(true)
@@ -160,4 +173,11 @@ function TOOL.BuildCPanel(CPanel)
     Mass:SetValue(1)
     Mass:SizeToContents()
     CPanel:AddItem(Mass)
+    
+    local PushAway = vgui.Create("DCheckBoxLabel")
+    PushAway:SetText("Push Away Collision Mode")
+    PushAway:SetConVar("tk_parent_pushaway")
+    PushAway:SetValue(1)
+    PushAway:SizeToContents()
+    CPanel:AddItem(PushAway)
 end
