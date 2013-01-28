@@ -76,7 +76,7 @@ function TKGC:RemoteFunction(server, toserver, cmd, rank, faction, name)
 	if toserver != "*" && !string.find(string.lower(TK.HostName()), string.lower(toserver)) then return end
 	
 	print(server, " Remote Command From "..TK.AM.Rank.Tag[rank]..name, cmd)
-	RunConsoleCommand("3k", cmd)
+	RunConsoleCommand("3k", unpack(string.Explode(" ", cmd)))
 end
 
 function TK.DB:SendGlobalMsg(ply, msg, flag)
@@ -93,7 +93,7 @@ function TK.DB:SendGlobalMsg(ply, msg, flag)
 		msg_flag = flag,
 		msg_data = msg,
 		sender_rank = ply:GetRank(),
-		sender_faction = ply:Team(),
+		sender_faction = IsValid(ply) && ply:Team() || 0,
 		sender_name = ply:Name()
 	}))
 	
@@ -119,7 +119,7 @@ function TK.DB:SendRemoteCmd(ply, svr, cmd)
 		msg_recipient = svr,
 		msg_data = cmd,
 		sender_rank = ply:GetRank(),
-		sender_faction = ply:Team(),
+		sender_faction = IsValid(ply) && ply:Team() || 0,
 		sender_name = ply:Name()
 	}))
 end

@@ -13,6 +13,7 @@ local string = string
 local math = math
 
 ///--- Teams ---\\\
+team.SetUp(0, "Console", Color(151,211,255), false)
 team.SetUp(1, "Mercenary", Color(147,147,150))
 team.SetUp(2, "The Solar Empire", Color(235,175,75))
 team.SetUp(3, "The New Lunar Republic", Color(75,75,235))

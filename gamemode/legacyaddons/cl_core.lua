@@ -57,7 +57,7 @@ end)
 hook.Add("Tick", "LegacyAddons", function()
     if !Legacy.Queue[1] then return end
     if Legacy.NextThink > CurTime() then return end
-    Legacy.NextThink = CurTime() + 0.5
+    Legacy.NextThink = CurTime() + 0.2
     
     local data = Legacy.Queue[1]
     Legacy:PopulateNode(data[1], data[2], data[3], data[4], data[5])
