@@ -58,6 +58,7 @@ end
 
 function AOC:BuildMenu()
     local Panel = vgui.Create("DFrame")
+    Panel.opticon = Material("icon16/cog.png")
     Panel:SetSize(535, 300)
     Panel:Center()
     Panel:SetTitle( "" )
@@ -71,7 +72,11 @@ function AOC:BuildMenu()
         draw.RoundedBox(4, 1, 1, w - 2, h - 2, Color(100,100,100,255))
         draw.RoundedBoxEx(4, 1, 1, w - 2, 20, Color(150,150,150,255), true, true)
         draw.SimpleText("Server Addon List", "TKFont18", 5, 2.5, Color(255,255,255,255))
-        draw.SimpleText("r", "Marlett", w - 10, 5, Color(255,255,255,255), TEXT_ALIGN_CENTER)
+        draw.SimpleText("r", "Marlett", w - 10, 3, Color(255,255,255,255), TEXT_ALIGN_CENTER)
+        
+        surface.SetDrawColor(Color(255, 255, 255, 255))
+        surface.SetMaterial(panel.opticon)
+        surface.DrawTexturedRect(w - 35, 3, 16, 16)
     end
     
     local close = vgui.Create("DButton", Panel)
@@ -83,6 +88,25 @@ function AOC:BuildMenu()
         Panel:Remove()
     end
     close.Paint = function() end
+    
+    local options = vgui.Create("DButton", Panel)
+    options:SetPos(500, 0)
+    options:SetSize(20, 20)
+    options:SetText("")
+    options.DoClick = function()
+        local menu = DermaMenu()
+        if Show:GetBool() then
+            menu:AddOption("Dont Show On Join", function()
+                RunConsoleCommand("tk_aoc_show", "0")
+            end)
+        else
+            menu:AddOption("Show On Join", function()
+                RunConsoleCommand("tk_aoc_show", "1")
+            end)
+        end
+        menu:Open()
+    end
+    options.Paint = function() end
     
     local copy
     local List = vgui.Create( "DListView", Panel )
@@ -146,7 +170,6 @@ hook.Add("Think", "AddonCheck", function()
 	if !LocalPlayer():IsValid() || !LocalPlayer():Alive() then return end
     if Show:GetInt() == 1 then
         RunConsoleCommand("3k_addon_check")
-        RunConsoleCommand("tk_aoc_show", 0)
     end
 	hook.Remove("Think", "AddonCheck")
 end)
