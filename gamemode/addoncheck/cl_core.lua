@@ -166,12 +166,12 @@ hook.Add("Initialize", "AddonCheck", function()
     AOC:GetLegacyAddons()
 end)
 
-hook.Add("Think", "AddonCheck", function()
-	if !LocalPlayer():IsValid() || !LocalPlayer():Alive() then return end
+hook.Add("HUDPaint", "AddonCheck", function()
+	if !IsValid(LocalPlayer()) || !LocalPlayer():Alive() then return end
     if Show:GetInt() == 1 then
         RunConsoleCommand("3k_addon_check")
     end
-	hook.Remove("Think", "AddonCheck")
+	hook.Remove("HUDPaint", "AddonCheck")
 end)
 
 concommand.Add("3k_addon_check", function(ply, cmd, arg)
