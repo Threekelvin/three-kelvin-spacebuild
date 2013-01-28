@@ -58,7 +58,9 @@ end)
 local index = 0
 TK.HUD.MOTDs = {
 	"Welcome to Three Kelvin Spacebuild!",
-	"This server has Audio Emotes! Bind +AudioEmotePanel_Show to see the menu."
+	"This server has Audio Emotes! Bind +AudioEmotePanel_Show to see the menu",
+	"We have a teamspeak server: threekelvin.co.uk:9987",
+	"Not sure how to do something? Ask!",
 }
 
 function TK.HUD.NextMOTD()
