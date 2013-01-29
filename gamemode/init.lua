@@ -102,6 +102,8 @@ function GM:PlayerSpawn(ply)
 
     local col = team.GetColor(ply:Team())
     ply:SetWeaponColor(Vector(col.r / 255, col.g / 255, col.b / 255))
+	
+	ply:SetNoCollideWithTeammates(false)
 
     player_manager.SetPlayerClass(ply, "player_sandbox")
     player_manager.OnPlayerSpawn(ply)
