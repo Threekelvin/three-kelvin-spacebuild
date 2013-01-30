@@ -58,6 +58,7 @@ e2function number entity:getUnitResourceCapacity(string res)
 end
 
 ///--- Loadouts ---\\\
+__e2setcost(30)
 local function GetLoadout(self)
 	local loadout = TK.DB:GetPlayerData(self.player, "player_loadout")
 	local validents = {n={},ntypes={},s={},stypes={},size=0}
@@ -126,7 +127,7 @@ e2function entity loSpawn(number item, angle rot, number frozen)
 	return CreateLOent(self,item,self.entity:GetPos()+self.entity:GetUp()*25,Angle(rot[1],rot[2],rot[3]),frozen)
 end
 
-e2function entity loSpawn(string slot, string model, vector pos, angle rot, number frozen)
+e2function entity loSpawn(string slot, vector pos, angle rot, number frozen)
 	local loadout = GetLoadout(self)
 	return CreateLOent(self,loadout.s[slot],Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
 end
@@ -205,6 +206,7 @@ e2function entity rdSpawn(entity template, vector pos, angle rot, number frozen)
 end
 
 ///--- Format ---\\\
+__e2setcost(5)
 e2function string format(number num)
 	return TK:Format(num)
 end
