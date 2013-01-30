@@ -72,6 +72,7 @@ function GM:PlayerSetModel(ply)
 end
 
 function GM:PlayerInitialSpawn(ply)
+    if ply:Team() == 0 then ply:SetTeam(1) end
     player_manager.SetPlayerClass(ply, "player_tk")
 end
 

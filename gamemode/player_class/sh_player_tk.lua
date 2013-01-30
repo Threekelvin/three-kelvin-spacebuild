@@ -61,7 +61,7 @@ end
 
 function PLAYER:CalcView( view )
 
-	if (self.TauntCam:CalcView(view, self.Player, self.Player:IsPlayingTaunt())) then return true end
+	if self.TauntCam:CalcView(view, self.Player, self.Player:IsPlayingTaunt()) then return true end
 
 end
 
