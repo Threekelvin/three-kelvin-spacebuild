@@ -104,6 +104,10 @@ function GM:PlayerSpawn(ply)
     ply:SetWeaponColor(Vector(col.r / 255, col.g / 255, col.b / 255))
 	
 	ply:SetNoCollideWithTeammates(false)
+	function _R.Player.SetNoCollideWithTeammates(bool)
+		print( "Can't figure out what's calling this so I disabled it entirely." )
+		return false
+	end
 
     player_manager.SetPlayerClass(ply, "player_sandbox")
     player_manager.OnPlayerSpawn(ply)
