@@ -47,6 +47,7 @@ function PP.SetOwner(ply, ent, uid)
 			if gamemode.Call("CPPIAssignOwnership", ply, ent) != nil then return false end
 			
 			ent:SetNWString("UID", uid)
+            ent.Owner = uid
 			PP.EntityRecord[uid] = PP.EntityRecord[uid] || {}
 			PP.EntityRecord[uid][eid] = ent
 			
@@ -60,6 +61,7 @@ function PP.SetOwner(ply, ent, uid)
 			if gamemode.Call("CPPIAssignOwnership", NullEntity(), ent) != nil then return false end
 			
 			ent:SetNWString("UID", uid)
+            ent.Owner = uid
 			PP.EntityRecord[uid] = PP.EntityRecord[uid] || {}
 			PP.EntityRecord[uid][eid] = ent
 			
