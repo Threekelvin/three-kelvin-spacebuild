@@ -89,7 +89,6 @@ function TOOL:RightClick(trace)
         if ent == self.Parent then
             if self:GetClientNumber("mass", 1) == 1 then
                 ent:GetPhysicsObject():SetMass(5000)
-                duplicator.StoreEntityModifier(ent, "mass", {Mass = 5000})
             end
             
             if self:GetClientNumber("pushaway", 1) == 1 then
@@ -105,6 +104,20 @@ function TOOL:RightClick(trace)
             continue
         end
         
+        if ent:IsVehicle() then
+            local phys = ent:GetPhysicsObject()
+            if IsValid(phys) then 
+                phys:SetMass(50)
+                phys:SetPos(ent:GetPos())
+                phys:SetAngles(ent:GetAngles())
+            end
+            constraint.Weld(self.Parent, ent, 0, 0, 0, false)
+            ent:SetCollisionGroup(COLLISION_GROUP_VEHICLE)
+            ent:PhysWake()
+            self:UnSelectEnt(ent)
+            continue
+        end
+        
         ent:SetParent(self.Parent)
         
         if self:GetClientNumber("physics", 1) == 1 then
@@ -112,7 +125,6 @@ function TOOL:RightClick(trace)
             if IsValid(phys) then 
                 if self:GetClientNumber("mass", 1) == 1 then
                     phys:SetMass(500)
-                    duplicator.StoreEntityModifier(ent, "mass", {Mass = 500})
                 else
                     phys:SetMass(phys:GetMass())
                 end
@@ -120,14 +132,13 @@ function TOOL:RightClick(trace)
                 phys:SetPos(ent:GetPos())
                 phys:SetAngles(ent:GetAngles())
                 constraint.Weld(self.Parent, ent, 0, 0, 0, false)
-                phys:Wake()
             end
             
             if self:GetClientNumber("pushaway", 1) == 1 then
-                if !ent:IsVehicle() then
-                    ent:SetCollisionGroup(COLLISION_GROUP_PUSHAWAY)
-                end
+                ent:SetCollisionGroup(COLLISION_GROUP_PUSHAWAY)
             end
+            
+            ent:PhysWake()
         else
             ent:SetNotSolid(true)
         end

@@ -131,7 +131,10 @@ function AOC:BuildMenu()
             copy.txt = "Open Workshop Page"
         end
         
-        steamworks.FileInfo(k, function(data) line:SetValue(1, data.title) end)
+        steamworks.FileInfo(k, function(data) 
+            if !data then return end
+            line:SetValue(1, data.title) 
+        end)
     end
     
     copy = vgui.Create("DButton", Panel)
