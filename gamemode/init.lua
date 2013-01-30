@@ -8,9 +8,9 @@ include('shared.lua')
 gameevent.Listen("player_connect")
 gameevent.Listen("player_disconnect")
 
-local function SetSpawnPoint(ply, side)
-	local Spawn = TK.SpawnPoints[side]
-    if !Spawn then Spawn = TK.SpawnPoints[1] end
+function TK:SetSpawnPoint(ply, side)
+	local Spawn = self.SpawnPoints[side]
+    if !Spawn then Spawn = self.SpawnPoints[1] end
     
 	for I=1, 8 do
 		local RotVec = Vector(100, 0, 36)
@@ -49,26 +49,10 @@ local AllowedWeapons = {
 	["remotecontroller"]	=	true,
 	["laserpointer"]		=	true
 }
+
 function GM:PlayerCanPickupWeapon(ply, wep)
    if AllowedWeapons[wep:GetClass()] != nil || ply:IsAdmin() then return true end
    return false
-end
-
-function GM:PlayerLoadout(ply)
-	ply:StripWeapons()
-	ply:StripAmmo()
-	
-	ply:Give("weapon_physcannon")
-	ply:Give("weapon_physgun")
-	ply:Give("gmod_camera")
-	ply:Give("gmod_tool")
-    ply:Give("hands")
-	
-	local cl_defaultweapon = ply:GetInfo("cl_defaultweapon")
-
-	if ply:HasWeapon(cl_defaultweapon) then
-		ply:SelectWeapon(cl_defaultweapon) 
-	end
 end
 
 function GM:PlayerSetModel(ply)
@@ -87,27 +71,18 @@ function GM:PlayerSetModel(ply)
     end
 end
 
+function GM:PlayerInitialSpawn(ply)
+    player_manager.SetPlayerClass(ply, "player_tk")
+end
+
 function GM:PlayerSpawn(ply)
-    ply:UnSpectate()
-    
-	self:SetPlayerSpeed(ply, 250, 500)
-	
-	if ply:Team() == 1001 then ply:SetTeam(1) end
-	SetSpawnPoint(ply, ply:Team())
-	
-	ply:TakeDamage(0)
-    
-    local col = ply:GetInfo("cl_playercolor")
-    ply:SetPlayerColor(Vector(col))
+	ply:UnSpectate()
 
-    local col = team.GetColor(ply:Team())
-    ply:SetWeaponColor(Vector(col.r / 255, col.g / 255, col.b / 255))
+	player_manager.OnPlayerSpawn(ply)
+	player_manager.RunClass(ply, "Spawn")
 
-    player_manager.SetPlayerClass(ply, "player_sandbox")
-    player_manager.OnPlayerSpawn(ply)
-    
-    hook.Call("PlayerLoadout", self, ply)
-	hook.Call("PlayerSetModel", self, ply)
+	hook.Call("PlayerLoadout", GAMEMODE, ply)
+	hook.Call("PlayerSetModel", GAMEMODE, ply)
 end
 ///--- ---\\\
 
