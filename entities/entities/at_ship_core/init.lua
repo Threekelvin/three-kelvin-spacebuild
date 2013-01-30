@@ -65,7 +65,7 @@ function ENT:TurnOn()
     else
         local hull = {}
         
-        for k,v in pairs(GH.ConstrainedEntities(self)) do
+        for k,v in pairs(self:GetConstrainedEntities()) do
             if v:BoundingRadius() < 135 then continue end
             if v.IsTKRD then continue end
             
