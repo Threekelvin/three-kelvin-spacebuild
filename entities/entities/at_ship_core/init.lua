@@ -94,8 +94,7 @@ function ENT:TurnOn()
         end
     end
     
-    local env = self:GetEnv()
-    self.atmosphere.resources = table.Copy(env.atmosphere.resources)
+    self.atmosphere.resources 	= {}
 end
 
 function ENT:TurnOff()
@@ -126,7 +125,7 @@ function ENT:DoThink(eff)
     
     self.data.power = -rate
     if !self:Work() then return end
-    rate = rate * math.min(1 / eff, 5)
+    rate = rate * 1 / math.Max(eff, 0.1)
 
     self.atmosphere.resources.oxygen = self.atmosphere.resources.oxygen || 0
     self.atmosphere.resources.oxygen = math.max(self.atmosphere.resources.oxygen - 1, 0)
