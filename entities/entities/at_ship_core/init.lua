@@ -119,8 +119,12 @@ end
 function ENT:DoThink(eff)
 	if !self:GetActive() then return end
     
-	local env
-	local size = table.Count(self.brushes)
+	local env, size
+    if self.ghd then
+        size = table.Count(GH.SHIPS[self].Welds || {})
+    else
+        size = table.Count(self.brushes)
+    end
     local rate = 5 * size
     
     self.data.power = -rate

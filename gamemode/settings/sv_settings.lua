@@ -205,17 +205,17 @@ elseif string.find(game.GetMap(), "lostinspace") then
 	}
 	TK.TibFields = {
 		[1] = {
-			Pos = Vector(9371.3046,12062.60,7972.330),
+			Pos = Vector(9370,12060,7970),
 			NextSpawn = 0,
 			Ents = {}
 		},
 		[2] = {
-			Pos = Vector(11065.549,9369.771,8023.753),
+			Pos = Vector(11065,9370,8025),
 			NextSpawn = 0,
 			Ents = {}
 		},
 		[3] = {
-			Pos = Vector(7967.8300,7289.97900,8065.2978),
+			Pos = Vector(7970,7290,8065),
 			NextSpawn = 0,
 			Ents = {}
 		}
@@ -267,4 +267,82 @@ elseif string.find(game.GetMap(), "lostinspace") then
 			ang = Angle(0,0,0)
 		}
 	}
+elseif string.find(game.GetMap(), "gooniverse") then
+    TK.SpawnPoints = {
+		[1] = Vector(-11220, -2630, -8062),
+		[2] = Vector(-260, 360, 4625),
+		[3] = Vector(10425, -9850, -1860),
+	}
+    TK.RoidFields = {
+		[1] = {
+			Pos = Vector(-9483,-683,4404),
+			NextSpawn = 0,
+			Ents = {}
+		},
+		[2] = {
+			Pos = Vector(5196,3163,-5011),
+			NextSpawn = 0,
+			Ents = {}
+		}
+	}
+    TK.TibFields = {
+		[1] = {
+			Pos = Vector(7725,-8080,-1950),
+			NextSpawn = 0,
+			Ents = {}
+		},
+		[2] = {
+			Pos = Vector(6968,-12221,-2048),
+			NextSpawn = 0,
+			Ents = {}
+		},
+		[3] = {
+			Pos = Vector(5218,-10198,-2048),
+			NextSpawn = 0,
+			Ents = {}
+		}
+	}
+    TK.Ents = {
+		[1] = {
+			ent = "tk_teleporter",
+			pos = Vector(-11217.178711,-2632.302002,-8062.649902),
+			ang = Angle(-90,120,180)
+		},
+        [2] = {
+			ent = "tk_teleporter",
+			pos = Vector(-258.712555,358.568268,4625.364746),
+			ang = Angle(-90,165,180)
+		},
+        [3] = {
+			ent = "tk_terminal",
+			pos = Vector(-104.682770,532.243408,4623.640625),
+			ang = Angle(0,-75,0)
+		},
+        [4] = {
+			ent = "tk_terminal",
+			pos = Vector(-475.378845,432.915527,4624.231934),
+			ang = Angle(0,-75,0)
+		},
+        [5] = {
+			ent = "prop_physics",
+			model = "models/Slyfo/refinery_large.mdl",
+			pos = Vector(10430.161133,-9848.124023,-1865.012695),
+			ang = Angle(0,-135,0)
+		},
+        [6] = {
+			ent = "tk_tib_transporter",
+			pos = Vector(10160.166992,-9887.300781,-1809.855591),
+			ang = Angle(90,45,180)
+		},
+        [7] = {
+			ent = "tk_tib_transporter",
+			pos = Vector(10394.168945,-10121.303711,-1809.805786),
+			ang = Angle(90,45,180)
+		},
+        [8] = {
+			ent = "tk_teleporter",
+			pos = Vector(10426.134766,-9852.023438,-1862.420288),
+			ang = Angle(-90,45,180)
+		}
+    }
 end

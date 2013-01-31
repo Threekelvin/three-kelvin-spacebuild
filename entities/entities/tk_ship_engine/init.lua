@@ -33,6 +33,8 @@ function ENT:TriggerInput(iname, value)
     
     elseif iname == "AngThrust" then
     
+    elseif iname == "AimAngle" then
+    
     elseif iname == "Level" then
         self.ShouldLevel = tobool(value)
     elseif iname == "Freeze" then
@@ -45,8 +47,6 @@ end
 function ENT:TurnOn()
 	if self:GetActive() || !self:IsLinked() then return end
     self:SetActive(true)
-    
-    self.Ents = self:GetConstrainedEntities()
 end
 
 function ENT:TurnOff()
@@ -67,13 +67,16 @@ end
 function ENT:DoThink(eff)
 	if !self:GetActive() then return end
     
-	
+    self.Ents = self:GetConstrainedEntities()
+	self.data.power = table.Count(self.Ents) * 5
     if !self:Work() then return end
    
 end
 
 function ENT:Think()
-
+    if !self:GetActive() then return end
+    
+    
 end
 
 function ENT:NewNetwork(netid)

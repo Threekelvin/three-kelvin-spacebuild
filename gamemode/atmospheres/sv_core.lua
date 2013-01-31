@@ -105,11 +105,12 @@ end
 local function LoadMapData()
 	local map = game.GetMap()
 	if !file.Exists("TKSB/Atmospheres/"..map..".txt", "DATA") then return end
-	MapData = util.KeyValuesToTable(file.Read("TKSB/Atmospheres/"..map..".txt")) || {}
+	MapData = util.KeyValuesToTable(file.Read("TKSB/Atmospheres/"..map..".txt", "DATA")) || {}
 end
 
 local function DecodeKeyValues(values)
 	local cat, data = "none", {}
+
 	if values.Case01 == "planet" then
 		cat = "planet"
 		data["radius"] = tonumber(values.Case02)
@@ -214,6 +215,7 @@ local function RegisterAtmospheres()
 			local pos = ent:GetPos()
 			
 			if cat == "planet" then
+                PrintTable(ent:GetKeyValues())
 				local planet = ents.Create("at_planet")
 				planet:SetPos(pos)
 				planet:Spawn()

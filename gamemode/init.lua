@@ -40,6 +40,7 @@ function TK:SetSpawnPoint(ply, side)
 	ply:SetPos(Spawn)
 end
 
+///--- GHD Real Constraint Function ---\\\
 function _R.Entity:GetConstrainedEntities()
 	local out = {[self] = self}
 	local tbtab = {{self,1}}
@@ -76,6 +77,7 @@ function _R.Entity:GetConstrainedEntities()
 	end
 	return out
 end
+///--- ---\\\
 
 local AllowedWeapons = {
 	["weapon_physcannon"]	=	true,
@@ -135,6 +137,13 @@ end)
 ///--- Map Setup ---\\\
 hook.Add("InitPostEntity", "TKSetup", function()
     game.CleanUpMap()
+    
+    for k,v in pairs(ents.GetAll()) do
+        if !IsValid(v) then continue end
+        if v:GetClass() == "func_dustcloud" then
+            v:Remove()
+        end
+    end
 end)
 ///--- ---\\\
 

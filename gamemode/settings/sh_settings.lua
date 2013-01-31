@@ -20,19 +20,24 @@ TK.PlyModels = {
     ["models/vinyl_player.mdl"] =           {rank = 2},
 }
 
-if game.GetMap() == "sb_twinsuns_fixed" then
+if string.find(game.GetMap(), "twinsuns") then
 	TK.TerminalPlanet = {
 		Pos = Vector(-10738,12687,125),
 		Size = 1638400
 	}
-elseif game.GetMap() == "sb_forlorn_sb3_r3" then
+elseif string.find(game.GetMap(), "forlorn") then
 	TK.TerminalPlanet = {
 		Pos = Vector(9414,9882,392),
 		Size = 6760000
 	}
-elseif game.GetMap() == "sb_lostinspace" then
+elseif string.find(game.GetMap(), "lostinspace") then
 	TK.TerminalPlanet = {
 		Pos = Vector(5846,6553,-8713),
 		Size = 1638400
+	}
+elseif string.find(game.GetMap(), "gooniverse") then
+    TK.TerminalPlanet = {
+		Pos = Vector(2,0,4620),
+		Size = 1254400
 	}
 end
