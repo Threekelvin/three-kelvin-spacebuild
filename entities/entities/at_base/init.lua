@@ -286,7 +286,7 @@ function ENT:InAtmosphere(pos)
 end
 
 function ENT:DoGravity(ent)
-	if !IsValid(ent) || !ent.tk_env then return end
+	if !IsValid(ent) || !ent.tk_env || ent.tk_env.nogravity then return end
 	local phys = ent:GetPhysicsObject()
 	if !IsValid(phys) then return end
 
@@ -296,7 +296,7 @@ function ENT:DoGravity(ent)
     local bool = grav > 0
     phys:EnableGravity(bool)
     phys:EnableDrag(bool)
-    ent:SetGravity(grav + 0.0001)
+    ent:SetGravity(grav + 0.001)
     ent.tk_env.gravity = grav
 end
 

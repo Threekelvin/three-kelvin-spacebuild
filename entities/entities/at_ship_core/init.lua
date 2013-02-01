@@ -81,7 +81,7 @@ function ENT:TurnOn()
         self:SetActive(true)
         
         for k,v in pairs(hull) do
-            v.tk_env.disabled = true
+            v.tk_env.disable = true
             
             local brush = ents.Create("at_brush")
             brush.env = self
@@ -107,7 +107,7 @@ function ENT:TurnOff()
         for k,v in pairs(self.brushes) do
             local par = v:GetParent()
             if IsValid(par) then
-                par.tk_env.disabled = nil
+                par.tk_env.disable = nil
             end
             
             SafeRemoveEntity(v)
@@ -233,7 +233,7 @@ function ENT:InAtmosphere(pos)
 end
 
 function ENT:DoGravity(ent)
-	if !IsValid(ent) || !ent.tk_env then return end
+	if !IsValid(ent) || !ent.tk_env || ent.tk_env.nogravity then return end
 	local phys = ent:GetPhysicsObject()
 	if !IsValid(phys) then return end
 

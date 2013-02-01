@@ -63,7 +63,7 @@ function Space:InAtmosphere(pos)
 end
 
 function Space:DoGravity(ent)
-	if !IsValid(ent) || !ent.tk_env then return end
+	if !IsValid(ent) || !ent.tk_env || ent.tk_env.nogravity then return end
 	local phys = ent:GetPhysicsObject()
 	if !IsValid(phys) then return end
 
