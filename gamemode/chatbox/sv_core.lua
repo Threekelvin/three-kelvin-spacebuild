@@ -73,7 +73,6 @@ hook.Add("player_connect", "TKChatBox", function(data)
     net.Start("3k_chat_g")
         net.WriteInt(1, 4)
         net.WriteString(data.name)
-        net.WriteString(string.match(data.address, "(%d+%.%d+%.%d+%.%d+)"))
     net.Broadcast()
 end)
 

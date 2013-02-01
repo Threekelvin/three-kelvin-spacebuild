@@ -147,6 +147,7 @@ end
 
 function ENT:Use(ply)
 	if !IsValid(ply) || !ply:IsPlayer() then return end
+    if !self:CPPICanUse(ply) then return end
     if self.next_use > CurTime() then return end
     self.next_use = CurTime() + 1
     

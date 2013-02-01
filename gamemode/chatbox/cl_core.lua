@@ -23,14 +23,15 @@ net.Receive("3k_chat_b", function()
     local toTeam = tobool(net.ReadBit())
     local ply = net.ReadEntity()
     local msg = net.ReadString()
-    gamemode.Call("OnPlayerChat", ply, msg, toTeam, !ply:Alive())
+
+    gamemode.Call("OnPlayerChat", ply, msg, toTeam, IsValid(ply) && !ply:Alive() || false)
 end)
 
 net.Receive("3k_chat_g", function()
     local typ = net.ReadInt(4)
     
     if typ == 1 then
-        chat.AddText(Color(161,255,161), "Player " ..net.ReadString().. " has connected (" ..net.ReadString().. ")")
+        chat.AddText(Color(161,255,161), "Player " ..net.ReadString().. " has connected")
     elseif typ == 2 then
         chat.AddText(Color(161,255,161), "Player " ..net.ReadString().. " has joined the game")
     elseif typ == 3 then

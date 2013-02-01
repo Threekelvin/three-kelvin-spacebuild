@@ -74,10 +74,15 @@ end
 
 function ENT:Think()
 	for k,v in ipairs(self.netdata.entities) do
-		if (v:GetPos() - self:GetPos()):LengthSqr() > self.rangesqr then
-			v:Unlink()
-			v:SoundPlay(0)
-		end
+        if !IsValid(v) then
+            self.netdata.entities[k] = nil
+            continue
+        end
+        
+		if (v:GetPos() - self:GetPos()):LengthSqr() <= self.rangesqr then continue end
+        
+        v:Unlink()
+        v:SoundPlay(0)
 	end
     
     local produce = 1

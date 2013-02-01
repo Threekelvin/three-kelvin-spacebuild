@@ -1,5 +1,5 @@
 
-TOOL.Category	= "Life Support"
+TOOL.Category	= "Ship Parts"
 TOOL.Name		= "Ship Core"
 TOOL.Limit		= 1
 TOOL.Data		= {

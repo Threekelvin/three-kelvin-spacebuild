@@ -100,6 +100,10 @@ function Space:DoTemp(ent)
     
 	return 3, self:InSun(ent)
 end
+
+function Space:IsValid()
+    return true
+end
 ///---   ---\\\
 
 local function LoadMapData()
@@ -317,7 +321,12 @@ hook.Add("Initialize", "TKAT", function()
 	end
 	
 	function _R.Entity:GetEnv()
-		return self.tk_env.envlist[1] || Space
+		local env = self.tk_env.envlist[1] || Space
+        if !IsValid(env) then
+            table.remove(self.tk_env.envlist, 1)
+            return self:GetEnv()
+        end
+        return env
 	end
 	
 	function _R.Player:AddhevRes(res, amt)
@@ -348,7 +357,7 @@ end)
 
 hook.Add("PlayerInitialSpawn", "TKAT", function(ply)
 	ply.tk_env = {}
-	ply.tk_env.envlist = {Space}
+	ply.tk_env.envlist = {}
 	ply.tk_env.gravity = -1
 	ply:GetEnv():DoGravity(ply)
 end)
@@ -369,7 +378,7 @@ hook.Add("EntitySpawned", "TKAT", function(ent)
     if !IsValid(ent:GetPhysicsObject()) then return end
     
     ent.tk_env = {}
-    ent.tk_env.envlist = {Space}
+    ent.tk_env.envlist = {}
     ent.tk_env.gravity = -1
     ent:GetEnv():DoGravity(ent)
 end)
