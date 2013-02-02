@@ -1,7 +1,7 @@
 
 TOOL.Category	= "Generators"
 TOOL.Name		= "Hydrogen Compressor"
-TOOL.Limit		= 5
+TOOL.Limit		= 2
 TOOL.Data		= {
 	["models/ce_ls3additional/compressor/compressor.mdl"]		  = {skin = 2, hydrogen = 50, power = -5},
 	["models/ce_ls3additional/compressor/compressor_large.mdl"]	  = {skin = 2, hydrogen = 100, power = -10},

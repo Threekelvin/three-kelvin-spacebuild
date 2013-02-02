@@ -1,7 +1,7 @@
 
 TOOL.Category	= "Generators"
 TOOL.Name		= "Nitrogen Liquifier"
-TOOL.Limit		= 5
+TOOL.Limit		= 2
 TOOL.Data		= {
 	["models/ce_ls3additional/compressor/compressor.mdl"]		= {skin = 4, liquid_nitrogen = 50, power = -10},
 	["models/techbot/nitrogenliquifier/nitrogenliquifier.mdl"] 	= {liquid_nitrogen = 100, power = -20},
