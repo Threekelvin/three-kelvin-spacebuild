@@ -39,7 +39,6 @@ hook.Add("Initialize", "TK.RD", function()
 	TK.RD:AddResource("hydrogen", "Hydrogen")
 	TK.RD:AddResource("liquid_nitrogen", "Liquid Nitrogen")
 	TK.RD:AddResource("water", "Water")
-	TK.RD:AddResource("steam", "Steam")
     TK.RD:AddResource("asteroid_ore", "Asteroid Ore")
     TK.RD:AddResource("raw_tiberium", "Raw Tiberium")
 end)
@@ -71,7 +70,7 @@ function TK.RD:GetEntTable(entid)
 	if !entdata || entdata.update < CurTime() then
 		RequestData("Ent", entid)
 	end
-	return entdata || {netid = 0, res = {}, data = {}}
+	return entdata || {netid = 0, res = {}, data = {}, powergrid = 0}
 end
 
 function TK.RD:IsLinked(ent)

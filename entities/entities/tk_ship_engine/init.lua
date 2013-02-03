@@ -108,8 +108,7 @@ function ENT:Initialize()
     
     self:SetNWBool("Generator", true)
     
-    self.Inputs = WireLib.CreateInputs(self, 
-    {"Activate", "Thrust [VECTOR]", "AngThrust [ANGLE]", "AimAngle [ANGLE]", "AimVector [VECTOR]", "Level"})
+    self.Inputs = WireLib.CreateInputs(self, {"Activate", "Thrust [VECTOR]", "AngThrust [ANGLE]", "AimAngle [ANGLE]", "AimVector [VECTOR]", "Level"})
 end
 
 function ENT:OnRemove()

@@ -9,6 +9,7 @@ function ENT:Initialize()
 	self:SetNWInt("Linked", 0)
 	self.rangesqr = self.data.range * self.data.range
 	
+    self:SetNWBool("Generator", true)
 	self:AddSound("l", 2, 65)
 	
 	WireLib.CreateInputs(self, {"On", "Mute"})
@@ -58,7 +59,7 @@ function ENT:DoCommand(ply, cmd, arg)
 			entdata.data[arg[1]] = nil
 			entdata.update = {}
 		else
-			entdata.data[arg[1]] = amt
+			entdata.data[arg[1]] = math.Clamp(amt, 0, 1000)
 			entdata.update = {}
 		end
 	end
@@ -85,6 +86,7 @@ function ENT:DoThink(eff)
 	local lnetdata = TK.RD:GetNetTable(lnetid)
 	local entdata = self:GetEntTable()
 	if !IsValid(lnetdata.node) then self:TurnOff() return end
+    
 	local netid = self:GetEntTable().netid
 	local netdata = TK.RD:GetNetTable(netid)
 	if (lnetdata.node:GetPos() - self:GetPos()):LengthSqr() > self.rangesqr then
@@ -94,10 +96,15 @@ function ENT:DoThink(eff)
 		return
 	end
     
+    self.data.power = 0
+    for k,v in pairs(entdata.data) do
+        self.data.power = math.ceil(self.data.power - v * 0.01)
+    end
+    
     if !self:Work() then return end	
 	
 	for k,v in pairs(entdata.data) do
-		local amt = self:ConsumeResource(k, v)
+		local amt = self:ConsumeResource(k, v * eff)
 		if amt > 0 then 
 			TK.RD:NetSupplyResource(lnetid, k, amt)
 		end

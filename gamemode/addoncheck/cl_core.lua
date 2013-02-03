@@ -1,19 +1,22 @@
 local Show = CreateClientConVar("tk_aoc_show", 1, true, false)
 
 local AOC = {}
+AOC.Tutorial = {
+    ["SVN Tutorial"]                        = "http://facepunch.com/showthread.php?t=688324"  
+}
 AOC.Legacy = {
-    ["SpaceBuild Enhancement Project"]					= "https://github.com/SnakeSVx/sbep/trunk/",
-    ["Spacebuild"]										= "https://github.com/SnakeSVx/spacebuild/trunk/",
-    ["Shadowscion's Construction Props"]				= "http://shadowscions-construction-props.googlecode.com/svn/trunk/",
-    ["TKMP"]											= "http://3k-model-pack.googlecode.com/svn/trunk/",
-    ["Wiremod"]											= "https://github.com/wiremod/wire/trunk/",
-    ["Wire Unofficial Extras"]							= "https://github.com/wiremod/wire-extras/trunk/"
+    ["SpaceBuild Enhancement Project"]		= "https://github.com/SnakeSVx/sbep/trunk/",
+    ["Spacebuild"]							= "https://github.com/SnakeSVx/spacebuild/trunk/",
+    ["Shadowscion's Construction Props"]    = "http://shadowscions-construction-props.googlecode.com/svn/trunk/",
+    ["TKMP"]								= "http://3k-model-pack.googlecode.com/svn/trunk/",
+    ["Wiremod"]								= "https://github.com/wiremod/wire/trunk/",
+    ["Wire Unofficial Extras"]				= "https://github.com/wiremod/wire-extras/trunk/"
 }
 AOC.Workshop = {
-    ["104694154"]										= "104694154",
-    ["106904944"]										= "106904944",
-    ["107155115"]										= "107155115",
-    ["107305209"]                                       = "107305209"
+    ["104694154"]							= "104694154",
+    ["106904944"]							= "106904944",
+    ["107155115"]							= "107155115",
+    ["107305209"]                           = "107305209"
 }
 AOC.MountedLegacy = {}
 
@@ -119,6 +122,13 @@ function AOC:BuildMenu()
     List:AddColumn("Installed"):SetFixedWidth(75)
     List:AddColumn("Mounted"):SetFixedWidth(75)
     
+    for k,v in pairs(self.Tutorial) do
+        local line = List:AddLine(k, "Tutorial", "", "", v)
+        line.OnSelect = function()
+            copy.txt = "Open Tutorial Page"
+        end
+    end
+    
     for k,v in pairs(self.Legacy) do
         local line = List:AddLine(k, "SVN", tostring(self:IsLegacyInstalled(k)), tostring(self:IsLegacyMounted(k)), v)
         line.OnSelect = function()
@@ -139,7 +149,7 @@ function AOC:BuildMenu()
     end
     
     copy = vgui.Create("DButton", Panel)
-    copy.txt = "Copy Selected Link"
+    copy.txt = "Open Tutorial Page"
     copy:SetPos(5, 255)
     copy:SetSize(525, 35)
     copy:SetText("")
@@ -157,13 +167,17 @@ function AOC:BuildMenu()
         surface.PlaySound("ui/buttonclickrelease.wav")
         local line = List:GetSelected()
         if IsValid(line[1]) then
-            if line[1]:GetValue(2) == "SVN" then
+            if line[1]:GetValue(2) == "Tutorial" then
+                gui.OpenURL(line[1]:GetValue(5))
+            elseif line[1]:GetValue(2) == "SVN" then
                 SetClipboardText(line[1]:GetValue(5) || "")
             elseif line[1]:GetValue(2) == "Workshop" then
                 steamworks.ViewFile(line[1]:GetValue(5))
             end
         end
     end
+    
+    List:SelectFirstItem()
 end
 
 hook.Add("Initialize", "AddonCheck", function()

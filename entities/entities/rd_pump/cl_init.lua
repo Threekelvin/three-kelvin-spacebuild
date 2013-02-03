@@ -16,6 +16,7 @@ function ENT:Draw()
 	if LocalPlayer():GetEyeTrace().Entity != self then return end
 	
 	local entdata = self:GetEntTable()
+    entdata.powergrid = entdata.powergrid || 0
 	local owner , uid = self:CPPIGetOwner()
 	local name = "World"
 	if IsValid(owner) then
@@ -36,11 +37,20 @@ function ENT:Draw()
 	Add(OverlayText, name)
 	Add(OverlayText, "\nRange: ")
 	Add(OverlayText, self:GetRange())
-	Add(OverlayText, "\nStatus: ")
-	Add(OverlayText, self:GetActive() && "On" || "Off")
-	Add(OverlayText, "\n")
-	
-	Add(OverlayText, "\nTransfer:\n")
+    Add(OverlayText, "\nStatus: ")
+    Add(OverlayText, self:GetActive() && "On" || "Off")
+    Add(OverlayText, "\nPower Grid: ")
+    
+    if entdata.powergrid > 0 then
+        Add(OverlayText, "+")
+        Add(OverlayText, entdata.powergrid)
+        Add(OverlayText, "kW")
+    else
+        Add(OverlayText, entdata.powergrid)
+        Add(OverlayText, "kW")
+    end
+    
+	Add(OverlayText, "\n\nTransfer:\n")
 	for k,v in pairs(entdata.data) do
 		Add(OverlayText, TK.RD:GetResourceName(k))
 		Add(OverlayText, ": ")
@@ -101,12 +111,12 @@ function ENT:DoMenu()
 		local energy = 0
 		for k,v in pairs(resources:GetLines()) do
 			if v == resources:GetSelected()[1] then
-				energy = energy + tonumber(rate_input:GetValue()) * 3
+				energy = math.ceil(energy + tonumber(rate_input:GetValue()) * 0.01)
 			else
-				energy = energy + (entdata.data[v:GetValue(2)] || 0) * 3
+				energy = math.ceil(energy + (entdata.data[v:GetValue(2)] || 0) * 0.01)
 			end
 		end
-		usage_input:SetText(tostring(energy))
+		usage_input:SetText(tostring(energy).. " kW")
 	end
 	
 	resources = vgui.Create("DListView", self.Menu)
@@ -123,12 +133,12 @@ function ENT:DoMenu()
 		local energy = 0
 		for k,v in pairs(resources:GetLines()) do
 			if v == resources:GetSelected()[1] then
-				energy = energy + tonumber(rate_input:GetValue()) * 3
+				energy = math.ceil(energy + tonumber(rate_input:GetValue()) * 0.01)
 			else
-				energy = energy + (entdata.data[v:GetValue(2)] || 0) * 3
+				energy = math.ceil(energy + (entdata.data[v:GetValue(2)] || 0) * 0.01)
 			end
 		end
-		usage_input:SetText(tostring(energy))
+		usage_input:SetText(tostring(energy).. " kW")
 	end
 	
 	for k,v in pairs(TK.RD:GetResources()) do
@@ -148,6 +158,7 @@ function ENT:DoMenu()
 	rate_input:SetEditable(true)
 	rate_input:SetText("0")
 	rate_input.OnTextChanged = function()
+        local entdata = self:GetEntTable()
 		local val = math.floor(math.Clamp(tonumber(rate_input:GetValue()) || 0, 0, 1000))
 		local pos = rate_input:GetCaretPos()
 		rate_input:SetText(tostring(val))
@@ -156,12 +167,12 @@ function ENT:DoMenu()
 		local energy = 0
 		for k,v in pairs(resources:GetLines()) do
 			if v == resources:GetSelected()[1] then
-				energy = energy + val * 3
+				energy = math.ceil(energy + val * 0.01)
 			else
-				energy = energy + (entdata.data[v:GetValue(2)] || 0) * 3
+				energy = math.ceil(energy + (entdata.data[v:GetValue(2)] || 0) * 0.01)
 			end
 		end
-		usage_input:SetText(tostring(energy))
+		usage_input:SetText(tostring(energy).. " kW")
 	end
 	
 	local usage = vgui.Create("DButton", self.Menu)
@@ -175,7 +186,7 @@ function ENT:DoMenu()
 	usage_input:SetPos(137.5, 110)
 	usage_input:SetNumeric(true)
 	usage_input:SetEditable(false)
-	usage_input:SetText("0")
+	usage_input:SetText("0 kW")
 	
 	local update = vgui.Create("DButton", self.Menu)
 	update:SetSize(125, 25)

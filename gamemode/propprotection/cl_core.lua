@@ -258,7 +258,7 @@ hook.Add("HUDPaint", "PP_OwnerBox", function()
 		draw.RoundedBox(4, scrw - x - 8.5, scrh / 4, x + 5, y + 5, Color(150,150,150))
 		draw.SimpleText(name, "TKFont12", scrw - 6, scrh/4 + 2.5, Color(255,255,255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
 		
-		local class = tr.Entity:GetClass()
+		local class = "["..tr.Entity:EntIndex().."] "..tr.Entity:GetClass()
 		x, y = surface.GetTextSize(class)
 		
 		draw.RoundedBox(4, scrw - x - 9.5, scrh / 4 + y + 8, x + 7, y + 7, Color(55,57,61))

@@ -34,6 +34,8 @@ function ENT:Initialize()
 	self:SetNWBool("Generator", true)
 	self:AddResource("oxygen", 0)
 	self:AddResource("nitrogen", 0)
+    
+    self.Inputs = WireLib.CreateInputs(self, {"Activate"})
 
 	self.brushes = {}
 end
@@ -105,6 +107,11 @@ function ENT:TurnOff()
         GH.UnHull(self)
     else
         for k,v in pairs(self.brushes) do
+            if !IsValid(v) then
+                self.brushes[k] = nil
+                continue
+            end
+            
             local par = v:GetParent()
             if IsValid(par) then
                 par.tk_env.disable = nil
@@ -224,6 +231,7 @@ function ENT:InAtmosphere(pos)
     end
     
 	for k,v in pairs(self.brushes) do
+        if !IsValid(v) then continue end
 		local cen, min, max = v:GetPos(), v:GetCollisionBounds()
 		if pos.x < cen.x + min.x && pos.x > cen.x + max.x && pos.y < cen.y + min.y && pos.y > cen.y + max.y && pos.z < cen.z + min.z && pos.z > cen.z + max.z then
 			return true
