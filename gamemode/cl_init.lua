@@ -98,3 +98,4 @@ player_manager.AddValidModel("Trixie (No Dress)", "models/trixienodress_player.m
 player_manager.AddValidModel("Vinyl Scratch", "models/vinyl_player.mdl")
 player_manager.AddValidModel("Vinyl Scratch (Goggles)", "models/vinyl_goggles_player.mdl")
 player_manager.AddValidModel("Raindrops", "models/raindrops_player.mdl")
+player_manager.AddValidModel("DS2 Engineering Suit", "models/player/engineer_suit.mdl")

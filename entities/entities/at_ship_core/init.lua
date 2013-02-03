@@ -119,7 +119,7 @@ end
 function ENT:DoThink(eff)
 	if !self:GetActive() then return end
     
-	local env, size
+	local env, size = TK.AT:GetSpace(), 0
     if self.ghd then
         size = table.Count(GH.SHIPS[self].Welds || {})
     else

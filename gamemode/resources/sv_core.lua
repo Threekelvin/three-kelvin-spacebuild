@@ -588,26 +588,6 @@ function TK.RD:ApplyDupeInfo(ent, CreatedEntities)
 	
 	ent.EntityMods.TKRDInfo = nil
 end
-
-function TK.RD:WaterLevel(ent)
-	if !IsValid(ent) then return 0 end
-	local height = (ent:OBBMaxs().z - ent:OBBMins().z) / 2
-	local trace = {}
-	trace.start = ent:LocalToWorld(ent:OBBCenter() + Vector(0,0,height))
-	trace.endpos = ent:LocalToWorld(ent:OBBCenter() - Vector(0,0,height))
-	trace.filter = ent
-	trace.mask = MASK_WATER
-	local tr = util.TraceLine(trace)
-	if !tr.Hit then return 0 end
-	
-	if tr.Fraction == 0 && tr.FractionLeftSolid == 0 then
-		return 1
-	elseif tr.Fraction > 0 && tr.FractionLeftSolid == 0 then
-		return 1 - tr.Fraction
-	elseif tr.Fraction == 1 && tr.FractionLeftSolid > 0 then
-		return tr.FractionLeftSolid
-	end
-end
 ///--- ---\\\
 
 ///--- Resources ---\\\

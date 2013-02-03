@@ -47,7 +47,7 @@ function ENT:DoThink(eff)
 
 	local water = self.data.water * self.mult * eff
 	
-	if TK.RD:WaterLevel(self) < 0.25 then self:TurnOff() return end
+	if self:WaterLevel() < 1 then self:TurnOff() return end
     if !self:Work() then return end
 
 	water = self:SupplyResource("water", water)

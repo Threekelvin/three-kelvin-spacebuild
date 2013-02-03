@@ -265,7 +265,15 @@ elseif string.find(game.GetMap(), "lostinspace") then
 			ent = "tk_terminal",
 			pos = Vector(4832.6,6911.449,-8721.35),
 			ang = Angle(0,0,0)
-		}
+		},
+        [10] = {
+            ent = "gmod_playx",
+			model = "models/props_junk/popcan01a.mdl",
+            color = Color(255, 255, 255, 1),
+            notsolid = true,
+			pos = Vector(6875,6530,-8468),
+			ang = Angle(0,180,0)
+        }
 	}
 elseif string.find(game.GetMap(), "gooniverse") then
     TK.SpawnPoints = {

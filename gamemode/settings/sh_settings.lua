@@ -4,6 +4,7 @@ TK.TerminalPlanet = {Pos = Vector(0,0,0), Size = 0}
 TK.PlyModels = {
     ["models/applejack_player.mdl"] =       {rank = 2},
     ["models/bonbon_player.mdl"] =          {rank = 2},
+    ["models/celestia.mdl"] =               {rank = 2},
     ["models/colgate_player.mdl"] =         {rank = 2},
     ["models/derpyhooves_player.mdl"] =     {rank = 2},
     ["models/fluttershy_player.mdl"] =      {rank = 2},
@@ -18,6 +19,7 @@ TK.PlyModels = {
     ["models/twilightsparkle_player.mdl"] = {rank = 2},
     ["models/vinyl_goggles_player.mdl"] =   {rank = 2},
     ["models/vinyl_player.mdl"] =           {rank = 2},
+    ["models/player/engineer_suit.mdl"] =   {rank = 2},
 }
 
 if string.find(game.GetMap(), "twinsuns") then
