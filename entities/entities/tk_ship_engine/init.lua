@@ -3,6 +3,95 @@ AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
 local math = math
+local WorldToLocal = WorldToLocal
+local LocalToWorld = LocalToWorld
+local LerpAngle = LerpAngle
+
+local function math_angnorm(ang)
+    return Angle(
+        math.NormalizeAngle(ang.p),
+        math.NormalizeAngle(ang.y),
+        math.NormalizeAngle(ang.r)
+    )
+end
+ 
+local function math_angclamp(ang, min, max)
+    return Angle(
+        math.Clamp(ang.p, min, max),
+        math.Clamp(ang.y, min, max),
+        math.Clamp(ang.r, min, max)
+    )
+end
+
+local function math_vecclamp(vec, min, max)
+    return Vector(
+        math.Clamp(vec.x, min, max),
+        math.Clamp(vec.y, min, max),
+        math.Clamp(vec.z, min, max)
+    )
+end
+
+local function math_physvec(vec)
+    return Vector(
+        vec.x > -math.huge && (vec.x < math.huge && vec.x || 0) || 0,
+        vec.y > -math.huge && (vec.y < math.huge && vec.y || 0) || 0,
+        vec.z > -math.huge && (vec.z < math.huge && vec.z || 0) || 0
+    )
+end
+
+local function math_qmul(lhs, rhs)
+    local lhs, rhs = lhs, rhs
+	return {
+		lhs[1] * rhs[1] - lhs[2] * rhs[2] - lhs[3] * rhs[3] - lhs[4] * rhs[4],
+		lhs[1] * rhs[2] + lhs[2] * rhs[1] + lhs[3] * rhs[4] - lhs[4] * rhs[3],
+		lhs[1] * rhs[3] + lhs[3] * rhs[1] + lhs[4] * rhs[2] - lhs[2] * rhs[4],
+		lhs[1] * rhs[4] + lhs[4] * rhs[1] + lhs[2] * rhs[3] - lhs[3] * rhs[2]
+	}
+end
+
+local function math_qdiv(lhs, rhs)
+    local lhs, rhs = lhs, rhs
+	local l = rhs[1] * rhs[1] + rhs[2] * rhs[2] + rhs[3] * rhs[3] + rhs[4] * rhs[4]
+	return {
+		( lhs[1] * rhs[1] + lhs[2] * rhs[2] + lhs[3] * rhs[3] + lhs[4] * rhs[4]) / l,
+		(-lhs[1] * rhs[2] + lhs[2] * rhs[1] - lhs[3] * rhs[4] + lhs[4] * rhs[3]) / l,
+		(-lhs[1] * rhs[3] + lhs[3] * rhs[1] - lhs[4] * rhs[2] + lhs[2] * rhs[4]) / l,
+		(-lhs[1] * rhs[4] + lhs[4] * rhs[1] - lhs[2] * rhs[3] + lhs[3] * rhs[2]) / l
+	}
+end
+
+local function math_rotationvector(tang, cang)
+    local deg2rad = math.pi / 180 * 0.5
+    local rad2deg = 180 / math.pi
+    
+    //-- Target --\\
+    tang = tang * deg2rad
+
+    local qr = {math.cos(tang.r), math.sin(tang.r), 0, 0}
+    local qp = {math.cos(tang.p), 0, math.sin(tang.p), 0}
+    local qy = {math.cos(tang.y), 0, 0, math.sin(tang.y)}
+    local tar = math_qmul(qy, math_qmul(qp, qr))
+    
+    //-- Current --\\
+    cang = cang * deg2rad
+    
+    local qr = {math.cos(cang.r), math.sin(cang.r), 0, 0}
+    local qp = {math.cos(cang.p), 0, math.sin(cang.p), 0}
+    local qy = {math.cos(cang.y), 0, 0, math.sin(cang.y)}
+    local cur = math_qmul(qy, math_qmul(qp, qr))
+    
+    local q = math_qdiv(tar, cur)
+    
+    //-- Rotation Vec --\\
+    local l2 = q[1]*q[1] + q[2]*q[2] + q[3]*q[3] + q[4]*q[4]
+	local m2 = math.max(q[2]*q[2] + q[3]*q[3] + q[4]*q[4], 0)
+	if l2 == 0 || m2 == 0 then return Vector(0, 0, 0) end
+	local s = 2 * math.acos(math.Clamp(q[1] / math.sqrt(l2), -1, 1)) * rad2deg
+	if s > 180 then s = s - 360 end
+	s = s / math.sqrt(m2)
+    
+	return Vector(q[2] * s, q[3] * s, q[4] * s)
+end
 
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
@@ -12,17 +101,15 @@ function ENT:Initialize()
     self.Thrust = Vector(0, 0, 0)
     self.AngThrust = Angle(0, 0, 0)
     self.AimAngle = Angle(0, 0, 0)
-    self.RotateAng = Angle(0, 0, 0)
     self.ShouldLevel = false
-    self.MaxThrust = 100
-    self.RadMax = 15
-    self.RadMin = 5
+    self.Rotation = Angle(0, 0, 0)
+    self.MaxThrust = 150
     self.Ents = {}
     
     self:SetNWBool("Generator", true)
     
     self.Inputs = WireLib.CreateInputs(self, 
-    {"Activate", "Thrust [VECTOR]", "AngThrust [ANGLE]", "AimAngle [ANGLE]", "Rotate [ANGLE]", "Level", "MaxThrust"})
+    {"Activate", "Thrust [VECTOR]", "AngThrust [ANGLE]", "AimAngle [ANGLE]", "Level", "Rotate [ANGLE]"})
 end
 
 function ENT:OnRemove()
@@ -42,19 +129,17 @@ function ENT:TriggerInput(iname, value)
             self:TurnOff()
         end
 	elseif iname == "Thrust" then
-        self.Thrust = value:GetNormal()
+        self.Thrust = math_vecclamp(Vector(value.x, value.y, value.z), -1, 1)
     elseif iname == "AngThrust" then
-        self.AngThrust = Angle(value.x, value.y, value.z)
+        self.AngThrust = math_angclamp(Angle(value.x, value.y, value.z), -1, 1)
         self.Aim = false
     elseif iname == "AimAngle" then
-        self.AimAngle = Angle(value.x, value.y, value.z)
+        self.AimAngle = math_angnorm(Angle(value.x, value.y, value.z))
         self.Aim = true
-    elseif iname == "Rotate" then
-        self.RotateAng = Angle(value.x, value.y, value.z)
     elseif iname == "Level" then
         self.ShouldLevel = tobool(value)
-    elseif iname == "MaxThrust" then
-        self.MaxThrust = 50
+    elseif iname == "Rotate" then
+        self.Rotation = math_angnorm(Angle(value.x, value.y, value.z))
     end
 end
 
@@ -68,6 +153,8 @@ function ENT:DisableGravity(ent)
     
     phys:EnableMotion(true)
     phys:Wake()
+    
+    self.TotalMass = self.TotalMass + phys:GetMass()
 end
 
 function ENT:ResetGravity(ent)
@@ -81,12 +168,15 @@ function ENT:ResetGravity(ent)
     
     phys:EnableMotion(false)
     phys:Wake()
+    
+    self.TotalMass = self.TotalMass - phys:GetMass()
 end
 
 function ENT:TurnOn()
 	if self:GetActive() || !self:IsLinked() then return end
     self:SetActive(true)
     
+    self.TotalMass = 0
     self.Ents = self:GetConstrainedEntities()
     for k,v in pairs(self.Ents) do
        self:DisableGravity(v)
@@ -119,19 +209,22 @@ function ENT:DoThink(eff)
     end
 
     self.Ents = conents
-	self.data.power = table.Count(self.Ents) * (-5 * self.MaxThrust / 100)
+	self.data.power = math.floor(table.Count(self.Ents) * -5 )
     if !self:Work() then return end
 end
 
 function ENT:Think()
     if !self:GetActive() then return end
     local parent = IsValid(self:GetParent()) && self:GetParent() || self
-    local pos, ang = parent:GetPos(), parent:GetAngles() + self.RotateAng
+    local pphys = parent:GetPhysicsObject()
+    if !IsValid(pphys) then return end
+    
+    local pos, ang = pphys:GetPos(), math_angnorm(pphys:GetAngles() + self.Rotation)
     local propcount = table.Count(self.Ents)
     
-    local vec = Vector(self.Thrust.x * self.MaxThrust, self.Thrust.y * self.MaxThrust * 0.25, self.Thrust.z * self.MaxThrust * 0.25) * self.Eff
-    local Thrust,_ = LocalToWorld(vec, Angle(0,0,0), pos, ang)
-    Thrust = Thrust - pos
+    local vec = Vector(self.Thrust.x, self.Thrust.y, self.Thrust.z)
+    local lvec,lang = LocalToWorld(vec, Angle(0,0,0), pos, ang)
+    local Thrust = (lvec - pos) * self.MaxThrust * self.Eff
     
     for _,ent in pairs(self.Ents) do
         if !IsValid(ent) then continue end
@@ -141,27 +234,34 @@ function ENT:Think()
         phys:AddAngleVelocity(phys:GetAngleVelocity() * -1)
     end
     
-    local AngThrust
+    local Torque
     if self.Aim then
-        AngThrust = self.AimAngle - ang
+        local lang = LerpAngle(0.01, ang, self.AimAngle)
+        local tang = self.ShouldLevel && Angle(0, lang.y, 0) || lang
+        Torque = math_rotationvector(tang, ang)
     else
-        AngThrust = self.AngThrust
+        local lvec,lang = LocalToWorld(Vector(0,0,0), self.AngThrust, pos, ang)
+        local tang = self.ShouldLevel && Angle(0, lang.y, 0) || lang
+        Torque = math_rotationvector(tang, ang)
     end
     
-    if self.ShouldLevel then
-        AngThrust = Angle(-ang.p, AngThrust.y, -ang.r)
+    Torque = (1000 * Torque - pphys:GetAngleVelocity() * 20) * pphys:GetInertia()
+    local magnitude = Torque:Length()
+    
+    local off
+    if math.abs(Torque.x) > magnitude * 0.1 || math.abs(Torque.z) > magnitude * 0.1 then
+        off = Vector(-Torque.z, 0, Torque.x)
+    else
+        off = Vector(-Torque.y, Torque.x, 0)
     end
+    off = off:GetNormal() * magnitude * 0.5
+    local dir = Torque:Cross(off):GetNormal()
     
-    local Mult = math.Max(self.RadMax - (0.2 * propcount), self.RadMin)
-    AngThrust = Vector((AngThrust.r + 180) % 360 - 180, (AngThrust.p + 180) % 360 - 180, (AngThrust.y + 180) % 360 - 180)
-    AngThrust = Vector(
-        math.abs(AngThrust.x) < Mult && math.floor(AngThrust.x) || (AngThrust.x / math.abs(AngThrust.x) * Mult),
-        math.abs(AngThrust.y) < Mult && math.floor(AngThrust.y) || (AngThrust.y / math.abs(AngThrust.y) * Mult),
-        math.abs(AngThrust.z) < Mult && math.floor(AngThrust.z) || (AngThrust.z / math.abs(AngThrust.z) * Mult)
-    )
-    
-    local phys = parent:GetPhysicsObject()
-    phys:AddAngleVelocity(AngThrust * self.Eff)
+    off = math_physvec(off)
+    dir = math_physvec(dir)
+
+    pphys:ApplyForceOffset(dir, off)
+    pphys:ApplyForceOffset(dir * -1, off * -1)
     
     self:NextThink(CurTime())
     return true
