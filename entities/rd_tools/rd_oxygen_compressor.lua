@@ -1,7 +1,7 @@
 
 TOOL.Category	= "Generators"
 TOOL.Name		= "Oxygen Compressor"
-TOOL.Limit		= 5
+TOOL.Limit		= 2
 TOOL.Data		= {
 	["models/ce_ls3additional/compressor/compressor.mdl"]		  = {skin = 0, oxygen = 50, power = -5},
 	["models/ce_ls3additional/compressor/compressor_large.mdl"]	  = {skin = 0, oxygen = 100, power = -10},
