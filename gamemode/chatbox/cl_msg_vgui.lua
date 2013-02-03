@@ -6,6 +6,7 @@ local Links  = CreateClientConVar("3k_chatbox_links", 1, true, false)
 local surface = surface
 local string_gmatch = string.gmatch
 local string_match = string.match
+local string_Explode = string.Explode
 
 local LastEmote = 0
 
@@ -84,7 +85,7 @@ function PANEL:DoLayout()
 	for k,v in ipairs(self.data) do
 		if type(v) == "string" then
 			local tempX, tempStr = X, ""
-			for _,word in ipairs(string.Explode(" ", v)) do
+			for _,word in ipairs(string_Explode(" ", v)) do
 				local isEmote, isLink = self:IsEmote(word), self:IsLink(word)
 				
 				if isEmote then

@@ -101,15 +101,15 @@ function ENT:Initialize()
     self.Thrust = Vector(0, 0, 0)
     self.AngThrust = Angle(0, 0, 0)
     self.AimAngle = Angle(0, 0, 0)
+    self.AimVector = Vector(0 ,0, 0)
     self.ShouldLevel = false
-    self.Rotation = Angle(0, 0, 0)
     self.MaxThrust = 150
     self.Ents = {}
     
     self:SetNWBool("Generator", true)
     
     self.Inputs = WireLib.CreateInputs(self, 
-    {"Activate", "Thrust [VECTOR]", "AngThrust [ANGLE]", "AimAngle [ANGLE]", "Level", "Rotate [ANGLE]"})
+    {"Activate", "Thrust [VECTOR]", "AngThrust [ANGLE]", "AimAngle [ANGLE]", "AimVector [VECTOR]", "Level"})
 end
 
 function ENT:OnRemove()
@@ -129,17 +129,18 @@ function ENT:TriggerInput(iname, value)
             self:TurnOff()
         end
 	elseif iname == "Thrust" then
-        self.Thrust = math_vecclamp(Vector(value.x, value.y, value.z), -1, 1)
+        self.Thrust = math_vecclamp(value, -1, 1)
     elseif iname == "AngThrust" then
-        self.AngThrust = math_angclamp(Angle(value.x, value.y, value.z), -1, 1)
-        self.Aim = false
+        self.AngThrust = math_angclamp(value, -1, 1)
+        self.Aim = 0
     elseif iname == "AimAngle" then
-        self.AimAngle = math_angnorm(Angle(value.x, value.y, value.z))
-        self.Aim = true
+        self.AimAngle = math_angnorm(value)
+        self.Aim = 1
+    elseif inmage == "AimVector" then
+        self.AimVector = value
+        self.Aim = 2
     elseif iname == "Level" then
         self.ShouldLevel = tobool(value)
-    elseif iname == "Rotate" then
-        self.Rotation = math_angnorm(Angle(value.x, value.y, value.z))
     end
 end
 
@@ -219,7 +220,7 @@ function ENT:Think()
     local pphys = parent:GetPhysicsObject()
     if !IsValid(pphys) then return end
     
-    local pos, ang = pphys:GetPos(), math_angnorm(pphys:GetAngles() + self.Rotation)
+    local pos, ang = pphys:GetPos(), math_angnorm(pphys:GetAngles())
     local propcount = table.Count(self.Ents)
     
     local vec = Vector(self.Thrust.x, self.Thrust.y, self.Thrust.z)
@@ -235,7 +236,12 @@ function ENT:Think()
     end
     
     local Torque
-    if self.Aim then
+    if self.Aim == 2 then
+        local lvec,_ = LocalToWorld(self.AimVector, Angle(0,0,0), pos, ang)
+        local lang = LerpAngle(0.01, ang, lvec:Angle())
+        local tang = self.ShouldLevel && Angle(0, lang.y, 0) || lang
+        Torque = math_rotationvector(tang, ang)
+    elseif self.Aim == 1 then
         local lang = LerpAngle(0.01, ang, self.AimAngle)
         local tang = self.ShouldLevel && Angle(0, lang.y, 0) || lang
         Torque = math_rotationvector(tang, ang)

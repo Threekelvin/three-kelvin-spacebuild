@@ -17,3 +17,7 @@ function TOOL:Reload(trace)
     RunConsoleCommand("tk_ship_engine_model", trace.Entity:GetModel())
     return true
 end
+
+if SERVER then return end
+
+language.Add("tool.tk_ship_engine.0", "Left Click: Spawn a "..TOOL.Name.."      Reload: Select Model")
