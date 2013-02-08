@@ -253,44 +253,56 @@ function MySQL.LoadPlayerData(ply, steamid, ip, uid)
 		MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("player_info", {}, {"steamid = %s", steamid}), function(data, ply, uid)
 			data[1].steamid = nil
 			TK.DB:SetPlayerData(ply, "player_info", data[1])
+            ply.loaded = ply.loaded + 1
 		end, ply, uid)
 		
 		MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("player_team", {}, {"steamid = %s", steamid}), function(data, ply, uid)
 			data[1].steamid = nil
 			TK.DB:SetPlayerData(ply, "player_team", data[1])
+            ply.loaded = ply.loaded + 1
 		end, ply, uid)
         
         MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("player_loadout", {}, {"steamid = %s", steamid}), function(data, ply, uid)
 			data[1].steamid = nil
 			TK.DB:SetPlayerData(ply, "player_loadout", data[1])
+            ply.loaded = ply.loaded + 1
 		end, ply, uid)
         
         MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("player_inventory", {}, {"steamid = %s", steamid}), function(data, ply, uid)
 			data[1].steamid = nil
             data[1].inventory = util.JSONToTable(data[1].inventory)
 			TK.DB:SetPlayerData(ply, "player_inventory", data[1])
+            ply.loaded = ply.loaded + 1
 		end, ply, uid)
 		
 		MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("terminal_setting", {}, {"steamid = %s", steamid}), function(data, ply, uid)
 			data[1].steamid = nil
 			TK.DB:SetPlayerData(ply, "terminal_setting", data[1])
+            ply.loaded = ply.loaded + 1
 		end, ply, uid)
 		
 		MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("terminal_storage", {}, {"steamid = %s", steamid}), function(data, ply, uid)
 			data[1].steamid = nil
 			TK.DB:SetPlayerData(ply, "terminal_storage", data[1])
+            ply.loaded = ply.loaded + 1
 		end, ply, uid)
 		
 		MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("terminal_refinery", {}, {"steamid = %s", steamid}), function(data, ply, uid)
 			data[1].steamid = nil
 			TK.DB:SetPlayerData(ply, "terminal_refinery", data[1])
+            ply.loaded = ply.loaded + 1
 		end, ply, uid)
 		
 		MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("terminal_upgrades", {}, {"steamid = %s", steamid}), function(data, ply, uid)
 			data[1].steamid = nil
 			TK.DB:SetPlayerData(ply, "terminal_upgrades", data[1])
+            ply.loaded = ply.loaded + 1
 		end, ply, uid)
 	end, ply, steamid, ip, uid)
+end
+
+function _R.Player:IsLoaded()
+    return self.loaded == 8
 end
 ///--- ---\\\
 
@@ -341,7 +353,9 @@ end)
 	
 hook.Add("Initialize", "MySQLLoad", function()
 	timer.Create("TK.DB_Stats_Update", 60, 0, function()
+        if !MySQL.Connected then return end
 		for _,ply in pairs(player.GetAll()) do
+            if !ply:IsLoaded() then continue end
 			local data = TK.DB:GetPlayerData(ply, "player_info")
             local update = {playtime = data.playtime + 1}
 
@@ -402,6 +416,7 @@ end)
 hook.Add("PlayerAuthed", "TKLoadPlayer", function(ply, steamid, uid)
 	local ip = ply:Ip()
 	ply.uid = uid
+    ply.loaded = 0
     ply.tk_cache = {}
 	
 	PlayerData[uid] = TK.DB:MakePlayerData()
@@ -424,7 +439,7 @@ hook.Add("PlayerAuthed", "TKLoadPlayer", function(ply, steamid, uid)
 end)
 
 hook.Add("PlayerDisconnected", "TKDisUpdate", function(ply)
-	if !IsValid(ply) then return end
+	if !IsValid(ply) || !MySQL.Connected || !ply:IsLoaded() then return end
     local data = TK.DB:GetPlayerData(ply, "player_info")
     local update = {}
     
@@ -437,9 +452,5 @@ hook.Add("PlayerDisconnected", "TKDisUpdate", function(ply)
     end
     
     PlayerData[ply:GetNWString("UID")] = nil
-end)
-
-hook.Add("ShutDown", "TKDatabaseDump", function()
-
 end)
 ///--- ---\\\

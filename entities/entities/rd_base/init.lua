@@ -181,6 +181,19 @@ function ENT:UpdateValues()
 
 end
 
+function ENT:PreEntityCopy()
+    if WireLib then
+        WireLib.BuildDupeInfo(self)
+    end
+end
+
+function ENT:PostEntityPaste(ply, ent, info, GetEntByID)
+    if WireLib then
+        WireLib.ApplyDupeInfo(ply, ent, info, GetEntByID)
+    end
+end
+
+
 function ENT:AddResource(idx, max, gen)
 	return TK.RD:EntAddResource(self, idx, max, gen)
 end

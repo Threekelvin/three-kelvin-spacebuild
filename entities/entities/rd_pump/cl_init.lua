@@ -111,9 +111,9 @@ function ENT:DoMenu()
 		local energy = 0
 		for k,v in pairs(resources:GetLines()) do
 			if v == resources:GetSelected()[1] then
-				energy = math.ceil(energy + tonumber(rate_input:GetValue()) * 0.01)
+				energy = energy + math.ceil(tonumber(rate_input:GetValue()) * 0.01)
 			else
-				energy = math.ceil(energy + (entdata.data[v:GetValue(2)] || 0) * 0.01)
+				energy = energy + math.ceil((entdata.data[v:GetValue(2)] || 0) * 0.01)
 			end
 		end
 		usage_input:SetText(tostring(energy).. " kW")
@@ -133,9 +133,9 @@ function ENT:DoMenu()
 		local energy = 0
 		for k,v in pairs(resources:GetLines()) do
 			if v == resources:GetSelected()[1] then
-				energy = math.ceil(energy + tonumber(rate_input:GetValue()) * 0.01)
+				energy = energy + math.ceil(tonumber(rate_input:GetValue()) * 0.01)
 			else
-				energy = math.ceil(energy + (entdata.data[v:GetValue(2)] || 0) * 0.01)
+				energy = energy + math.ceil((entdata.data[v:GetValue(2)] || 0) * 0.01)
 			end
 		end
 		usage_input:SetText(tostring(energy).. " kW")
@@ -167,9 +167,9 @@ function ENT:DoMenu()
 		local energy = 0
 		for k,v in pairs(resources:GetLines()) do
 			if v == resources:GetSelected()[1] then
-				energy = math.ceil(energy + val * 0.01)
+				energy = energy + math.ceil(val * 0.01)
 			else
-				energy = math.ceil(energy + (entdata.data[v:GetValue(2)] || 0) * 0.01)
+				energy = energy + math.ceil((entdata.data[v:GetValue(2)] || 0) * 0.01)
 			end
 		end
 		usage_input:SetText(tostring(energy).. " kW")

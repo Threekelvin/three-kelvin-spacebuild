@@ -15,7 +15,7 @@ function ENT:Initialize()
     entdata.update = {}
     
     self.Inputs = WireLib.CreateInputs(self, {"On"})
-    self.Outputs = WireLib.CreateOutputs(self, {"On"})
+    self.Outputs = WireLib.CreateOutputs(self, {"On", "Name [STRING]", "Tempurature", "Gravity", "Resources [TABLE]"})
 end
 
 function ENT:TurnOn()
@@ -28,6 +28,10 @@ function ENT:TurnOff()
     if !self:GetActive() then return end
     self:SetActive(false)
     WireLib.TriggerOutput(self, "On", 0)
+    WireLib.TriggerOutput(self, "Name", "")
+    WireLib.TriggerOutput(self, "Tempurature", 0)
+    WireLib.TriggerOutput(self, "Gravity", 0)
+    WireLib.TriggerOutput(self, "Resources", {n={},ntypes={},s={},stypes={},size=0})
 end
 
 function ENT:TriggerInput(iname, value)
@@ -50,27 +54,42 @@ function ENT:DoThink(eff)
     
     if entdata.data.id != env.atmosphere.name then
         entdata.data.id = env.atmosphere.name
+        WireLib.TriggerOutput(self, "Name", env.atmosphere.name)
         entdata.update = {}
     end
     
-    local temp = eff && env:DoTemp(self) || "NA"
+    local temp = eff && env:DoTemp(self) || 0
     if entdata.data.temp != temp then
         entdata.data.temp = temp
+        WireLib.TriggerOutput(self, "Tempurature", temp)
         entdata.update = {}
     end
     
-    local gravity = eff && env.atmosphere.gravity || "NA"
+    local gravity = eff && env.atmosphere.gravity || 0
     if entdata.data.gravity != gravity then
         entdata.data.gravity = gravity
+        WireLib.TriggerOutput(self, "Gravity", temp)
         entdata.update = {}
     end
 
+    local data = {n={},ntypes={},s={},stypes={},size=0}
+    local size, update = 0, false
     for k,v in pairs(env.atmosphere.resources) do
-        local val = eff && v || "NA"
+        local val = eff && v || 0
         if !entdata.data.resources[k] || entdata.data.resources[k] != val then
             entdata.data.resources[k] = val
             entdata.update = {}
+            update = true
         end
+        
+        data.s[k] = val
+        data.stypes[k] = "n"
+        size = size + 1
+    end
+    
+    if update then
+        data.size = size
+        WireLib.TriggerOutput(self, "Resources", data)
     end
     
     for k,v in pairs(entdata.data.resources) do

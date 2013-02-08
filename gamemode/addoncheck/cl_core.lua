@@ -1,6 +1,9 @@
 local Show = CreateClientConVar("tk_aoc_show", 1, true, false)
+local Version = CreateClientConVar("tk_aoc_version", 0, true, false)
 
 local AOC = {}
+AOC.ListVersion = 1 //change this to make it popup for everyone
+
 AOC.Tutorial = {
     ["SVN Tutorial"]                        = "http://facepunch.com/showthread.php?t=688324"  
 }
@@ -16,7 +19,7 @@ AOC.Workshop = {
     ["104694154"]							= "104694154",
     ["106904944"]							= "106904944",
     ["107155115"]							= "107155115",
-    ["107305209"]                           = "107305209"
+    ["107306185"]                           = "107306185"
 }
 AOC.MountedLegacy = {}
 
@@ -182,10 +185,16 @@ end
 
 hook.Add("Initialize", "AddonCheck", function()
     AOC:GetLegacyAddons()
+    
+    if Version:GetInt() != AOC.Version then
+        RunConsoleCommand("tk_aoc_show", "1")
+        RunConsoleCommand("tk_aoc_version", AOC.ListVersion)
+    end
 end)
 
 hook.Add("HUDPaint", "AddonCheck", function()
 	if !IsValid(LocalPlayer()) || !LocalPlayer():Alive() then return end
+    
     if Show:GetInt() == 1 then
         RunConsoleCommand("3k_addon_check")
     end

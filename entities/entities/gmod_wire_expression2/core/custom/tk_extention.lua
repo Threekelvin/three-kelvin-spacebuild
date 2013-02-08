@@ -456,3 +456,8 @@ e2function number entity:score()
 	if !IsValid(this) || !this:IsPlayer() then return 0 end
 	return TK.DB:GetPlayerData(this, "player_info").score
 end
+
+e2function vector getSunPos()
+    local sun = TK.AT:GetSuns()[1]
+    return sun
+end

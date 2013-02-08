@@ -5,7 +5,6 @@ local Emotes = CreateClientConVar("3k_chatbox_emotes", 1, true, false)
 local Links = CreateClientConVar("3k_chatbox_links", 1, true, false)
 
 local Chatbox
-local Log = {}
 
 local function MakeChatbox()
 	if IsValid(Chatbox) then return end
@@ -13,10 +12,6 @@ local function MakeChatbox()
 	Chatbox:MakePopup()
 	Chatbox:InvalidateLayout(true)
 	Chatbox:Close()
-    
-    for k,v in ipairs(Log) do
-		Chatbox:NewMsg(v)
-	end
 end
 
 net.Receive("3k_chat_b", function()
@@ -24,7 +19,8 @@ net.Receive("3k_chat_b", function()
     local ply = net.ReadEntity()
     local msg = net.ReadString()
 
-    gamemode.Call("OnPlayerChat", ply, msg, toTeam, IsValid(ply) && !ply:Alive() || false)
+    if !IsValid(ply) then return end
+    gamemode.Call("OnPlayerChat", ply, msg, toTeam, !ply:Alive())
 end)
 
 net.Receive("3k_chat_g", function()
@@ -59,26 +55,17 @@ hook.Add("Initialize", "TKChatBox", function()
 		end
 		
 		oldchat(unpack(newarg))
-		table.insert(Log, newarg)
-		if table.Count(Log) == 201 then
-			table.remove(Log, 1)
-		end
-		
-		if Enable:GetBool() then
-			if !IsValid(Chatbox) then return end
-            Chatbox:NewMsg(newarg)
-		end
         
-        LastPlayer = ply
+        if !IsValid(Chatbox) then
+            MakeChatbox()
+        end
+        
+        Chatbox:NewMsg(newarg, Enable:GetBool())
 	end
 	
 	function _R.Player.ChatPrint(ply, txt)
 		chat.AddText(Color(151,211,255), txt)
 	end
-    
-    if Enable:GetBool() then
-        timer.Simple(1, MakeChatbox)
-    end
 end)
 
 hook.Add("ChatText", "TKChatBox", function(plyidx, plyname, txt, msgtyp)
@@ -100,7 +87,12 @@ hook.Add("PlayerBindPress", "TKChatBox", function(ply, key, press)
 end)
 
 hook.Add("HUDShouldDraw", "TKChatBox", function(Element)
-    if Enable:GetBool() && IsValid(Chatbox) && Element == "CHudChat" then return false end
+    if Enable:GetBool() && Element == "CHudChat" then 
+        if !IsValid(Chatbox) then
+            MakeChatbox()
+        end
+        return false 
+    end
 end)
 
 hook.Add("StartChat", "TKChatBox", function()
@@ -109,17 +101,6 @@ end)
 
 hook.Add("FinishChat", "TKChatBox", function()
     RunConsoleCommand("tk_chat_bubble", "0")
-end)
-
-cvars.AddChangeCallback("3k_chatbox_enable", function(cvar)
-	if GetConVar(cvar):GetBool() then
-		MakeChatbox()
-	else
-		if IsValid(Chatbox) then
-			Chatbox:Delete()
-			RunConsoleCommand("tk_chat_bubble", "0")
-		end
-	end
 end)
 
 cvars.AddChangeCallback("3k_chatbox_emotes", function(cvar)

@@ -6,6 +6,8 @@ function PANEL:Init()
 	self:SetSize(wide, tall)
 	self:SetPos(5, surface.ScreenHeight() / 2)
     self.emotelist = {}
+    self.inputlog = {}
+    self.inputidx = 0
 	self.wide = wide
 	self.msgcount = 0
 	self.isTeam = false
@@ -47,11 +49,24 @@ function PANEL:Init()
 			panel:SetText("")
             
             if txt == "" then return end
+            table.insert(self.inputlog, 1, txt)
             net.Start("3k_chat_r")
                 net.WriteBit(self.isTeam)
                 net.WriteString(txt)
             net.SendToServer()
-		end
+		elseif key == KEY_UP then
+            self.inputidx = math.min(self.inputidx + 1, #self.inputlog)
+            local txt = self.inputlog[self.inputidx]
+            if !txt then return end
+            self.textentry:SetText(txt)
+			self.textentry:SetCaretPos(string.len(txt))
+        elseif key == KEY_DOWN then
+            self.inputidx = math.max(self.inputidx - 1, 0)
+            local txt = self.inputlog[self.inputidx]
+            if !txt then return end
+            self.textentry:SetText(txt)
+			self.textentry:SetCaretPos(string.len(txt))
+        end
 	end
 	
     //-- Expand Button --\\
@@ -194,15 +209,22 @@ function PANEL:OnMouseReleased()
 	self:MouseCapture(false)
 end
 
-function PANEL:NewMsg(data)
+function PANEL:NewMsg(data, show)
 	self.msgcount = self.msgcount + 1
 	
 	local msg = vgui.Create("TKMsg")
 	msg.idx = self.msgcount
 	msg.box = self.msgbox
+    msg.fade = show && 255 || 0
     msg.emotelist = self.emotelist
 	
     msg:SetMsg(data)
+    
+    if table.Count(self.msgbox.Items) >= 100 then
+        self.msgbox.Items[1]:Remove()
+        table.remove(self.msgbox.Items, 1)
+    end
+    
     self.msgbox:AddItem(msg)
     self.msgbox:InvalidateLayout(true)
 	
@@ -221,6 +243,7 @@ function PANEL:Open()
 	self:SetVisible(true)
 	self:MakePopup()
 	self.textentry:RequestFocus()
+    self.inputidx = 0
 	RunConsoleCommand("tk_chat_bubble", "1")
 	
 	self:InvalidateLayout()

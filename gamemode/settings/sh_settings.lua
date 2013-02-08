@@ -20,6 +20,7 @@ TK.PlyModels = {
     ["models/vinyl_goggles_player.mdl"] =   {rank = 2},
     ["models/vinyl_player.mdl"] =           {rank = 2},
     ["models/player/engineer_suit.mdl"] =   {rank = 2},
+    ["models/player/security_suit.mdl"] =   {rank = 2}
 }
 
 if string.find(game.GetMap(), "twinsuns") then

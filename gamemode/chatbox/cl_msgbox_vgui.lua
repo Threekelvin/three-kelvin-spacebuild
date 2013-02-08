@@ -20,21 +20,14 @@ function PANEL:SetActive(bool)
 end
 
 function PANEL:GetLastMsg()
-    local msg
-    for k,v in pairs(self.Items) do
-        if !msg || v.idx > msg.idx then
-            msg = v
-        end
-    end
-    
-    return msg
+    return next(self.Items, #self.Items)
 end
 
 function PANEL:Capture(parent)
 	self:SetActive(true)
 	self:SetParent(parent)
 	
-	for k,v in pairs(self:GetItems()) do
+	for k,v in pairs(self.Items) do
 		v:Hide(false)
 	end
 end
@@ -43,7 +36,7 @@ function PANEL:Release(parent)
 	self:SetActive(false)
 	self:SetParent()
 	
-	for k,v in pairs(self:GetItems()) do
+	for k,v in pairs(self.Items) do
 		v:Hide(true)
 	end
 	

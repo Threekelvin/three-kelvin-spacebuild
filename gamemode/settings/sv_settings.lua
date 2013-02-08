@@ -18,11 +18,6 @@ if string.find(game.GetMap(), "twinsuns") then
 			Pos = Vector(-10364,2585,-750),
 			NextSpawn = 0,
 			Ents = {}
-		},
-		[2] = {
-			Pos = Vector(8144,8428,-8000),
-			NextSpawn = 0,
-			Ents = {}
 		}
 	}
 	TK.TibFields = {
@@ -110,11 +105,6 @@ elseif string.find(game.GetMap(), "forlorn") then
 			Pos = Vector(-3823,-7555,5000),
 			NextSpawn = 0,
 			Ents = {}
-		},
-		[2] = {
-			Pos = Vector(-2609,6972,-6250),
-			NextSpawn = 0,
-			Ents = {}
 		}
 	}
 	TK.TibFields = {
@@ -194,11 +184,6 @@ elseif string.find(game.GetMap(), "lostinspace") then
 	TK.RoidFields = {
 		[1] = {
 			Pos = Vector(10478,-2073,3534),
-			NextSpawn = 0,
-			Ents = {}
-		},
-		[2] = {
-			Pos = Vector(-1447,-4342,-7966),
 			NextSpawn = 0,
 			Ents = {}
 		}
@@ -284,11 +269,6 @@ elseif string.find(game.GetMap(), "gooniverse") then
     TK.RoidFields = {
 		[1] = {
 			Pos = Vector(-9483,-683,4404),
-			NextSpawn = 0,
-			Ents = {}
-		},
-		[2] = {
-			Pos = Vector(5196,3163,-5011),
 			NextSpawn = 0,
 			Ents = {}
 		}

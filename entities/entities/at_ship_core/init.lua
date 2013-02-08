@@ -37,6 +37,7 @@ function ENT:Initialize()
     
     self.Inputs = WireLib.CreateInputs(self, {"Activate"})
 
+    self.hull = {}
 	self.brushes = {}
 end
 
@@ -44,18 +45,41 @@ function ENT:EnableGHD()
     self.ghd = true
 end
 
+function ENT:AddHull(ent)
+    ent.tk_env.disable = true
+    self.hull[ent] = ent
+    
+    if ent:BoundingRadius() < 135 then return end
+    if ent.IsTKRD then return end
+    
+    local brush = ents.Create("at_brush")
+    brush.env = self
+    brush:SetPos(ent:GetPos())
+    brush:SetAngles(ent:GetAngles())
+    brush:SetParent(ent)
+    brush:Spawn()
+    
+    self.brushes[ent] = brush    
+end
+
+function ENT:RemoveHull(ent)
+    if IsValid(ent) then
+        ent.tk_env.disabled = nil
+    end
+    self.hull[ent] = nil
+    
+    if IsValid(self.brushes[ent]) then
+        self.brushes[ent]:Remove()
+    end
+    self.brushes[ent] = nil
+end
+
 function ENT:OnRemove()
 	self.BaseClass.OnRemove(self)
-	
-	for k,v in pairs(self.brushes) do
-        local par = v:GetParent()
-        if IsValid(par) then
-            par.tk_env.disabled = nil
-        end
-        
-		SafeRemoveEntity(v)
-        self.brushes[k] = nil
-	end
+    
+    for k,v in pairs(self.hull) do
+        self:RemoveHull(v)
+    end
 end
 
 function ENT:TurnOn()
@@ -65,35 +89,11 @@ function ENT:TurnOn()
         GH.UpdateHull(self, self:GetUp())
         self:SetActive(true)
     else
-        local hull = {}
-        
-        for k,v in pairs(self:GetConstrainedEntities()) do
-            if v:BoundingRadius() < 135 then continue end
-            if v.IsTKRD then continue end
-            
-            table.insert(hull, v)
+        for k,v in pairs(self:GetConstrainedEntities()) do  
+            self:AddHull(v)
         end
-        
-        if #hull == 0 then
-            local owner = self:CPPIGetOwner()
-            owner:SendLua("GAMEMODE:AddNotify(\"No Vaild Hull Found\", NOTIFY_ERROR, 5)")
-            return
-        end
-        
+
         self:SetActive(true)
-        
-        for k,v in pairs(hull) do
-            v.tk_env.disable = true
-            
-            local brush = ents.Create("at_brush")
-            brush.env = self
-            brush:SetPos(v:GetPos())
-            brush:SetAngles(v:GetAngles())
-            brush:SetParent(v)
-            brush:Spawn()
-            
-            table.insert(self.brushes, brush)
-        end
     end
     
     self.atmosphere.resources 	= {}
@@ -106,19 +106,8 @@ function ENT:TurnOff()
     if self.ghd then
         GH.UnHull(self)
     else
-        for k,v in pairs(self.brushes) do
-            if !IsValid(v) then
-                self.brushes[k] = nil
-                continue
-            end
-            
-            local par = v:GetParent()
-            if IsValid(par) then
-                par.tk_env.disable = nil
-            end
-            
-            SafeRemoveEntity(v)
-            self.brushes[k] = nil
+        for k,v in pairs(self.hull) do
+            self:RemoveHull(v)
         end
     end
 end
@@ -128,9 +117,28 @@ function ENT:DoThink(eff)
     
 	local env, size = TK.AT:GetSpace(), 0
     if self.ghd then
-        size = table.Count(GH.SHIPS[self].Welds || {})
+        for k,v in pairs(GH.SHIPS[self].Welds || {}) do
+            if v:BoundingRadius() < 135 then continue end
+            if v.IsTKRD then continue end
+            size = size + 1
+        end
     else
-        size = table.Count(self.brushes)
+        local conents = self:GetConstrainedEntities()
+        for k,v in pairs(conents) do
+            if self.hull[k] then continue end
+            self:AddHull(v)
+        end
+        
+        for k,v in pairs(self.hull) do
+            if !IsValid(v) || !conents[k] then
+                self:RemoveHull(v)
+                continue
+            end
+            
+            if IsValid(self.brushes[k]) then
+                size = size + 1
+            end
+        end
     end
     local rate = 5 * size
     

@@ -98,7 +98,7 @@ function ENT:DoThink(eff)
     
     self.data.power = 0
     for k,v in pairs(entdata.data) do
-        self.data.power = math.ceil(self.data.power - v * 0.01)
+        self.data.power = self.data.power - math.ceil(v * 0.01)
     end
     
     if !self:Work() then return end	
