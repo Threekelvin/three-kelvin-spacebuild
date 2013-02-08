@@ -120,6 +120,11 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
 			
 			for k,v in pairs(TK.RD.EntityData[class]) do
 				local icon = vgui.Create("SpawnIcon")
+				icon.DoRightClick = function()
+					RunConsoleCommand( "playgamesound", "ui/buttonclickrelease.wav" )
+					SetClipboardText(k)
+					GAMEMODE:AddNotify("Model path copied to clipboard.", NOTIFY_HINT, 5)
+				end
 				icon.idx = k
 				icon:SetModel(k)
 				icon:SetSize(64, 64)

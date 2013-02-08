@@ -124,6 +124,11 @@ if CLIENT then
                 
                 local item = TK.TD:GetItem(v)
                 local icon = vgui.Create("SpawnIcon")
+				icon.DoRightClick = function()
+					RunConsoleCommand( "playgamesound", "ui/buttonclickrelease.wav" )
+					SetClipboardText(item.mdl)
+					GAMEMODE:AddNotify("Model path copied to clipboard.", NOTIFY_HINT, 5)
+				end
                 icon:SetModel(item.mdl)
                 icon:SetSize(64, 64)
                 icon:SetToolTip(item.name)

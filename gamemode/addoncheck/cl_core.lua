@@ -16,10 +16,10 @@ AOC.Legacy = {
     ["Wire Unofficial Extras"]				= "https://github.com/wiremod/wire-extras/trunk/"
 }
 AOC.Workshop = {
-    ["104694154"]							= "104694154",
-    ["106904944"]							= "106904944",
-    ["107155115"]							= "107155115",
-    ["107306185"]                           = "107306185"
+    ["104694154"]							= "104694154",	// Mane Six
+    ["106904944"]							= "106904944",	// The Other Ponies
+    ["107155115"]							= "107155115",	// Pony Player Models
+    ["107306185"]                           = "107306185"	// Dead Space Player Model
 }
 AOC.MountedLegacy = {}
 
