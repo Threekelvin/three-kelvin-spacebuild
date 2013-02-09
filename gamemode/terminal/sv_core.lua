@@ -73,29 +73,6 @@ function Terminal.StartRefine(ply, res)
 	end
 end
 
-function Terminal.AutoRefine(ply)
-	local storage, res = TK.DB:GetPlayerData(ply, "terminal_storage"), {}
-	local settings = TK.DB:GetPlayerData(ply, "terminal_setting")
-	
-	if tobool(settings.auto_refine_ore) && storage["asteroid_ore"] then
-		local amount = math.floor(600 * TK.TD:Refine(ply, "asteroid_ore"))
-		if storage["asteroid_ore"] >= amount then
-			res["asteroid_ore"] = amount
-			return res
-		end
-	end
-	
-	if tib == 1 && storage["raw_tiberium"] then
-		local amount = math.floor(600 * TK.TD:Refine(ply, "raw_tiberium"))
-		if storage["raw_tiberium"] >= amount then
-			res["raw_tiberium"] = amount
-			return res
-		end
-	end
-
-	return res
-end
-
 function Terminal.EndRefine(ply)
 	local refinery, newrefinery = TK.DB:GetPlayerData(ply, "terminal_refinery"), {}
 	local info = TK.DB:GetPlayerData(ply, "player_info")
@@ -116,33 +93,10 @@ function Terminal.EndRefine(ply)
         
 		TK.DB:UpdatePlayerData(ply, "player_info", {credits = credits, score = score, exp = exp})
 		
-		local res = Terminal.AutoRefine(ply)
-		if table.Count(res) == 0 then
-			TK.DB:UpdatePlayerData(ply, "terminal_refinery", newrefinery)
-			TK.DB:UpdatePlayerData(ply, "terminal_setting", {refine_started = 0, refine_length = 0})
-			umsg.Start("3k_terminal_refinery_finish", ply)
-			umsg.End()
-		else
-			local storage, newstorage = TK.DB:GetPlayerData(ply, "terminal_storage"), {}
-			local newtime = 0
-			
-			for k,v in pairs(res) do
-				if storage[k] >= v then
-					newstorage[k] = storage[k] - v
-					newrefinery[k] = v
-					newtime = newtime + (v / TK.TD:Refine(ply, k))
-				end
-			end
-			
-			TK.DB:UpdatePlayerData(ply, "terminal_storage", newstorage)
-			TK.DB:UpdatePlayerData(ply, "terminal_refinery", newrefinery)
-			TK.DB:UpdatePlayerData(ply, "terminal_setting", {refine_started = true, refine_length = newtime})
-			
-			umsg.Start("3k_terminal_refinery_start", ply)
-				umsg.Bool(true)
-			umsg.End()
-		end
-
+        TK.DB:UpdatePlayerData(ply, "terminal_refinery", newrefinery)
+        TK.DB:UpdatePlayerData(ply, "terminal_setting", {refine_started = 0, refine_length = 0})
+        umsg.Start("3k_terminal_refinery_finish", ply)
+        umsg.End()
 	end
 end
 
@@ -151,16 +105,10 @@ hook.Add("Initialize", "TKRefinery", function()
 		for k,v in pairs(player.GetAll()) do
 			local settings = TK.DB:GetPlayerData(v, "terminal_setting")
 			local complete = settings.refine_started + settings.refine_length
-			if complete > 0 then
-				if TK.DB:OSTime() >= complete then
-					Terminal.EndRefine(v)
-				end
-			else
-				local res = Terminal.AutoRefine(v)
-				if table.Count(res) != 0 then
-					Terminal.StartRefine(v, res)
-				end
-			end
+			if complete == 0 then continue end
+            if TK.DB:OSTime() >= complete then
+                Terminal.EndRefine(v)
+            end
 		end
 	end)
 end)
@@ -193,15 +141,6 @@ function Terminal.CancelRefine(ply, arg)
 	umsg.Start("3k_terminal_refinery_start", ply)
 		umsg.Bool(false)
 	umsg.End()
-end
-
-function Terminal.ToggleAutoRefine(ply, arg)
-	local settings = TK.DB:GetPlayerData(ply, "terminal_setting")
-	if arg[1] == "asteroid_ore" then
-		TK.DB:UpdatePlayerData(ply, "terminal_setting", {auto_refine_ore = !tobool(settings.auto_refine_ore) && 1 || 0})
-	elseif arg[1] == "raw_tiberium" then
-		TK.DB:UpdatePlayerData(ply, "terminal_setting", {auto_refine_tib = !tobool(settings.auto_refine_tib) && 1 || 0})
-	end
 end
 ///--- ---\\\
 
@@ -254,10 +193,6 @@ function Terminal.SetSlot(ply, arg)
         TK.DB:UpdatePlayerData(ply, "player_loadout", {[slot.. "_" ..idx.. "_item"] = item})
         break
     end
-end
-
-function Terminal.UnlockSlot(ply, arg)
-
 end
 ///--- ---\\\
 
@@ -330,8 +265,6 @@ concommand.Add("3k_term", function(ply, cmd, arg)
 		Terminal.RefineAll(ply, arg)
 	elseif command == "cancelrefine" then
 		Terminal.CancelRefine(ply, arg)
-	elseif command == "toggleautorefine" then
-		Terminal.ToggleAutoRefine(ply, arg)
 	elseif command == "addresearch" then
 		Terminal.AddResearch(ply, arg)
     elseif command == "setslot" then

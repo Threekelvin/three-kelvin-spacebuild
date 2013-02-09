@@ -560,34 +560,6 @@ end
 function TK.RD:GetResourceName(idx)
 	return res_table[idx] || idx
 end
-
-function TK.RD:MakeDupeInfo(ent)
-	if !ent.IsTKRD then return end
-	
-	if !ent.IsNode then return end
-	local netdata = net_table[ent.netid]
-	local info = {}
-	
-	for k,v in ipairs(netdata.entities) do
-		table.insert(info, v:EntIndex())
-	end
-	
-	duplicator.StoreEntityModifier(ent, "TKRDInfo", info)
-end
-
-function TK.RD:ApplyDupeInfo(ent, CreatedEntities)
-	if !ent.EntityMods || !ent.EntityMods.TKRDInfo then return end
-	local TKRDInfo = ent.EntityMods.TKRDInfo
-
-	for k,v in ipairs(TKRDInfo || {}) do
-		local ent2 = CreatedEntities[v]
-		if IsValid(ent2) then
-			self:Link(ent2, ent.netid)
-		end
-	end
-	
-	ent.EntityMods.TKRDInfo = nil
-end
 ///--- ---\\\
 
 ///--- Resources ---\\\

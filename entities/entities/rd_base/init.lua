@@ -182,15 +182,24 @@ function ENT:UpdateValues()
 end
 
 function ENT:PreEntityCopy()
+    local info = {}
     if WireLib then
-        WireLib.BuildDupeInfo(self)
+        info.wire = WireLib.BuildDupeInfo(self)
     end
+    
+    if table.Count(info) == 0 then return end
+    duplicator.StoreEntityModifier(self, "TKRDInfo", info)
 end
 
-function ENT:PostEntityPaste(ply, ent, info, GetEntByID)
+function ENT:PostEntityPaste(ply, ent, entlist)
+	if !self.EntityMods || !self.EntityMods.TKRDInfo then return end
+	local TKRDInfo = self.EntityMods.TKRDInfo
+    
     if WireLib then
-        WireLib.ApplyDupeInfo(ply, ent, info, GetEntByID)
+		WireLib.ApplyDupeInfo(ply, Ent, TKRDInfo.wire, function(id) return entlist[id] end)
     end
+    
+    self.EntityMods.TKRDInfo = nil
 end
 
 

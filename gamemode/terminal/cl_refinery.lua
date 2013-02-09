@@ -96,6 +96,60 @@ local function AddResource(panel)
 	end
 end
 
+local function Confirm(panel)
+    local mouseblock = vgui.Create("DPanel", panel.Terminal)
+	mouseblock:SetPos(0, 0)
+	mouseblock:SetSize(panel.Terminal:GetWide(), panel.Terminal:GetTall())
+	mouseblock.Paint = function() 
+		return true
+	end
+	
+	local frame = vgui.Create("DPanel", mouseblock)
+	frame:SetSkin("Terminal")
+	frame:SetSize(250, 60)
+	frame:Center()
+	frame.title = "Confirm Action"
+	frame.Paint = function(panel, w, h)
+		derma.SkinHook("Paint", "TKFrame", frame, w, h)
+		return true
+	end
+	
+	local close = vgui.Create("DButton", frame)
+	close:SetSize(20, 20)
+	close:SetPos(229, 1)
+	close:SetText("")
+	close.Paint = function() 
+		return true
+	end
+	close.DoClick = function()
+		surface.PlaySound("ui/buttonclick.wav")
+		mouseblock:Remove()
+	end
+    
+    local accept = vgui.Create("DButton", frame)
+	accept:SetSkin("Terminal")
+	accept:SetSize(240, 30)
+	accept:SetPos(5, 25)
+	accept:SetText("")
+	accept.text = "Accept"
+	accept.style = {"normal", "dim"}
+	accept.Paint = function(panel, w, h)
+		derma.SkinHook("Paint", "TKButton", accept, w, h)
+		return true
+	end
+	accept.DoClick = function()
+		if !IsValid(panel.Terminal) || panel.Analyzing then return end
+		surface.PlaySound("ui/buttonclickrelease.wav")
+        if panel.refining then
+			panel.Terminal.AddQuery("cancelrefine")
+		else
+			panel.Terminal.AddQuery("refineall")
+		end
+        
+        mouseblock:Remove()
+    end
+end
+
 usermessage.Hook("3k_terminal_refinery_start", function(msg)
 	-- Ghost Hook
 end)
@@ -145,33 +199,6 @@ function PANEL:Init()
 		self.RefineSetting = "raw_tiberium"
 	end
 	
-	self.autorefine = vgui.Create("DButton", self)
-	self.autorefine:SetSkin("Terminal")
-	self.autorefine:SetText("")
-	self.autorefine.style = {"dim", "dark"}
-	self.autorefine.Paint = function(panel, w, h)
-		if self.RefineSetting == "asteroid_ore" then
-			if tobool(TK.DB:GetPlayerData("terminal_setting").auto_refine_ore) then
-				self.autorefine.text = "Disable Auto"
-			else
-				self.autorefine.text = "Enable Auto"
-			end
-		elseif self.RefineSetting == "raw_tiberium" then
-			if tobool(TK.DB:GetPlayerData("terminal_setting").auto_refine_tib) then
-				self.autorefine.text = "Disable Auto"
-			else
-				self.autorefine.text = "Enable Auto"
-			end
-		end
-		derma.SkinHook("Paint", "TKButton", self.autorefine, w, h)
-		return true
-	end
-	self.autorefine.DoClick = function()
-		if !IsValid(self.Terminal) then return end
-		surface.PlaySound("ui/buttonclickrelease.wav")
-		self.Terminal.AddQuery("toggleautorefine", self.RefineSetting)
-	end
-	
 	self.addresource = vgui.Create("DButton", self)
 	self.addresource:SetSkin("Terminal")
 	self.addresource:SetText("")
@@ -188,6 +215,7 @@ function PANEL:Init()
 	self.addresource.DoClick = function()
 		if !IsValid(self.Terminal) || self.Analyzing then return end
 		surface.PlaySound("ui/buttonclickrelease.wav")
+        gui.SetMousePos(surface.ScreenWidth() * 0.5 + math.random(-400, 400), surface.ScreenHeight() * 0.5 + math.random(-300, 300))
 		AddResource(self)
 	end
 	
@@ -220,12 +248,8 @@ function PANEL:Init()
 	self.refineall.DoClick = function()
 		if !IsValid(self.Terminal) || self.Analyzing then return end
 		surface.PlaySound("ui/buttonclickrelease.wav")
-
-		if self.refining then
-			self.Terminal.AddQuery("cancelrefine")
-		else
-			self.Terminal.AddQuery("refineall")
-		end
+        gui.SetMousePos(surface.ScreenWidth() * 0.5 + math.random(-400, 400), surface.ScreenHeight() * 0.5 + math.random(-300, 300))
+        Confirm(self)
 	end
 	
 	usermessage.Hook("3k_terminal_refinery_start", function(msg)
@@ -263,9 +287,6 @@ function PANEL:PerformLayout()
 	
 	self.selecttib:SetPos(132.5, 80)
 	self.selecttib:SetSize(117.5, 40)
-	
-	self.autorefine:SetPos(10, 415)
-	self.autorefine:SetSize(240, 50)
 	
 	self.addresource:SetPos(10, 470)
 	self.addresource:SetSize(240, 50)

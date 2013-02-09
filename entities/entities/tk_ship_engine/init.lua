@@ -209,7 +209,7 @@ function ENT:DoThink(eff)
     end
 
     self.Ents = conents
-	self.data.power = math.floor(table.Count(self.Ents) * -5 )
+	self.data.power = math.floor(table.Count(self.Ents) * -5)
     if !self:Work() then return end
 end
 

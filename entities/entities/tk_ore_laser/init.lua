@@ -106,11 +106,13 @@ function ENT:Update(ply)
 end
 
 function ENT:PreEntityCopy()
+    self.BaseClass.PreEntityCopy(self)
 	TK.LO:MakeDupeInfo(self)
 end
 
-function ENT:PostEntityPaste(ply, ent, CreatedEntities)
-	TK.LO:ApplyDupeInfo(ply, ent, CreatedEntities)
+function ENT:PostEntityPaste(ply, ent, entlist)
+    self.BaseClass.PostEntityPaste(self, ply, ent, entlist)
+	TK.LO:ApplyDupeInfo(ply, ent, info)
 end
 
 function ENT:UpdateTransmitState() 

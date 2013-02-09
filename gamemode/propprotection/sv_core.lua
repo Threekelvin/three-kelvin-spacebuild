@@ -231,7 +231,6 @@ concommand.Add("pp_cleanup", PP.CleanUp)
 function PP.CanToolEnt(ply, toolmode, ent)
 	if !IsValid(ent) then return end
 	if ent:IsPlayer() then return false end
-    if table.HasValue(TK.PP.ToolsBlackList, toolmode) then return false end
 	
 	local owner, uid = PP.GetOwner(ent)
 	if IsValid(owner) then
@@ -266,7 +265,6 @@ function PP.CanTool(ply, tr, toolmode)
 
 	local ent = tr.Entity
 	if ent:IsPlayer() then return false end
-    if table.HasValue(TK.PP.ToolsBlackList, toolmode) then return false end
 
 	local owner, uid = PP.GetOwner(ent)
 	if IsValid(owner) then

@@ -115,7 +115,7 @@ function SKIN:PaintTKRefinery(panel, w, h)
 	draw.SimpleText("Refinery", "TKFont30", 390, 6, self.text, TEXT_ALIGN_CENTER)
 	
 	draw.RoundedBox(4, 5, 75, 250, 450, self.normal)
-	draw.RoundedBox(4, 10, 125, 240, 285, self.dark)
+	draw.RoundedBox(4, 10, 125, 240, 340, self.dark)
 	
 	draw.RoundedBox(4, 15, 130, 230, 60, self.light)
 	draw.RoundedBox(4, 20, 135, 220, 25, self.dark)
@@ -129,7 +129,7 @@ function SKIN:PaintTKRefinery(panel, w, h)
 	draw.RoundedBox(4, 15, 260, 230, 60, self.light)
 	draw.RoundedBox(4, 20, 265, 220, 25, self.dark)
 	draw.RoundedBox(4, 20, 295, 220, 20, self.dim)
-	draw.SimpleText("Auto Refine Amount", "TKFont20", 25, 267.5, self.text)
+	draw.SimpleText("Min Refining Amount", "TKFont20", 25, 267.5, self.text)
 	
 	if panel.RefineSetting == "asteroid_ore" then
 		draw.SimpleText("Credits Per Ore", "TKFont20", 25, 137.5, self.text)

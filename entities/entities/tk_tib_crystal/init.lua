@@ -75,7 +75,7 @@ function ENT:Initialize()
 		self.Tib = 0
 	end
 	self.TibLast = self.Tib
-	self.countleft = 11
+	self.countleft = 6
 	
 	self.Stable = true
 	self:SendStatus()
@@ -158,7 +158,7 @@ function ENT:Think()
 	end
 	
 	if Changed == 0 then
-		self.countleft = 11
+		self.countleft = 6
 		if self.Stable then
 			if self.delay == -1 then
 			elseif self.delay > 0 then

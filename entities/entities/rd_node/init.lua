@@ -120,9 +120,26 @@ function ENT:OnRemove()
 end
 
 function ENT:PreEntityCopy()
-	TK.RD:MakeDupeInfo(self)
+	local info = {}
+	
+	for k,v in ipairs(self.netdata.entities) do
+		table.insert(info, v:EntIndex())
+	end
+	
+    if table.Count(info) == 0 then return end
+	duplicator.StoreEntityModifier(ent, "TKRDInfo", info)
 end
 
-function ENT:PostEntityPaste(ply, ent, CreatedEntities)
-	TK.RD:ApplyDupeInfo(ent, CreatedEntities)
+function ENT:PostEntityPaste(ply, ent, entlist)
+	if !self.EntityMods || !self.EntityMods.TKRDInfo then return end
+	local TKRDInfo = self.EntityMods.TKRDInfo
+
+	for k,v in ipairs(TKRDInfo || {}) do
+		local ent2 = entlist[v]
+		if IsValid(ent2) then
+			ent2:Link(self.netid)
+		end
+	end
+	
+	self.EntityMods.TKRDInfo = nil
 end
