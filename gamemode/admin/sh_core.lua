@@ -174,7 +174,7 @@ end
 function _R.Entity:CanRunOn(ply)
 	if !IsValid(self) then return true end
 	if !IsValid(ply) then return false end
-	return self:GetNWInt("TKRank", 1) >= ply:GetNWInt("TKRank", 1)
+	return self:GetNWInt("TKRank", 1) > ply:GetNWInt("TKRank", 1)
 end
 
 function _R.Player:IsAFK()

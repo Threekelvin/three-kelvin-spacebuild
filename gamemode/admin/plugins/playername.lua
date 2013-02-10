@@ -19,7 +19,7 @@ if SERVER then
 			
 			TK.DB:UpdatePlayerData(ply, "player_info", {name = name})
 			
-			msgdata = {team_color , name_old, " Has Changed Thier Name To ",team_color, name}
+			msgdata = {team_color , name_old, " has changed their name to ",team_color, name}
 			TK.AM:SystemMessage(msgdata)
 		else
 			TK.AM:SystemMessage({"Access Denied!"}, {ply}, 1)

@@ -124,7 +124,8 @@ function AOC:BuildMenu()
     List:AddColumn("Type"):SetFixedWidth(75)
     List:AddColumn("Installed"):SetFixedWidth(75)
     List:AddColumn("Mounted"):SetFixedWidth(75)
-    
+	
+	local AutoHide = 1 // Prepare to set the AOC to hide if the player has all addons mounted.
     for k,v in pairs(self.Tutorial) do
         local line = List:AddLine(k, "Tutorial", "", "", v)
         line.OnSelect = function()
@@ -133,14 +134,18 @@ function AOC:BuildMenu()
     end
     
     for k,v in pairs(self.Legacy) do
-        local line = List:AddLine(k, "SVN", tostring(self:IsLegacyInstalled(k)), tostring(self:IsLegacyMounted(k)), v)
+		local mounted = self:IsLegacyMounted(k)
+        local line = List:AddLine(k, "SVN", tostring(self:IsLegacyInstalled(k)), tostring(mounted), v)
+		if !mounted then AutoHide = 0 end
         line.OnSelect = function()
             copy.txt = "Copy Selected Link"
         end
     end
     
     for k,v in pairs(self.Workshop) do
-        local line = List:AddLine(k, "Workshop", tostring(self:IsWorkshopInstalled(k)), tostring(self:IsWorkshopMounted(k)), v)
+		local mounted = self:IsWorkshopMounted(k)
+        local line = List:AddLine(k, "Workshop", tostring(self:IsWorkshopInstalled(k)), tostring(mounted), v)
+		if !mounted then AutoHide = 0 end
         line.OnSelect = function()
             copy.txt = "Open Workshop Page"
         end
@@ -150,6 +155,8 @@ function AOC:BuildMenu()
             line:SetValue(1, data.title || k)
         end)
     end
+	
+	RunConsoleCommand("tk_aoc_show", AutoHide)
     
     copy = vgui.Create("DButton", Panel)
     copy.txt = "Open Tutorial Page"
