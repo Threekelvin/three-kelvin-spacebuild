@@ -16,7 +16,6 @@ local function BlackList(ent)
 	if class == "gmod_ghost" then return false end
 	if class == "prop_door_rotating" then return false end
 	if class == "predicted_viewmodel" then return false end
-	if class == "phys_magnet" then return true end
 	if string.Left(class, 4) == "env_" then return false end
 	if string.Left(class, 5) == "info_" then return false end
 	if string.Left(class, 5) == "func_" then return false end
@@ -37,7 +36,7 @@ local function ScanNetwork(netid, entlist)
 	if IsValid(node) then
 		if !entlist[node:EntIndex()] then
 			entlist[node:EntIndex()] = node
-			for k,v in pairs(constraint.GetAllConstrainedEntities(node) || {}) do
+			for k,v in pairs(node:GetConstrainedEntities()) do
 				entlist[v:EntIndex()] = v
 			end
 		end
@@ -45,7 +44,7 @@ local function ScanNetwork(netid, entlist)
 		for k,v in pairs(TK.RD:GetConnectedEnts(netid)) do
 			if !entlist[v:EntIndex()] then
 				entlist[v:EntIndex()] = b
-				for l,b in pairs(constraint.GetAllConstrainedEntities(v) || {}) do
+				for l,b in pairs(v:GetConstrainedEntities()) do
 					entlist[b:EntIndex()] = b
 				end
 			end
@@ -54,7 +53,7 @@ local function ScanNetwork(netid, entlist)
 end
 
 local function ScanForEntities(ent)
-	local entities = constraint.GetAllConstrainedEntities(ent) || {}
+	local entities = ent:GetConstrainedEntities()
 	local entlist = {}
 	local nets = {0}
 	

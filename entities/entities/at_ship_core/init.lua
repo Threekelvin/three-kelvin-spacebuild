@@ -46,6 +46,7 @@ function ENT:EnableGHD()
 end
 
 function ENT:AddHull(ent)
+    if !ent.tk_env then return end
     ent.tk_env.disable = true
     self.hull[ent] = ent
     

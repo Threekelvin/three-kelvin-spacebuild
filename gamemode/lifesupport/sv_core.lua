@@ -113,7 +113,17 @@ local function PlayerLSCheck()
 end
 
 hook.Add("Initialize", "TKLS", function()
-	timer.Create("TKLS_Think", 1, 0, PlayerLSCheck)
+	timer.Create("TKLS", 1, 0, PlayerLSCheck)
+    
+    function _R.Player:AddhevRes(res, amt)
+		if res == "energy" then
+			self.tk_hev.energy = math.min(self.tk_hev.energy + amt, self.tk_hev.energymax)
+		elseif res == "water" then
+			self.tk_hev.water = math.min(self.tk_hev.water + amt, self.tk_hev.watermax)
+		elseif res == "oxygen" then
+			self.tk_hev.oxygen = math.min(self.tk_hev.oxygen + amt, self.tk_hev.oxygenmax)
+		end
+	end
 end)
 
 hook.Add("PlayerInitialSpawn", "TKLS", function(ply)

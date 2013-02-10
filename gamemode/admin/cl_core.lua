@@ -84,6 +84,22 @@ hook.Add("OnChatTab", "TKOnChatTab", function(text)
 end)
 ///--- ---\\\
 
+///--- AFK ---\\\
+usermessage.Hook("TKAFK", function(msg)
+    if msg:ReadBool() then
+        hook.Add("HUDPaint", "TK_Blackout", function()
+            local width, height = surface.ScreenWidth(), surface.ScreenHeight()
+            draw.RoundedBox(0, 0, 0, width, height, Color(0,0,0,255))
+            draw.SimpleText("You Are AFK!", "TKFont45", width / 2, height / 2, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        end)
+        gamemode.Call("TKafk", true)
+    else
+        hook.Remove("HUDPaint", "TK_Blackout")
+        gamemode.Call("TKafk", false)
+    end
+end)
+///--- ---\\\
+
 ///--- Stop Sounds ---\\\
 usermessage.Hook("TKStopSounds", function(msg)
 	RunConsoleCommand("stopsound")

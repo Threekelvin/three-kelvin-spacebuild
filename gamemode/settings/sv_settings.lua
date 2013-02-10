@@ -331,6 +331,14 @@ elseif string.find(game.GetMap(), "gooniverse") then
 			ent = "tk_teleporter",
 			pos = Vector(10426.134766,-9852.023438,-1862.420288),
 			ang = Angle(-90,45,180)
-		}
+		},
+        [9] = {
+            ent = "gmod_playx",
+			model = "models/dav0r/camera.mdl",
+            color = Color(255, 255, 255, 1),
+            notsolid = true,
+			pos = Vector(-288,218,4730),
+			ang = Angle(0,90,0)
+        }
     }
 end

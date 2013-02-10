@@ -113,10 +113,6 @@ function ENT:EndTouch(ent)
 	self.inside[entid] = nil
 end
 
-function ENT:PhysicsCollide(cdata, physobj)
-    PrintTable(cdata)
-end
-
 function ENT:Think()
 	if !self.atmosphere.sphere then return end
     

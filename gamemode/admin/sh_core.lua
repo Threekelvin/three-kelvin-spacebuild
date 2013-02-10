@@ -177,6 +177,10 @@ function _R.Entity:CanRunOn(ply)
 	return self:GetNWInt("TKRank", 1) >= ply:GetNWInt("TKRank", 1)
 end
 
+function _R.Player:IsAFK()
+    return self:GetNWBool("TKAFK", false)
+end
+
 ///--- Messages ---\\\
 local function ConMessageSetup(arg)
 	local Table = {}

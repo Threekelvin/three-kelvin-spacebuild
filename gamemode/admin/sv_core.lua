@@ -147,6 +147,50 @@ hook.Add("PlayerSay", "TKChatCommands", function(ply, text, toteam)
 end)
 ///--- ---\\\
 
+///--- AFK ---\\\
+local Inputs = {IN_JUMP, IN_DUCK, IN_FORWARD, IN_BACK, IN_LEFT, IN_RIGHT, IN_MOVELEFT, IN_MOVERIGHT}
+
+function TK.AM:SetAFK(ply, isAFK, txt)
+    if ply:IsAFK() && !isAFK then
+        ply:SetNWBool("TKAFK", false)
+        timer.Create("AFK_".. ply:UserID(), 600, 1, function() TK.AM:SetAFK(ply, true) end)
+        umsg.Start("TKAFK", ply)
+            umsg.Bool(false)
+        umsg.End()
+        
+        TK.AM:SystemMessage({ply, " Is Back"})
+    elseif !ply:IsAFK() && isAFK then
+        ply:SetNWBool("TKAFK", true)
+        timer.Remove("AFK_".. ply:UserID())
+        umsg.Start("TKAFK", ply)
+            umsg.Bool(true)
+        umsg.End()
+        
+        local msg = "'"..(txt || "").."'"
+        TK.AM:SystemMessage({ply, " Is AFK ".. (msg == "''" && "" || msg)})
+    end
+end
+
+hook.Add("PlayerInitialSpawn", "TKAFKTimer", function(ply)
+    TK.AM:SetAFK(ply, false)
+end)
+
+hook.Add("KeyPress", "TKAFKTimer", function(ply, key)
+    if !table.HasValue(Inputs, key) then return end
+    
+    if ply:IsAFK() then
+        TK.AM:SetAFK(ply, false)
+    else
+        timer.Remove("AFK_".. ply:UserID())
+        timer.Create("AFK_".. ply:UserID(), 600, 1, function() TK.AM:SetAFK(ply, true) end)
+    end
+end)
+
+hook.Add("PlayerDisconnected", "TKAFKTimer", function(ply)
+    timer.Remove("AFK_".. ply:UserID())
+end)
+///--- ---\\\
+
 ///--- Functions ---\\\
 umsg.PoolString("TKStopSounds")
 
@@ -163,26 +207,6 @@ function TK.AM:SetRank(ply, lvl)
 	elseif lvl == 3 then ply:SetUserGroup("moderator")
 	elseif lvl == 2 then ply:SetUserGroup("vip")
 	else ply:SetUserGroup("user") end
-end
-
-function TK.AM:AddAFKBubble(ply)
-	if IsValid(ply.bubble) then
-		ply.bubble:SetSkin(1)
-		return
-	end
-	
-	local ent = ents.Create("tk_bubble")
-	ent:SetPos(ply:GetPos())
-	ent:SetAngles(ply:GetAngles())
-	ent:Spawn()
-	ent:SetParent(ply)
-	ent:SetSkin(1)
-	ply.bubble = ent
-end
-
-function TK.AM:RemoveAFKBubble(ply)
-	if !IsValid(ply.bubble) then return end
-	ply.bubble:Remove()
 end
 ///--- ---\\\
 

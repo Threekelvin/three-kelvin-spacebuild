@@ -144,7 +144,8 @@ function ENT:TriggerInput(iname, value)
 end
 
 function ENT:DisableGravity(ent)
-     local phys = ent:GetPhysicsObject()
+    if !ent.tk_env then return end
+    local phys = ent:GetPhysicsObject()
     if !IsValid(phys) then return end
     
     ent.tk_env.nogravity = true
@@ -153,11 +154,10 @@ function ENT:DisableGravity(ent)
     
     phys:EnableMotion(true)
     phys:Wake()
-    
-    self.TotalMass = self.TotalMass + phys:GetMass()
 end
 
 function ENT:ResetGravity(ent)
+    if !ent.tk_env then return end
     local phys = ent:GetPhysicsObject()
     if !IsValid(phys) then return end
     
@@ -168,8 +168,6 @@ function ENT:ResetGravity(ent)
     
     phys:EnableMotion(false)
     phys:Wake()
-    
-    self.TotalMass = self.TotalMass - phys:GetMass()
 end
 
 function ENT:TurnOn()

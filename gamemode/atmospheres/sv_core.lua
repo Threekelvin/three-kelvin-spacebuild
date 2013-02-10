@@ -328,16 +328,6 @@ hook.Add("Initialize", "TKAT", function()
         end
         return env
 	end
-	
-	function _R.Player:AddhevRes(res, amt)
-		if res == "energy" then
-			self.hev.energy = math.min(self.hev.energy + amt, self.hev.energymax)
-		elseif res == "water" then
-			self.hev.water = math.min(self.hev.water + amt, self.hev.watermax)
-		elseif res == "oxygen" then
-			self.hev.oxygen = math.min(self.hev.oxygen + amt, self.hev.oxygenmax)
-		end
-	end
 end)
 
 hook.Add("InitPostEntity", "TKAT", function()

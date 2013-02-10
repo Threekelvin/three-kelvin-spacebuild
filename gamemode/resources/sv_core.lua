@@ -577,8 +577,28 @@ end)
 
 ///--- Vehicles ---\\\
 hook.Add("PlayerSpawnedVehicle", "TKRD", function(ply, ent)
-	function ent:DoThink()
+    ent.data = {}
+    ent.data.power = 0
+    
+    function ent:Work()
+        if self:GetUnitPowerGrid() != self.data.power then
+            self:SetPower(self.data.power)
+            return false
+        end
+        
+        return true
+    end
 
+	function ent:DoThink(eff)
+        local ply = self:GetDriver()
+        self.data.power = IsValid(ply) && -5 || 0
+        
+        if !self:Work() then return end
+        if !IsValid(ply) then return end
+        
+        ply:AddhevRes("energy", 5 * eff)
+        ply:AddhevRes("water", self:ConsumeResource("water", 5) * eff)
+        ply:AddhevRes("oxygen", self:ConsumeResource("oxygen", 5) * eff)
 	end
 
 	function ent:NewNetwork(netid)
@@ -588,6 +608,10 @@ hook.Add("PlayerSpawnedVehicle", "TKRD", function(ply, ent)
 	function ent:UpdateValues()
 
 	end
+    
+    function ent:SetPower(power)
+        return TK.RD:SetPower(self, power)
+    end
 
 	function ent:AddResource(idx, max, gen)
 		return TK.RD:EntAddResource(self, idx, max, gen)

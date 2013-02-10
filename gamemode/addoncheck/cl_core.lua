@@ -147,7 +147,7 @@ function AOC:BuildMenu()
         
         steamworks.FileInfo(k, function(data) 
             if !data then return end
-            line:SetValue(1, data.title) 
+            line:SetValue(1, data.title || k)
         end)
     end
     

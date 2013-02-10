@@ -102,6 +102,11 @@ function Terminal:Create()
 	end
 	
 	frame.AddQuery = function(...)
+        if LocalPlayer():IsAFK() then 
+            frame:SetVisible(false)
+            return
+        end
+        
 		local args = {...}
 		if !Terminal.Secure then
 			Terminal.Secure = args
@@ -172,24 +177,6 @@ function Terminal:Open()
 	gamemode.Call("TKOpenTerminal")
 end
 
-if usermessage then
-	local IncomingMessage = usermessage.IncomingMessage
-	function  usermessage.IncomingMessage(idx, msg)
-		if idx == "3k_Secure" then 
-			local one, two, three = msg:ReadShort(), msg:ReadLong(), msg:ReadShort()
-			local pass = util.CRC(one + two - three)
-			if Terminal.Secure then
-				RunConsoleCommand("3k_term", pass, unpack(Terminal.Secure))
-				Terminal.Secure = nil
-			else
-				RunConsoleCommand("3k_term", pass, "error")
-			end
-		else
-			IncomingMessage(idx, msg)
-		end
-	end
-end
-
 usermessage.Hook("3k_terminal_open", function(msg)
 	Terminal:Open()
 end)
@@ -199,12 +186,6 @@ hook.Add("TKDBPlayerData", "UpdateTerm", function(dbtable, idx, data)
     Terminal.Menu:Update()
 end)
 
-hook.Add("TKafk", "CloseTerm", function(isAFK)
-	if isAFK && IsValid(Terminal.Menu) then
-		Terminal.Menu:SetVisible(false)
-	end
-end)
-
 concommand.Add("3k_rebuild_terminal", function(ply, cmd, arg)
 	Terminal:Rebuild()
 end)
@@ -212,4 +193,22 @@ end)
 hook.Add("Initialize", "TKTerminal", function()
 	function GAMEMODE:TKOpenTerminal()
 	end
+    
+    if usermessage then
+        local IncomingMessage = usermessage.IncomingMessage
+        function  usermessage.IncomingMessage(idx, msg)
+            if idx == "3k_Secure" then 
+                local one, two, three = msg:ReadShort(), msg:ReadLong(), msg:ReadShort()
+                local pass = util.CRC(one + two - three)
+                if Terminal.Secure then
+                    RunConsoleCommand("3k_term", pass, unpack(Terminal.Secure))
+                    Terminal.Secure = nil
+                else
+                    RunConsoleCommand("3k_term", pass, "error")
+                end
+            else
+                IncomingMessage(idx, msg)
+            end
+        end
+    end
 end)
