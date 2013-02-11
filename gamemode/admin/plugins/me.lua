@@ -7,14 +7,10 @@ PLUGIN.Level      = 1
 
 if SERVER then
 	function PLUGIN.Call(ply, arg)
-		if ply:HasAccess(PLUGIN.Level) then
-			local msgdata = {false, ply, team.GetColor(ply:Team())}
-			
-			table.insert(msgdata, table.concat(arg, " "))
-			TK.AM:SystemMessage(msgdata)
-		else
-			TK.AM:SystemMessage({"Access Denied!"}, {ply}, 1)
-		end
+        local msgdata = {false, ply, team.GetColor(ply:Team())}
+        
+        table.insert(msgdata, table.concat(arg, " "))
+        TK.AM:SystemMessage(msgdata)
 	end
 else
 

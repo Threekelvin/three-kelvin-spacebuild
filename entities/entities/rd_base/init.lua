@@ -196,7 +196,7 @@ function ENT:PostEntityPaste(ply, ent, entlist)
 	local TKRDInfo = self.EntityMods.TKRDInfo
     
     if WireLib then
-		WireLib.ApplyDupeInfo(ply, Ent, TKRDInfo.wire, function(id) return entlist[id] end)
+		WireLib.ApplyDupeInfo(ply, ent, TKRDInfo.wire, function(id) return entlist[id] end)
     end
     
     self.EntityMods.TKRDInfo = nil
