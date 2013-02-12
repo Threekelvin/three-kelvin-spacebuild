@@ -82,7 +82,7 @@ function AOC:BuildMenu()
     end
     
     local close = vgui.Create("DButton", Panel)
-    close:SetPos(525, 0)
+    close:SetPos(500, 0)
     close:SetSize(20, 20)
     close:SetText("")
     close.DoClick = function()
@@ -94,7 +94,7 @@ function AOC:BuildMenu()
 	end
     
     local options = vgui.Create("DButton", Panel)
-    options:SetPos(500, 0)
+    options:SetPos(475, 0)
     options:SetSize(20, 20)
     options:SetText("")
     options.DoClick = function()
@@ -112,7 +112,7 @@ function AOC:BuildMenu()
     end
     options.Paint = function()
 		surface.SetDrawColor(Color(255, 255, 255, 255))
-        surface.SetMaterial(panel.opticon)
+        surface.SetMaterial(Panel.opticon)
         surface.DrawTexturedRect(2, 2, 16, 16)
 	end
     
