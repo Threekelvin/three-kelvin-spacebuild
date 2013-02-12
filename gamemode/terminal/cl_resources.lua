@@ -428,6 +428,7 @@ function PANEL:Think(force)
 						if !IsValid(self.Terminal) then return end
                         if ShouldCaptcha(self) then
                             CaptchaPopup(self, function()
+                                if !IsValid(self.ActiveNode) then return end
                                 self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, panel.val)
                             end)
                         else
@@ -440,6 +441,7 @@ function PANEL:Think(force)
 							if val > panel.val then val = panel.val end
                             if ShouldCaptcha(self) then
                                 CaptchaPopup(self, function()
+                                    if !IsValid(self.ActiveNode) then return end
                                     self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, val)
                                 end)
                             else
