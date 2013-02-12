@@ -176,38 +176,29 @@ local function SelectNode(panel)
 end
 
 local function ShouldCaptcha(panel)
-    if panel.timeout > CurTime() then return false end
+    if CurTime() < panel.nextCaptcha then return false end
 
-    local pos = LocalPlayer():GetPos()
-    pos = Vector(
-        math.floor(pos.x),
-        math.floor(pos.y),
-        math.floor(pos.z)
-    )
-    
-    if pos.x == panel.ppos.x && pos.y == panel.ppos.y && pos.z == panel.ppos.z then
-        panel.timeout = CurTime() + 300
+    local pos = LocalPlayer():GetPos()    
+    if (pos - panel.ppos):LengthSqr() < 1 then
         return true
     end
     panel.ppos = pos
     
-    local ang = LocalPlayer():EyeAngles()
-    ang = Angle(
-        math.floor(ang.y),
-        math.floor(ang.p),
-        math.floor(ang.r)
-    )
-    
-    if ang.y == panel.pang.y && ang.p == panel.pang.p && ang.r == panel.pang.r then
-        panel.timeout = CurTime() + 300
+    local dir = LocalPlayer():EyeAngles():Forward()    
+    if dir:DotProduct(panel.pdir) < 0.996 then // Within approx 5 degrees
         return true
     end
-    panel.pang = ang
+    panel.pdir = dir
     
     return false
 end
 
 local function CaptchaPopup(panel, request)
+	if !ShouldCaptcha(panel) then
+		request()
+		return
+	end
+	
 	local mouseblock = vgui.Create("DPanel", panel.Terminal)
 	mouseblock:SetPos(0, 0)
 	mouseblock:SetSize(panel.Terminal:GetWide(), panel.Terminal:GetTall())
@@ -233,7 +224,6 @@ local function CaptchaPopup(panel, request)
 	close.DoClick = function()
 		surface.PlaySound("ui/buttonclick.wav")
 		mouseblock:Remove()
-        panel.timeout = 0
 	end
 	close.Paint = function() 
 		return true
@@ -272,8 +262,9 @@ local function CaptchaPopup(panel, request)
 	net.Receive("3k_terminal_resources_captcha_response", function()
 		if !IsValid(mouseblock) then return end
 		if net.ReadBit() == 1 then
-			request()
 			mouseblock:Remove()
+			request()
+			panel.nextCaptcha = CurTime() + 300
 		else
 			textBox:SetValue("")
 			textBox:SetEditable(true)
@@ -290,8 +281,8 @@ function PANEL:Init()
 	self.NextThink = 0
     
     self.ppos = Vector(0,0,0)
-    self.pang = Angle(0,0,0)
-    self.timeout = 0
+    self.pdir = Vector(0,0,1)
+    self.nextCaptcha = 0
 	
 	self.storage = vgui.Create("DPanelList", self)
 	self.storage:SetSkin("Terminal")
@@ -426,27 +417,25 @@ function PANEL:Think(force)
 				if !self.node.list[k] then
 					local panel = MakePanel(k, v.cur, function(panel)
 						if !IsValid(self.Terminal) then return end
-                        if ShouldCaptcha(self) then
-                            CaptchaPopup(self, function()
-                                if !IsValid(self.ActiveNode) then return end
-                                self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, panel.val)
-                            end)
-                        else
-                            self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, panel.val)
-                        end
+						CaptchaPopup(self, function()
+							if !IsValid(self.ActiveNode) then
+								self:ShowError("No Node Selected")
+							else
+								self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, panel.val)
+							end
+						end)
 					end, function(panel)
 						if !IsValid(self.Terminal) then return end
 						panel.AddTextBox(function(panel, val)
 							if val <= 0 then self:ShowError("Nil Value Entered") return end
 							if val > panel.val then val = panel.val end
-                            if ShouldCaptcha(self) then
-                                CaptchaPopup(self, function()
-                                    if !IsValid(self.ActiveNode) then return end
-                                    self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, val)
-                                end)
-                            else
-                                self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, val)
-                            end
+							CaptchaPopup(self, function()
+								if !IsValid(self.ActiveNode) then
+									self:ShowError("No Node Selected")
+								else
+									self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, val)
+								end
+							end)
 						end)
 					end)
 
