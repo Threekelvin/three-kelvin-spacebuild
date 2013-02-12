@@ -1,5 +1,6 @@
 
 TK.DB = TK.DB || {}
+TK.DB.CaptchaLength = 5
 
 function TK.DB:MakePlayerData()
 	local data = {}
@@ -63,7 +64,7 @@ function TK.DB:MakePlayerData()
         inventory = {}
     }
 	data.terminal_setting = {
-		captcha = "",
+		captcha = string.random(TK.DB.CaptchaLength),
 		refine_started = 0,
 		refine_length = 0
 	}

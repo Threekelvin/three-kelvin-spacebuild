@@ -119,7 +119,7 @@ local Queries = {
 		terminal_setting = [[CREATE TABLE IF NOT EXISTS
 		terminal_setting(
 			steamid VARCHAR(20) NOT NULL PRIMARY KEY,
-            captcha VARCHAR(5),
+            captcha VARCHAR(]]..TK.DB.CaptchaLength..[[),
 			refine_started INT DEFAULT 0,
 			refine_length INT DEFAULT 0
 		)]],

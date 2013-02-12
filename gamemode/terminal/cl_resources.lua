@@ -175,6 +175,83 @@ local function SelectNode(panel)
 	nodes:EnableVerticalScrollbar(true)
 end
 
+local function CaptchaPopup(panel, request)
+	local mouseblock = vgui.Create("DPanel", panel.Terminal)
+	mouseblock:SetPos(0, 0)
+	mouseblock:SetSize(panel.Terminal:GetWide(), panel.Terminal:GetTall())
+	mouseblock.Paint = function()
+		return true
+	end
+	
+	local frame = vgui.Create("DPanel", mouseblock)
+	frame:SetSkin("Terminal")
+	frame.NextThink = 0
+	frame:SetSize(210, 175)
+	frame:Center()
+	frame.title = "Complete CAPTCHA"
+	frame.Paint = function(panel, w, h)
+		derma.SkinHook("Paint", "TKFrame", frame, w, h)
+		return true
+	end
+	
+	local close = vgui.Create("DButton", frame)
+	close:SetPos(frame:GetWide()-21, 0)
+	close:SetSize(20, 20)
+	close:SetText("")
+	close.DoClick = function()
+		surface.PlaySound("ui/buttonclick.wav")
+		mouseblock:Remove()
+	end
+	close.Paint = function() 
+		return true
+	end
+	
+	local textBox = vgui.Create("DTextEntry", frame)
+	textBox:SetSize(frame:GetWide()-70, 20)
+	textBox:SetPos(5, frame:GetTall()-textBox:GetTall()-5)
+	textBox:SetEnterAllowed(true)
+	
+	local submit = vgui.Create("DButton", frame)
+	submit:SetSize(frame:GetWide()-textBox:GetWide()-11, 20)
+	submit:SetPos(frame:GetWide()-submit:GetWide()-5, frame:GetTall()-submit:GetTall()-5)
+	submit:SetText("Submit")
+	
+	local function doSubmit()
+		textBox:SetEditable(false)
+		textBox:SetEnterAllowed(false)
+		submit:SetDisabled(true)
+		net.Start("3k_terminal_resources_captcha_challenge")
+			net.WriteString(textBox:GetValue())
+		net.SendToServer()
+	end
+	textBox.OnEnter = function()
+		doSubmit()
+	end
+	submit.DoClick = function()
+		doSubmit()
+	end
+	
+	local browser = vgui.Create("HTML", frame)
+	browser:SetPos(5, 25)
+	browser:SetSize(frame:GetWide()-10, frame:GetTall()-submit:GetTall()-35)
+	browser:OpenURL("http://threekelvin.co.uk/resource/captcha.php?steamid="..LocalPlayer():SteamID())
+	
+	net.Receive("3k_terminal_resources_captcha_response", function()
+		if !mouseblock then return end
+		if net.ReadBit() == 1 then
+			request()
+			mouseblock:Remove()
+		else
+			textBox:SetValue("")
+			textBox:SetEditable(true)
+			textBox:SetEnterAllowed(true)
+			submit:SetDisabled(false)
+			browser:OpenURL("http://threekelvin.co.uk/resource/captcha.php?steamid="..LocalPlayer():SteamID())
+			Derma_Message("Incorrect. Please try again.", "", "OK")
+		end
+	end)
+end
+
 function PANEL:Init()
 	self:SetSkin("Terminal")
 	self.NextThink = 0
@@ -313,14 +390,18 @@ function PANEL:Think(force)
 					local panel = MakePanel(k, v.cur, function(panel)
 						if !IsValid(self.Terminal) then return end
 						if panel.res == "raw_tiberium" then return end
-						self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, panel.val)
+						CaptchaPopup(self, function()
+							self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, panel.val)
+						end)
 					end, function(panel)
 						if !IsValid(self.Terminal) then return end
 						panel.AddTextBox(function(panel, val)
 							if panel.res == "raw_tiberium" then return end
 							if val <= 0 then self:ShowError("Nil Value Entered") return end
 							if val > panel.val then val = panel.val end
-							self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, val)
+							CaptchaPopup(self, function()
+								self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, val)
+							end)
 						end)
 					end)
 
