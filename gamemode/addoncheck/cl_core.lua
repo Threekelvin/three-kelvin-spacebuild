@@ -65,7 +65,6 @@ end
 
 function AOC:BuildMenu()
     local Panel = vgui.Create("DFrame")
-    Panel.opticon = Material("icon16/cog.png")
     Panel:SetSize(535, 300)
     Panel:Center()
     Panel:SetTitle( "" )
@@ -79,41 +78,37 @@ function AOC:BuildMenu()
         draw.RoundedBox(4, 1, 1, w - 2, h - 2, Color(100,100,100,255))
         draw.RoundedBoxEx(4, 1, 1, w - 2, 20, Color(150,150,150,255), true, true)
         draw.SimpleText("Server Addon List", "TKFont18", 5, 2.5, Color(255,255,255,255))
-        draw.SimpleText("r", "Marlett", w - 10, 3, Color(255,255,255,255), TEXT_ALIGN_CENTER)
-        
-        surface.SetDrawColor(Color(255, 255, 255, 255))
-        surface.SetMaterial(panel.opticon)
-        surface.DrawTexturedRect(w - 35, 3, 16, 16)
     end
     
     local close = vgui.Create("DButton", Panel)
-    close:SetPos(525, 0)
     close:SetSize(20, 20)
+	close:SetPos( Panel:GetWide() - close:GetWide(), 0 )
     close:SetText("")
     close.DoClick = function()
         surface.PlaySound("ui/buttonclick.wav")
         Panel:Remove()
     end
-    close.Paint = function() end
+    close.Paint = function(panel, w, h)
+		draw.SimpleText("r", "Marlett", w/2, h/2, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	end
     
     local options = vgui.Create("DButton", Panel)
-    options:SetPos(500, 0)
-    options:SetSize(20, 20)
+    options:SetSize(20, 22)
+	local x,_ = close:GetPos()
+	options:SetPos( x - options:GetWide(), 0 )
     options:SetText("")
     options.DoClick = function()
         local menu = DermaMenu()
-        if Show:GetBool() then
-            menu:AddOption("Dont Show On Join", function()
-                RunConsoleCommand("tk_aoc_show", "0")
-            end)
-        else
-            menu:AddOption("Show On Join", function()
-                RunConsoleCommand("tk_aoc_show", "1")
-            end)
-        end
+		menu:AddOption("Don't Show On Join", function()
+			RunConsoleCommand("tk_aoc_show", "0")
+		end)
         menu:Open()
     end
-    options.Paint = function() end
+    options.Paint = function(panel, w, h)
+		surface.SetDrawColor(Color(255, 255, 255, 255))
+    	surface.SetMaterial( Material("icon16/cog.png") )
+    	surface.DrawTexturedRect( (w-16)/2, (h-16)/2, 16, 16 )
+	end
     
     local copy
     local List = vgui.Create( "DListView", Panel )
@@ -124,7 +119,8 @@ function AOC:BuildMenu()
     List:AddColumn("Type"):SetFixedWidth(75)
     List:AddColumn("Installed"):SetFixedWidth(75)
     List:AddColumn("Mounted"):SetFixedWidth(75)
-    
+	
+	local AutoHide = 0 // Prepare to set the AOC to hide if the player has all addons mounted.
     for k,v in pairs(self.Tutorial) do
         local line = List:AddLine(k, "Tutorial", "", "", v)
         line.OnSelect = function()
@@ -133,14 +129,18 @@ function AOC:BuildMenu()
     end
     
     for k,v in pairs(self.Legacy) do
-        local line = List:AddLine(k, "SVN", tostring(self:IsLegacyInstalled(k)), tostring(self:IsLegacyMounted(k)), v)
+		local mounted = self:IsLegacyMounted(k)
+        local line = List:AddLine(k, "SVN", tostring(self:IsLegacyInstalled(k)), tostring(mounted), v)
+		if !mounted then AutoHide = 1 end
         line.OnSelect = function()
             copy.txt = "Copy Selected Link"
         end
     end
     
     for k,v in pairs(self.Workshop) do
-        local line = List:AddLine(k, "Workshop", tostring(self:IsWorkshopInstalled(k)), tostring(self:IsWorkshopMounted(k)), v)
+		local mounted = self:IsWorkshopMounted(k)
+        local line = List:AddLine(k, "Workshop", tostring(self:IsWorkshopInstalled(k)), tostring(mounted), v)
+		if !mounted then AutoHide = 1 end
         line.OnSelect = function()
             copy.txt = "Open Workshop Page"
         end
@@ -150,6 +150,8 @@ function AOC:BuildMenu()
             line:SetValue(1, data.title || k)
         end)
     end
+	
+	RunConsoleCommand("tk_aoc_show", AutoHide)
     
     copy = vgui.Create("DButton", Panel)
     copy.txt = "Open Tutorial Page"
@@ -186,7 +188,7 @@ end
 hook.Add("Initialize", "AddonCheck", function()
     AOC:GetLegacyAddons()
     
-    if Version:GetInt() != AOC.Version then
+    if Version:GetInt() != AOC.ListVersion then
         RunConsoleCommand("tk_aoc_show", "1")
         RunConsoleCommand("tk_aoc_version", AOC.ListVersion)
     end
