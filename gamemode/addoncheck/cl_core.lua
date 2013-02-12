@@ -79,11 +79,6 @@ function AOC:BuildMenu()
         draw.RoundedBox(4, 1, 1, w - 2, h - 2, Color(100,100,100,255))
         draw.RoundedBoxEx(4, 1, 1, w - 2, 20, Color(150,150,150,255), true, true)
         draw.SimpleText("Server Addon List", "TKFont18", 5, 2.5, Color(255,255,255,255))
-        draw.SimpleText("r", "Marlett", w - 10, 3, Color(255,255,255,255), TEXT_ALIGN_CENTER)
-        
-        surface.SetDrawColor(Color(255, 255, 255, 255))
-        surface.SetMaterial(panel.opticon)
-        surface.DrawTexturedRect(w - 35, 3, 16, 16)
     end
     
     local close = vgui.Create("DButton", Panel)
@@ -94,7 +89,9 @@ function AOC:BuildMenu()
         surface.PlaySound("ui/buttonclick.wav")
         Panel:Remove()
     end
-    close.Paint = function() end
+    close.Paint = function()
+		draw.SimpleText("r", "Marlett", 8, 8, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	end
     
     local options = vgui.Create("DButton", Panel)
     options:SetPos(500, 0)
@@ -113,7 +110,11 @@ function AOC:BuildMenu()
         end
         menu:Open()
     end
-    options.Paint = function() end
+    options.Paint = function()
+		surface.SetDrawColor(Color(255, 255, 255, 255))
+        surface.SetMaterial(panel.opticon)
+        surface.DrawTexturedRect(2, 2, 16, 16)
+	end
     
     local copy
     local List = vgui.Create( "DListView", Panel )
