@@ -119,8 +119,7 @@ local Queries = {
 		terminal_setting = [[CREATE TABLE IF NOT EXISTS
 		terminal_setting(
 			steamid VARCHAR(20) NOT NULL PRIMARY KEY,
-			auto_refine_ore TINYINT DEFAULT 0,
-			auto_refine_tib TINYINT DEFAULT 0,
+            captcha VARCHAR(5),
 			refine_started INT DEFAULT 0,
 			refine_length INT DEFAULT 0
 		)]],

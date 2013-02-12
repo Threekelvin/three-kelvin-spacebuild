@@ -63,8 +63,7 @@ function TK.DB:MakePlayerData()
         inventory = {}
     }
 	data.terminal_setting = {
-		auto_refine_ore = 0,
-		auto_refine_tib = 0,
+		captcha = "",
 		refine_started = 0,
 		refine_length = 0
 	}
