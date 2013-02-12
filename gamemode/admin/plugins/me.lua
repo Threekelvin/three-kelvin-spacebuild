@@ -2,7 +2,6 @@ local PLUGIN = {}
 PLUGIN.Name       = "Me"
 PLUGIN.Prefix     = "/me"
 PLUGIN.Command    = ""
-PLUGIN.Auto       = {"string"}
 PLUGIN.Level      = 1
 
 if SERVER then

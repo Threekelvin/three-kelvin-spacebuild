@@ -3,7 +3,6 @@ local PLUGIN = {}
 PLUGIN.Name       = "Restart"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "Restart"
-PLUGIN.Auto       = {"number"}
 PLUGIN.Level      = 5
 
 if SERVER then

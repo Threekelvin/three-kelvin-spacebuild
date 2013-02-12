@@ -3,7 +3,6 @@ local PLUGIN = {}
 PLUGIN.Name       = "RCON"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "RCON"
-PLUGIN.Auto       = {"string"}
 PLUGIN.Level      = 7
 
 if SERVER then

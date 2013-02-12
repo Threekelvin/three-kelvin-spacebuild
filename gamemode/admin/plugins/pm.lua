@@ -3,7 +3,6 @@ local PLUGIN = {}
 PLUGIN.Name       = "PM"
 PLUGIN.Prefix     = ">"
 PLUGIN.Command    = nil
-PLUGIN.Auto       = {"player", "string"}
 PLUGIN.Level      = 1
 
 if SERVER then

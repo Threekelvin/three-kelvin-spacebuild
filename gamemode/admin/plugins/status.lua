@@ -3,7 +3,6 @@ local PLUGIN = {}
 PLUGIN.Name       = "status"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "status"
-PLUGIN.Auto       = {}
 PLUGIN.Level      = 4
 
 if SERVER then

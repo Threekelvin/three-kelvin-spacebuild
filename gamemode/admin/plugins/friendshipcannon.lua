@@ -3,7 +3,6 @@ local PLUGIN = {}
 PLUGIN.Name       = "Orbital Friendship Cannon"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "OFC"
-PLUGIN.Auto       = {"player"}
 PLUGIN.Level      = 6
 
 if SERVER then

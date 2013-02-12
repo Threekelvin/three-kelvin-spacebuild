@@ -3,7 +3,6 @@ local PLUGIN = {}
 PLUGIN.Name       = "ChatAdmin"
 PLUGIN.Prefix     = "@"
 PLUGIN.Command    = nil
-PLUGIN.Auto       = {"string"}
 PLUGIN.Level      = 1
 
 if SERVER then

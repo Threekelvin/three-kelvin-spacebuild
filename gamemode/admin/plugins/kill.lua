@@ -3,7 +3,6 @@ local PLUGIN = {}
 PLUGIN.Name       = "Kill"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "Kill"
-PLUGIN.Auto       = {}
 PLUGIN.Level      = 1
 
 if SERVER then

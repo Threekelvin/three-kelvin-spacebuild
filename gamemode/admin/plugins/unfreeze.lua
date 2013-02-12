@@ -3,7 +3,6 @@ local PLUGIN = {}
 PLUGIN.Name       = "UnFreeze"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "UnFreeze"
-PLUGIN.Auto       = {"players"}
 PLUGIN.Level      = 4
 
 if SERVER then	

@@ -1,11 +1,8 @@
 
 local PLUGIN = {}
 PLUGIN.Name       = "TP"
-PLUGIN.Author     = "Ghost400"
-PLUGIN.Date       = "13/01/2012"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "TP"
-PLUGIN.Auto       = {"string", "number"}
 PLUGIN.Level      = 2
 
 if SERVER then

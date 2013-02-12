@@ -3,7 +3,6 @@ local PLUGIN = {}
 PLUGIN.Name       = "AFK"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "AFK"
-PLUGIN.Auto       = {}
 PLUGIN.Level      = 1
 
 if SERVER then

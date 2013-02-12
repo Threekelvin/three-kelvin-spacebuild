@@ -4,9 +4,8 @@ local Emotes  = CreateClientConVar("3k_chatbox_emotes", 1, true, false)
 local Links  = CreateClientConVar("3k_chatbox_links", 1, true, false)
 
 local surface = surface
-local string_gmatch = string.gmatch
-local string_match = string.match
-local string_Explode = string.Explode
+local string = string
+local table = table
 
 local LastEmote = 0
 
@@ -51,7 +50,7 @@ function PANEL:TextLenght(txt)
 	surface.SetFont(self.font)
 	local space = surface.GetTextSize("U")
 	local lenght = surface.GetTextSize(txt)
-	for w in string_gmatch(txt, "&") do
+	for w in string.gmatch(txt, "&") do
 		lenght = lenght + space
 	end	
 	return lenght
@@ -60,7 +59,7 @@ end
 function PANEL:IsEmote(txt)
 	if !Emotes:GetBool() then return false end
 	for k,v in pairs(self.emotelist) do
-		if string_match(txt, k, 0) then
+		if string.match(txt, k, 0) then
 			return v
 		end
 	end
@@ -69,7 +68,7 @@ end
 
 function PANEL:IsLink(txt)
 	if !Links:GetBool() then return false end
-	return string_match(txt, "^http://[^ ]+", 0) || string_match(txt, "^https://[^ ]+", 0)
+	return string.match(txt, "^http://[^ ]+", 0) || string.match(txt, "^https://[^ ]+", 0)
 end
 
 function PANEL:DoLayout()
@@ -93,7 +92,7 @@ function PANEL:DoLayout()
                 break
             end
             
-			for _,word in ipairs(string_Explode(" ", v)) do
+			for _,word in ipairs(string.Explode(" ", v)) do
 				local isEmote, isLink = self:IsEmote(word), self:IsLink(word)
 				
 				if !isPlayer && isEmote then
@@ -117,7 +116,7 @@ function PANEL:DoLayout()
 					if tempX + wide > self.width then
 						if wide > self.width then
 							local tempWord = " "
-							for letter in string_gmatch(word, ".?") do
+							for letter in string.gmatch(word, ".?") do
 								wide = self:TextLenght(tempWord..letter)
 								
 								if tempX + wide > self.width then
@@ -152,7 +151,7 @@ function PANEL:DoLayout()
 					if tempX + wide > self.width then
 						if wide > self.width then
 							local tempWord = " "
-							for letter in string_gmatch(word, ".?") do
+							for letter in string.gmatch(word, ".?") do
 								wide = self:TextLenght(tempWord..letter)
 								if tempX + wide > self.width then
 									table.insert(self.layout, {tempStr..tempWord, X, Y, Col})

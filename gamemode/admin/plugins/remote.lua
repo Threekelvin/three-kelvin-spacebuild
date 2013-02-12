@@ -3,7 +3,6 @@ local PLUGIN = {}
 PLUGIN.Name       = "Remote Command"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "Remote"
-PLUGIN.Auto       = {"string", "string"}
 PLUGIN.Level      = 5
 
 if SERVER then

@@ -127,7 +127,7 @@ function ENT:PreEntityCopy()
 	end
 	
     if table.Count(info) == 0 then return end
-	duplicator.StoreEntityModifier(ent, "TKRDInfo", info)
+	duplicator.StoreEntityModifier(self, "TKRDInfo", info)
 end
 
 function ENT:PostEntityPaste(ply, ent, entlist)

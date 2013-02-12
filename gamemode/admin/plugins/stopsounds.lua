@@ -3,7 +3,6 @@ local PLUGIN = {}
 PLUGIN.Name       = "Stopsounds"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "Stopsounds"
-PLUGIN.Auto       = {}
 PLUGIN.Level      = 1
 
 if SERVER then	

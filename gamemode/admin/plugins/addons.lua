@@ -3,7 +3,6 @@ local PLUGIN = {}
 PLUGIN.Name       = "Addons"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "Addons"
-PLUGIN.Auto       = {}
 PLUGIN.Level      = 1
 
 if SERVER then

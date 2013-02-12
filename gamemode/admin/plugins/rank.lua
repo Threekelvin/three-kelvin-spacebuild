@@ -3,7 +3,6 @@ local PLUGIN = {}
 PLUGIN.Name       = "Rank"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "Rank"
-PLUGIN.Auto       = {"player", "number", "number"}
 PLUGIN.Level      = 7
 
 if SERVER then

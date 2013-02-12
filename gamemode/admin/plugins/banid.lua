@@ -3,7 +3,6 @@ local PLUGIN = {}
 PLUGIN.Name       = "Ban ID"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "BanID"
-PLUGIN.Auto       = {"string", "number", "string"}
 PLUGIN.Level      = 6
 
 if SERVER then
