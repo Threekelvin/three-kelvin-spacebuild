@@ -1,6 +1,8 @@
 
 local PANEL = {}
 
+util.AddNetworkString("terminalCaptcha")
+
 local function MakePanel(res, val, btnl, btnr)
 	local btn = vgui.Create("DButton")
 	btn:SetSkin("Terminal")
@@ -175,6 +177,58 @@ local function SelectNode(panel)
 	nodes:EnableVerticalScrollbar(true)
 end
 
+local function CaptchaPopup(panel)
+	local mouseblock = vgui.Create("DPanel", panel.Terminal)
+	mouseblock:SetPos(0, 0)
+	mouseblock:SetSize(panel.Terminal:GetWide(), panel.Terminal:GetTall())
+	mouseblock.Paint = function()
+		return true
+	end
+	
+	local frame = vgui.Create("DPanel", mouseblock)
+	frame:SetSkin("Terminal")
+	frame.NextThink = 0
+	frame:SetSize(400, 300)
+	frame:Center()
+	frame.title = "Please complete CAPTCHA"
+	frame.Paint = function(panel, w, h)
+		derma.SkinHook("Paint", "TKFrame", frame, w, h)
+		return true
+	end
+	
+	local close = vgui.Create("DButton", frame)
+	close:SetPos(frame:GetWide()-21, 0)
+	close:SetSize(20, 20)
+	close:SetText("")
+	close.DoClick = function()
+		surface.PlaySound("ui/buttonclick.wav")
+		mouseblock:Remove()
+	end
+	close.Paint = function() 
+		return true
+	end
+	
+	local textBox = vgui.Create("DTextEntry", frame)
+	textBox:SetSize(frame:GetWide()-45, 20)
+	textBox:SetPos(5, frame:GetTall()-textBox:GetTall()-5)
+	textBox:SetEnterAllowed( true )
+	textBox.OnEnter = function()
+		surface.PlaySound("ui/buttonclick.wav")
+	end
+	
+	local submit = vgui.Create("DButton", frame)
+	submit:SetSize(frame:GetWide()-textBox:GetWide()-10, 20)
+	submit:SetPos(frame:GetWide()-submit:GetWide()-5, frame:GetTall()-submit:GetTall()-5)
+	submit.DoClick = function()
+		surface.PlaySound("ui/buttonclick.wav")
+	end
+	
+	local browser = vgui.Create("DHTML", frame)
+	browser:SetPos(5, 25)
+	browser:SetSize(frame:GetWide()-10, frame:GetTall()-30)
+	browser:OpenURL("http://threekelvin.co.uk/resource/captcha.php?steamid="..LocalPlayer():SteamID())
+end
+
 function PANEL:Init()
 	self:SetSkin("Terminal")
 	self.NextThink = 0
@@ -313,14 +367,16 @@ function PANEL:Think(force)
 					local panel = MakePanel(k, v.cur, function(panel)
 						if !IsValid(self.Terminal) then return end
 						if panel.res == "raw_tiberium" then return end
-						self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, panel.val)
+						CaptchaPopup(self)
+						//self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, panel.val)
 					end, function(panel)
 						if !IsValid(self.Terminal) then return end
 						panel.AddTextBox(function(panel, val)
 							if panel.res == "raw_tiberium" then return end
 							if val <= 0 then self:ShowError("Nil Value Entered") return end
 							if val > panel.val then val = panel.val end
-							self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, val)
+							CaptchaPopup(self)
+							//self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, val)
 						end)
 					end)
 

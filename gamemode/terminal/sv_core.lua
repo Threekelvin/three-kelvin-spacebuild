@@ -37,6 +37,17 @@ function Terminal.NodeTostorage(ply, arg)
 
 	TK.DB:UpdatePlayerData(ply, "terminal_storage", {[res] = math.floor(storage[res] + amt)})
 end
+
+function Terminal.GetCaptcha(ply)
+	local setting = TK.DB:GetPlayerData(ply, "terminal_setting")
+	return setting["captcha"]
+end
+
+function Terminal.NewCaptcha(ply)
+	local captcha = string.random(TK.DB.CaptchaLength)
+	TK.DB:UpdatePlayerData(ply, "terminal_setting", {"captcha" = captcha})
+	return captcha
+end
 ///--- ---\\\
 
 ///--- Refinery ---\\\
@@ -216,7 +227,7 @@ concommand.Add("3k_secure_ping", function(ply, cmd, arg)
 	if !IsValid(ply) then return end 
 	local uid = ply:GetNWString("UID")
 	
-	if !CanCall(ply) then ErrorNoHalt(ply:Name().." Can Not Call - "..cmd.." - "..table.concat(arg, " ").."\n") return end
+	if !CanCall(ply) then ErrorNoHalt(ply:Name().." cannot call - "..cmd.." - "..table.concat(arg, " ").."\n") return end
 	
 	math.randomseed(SysTime())
 	local one, two, three = math.random(-32767, 32767), math.random(-32767, 32767), math.random(-32767, 32767)
