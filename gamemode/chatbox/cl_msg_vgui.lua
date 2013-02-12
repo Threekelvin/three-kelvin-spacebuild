@@ -85,10 +85,18 @@ function PANEL:DoLayout()
 	for k,v in ipairs(self.data) do
 		if type(v) == "string" then
 			local tempX, tempStr = X, ""
+            local isPlayer = false
+            
+            for _,ply in pairs(player.GetAll()) do
+                if ply:Name() != v then continue end
+                isPlayer = true
+                break
+            end
+            
 			for _,word in ipairs(string_Explode(" ", v)) do
 				local isEmote, isLink = self:IsEmote(word), self:IsLink(word)
 				
-				if isEmote then
+				if !isPlayer && isEmote then
 					table.insert(self.layout, {tempStr, X, Y, Col})
 					tempStr = ""
 					
@@ -101,7 +109,7 @@ function PANEL:DoLayout()
 						X = tempX + 50 + space
 						tempX, tempHeight = X, 50
 					end
-				elseif isLink then
+				elseif !isPlayer && isLink then
 					local wide = self:TextLenght(word)
 					table.insert(self.layout, {tempStr, X, Y, Col})
 					tempStr = ""
