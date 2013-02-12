@@ -8,11 +8,7 @@ PLUGIN.Level      = 1
 
 if SERVER then
 	function PLUGIN.Call(ply,arg)
-		if ply:HasAccess(PLUGIN.Level) then
-			ply:Kill()
-		else
-			TK.AM:SystemMessage({"Access Denied"}, {ply}, 1)
-		end
+        ply:Kill()
 	end
 else
 

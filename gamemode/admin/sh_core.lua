@@ -1,4 +1,7 @@
 
+local string = string
+local table = table
+
 TK.AM = TK.AM || {}
 
 TK.AM.Rank = {
@@ -14,18 +17,20 @@ local Plugins = {}
 function TK.AM:GetAllPlugins()
 	return table.Copy(Plugins)
 end
-
-function TK.AM:CallPlugin(name, arg)
-	for _,plugin in pairs(Plugins) do
-		if plugin.Name == name then
-			local status, error = pcall(plugin.Call, unpack(arg || {}))
-			if !status then 
-				ErrorNoHalt(error.."\n") 
-				return false
-			end
-			return true
-		end
-	end
+if SERVER then
+    function TK.AM:CallPlugin(name, ply, arg)
+        for _,plugin in pairs(Plugins) do
+            if plugin.Name == name then
+                if ply:HasAccess(plugin.Level) then
+                    local status, error = pcall(plugin.Call, ply, arg)
+                    if !status then ErrorNoHalt(error.."\n") end
+                    break
+                else
+                    TK.AM:SystemMessage({"Access Denied!"}, {ply}, 1)
+                end
+            end
+        end
+    end
 end
 
 function TK.AM:RegisterPlugin(Plugin)	

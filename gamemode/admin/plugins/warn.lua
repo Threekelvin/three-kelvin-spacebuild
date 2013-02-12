@@ -17,27 +17,23 @@ if SERVER then
 	end
 
 	function PLUGIN.Call( ply, arg )
-		if ply:HasAccess(PLUGIN.Level) then
-			local count, targets = TK.AM:FindPlayer(arg[1])
-			local message = ""
-			
-			if count == 0 then
-				message = table.concat( arg, " ", 1 )
-				HUDwarning( player.GetAll(), message )
-			elseif count > 1 then
-				TK.AM:SystemMessage({"Multiple Targets Found"}, {ply}, 2)
-			else
-				local tar = targets[1]
-				if ply:CanRunOn(tar) then
-					message = table.concat( arg, " ", 2 )
-					HUDwarning( tar, message )
-				else
-					TK.AM:SystemMessage({"You cannot Warn ", tar}, {ply}, 2)
-				end
-			end
-		else
-			TK.AM:SystemMessage({"Access Denied!"}, {ply}, 1)
-		end
+        local count, targets = TK.AM:FindPlayer(arg[1])
+        local message = ""
+        
+        if count == 0 then
+            message = table.concat( arg, " ", 1 )
+            HUDwarning( player.GetAll(), message )
+        elseif count > 1 then
+            TK.AM:SystemMessage({"Multiple Targets Found"}, {ply}, 2)
+        else
+            local tar = targets[1]
+            if ply:CanRunOn(tar) then
+                message = table.concat( arg, " ", 2 )
+                HUDwarning( tar, message )
+            else
+                TK.AM:SystemMessage({"You cannot Warn ", tar}, {ply}, 2)
+            end
+        end
 	end
 else
 

@@ -102,7 +102,7 @@ end
 ///--- ---\\\
 
 ///--- Console Commands ---\\\
-local function RunCmd(ply, com, arg)
+local function RunCmd(ply, cmd, arg)
 	local command = arg[1]
 	if !command || command == "" then return end
 	table.remove(arg, 1)
@@ -110,7 +110,7 @@ local function RunCmd(ply, com, arg)
 	for k,v in pairs(TK.AM:GetAllPlugins()) do
 		if v.Command then
 			if string.lower(command) == string.lower(v.Command) then
-				TK.AM:CallPlugin(v.Name, {ply, arg})
+				TK.AM:CallPlugin(v.Name, ply, arg)
 				return
 			end
 		end
@@ -133,13 +133,13 @@ hook.Add("PlayerSay", "TKChatCommands", function(ply, text, toteam)
 				local temp = string.sub(Chat[1], string.len(p) + 1)
 				table.remove(Chat, 1)
 				table.insert(Chat, 1, temp)
-				TK.AM:CallPlugin(v.Name, {ply, Chat})
+				TK.AM:CallPlugin(v.Name, ply, Chat)
 				return false
 			end
 		else
 			if string.lower(Chat[1]) == string.lower(p..c) then
 				table.remove(Chat, 1)
-				TK.AM:CallPlugin(v.Name, {ply, Chat})
+				TK.AM:CallPlugin(v.Name, ply, Chat)
 				return false
 			end
 		end
@@ -151,6 +151,7 @@ end)
 local Inputs = {IN_JUMP, IN_DUCK, IN_FORWARD, IN_BACK, IN_LEFT, IN_RIGHT, IN_MOVELEFT, IN_MOVERIGHT}
 
 function TK.AM:SetAFK(ply, isAFK, txt)
+    if !IsValid(ply) then return end
     if ply:IsAFK() && !isAFK then
         ply:SetNWBool("TKAFK", false)
         timer.Create("AFK_".. ply:UserID(), 600, 1, function() TK.AM:SetAFK(ply, true) end)
