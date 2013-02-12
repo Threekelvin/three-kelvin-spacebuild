@@ -175,6 +175,38 @@ local function SelectNode(panel)
 	nodes:EnableVerticalScrollbar(true)
 end
 
+local function ShouldCaptcha(panel)
+    if panel.timeout > CurTime() then return false end
+
+    local pos = LocalPlayer():GetPos()
+    pos = Vector(
+        math.floor(pos.x),
+        math.floor(pos.y),
+        math.floor(pos.z)
+    )
+    
+    if pos.x == panel.ppos.x && pos.y == panel.ppos.y && pos.z == panel.ppos.z then
+        panel.timeout = CurTime() + 300
+        return true
+    end
+    panel.ppos = pos
+    
+    local ang = LocalPlayer():EyeAngles()
+    ang = Angle(
+        math.floor(ang.y),
+        math.floor(ang.p),
+        math.floor(ang.r)
+    )
+    
+    if ang.y == panel.pang.y && ang.p == panel.pang.p && ang.r == panel.pang.r then
+        panel.timeout = CurTime() + 300
+        return true
+    end
+    panel.pang = ang
+    
+    return false
+end
+
 local function CaptchaPopup(panel, request)
 	local mouseblock = vgui.Create("DPanel", panel.Terminal)
 	mouseblock:SetPos(0, 0)
@@ -201,6 +233,7 @@ local function CaptchaPopup(panel, request)
 	close.DoClick = function()
 		surface.PlaySound("ui/buttonclick.wav")
 		mouseblock:Remove()
+        panel.timeout = 0
 	end
 	close.Paint = function() 
 		return true
@@ -237,7 +270,7 @@ local function CaptchaPopup(panel, request)
 	browser:OpenURL("http://threekelvin.co.uk/resource/captcha.php?steamid="..LocalPlayer():SteamID())
 	
 	net.Receive("3k_terminal_resources_captcha_response", function()
-		if !mouseblock then return end
+		if !IsValid(mouseblock) then return end
 		if net.ReadBit() == 1 then
 			request()
 			mouseblock:Remove()
@@ -255,6 +288,10 @@ end
 function PANEL:Init()
 	self:SetSkin("Terminal")
 	self.NextThink = 0
+    
+    self.ppos = Vector(0,0,0)
+    self.pang = Angle(0,0,0)
+    self.timeout = 0
 	
 	self.storage = vgui.Create("DPanelList", self)
 	self.storage:SetSkin("Terminal")
@@ -385,23 +422,29 @@ function PANEL:Think(force)
 		end
 		
 		for k,v in pairs(Resources) do
-			if v.cur > 0 && TK.TD:AcceptResource(k) then
+			if v.cur > 0 && TK.TD:AcceptResource(k, "node") then
 				if !self.node.list[k] then
 					local panel = MakePanel(k, v.cur, function(panel)
 						if !IsValid(self.Terminal) then return end
-						if panel.res == "raw_tiberium" then return end
-						CaptchaPopup(self, function()
-							self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, panel.val)
-						end)
+                        if ShouldCaptcha(self) then
+                            CaptchaPopup(self, function()
+                                self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, panel.val)
+                            end)
+                        else
+                            self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, panel.val)
+                        end
 					end, function(panel)
 						if !IsValid(self.Terminal) then return end
 						panel.AddTextBox(function(panel, val)
-							if panel.res == "raw_tiberium" then return end
 							if val <= 0 then self:ShowError("Nil Value Entered") return end
 							if val > panel.val then val = panel.val end
-							CaptchaPopup(self, function()
-								self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, val)
-							end)
+                            if ShouldCaptcha(self) then
+                                CaptchaPopup(self, function()
+                                    self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, val)
+                                end)
+                            else
+                                self.Terminal.AddQuery("nodetostorage", self.ActiveNode:EntIndex(), panel.res, val)
+                            end
 						end)
 					end)
 

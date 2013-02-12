@@ -46,7 +46,6 @@ function Terminal.GetCaptcha(ply)
 end
 
 function Terminal.NewCaptcha(ply)
-	//local captcha = string.random(TK.DB.CaptchaLength)
 	local captcha = string.random(5)
 	TK.DB:UpdatePlayerData(ply, "terminal_setting", {["captcha"] = captcha})
 	return captcha
@@ -55,7 +54,7 @@ end
 net.Receive("3k_terminal_resources_captcha_challenge", function(len,ply)
 	local challenge = net.ReadString()
 	net.Start("3k_terminal_resources_captcha_response")
-		net.WriteBit( Terminal.GetCaptcha(ply) == challenge )
+		net.WriteBit(string.lower(Terminal.GetCaptcha(ply)) == string.lower(challenge))
 	net.Send(ply)
 	Terminal.NewCaptcha(ply)
 end)

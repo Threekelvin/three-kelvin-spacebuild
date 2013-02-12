@@ -1,4 +1,6 @@
 
+local table = table
+
 TK.DB = TK.DB || {}
 
 local Queries = {
@@ -223,6 +225,10 @@ local Queries = {
     
     json = {
         player_inventory = {"inventory"}
+    },
+    
+    dont_sync = {
+        captcha = true
     }
 }
 
@@ -246,6 +252,10 @@ local function ShouldJson(dbtable, index)
     if !Queries.json[dbtable] then return false end
     if !Queries.json[dbtable][index] then return false end
     return true
+end
+
+function TK.DB:DontSync(idx)
+    return table.HasValue(Queries.dont_sync, idx)
 end
 
 function TK.DB:GetCreateQueries()

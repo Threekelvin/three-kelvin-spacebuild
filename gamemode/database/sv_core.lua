@@ -153,7 +153,7 @@ function TK.DB:AddBan(admin, tarid, tarip, length, reason)
     local a_sid = IsValid(admin) && admin:SteamID() || "Console"
     local a_ip = IsValid(admin) && admin:Ip() || TK:HostName()
 
-    MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("server_ban_data", 
+    MySQL.MakePriorityQuery(self:FormatInsertQuery("server_ban_data", 
     {
         ply_steamid = tarid,
         ply_ip = tarip,
@@ -173,6 +173,8 @@ function TK.DB:SetPlayerData(ply, dbtable, content)
 
 	for k,v in pairs(content) do
 		if data[k] == v then continue end
+        if self:DontSync(idx) then continue end
+        
         net.Start("DB_Sync")
             net.WriteString(dbtable)
             net.WriteString(k)
@@ -203,18 +205,18 @@ end
 function TK.DB:UpdatePlayerData(ply, dbtable, update)
 	if !IsValid(ply) then return end
 
-	TK.DB:MakeQuery(TK.DB:FormatUpdateQuery(dbtable, update, {"steamid = %s", ply:SteamID()}))
+	self:MakeQuery(TK.DB:FormatUpdateQuery(dbtable, update, {"steamid = %s", ply:SteamID()}))
 	
 	local data = {}
 	for k,v in pairs(update) do
 		if type(v) == "boolean" then
-			data[k] = TK.DB:OSTime()
+			data[k] = self:OSTime()
 		else
 			data[k] = v
 		end
 	end
 	
-	TK.DB:SetPlayerData(ply, dbtable, data)
+	self:SetPlayerData(ply, dbtable, data)
 end
 ///--- ---\\\
 
@@ -244,7 +246,7 @@ function MySQL.LoadPlayerData(ply, steamid, ip, uid)
 			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_team", {steamid = steamid}))
             MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_loadout", {steamid = steamid}))
             MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_inventory", {steamid = steamid, inventory = util.TableToJSON({1, 2, 3, 4})}))
-			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_setting", {steamid = steamid}))
+			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_setting", {steamid = steamid, captcha = string.random(5)}))
 			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_storage", {steamid = steamid}))
 			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_refinery", {steamid = steamid}))
 			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_upgrades", {steamid = steamid}))

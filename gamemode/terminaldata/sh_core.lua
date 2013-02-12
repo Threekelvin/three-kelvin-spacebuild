@@ -20,7 +20,8 @@ local Resources = {
     "liquid_nitrogen"
 }
 
-function TK.TD:AcceptResource(res)
+function TK.TD:AcceptResource(res, typ)
+    if typ == "node" && res == "raw_tiberium" then return false end
     return table.HasValue(Resources, res)
 end
 
