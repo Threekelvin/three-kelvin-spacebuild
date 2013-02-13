@@ -266,7 +266,7 @@ local Upgrades = {
         cost = 1,
         pos = {2, 3},
         req = {"non_static_heads"},
-        --icon = ""
+        icon = "sonic macerator"
     },
     plasma_tor_furnace = {
         name = "Plasma Toroid Furnace",
@@ -299,7 +299,6 @@ local Upgrades = {
         cost = 1,
         pos = {3, 3},
         req = {"sonic_pulse_macer"},
-        --icon = ""
     }
 }
 

@@ -20,7 +20,8 @@ local Icons = {
 	["magnetic conveyor"] = Material("icon64/magnetic_conveyor.png"),
 	["nanofiber hopper"] = Material("icon64/nanofiber_hopper.png"),
 	["plasma furnace"] = Material("icon64/plasma_furnace.png"),
-	["relativistic centrifuge"] = Material("icon64/relativistic_centrifuge.png")
+	["relativistic centrifuge"] = Material("icon64/relativistic_centrifuge.png"),
+    ["sonic macerator"] = Material("icon64/sonic_macerator.png")
 }
 
 function TK.TD:GetIcon(str)
