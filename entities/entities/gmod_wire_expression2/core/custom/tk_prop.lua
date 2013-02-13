@@ -236,7 +236,10 @@ end
 
 local function superparent( child, parent, enablephysics, massbalance, pushaway )
 	if massbalance == 1 then
-		parent:GetPhysicsObject():SetMass(5000)
+		local phys = parent:GetPhysicsObject()
+		if IsValid(phys) then
+			parent:GetPhysicsObject():SetMass(5000)
+		end
 	end
 	if pushaway == 1 then
 		if !parent:IsVehicle() then
