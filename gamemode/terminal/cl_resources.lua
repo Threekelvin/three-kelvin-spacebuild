@@ -175,20 +175,23 @@ local function SelectNode(panel)
 	nodes:EnableVerticalScrollbar(true)
 end
 
+local ppos = Vector(0,0,0)
+local pdir = Vector(0,0,1)
+local nextCaptcha = 0
 local function ShouldCaptcha(panel)
-    if CurTime() < panel.nextCaptcha then return false end
+    if CurTime() < nextCaptcha then return false end
 
     local pos = LocalPlayer():GetPos()    
-    if (pos - panel.ppos):LengthSqr() < 1 then
+    if (pos - ppos):LengthSqr() < 1 then
         return true
     end
-    panel.ppos = pos
+    ppos = pos
     
     local dir = LocalPlayer():EyeAngles():Forward()    
-    if dir:DotProduct(panel.pdir) < 0.996 then // Within approx 5 degrees
+    if dir:DotProduct(pdir) < 0.996 then // Within approx 5 degrees
         return true
     end
-    panel.pdir = dir
+    pdir = dir
     
     return false
 end
@@ -264,7 +267,7 @@ local function CaptchaPopup(panel, request)
 		if net.ReadBit() == 1 then
 			mouseblock:Remove()
 			request()
-			panel.nextCaptcha = CurTime() + 300
+			nextCaptcha = CurTime() + 300
 		else
 			textBox:SetValue("")
 			textBox:SetEditable(true)
@@ -279,10 +282,6 @@ end
 function PANEL:Init()
 	self:SetSkin("Terminal")
 	self.NextThink = 0
-    
-    self.ppos = Vector(0,0,0)
-    self.pdir = Vector(0,0,1)
-    self.nextCaptcha = 0
 	
 	self.storage = vgui.Create("DPanelList", self)
 	self.storage:SetSkin("Terminal")
