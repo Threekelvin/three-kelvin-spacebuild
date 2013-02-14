@@ -364,8 +364,8 @@ hook.Add("EntitySpawned", "TKAT", function(ent)
     end
     
     if ent.Type == "brush" || ent.Type == "point" then return end
-    if ent:GetMoveType() == 0 then return end
     if !IsValid(ent:GetPhysicsObject()) then return end
+    if ent:GetMoveType() == 0 then return end
     
     ent.tk_env = {}
     ent.tk_env.envlist = {}

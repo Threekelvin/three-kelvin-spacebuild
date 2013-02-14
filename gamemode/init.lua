@@ -15,8 +15,8 @@ function TK:SetSpawnPoint(ply, side)
     
     for X = 1, grid do
         for Y = 1, grid do
-            local x_pos = (-16 * grid) + 32 * (X - 1)
-            local y_pos = (-16 * grid) + 32 * (Y - 1)
+            local x_pos = (-18 * grid) + 36 * (X - 1)
+            local y_pos = (-18 * grid) + 36 * (Y - 1)
         
             local td = {}
             td.start = Spawn + Vector(x_pos, y_pos, 36)
