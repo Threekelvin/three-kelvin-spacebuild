@@ -11,33 +11,33 @@ gameevent.Listen("player_disconnect")
 function TK:SetSpawnPoint(ply, side)
 	local Spawn = self.SpawnPoints[side]
     if !Spawn then Spawn = self.SpawnPoints[1] end
+    local grid = 5
     
-	for I=1, 8 do
-		local RotVec = Vector(100, 0, 36)
-		RotVec:Rotate(Angle(0, 45 * I, 0))
-		local check1 = util.QuickTrace(Spawn + RotVec, Vector(0, 0, 113))
-		local check2 = util.QuickTrace(Spawn + RotVec, Vector(0, 0, -113))
-		if !check1.StartSolid && !check2.StartSolid then
-			if check1.Hit && check2.Hit then
-				if check1.HitPos:Distance(check2.HitPos) > 82 then
-					ply:SetPos(check2.HitPos + Vector(0, 0, 5))
-					return
-				end
-			elseif check1.Hit then
-				ply:SetPos(check1.HitPos - Vector(0, 0, 77))
-				return
-			elseif check2.Hit then
-				ply:SetPos(check2.HitPos + Vector(0, 0, 5))
-				return
-			else
-				ply:SetPos(Spawn + RotVec - Vector(0, 0, 36))
-				return
-			end
-		end
-	end
+    for X = 1, grid do
+        for Y = 1, grid do
+            local x_pos = (-16 * grid) + 32 * (X - 1)
+            local y_pos = (-16 * grid) + 32 * (Y - 1)
+        
+            local td = {}
+            td.start = Spawn + Vector(x_pos, y_pos, 36)
+            td.endpos = Spawn + Vector(x_pos, y_pos, -36)
+            td.mins = ply:OBBMins()
+            td.maxs = ply:OBBMaxs()
+            
+            local trace_down = util.TraceHull(td)
+            td.start = Spawn + Vector(x_pos, y_pos, 36)
+            td.endpos = Spawn + Vector(x_pos, y_pos, 108)
+            local trace_up = util.TraceHull(td)
+            
+            if trace_down.Fraction + trace_up.Fraction >= 0.5 then
+                ply:SetPos(trace_down.HitPos)
+                return
+            end
+        end
+    end
     
-	ply:SetMoveType(MOVETYPE_NOCLIP)
-	ply:SetPos(Spawn)
+    ply:SetMoveType(MOVETYPE_NOCLIP)
+    ply:SetPos(Spawn)
 end
 
 ///--- GHD Real Constraint Function ---\\\

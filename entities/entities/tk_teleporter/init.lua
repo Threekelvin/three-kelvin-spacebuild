@@ -40,30 +40,34 @@ end
 
 concommand.Add("3k_teleporter_send", function(ply, cmd, args)
 	local ent = Entity(tonumber(args[1]))
-	if IsValid(ent) && ent:GetClass() == "tk_teleporter" && IsValid(ply) then
-		for I = 1, 8 do
-			local RotVec = Vector(40, 0, 36)
-			RotVec:Rotate(Angle(0, (360/8)*I, 0))
-			local check1 = util.QuickTrace(ent:LocalToWorld(RotVec), Vector(0, 0, 113))
-			local check2 = util.QuickTrace(ent:LocalToWorld(RotVec), Vector(0, 0, -113))
-			if !check1.StartSolid && !check2.StartSolid then
-				if check1.Hit && check2.Hit then
-					if check1.HitPos:Distance(check2.HitPos) > 82 then
-						ply:SetPos(check2.HitPos + Vector(0, 0, 5))
-						return
-					end
-				elseif check1.Hit then
-					ply:SetPos(check1.HitPos - Vector(0, 0, 77))
-					return
-				elseif check2.Hit then
-					ply:SetPos(check2.HitPos + Vector(0, 0, 5))
-					return
-				else
-					ply:SetMoveType(MOVETYPE_NOCLIP)
-					ply:SetPos(ent:LocalToWorld(RotVec) - Vector(0, 0, 36))
-					return
-				end
-			end
-		end
-	end
+	if !IsValid(ply) || !IsValid(ent) || ent:GetClass() != "tk_teleporter" then return end
+    
+    local pos = ent:GetPos()
+    local grid = 5
+    
+    for X = 1, grid do
+        for Y = 1, grid do
+            local x_pos = (-16 * grid) + 32 * (X - 1)
+            local y_pos = (-16 * grid) + 32 * (Y - 1)
+        
+            local td = {}
+            td.start = pos + Vector(x_pos, y_pos, 36)
+            td.endpos = pos + Vector(x_pos, y_pos, -36)
+            td.mins = ply:OBBMins()
+            td.maxs = ply:OBBMaxs()
+            
+            local trace_down = util.TraceHull(td)
+            td.start = pos + Vector(x_pos, y_pos, 36)
+            td.endpos = pos + Vector(x_pos, y_pos, 108)
+            local trace_up = util.TraceHull(td)
+            
+            if trace_down.Fraction + trace_up.Fraction >= 0.5 then
+                ply:SetPos(trace_down.HitPos)
+                return
+            end
+        end
+    end
+    
+    ply:SetMoveType(MOVETYPE_NOCLIP)
+    ply:SetPos(pos)
 end)
