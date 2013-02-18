@@ -23,6 +23,7 @@ function ENT:Initialize()
 	self.atmosphere.name = "Ship"
 	self.atmosphere.sphere	= false
 	self.atmosphere.noclip 	= false
+    self.atmosphere.combat  = true
 	self.atmosphere.priority	= 2
 	self.atmosphere.radius 		= 0
 	self.atmosphere.gravity 	= 1
@@ -36,8 +37,10 @@ function ENT:Initialize()
 	self:AddResource("nitrogen", 0)
     
     self.Inputs = WireLib.CreateInputs(self, {"Activate"})
+    self.Outputs = WireLib.CreateOutputs(self, {"Shield", "Max Shield", "Armor", "Max Armor", "Hull", "Max Hull"})
 
     self.hull = {}
+    self.hull_size = 0
 	self.brushes = {}
 end
 
@@ -45,14 +48,22 @@ function ENT:EnableGHD()
     self.ghd = true
 end
 
-function ENT:AddHull(ent)
-    if !ent.tk_env then return end
-    ent.tk_env.disable = true
+function ENT:AddHull(ent, addBrush)
+    if !ent.tk_env || !ent.tk_dmg then return end
+    if IsValid(ent.tk_env.core) || IsValid(ent.tk_dmg.core) then return end
+    ent.tk_env.core = self
+    ent.tk_dmg.core = self
     self.hull[ent] = ent
+    
+    for k,v in pairs(ent.tk_dmg.stats) do
+        self.tk_dmg.total[k] = self.tk_dmg.total[k] + v
+    end
     
     if ent:BoundingRadius() < 135 then return end
     if ent.IsTKRD then return end
+    self.hull_size = self.hull_size + 1
     
+    if !addBrush then return end
     local brush = ents.Create("at_brush")
     brush.env = self
     brush:SetPos(ent:GetPos())
@@ -60,19 +71,28 @@ function ENT:AddHull(ent)
     brush:SetParent(ent)
     brush:Spawn()
     
-    self.brushes[ent] = brush    
+    self.brushes[ent] = brush
 end
 
 function ENT:RemoveHull(ent)
     if IsValid(ent) then
-        ent.tk_env.disabled = nil
+        ent.tk_env.core = nil
+        ent.tk_dmg.core = nil
     end
     self.hull[ent] = nil
+    
+    for k,v in pairs(ent.tk_dmg.stats) do
+        self.tk_dmg.total[k] = self.tk_dmg.total[k] + v
+    end
     
     if IsValid(self.brushes[ent]) then
         self.brushes[ent]:Remove()
     end
     self.brushes[ent] = nil
+    
+    if ent:BoundingRadius() < 135 then return end
+    if ent.IsTKRD then return end
+    self.hull_size = self.hull_size - 1
 end
 
 function ENT:OnRemove()
@@ -88,16 +108,22 @@ function ENT:TurnOn()
 	if self.ghd then
         GH.RegisterHull(self, 0)
         GH.UpdateHull(self, self:GetUp())
+        
+        for k,v in pairs(GH.SHIPS[self].Welds || {}) do
+            self:AddHull(v)
+        end
+        
         self:SetActive(true)
     else
-        for k,v in pairs(self:GetConstrainedEntities()) do  
-            self:AddHull(v)
+        for k,v in pairs(self:GetConstrainedEntities()) do
+            self:AddHull(v, true)
         end
 
         self:SetActive(true)
     end
     
     self.atmosphere.resources 	= {}
+    self:UpdateOutputs()
 end
 
 function ENT:TurnOff()
@@ -111,39 +137,31 @@ function ENT:TurnOff()
             self:RemoveHull(v)
         end
     end
+    
+    self:UpdateOutputs()
 end
 
 function ENT:DoThink(eff)
 	if !self:GetActive() then return end
     
-	local env, size = TK.AT:GetSpace(), 0
-    if self.ghd then
-        for k,v in pairs(GH.SHIPS[self].Welds || {}) do
-            if v:BoundingRadius() < 135 then continue end
-            if v.IsTKRD then continue end
-            size = size + 1
-        end
-    else
-        local conents = self:GetConstrainedEntities()
-        for k,v in pairs(conents) do
-            if self.hull[k] then continue end
-            self:AddHull(v)
-        end
-        
-        for k,v in pairs(self.hull) do
-            if !IsValid(v) || !conents[k] then
-                self:RemoveHull(v)
-                continue
-            end
-            
-            if IsValid(self.brushes[k]) then
-                size = size + 1
-            end
-        end
-    end
-    local rate = 5 * size
+	local env = TK.AT:GetSpace()
+    local conents = self.ghd && (GH.SHIPS[self].Welds || self:GetConstrainedEntities()) || self:GetConstrainedEntities()
     
+    for k,v in pairs(conents) do
+        if self.hull[k] then continue end
+        self:AddHull(v, !self.ghd)
+        self:UpdateOutputs()
+    end
+    
+    for k,v in pairs(self.hull) do
+        if IsValid(v) && conents[k] then continue end
+        self:RemoveHull(v)
+        self:UpdateOutputs()
+    end
+    
+    local rate = 5 * self.hull_size
     self.data.power = -rate
+    
     if !self:Work() then return end
     rate = rate * 1 / math.Max(eff, 0.1)
 
@@ -196,6 +214,15 @@ function ENT:UpdateValues()
 
 end
 
+function ENT:UpdateOutputs()
+    WireLib.TriggerOutput(self, "Shield",       self.tk_dmg.total.shield)
+    WireLib.TriggerOutput(self, "Max Shield",   self.tk_dmg.total.shield_max)
+    WireLib.TriggerOutput(self, "Armor",        self.tk_dmg.total.armor)
+    WireLib.TriggerOutput(self, "Max Armor",    self.tk_dmg.total.armor_max)
+    WireLib.TriggerOutput(self, "Hull",         self.tk_dmg.total.hull)
+    WireLib.TriggerOutput(self, "Max Hull",     self.tk_dmg.total.hull_max)
+end
+
 function ENT:IsStar()
 	return false
 end
@@ -216,6 +243,14 @@ function ENT:GetRadius()
 	return 0
 end
 
+function ENT:GetRadius2()
+    return 0
+end
+
+function ENT:GetGravity()
+    return self.atmosphere.gravity
+end
+
 function ENT:GetVolume()
 	return 0
 end
@@ -226,6 +261,14 @@ end
 
 function ENT:HasResource(res)
     return self.atmosphere.resources[res] && self.atmosphere.resources[res] > 0
+end
+
+function ENT:CanNoclip()
+    return self.atmosphere.noclip
+end
+
+function ENT:CanCombat()
+    return self.atmosphere.combat
 end
 
 function ENT:GetResourcePercent(res)

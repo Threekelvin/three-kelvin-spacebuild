@@ -11,9 +11,10 @@ local MapData
 local Space = {}
 
 Space.atmosphere = {}
-Space.atmosphere.name = "Space"
+Space.atmosphere.name       = "Space"
 Space.atmosphere.sphere	    = true
 Space.atmosphere.noclip 	= false
+Space.atmosphere.combat     = true
 Space.atmosphere.priority	= 4
 Space.atmosphere.radius 	= 0
 Space.atmosphere.gravity 	= 0
@@ -42,6 +43,14 @@ function Space:GetRadius()
 	return 0
 end
 
+function Space:GetRadius2()
+    return 0
+end
+
+function Space:GetGravity()
+    return self.atmosphere.gravity
+end
+
 function Space:GetVolume()
 	return 0
 end
@@ -52,6 +61,14 @@ end
 
 function Space:HasResource(res)
     return false
+end
+
+function Space:CanNoclip()
+    return false
+end
+
+function Space:CanCombat()
+    return true
 end
 
 function Space:GetResourcePercent(res)
@@ -130,7 +147,8 @@ local function DecodeKeyValues(values)
 		data["name"] = "Planet"
 		data["flags"] = tonumber(values.Case16)
 		data["sphere"] = 1
-		data["noclip"] = 1
+		data["noclip"] = 0
+        data["combat"] = 1
 	elseif values.Case01 == "planet2" then
 		cat = "planet"
 		data["radius"] = tonumber(values.Case02)
@@ -146,7 +164,8 @@ local function DecodeKeyValues(values)
 		data["name"] = values.Case13
 		data["flags"] = tonumber(values.Case08)
 		data["sphere"] = 1
-		data["noclip"] = 1
+		data["noclip"] = 0
+        data["combat"] = 1
 	elseif values.Case01 == "cube" then
 		cat = "planet"
 		data["radius"] = tonumber(values.Case02)
@@ -162,7 +181,8 @@ local function DecodeKeyValues(values)
 		data["name"] = values.Case13
 		data["flags"] = tonumber(values.Case08)
 		data["sphere"] = 0
-		data["noclip"] = 1
+		data["noclip"] = 0
+        data["combat"] = 1
 	elseif values.Case01 == "star" then
 		cat = "star"
 		data["radius"] = tonumber(values.Case02)
@@ -174,6 +194,7 @@ local function DecodeKeyValues(values)
         }
 		data["name"] = "Star"
 		data["noclip"] = 0
+        data["combat"] = 1
 	elseif values.Case01 == "star2" then
 		cat = "star"
 		data["radius"] = tonumber(values.Case02)
@@ -185,6 +206,7 @@ local function DecodeKeyValues(values)
         }
 		data["name"] = values.Case06
 		data["noclip"] = 0
+        data["combat"] = 1
 	end
 	
 	return cat, data
@@ -321,6 +343,8 @@ hook.Add("Initialize", "TKAT", function()
 	end
 	
 	function _R.Entity:GetEnv()
+        if !self.tk_env then return Space end
+        
 		local env = self.tk_env.envlist[1] || Space
         if !IsValid(env) then
             table.remove(self.tk_env.envlist, 1)
@@ -359,7 +383,7 @@ hook.Add("EntitySpawned", "TKAT", function(ent)
 		table.insert(Planets, ent)
 	elseif class == "at_star" then
 		table.insert(Stars, ent)
-	elseif class == "at_ship_core" then
+	elseif class == "tk_ship_core" then
 		table.insert(Ships, ent)
     end
     
