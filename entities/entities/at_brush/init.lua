@@ -38,7 +38,8 @@ local function EnvPrioritySort(a, b)
 end
 
 function ENT:StartTouch(ent)
-	if !IsValid(self.env) || !ent.tk_env || ent.tk_env.disable then return end
+	if !IsValid(self.env) || !ent.tk_env then return end
+    if !IsValid(ent.tk_env.core) then return end
 	
 	self.inside[ent:EntIndex()] = ent
 	

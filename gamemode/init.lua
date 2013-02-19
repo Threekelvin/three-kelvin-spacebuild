@@ -15,8 +15,8 @@ function TK:SetSpawnPoint(ply, side)
     
     for X = 1, grid do
         for Y = 1, grid do
-            local x_pos = (-16 * grid) + 32 * (X - 1)
-            local y_pos = (-16 * grid) + 32 * (Y - 1)
+            local x_pos = (-18 * grid) + 36 * (X - 1)
+            local y_pos = (-18 * grid) + 36 * (Y - 1)
         
             local td = {}
             td.start = Spawn + Vector(x_pos, y_pos, 36)
@@ -40,44 +40,48 @@ function TK:SetSpawnPoint(ply, side)
     ply:SetPos(Spawn)
 end
 
-///--- GHD Real Constraint Function ---\\\
+local BadConstraints = {
+    ["phys_keepupright"] = true,
+    ["logic_collision_pair"] = true
+}
+
 function _R.Entity:GetConstrainedEntities()
 	local out = {[self] = self}
-	local tbtab = {{self,1}}
-	if self.Constraints then
-		while #tbtab > 0 do
-			local bd = tbtab[#tbtab]
-			local bde = bd[1]
-			local bdc = bde.Constraints[bd[2]]
-			local ce
+	if !self.Constraints then return out end
+    
+    local tbtab = {{self,1}}
+    while #tbtab > 0 do
+        local bd = tbtab[#tbtab]
+        local bde = bd[1]
+        local bdc = bde.Constraints[bd[2]]
+        local ce
+        
+        if bdc then
+            if bde == bdc.Ent1 then
+                ce = bdc.Ent2
+            else
+                ce = bdc.Ent1
+            end
+        end
+        
+        if bd[2] > #bde.Constraints then
+            tbtab[#tbtab] = nil
+        elseif !IsValid(bdc) || !IsValid(ce) || BadConstraints[bdc:GetClass()] then
+            bd[2] = bd[2] + 1
+        else
+            if !out[ce] then
+                tbtab[#tbtab+1] = {ce,1}
+            else
+                bd[2] = bd[2] + 1
+            end
             
-			if bdc then
-				if bde == bdc.Ent1 then
-					ce = bdc.Ent2
-				else
-					ce = bdc.Ent1
-				end
-			end
-            
-			if bd[2] > #bde.Constraints then
-				tbtab[#tbtab] = nil
-			elseif !IsValid(bdc) || !IsValid(ce) || bdc:GetClass() == "phys_keepupright" || bdc:GetClass() == "logic_collision_pair" then
-				bd[2] = bd[2] + 1
-			else
-				if !out[ce] then
-					tbtab[#tbtab+1] = {ce,1}
-				else
-					bd[2] = bd[2] + 1
-				end
-                
-				out[bde] = bde
-				out[ce] = ce
-			end
-		end
-	end
+            out[bde] = bde
+            out[ce] = ce
+        end
+    end
+    
 	return out
 end
-///--- ---\\\
 
 local AllowedWeapons = {
 	["weapon_physcannon"]	=	true,

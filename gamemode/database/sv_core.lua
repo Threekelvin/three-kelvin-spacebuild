@@ -250,6 +250,8 @@ function MySQL.LoadPlayerData(ply, steamid, ip, uid)
 			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_storage", {steamid = steamid}))
 			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_refinery", {steamid = steamid}))
 			MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_upgrades", {steamid = steamid}))
+            
+            ply:ConCommand("playx_enabled 0\n")
 		end
 		
 		MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("player_info", {}, {"steamid = %s", steamid}), function(data, ply, uid)

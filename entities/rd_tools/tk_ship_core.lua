@@ -65,28 +65,28 @@ if SERVER then return end
 function TOOL.BuildCPanel(CPanel)
     local Weld = vgui.Create("DCheckBoxLabel")
     Weld:SetText("Weld")
-    Weld:SetConVar("at_ship_core_weld")
+    Weld:SetConVar("tk_ship_core_weld")
     Weld:SetValue(0)
     Weld:SizeToContents()
     CPanel:AddItem(Weld)
     
     local AllowWeldingToWorld = vgui.Create("DCheckBoxLabel")
     AllowWeldingToWorld:SetText("Weld To World")
-    AllowWeldingToWorld:SetConVar("at_ship_core_weldingtoworld")
+    AllowWeldingToWorld:SetConVar("tk_ship_core_weldingtoworld")
     AllowWeldingToWorld:SetValue(0)
     AllowWeldingToWorld:SizeToContents()
     CPanel:AddItem(AllowWeldingToWorld)
     
     local MakeFrozen = vgui.Create("DCheckBoxLabel")
     MakeFrozen:SetText("Make Frozen")
-    MakeFrozen:SetConVar("at_ship_core_makefrozen")
+    MakeFrozen:SetConVar("tk_ship_core_makefrozen")
     MakeFrozen:SetValue(1)
     MakeFrozen:SizeToContents()
     CPanel:AddItem(MakeFrozen)
     
     local GHD = vgui.Create("DCheckBoxLabel")
     GHD:SetText("Enable GHD")
-    GHD:SetConVar("at_ship_core_ghd")
+    GHD:SetConVar("tk_ship_core_ghd")
     GHD:SetValue(0)
     GHD:SizeToContents()
     CPanel:AddItem(GHD)
@@ -96,12 +96,12 @@ function TOOL.BuildCPanel(CPanel)
     List:EnableVerticalScrollbar(true)
     CPanel:AddItem(List)
     
-    for k,v in pairs(TK.RD.EntityData["at_ship_core"]) do
+    for k,v in pairs(TK.RD.EntityData["tk_ship_core"]) do
         local icon = vgui.Create("SpawnIcon")
         icon.idx = k
         icon:SetModel(k)
         icon:SetSize(64, 64)
-        List:AddPanel(icon, {["at_ship_core_model"] = k, playgamesound = "ui/buttonclickrelease.wav"})
+        List:AddPanel(icon, {["tk_ship_core_model"] = k, playgamesound = "ui/buttonclickrelease.wav"})
     end
     List:SortByMember("idx")
 end

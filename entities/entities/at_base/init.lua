@@ -43,6 +43,7 @@ function ENT:Initialize()
 	self.atmosphere.name = "Base Atmosphere"
 	self.atmosphere.sphere	= true
 	self.atmosphere.noclip 	= false
+    self.atmosphere.combat 	= true
 	self.atmosphere.priority	= 5
 	self.atmosphere.radius 		= 0
 	self.atmosphere.gravity 	= 0
@@ -247,6 +248,10 @@ function ENT:GetRadius2()
     return self.atmosphere.radius * self.atmosphere.radius
 end
 
+function ENT:GetGravity()
+    return self.atmosphere.gravity
+end
+
 function ENT:GetVolume()
 	if self.atmosphere.sphere then
 		return math.floor(((4/3) * math.pi * self.atmosphere.radius ^ 3) * 0.001)
@@ -261,6 +266,14 @@ end
 
 function ENT:HasResource(res)
     return self.atmosphere.resources[res] && self.atmosphere.resources[res] > 0
+end
+
+function ENT:CanNoclip()
+    return self.atmosphere.noclip
+end
+
+function ENT:CanCombat()
+    return self.atmosphere.combat
 end
 
 function ENT:GetResourcePercent(res)
