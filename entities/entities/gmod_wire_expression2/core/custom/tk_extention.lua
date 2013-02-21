@@ -18,7 +18,7 @@ end
 e2function number entity:unLink()
     if !ValidAction(self, this) then return 0 end
     if !this.IsTKRD then return 0 end
-    return this:UnLink() && 1 || 0
+    return this:Unlink() && 1 || 0
 end
 
 e2function number entity:getPowerGrid()
