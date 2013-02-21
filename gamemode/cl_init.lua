@@ -2,8 +2,8 @@
 include('shared.lua')
 
 usermessage.Hook("TKOSSync", function(msg)
-	local servertime = tonumber(msg:ReadString())
-	TK.OSSync = math.ceil(servertime - os.time())
+    local servertime = tonumber(msg:ReadString())
+    TK.OSSync = math.ceil(servertime - os.time())
 end)
 
 hook.Add("Initialize", "SWDownload", function()
@@ -12,12 +12,12 @@ hook.Add("Initialize", "SWDownload", function()
     end
     
     list.Set("DesktopWindows", "PlayerEditor", {
-        title		= "Player Model",
-        icon		= "icon64/playermodel.png",
-        width		= 960,
-        height		= 700,
-        onewindow	= true,
-        init		= function( icon, window )
+        title        = "Player Model",
+        icon        = "icon64/playermodel.png",
+        width        = 960,
+        height        = 700,
+        onewindow    = true,
+        init        = function( icon, window )
 
             local mdl = window:Add( "DModelPanel" )
             mdl:Dock( FILL )
@@ -73,8 +73,8 @@ hook.Add("Initialize", "SWDownload", function()
             end
 
             UpdateFromConvars();
-            plycol.ValueChanged					= UpdateFromControls
-            PanelSelect.OnActivePanelChanged	= function() timer.Simple( 0.1, UpdateFromConvars ) end
+            plycol.ValueChanged                    = UpdateFromControls
+            PanelSelect.OnActivePanelChanged    = function() timer.Simple( 0.1, UpdateFromConvars ) end
         end
     })
     

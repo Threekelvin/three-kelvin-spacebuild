@@ -4,7 +4,7 @@ local PANEL = {}
 function PANEL:Init()
     self:SetMouseInputEnabled(true)
     self.hidden = false
-	self.emotelist = {}
+    self.emotelist = {}
     self.size = 50
     self.padding = 5
     self.offset = 0
@@ -39,11 +39,11 @@ function PANEL:PerformLayout()
 end
 
 function PANEL:OnMouseWheeled(dlta)
-	return self.vscroll:OnMouseWheeled(dlta)
+    return self.vscroll:OnMouseWheeled(dlta)
 end
 
 function PANEL:OnVScroll(iOffset)
-	self.offset = iOffset
+    self.offset = iOffset
 end
 
 function PANEL:Think()
@@ -69,10 +69,10 @@ function PANEL.Paint(self, wide, tall)
 end
 
 function PANEL:OnMousePressed(mc)
-	if self.hidden then return end
+    if self.hidden then return end
 
-	local mx, my = gui.MousePos()
-	local px, py = self:LocalToScreen()
+    local mx, my = gui.MousePos()
+    local px, py = self:LocalToScreen()
     px = mx - px
     py = my - py
    
@@ -98,7 +98,7 @@ function PANEL:OnMousePressed(mc)
 end
 
 function PANEL:OnMouseReleased()
-	self:MouseCapture(false)
+    self:MouseCapture(false)
 end
 
 function PANEL:Selected(txt)

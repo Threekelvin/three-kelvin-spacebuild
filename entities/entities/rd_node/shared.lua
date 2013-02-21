@@ -9,9 +9,9 @@ ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
 function ENT:GetNetID()
-	return self:GetNWInt("NetID", 0)
+    return self:GetNWInt("NetID", 0)
 end
 
 function ENT:GetRange()
-	return self:GetNWInt("Range", 0)
+    return self:GetNWInt("Range", 0)
 end

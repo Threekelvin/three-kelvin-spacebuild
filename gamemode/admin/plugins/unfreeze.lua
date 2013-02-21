@@ -5,8 +5,8 @@ PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "UnFreeze"
 PLUGIN.Level      = 4
 
-if SERVER then	
-	function PLUGIN.Call(ply, arg)
+if SERVER then    
+    function PLUGIN.Call(ply, arg)
         local count, targets = TK.AM:FindTargets(ply, arg)
         
         if #arg == 0 then
@@ -24,7 +24,7 @@ if SERVER then
             msgdata[#msgdata] = nil
             TK.AM:SystemMessage(msgdata)
         end
-	end
+    end
 else
 
 end

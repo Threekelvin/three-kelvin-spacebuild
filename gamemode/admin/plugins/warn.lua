@@ -7,15 +7,15 @@ PLUGIN.Level      = 4
 
 if SERVER then
 
-	util.AddNetworkString( "HUD_WARNING" )
-	local function HUDwarning( ply, message )
-		net.Start( "HUD_WARNING" )
-			net.WriteString( "admin" )
-			net.WriteString( message )
-		net.Send( ply )
-	end
+    util.AddNetworkString( "HUD_WARNING" )
+    local function HUDwarning( ply, message )
+        net.Start( "HUD_WARNING" )
+            net.WriteString( "admin" )
+            net.WriteString( message )
+        net.Send( ply )
+    end
 
-	function PLUGIN.Call( ply, arg )
+    function PLUGIN.Call( ply, arg )
         local count, targets = TK.AM:FindPlayer(arg[1])
         local message = ""
         
@@ -33,7 +33,7 @@ if SERVER then
                 TK.AM:SystemMessage({"You cannot Warn ", tar}, {ply}, 2)
             end
         end
-	end
+    end
 else
 
 end

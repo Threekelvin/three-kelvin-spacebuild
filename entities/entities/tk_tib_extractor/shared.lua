@@ -9,5 +9,5 @@ ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
 function ENT:GetCrystal()
-	return self:GetNWInt("crystal", 0)
+    return self:GetNWInt("crystal", 0)
 end

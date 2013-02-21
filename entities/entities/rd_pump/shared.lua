@@ -9,9 +9,9 @@ ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
 function ENT:GetLinked()
-	return self:GetNWInt("Linked", 0)
+    return self:GetNWInt("Linked", 0)
 end
 
 function ENT:GetRange()
-	return self:GetNWInt("Range", 0)
+    return self:GetNWInt("Range", 0)
 end

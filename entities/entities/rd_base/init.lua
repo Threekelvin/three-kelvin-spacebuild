@@ -4,118 +4,118 @@ include('shared.lua')
 
 local SoundLib = {}
 SoundLib.a = {
-	Sound("ambient/machines/thumper_startup1.wav"),
-	Sound("vehicles/apc/apc_start_loop3.wav"),
-	Sound("buttons/button1.wav"),
-	Sound("misc/hologram_start.wav"),
-	Sound("vehicles/crane/crane_magnet_switchon.wav"),
-	Sound("ambient/levels/citadel/advisor_leave.wav")
+    Sound("ambient/machines/thumper_startup1.wav"),
+    Sound("vehicles/apc/apc_start_loop3.wav"),
+    Sound("buttons/button1.wav"),
+    Sound("misc/hologram_start.wav"),
+    Sound("vehicles/crane/crane_magnet_switchon.wav"),
+    Sound("ambient/levels/citadel/advisor_leave.wav")
 }
 SoundLib.l = {
-	Sound("ambient/machines/refinery_loop_1.wav"),
-	Sound("ambient/machines/pump_loop_1.wav"),
-	Sound("ambient/machines/turbine_loop_1.wav"),
-	Sound("vehicles/diesel_loop2.wav"),
-	Sound("vehicles/airboat/fan_blade_idle_loop1.wav"),
-	Sound("vehicles/apc/apc_idle1.wav"),
-	Sound("ambient/machines/combine_shield_touch_loop1.wav"),
-	Sound("misc/hologram_move.wav"),
-	Sound("ambient/levels/citadel/datatransmission02_loop.wav")
+    Sound("ambient/machines/refinery_loop_1.wav"),
+    Sound("ambient/machines/pump_loop_1.wav"),
+    Sound("ambient/machines/turbine_loop_1.wav"),
+    Sound("vehicles/diesel_loop2.wav"),
+    Sound("vehicles/airboat/fan_blade_idle_loop1.wav"),
+    Sound("vehicles/apc/apc_idle1.wav"),
+    Sound("ambient/machines/combine_shield_touch_loop1.wav"),
+    Sound("misc/hologram_move.wav"),
+    Sound("ambient/levels/citadel/datatransmission02_loop.wav")
 }
 SoundLib.s = {
-	Sound("ambient/machines/thumper_shutdown1.wav"),
-	Sound("vehicles/airboat/fan_motor_shut_off1.wav"),
-	Sound("vehicles/apc/apc_shutdown.wav"),
-	Sound("misc/hologram_stop.wav"),
-	Sound("ambient/machines/spindown.wav")
+    Sound("ambient/machines/thumper_shutdown1.wav"),
+    Sound("vehicles/airboat/fan_motor_shut_off1.wav"),
+    Sound("vehicles/apc/apc_shutdown.wav"),
+    Sound("misc/hologram_stop.wav"),
+    Sound("ambient/machines/spindown.wav")
 }
 SoundLib.d = {
-	Sound("ambient/machines/zap1.wav"),
-	Sound("ambient/machines/zap2.wav"),
-	Sound("ambient/machines/zap3.wav"),
-	Sound("misc/hologram_malfunction.wav"),
-	Sound("ambient/machines/catapult_throw.wav")
+    Sound("ambient/machines/zap1.wav"),
+    Sound("ambient/machines/zap2.wav"),
+    Sound("ambient/machines/zap3.wav"),
+    Sound("misc/hologram_malfunction.wav"),
+    Sound("ambient/machines/catapult_throw.wav")
 }
 
 function ENT:Initialize()
-	self:PhysicsInit(SOLID_VPHYSICS)
-	self:SetMoveType(MOVETYPE_VPHYSICS)
-	self:SetSolid(SOLID_VPHYSICS)
-	self:SetUseType(SIMPLE_USE)
-	
-	local phys = self:GetPhysicsObject()
-	if IsValid(phys) then
-		phys:Wake()
-	end
-	
-	self.data = {}
-	self.soundlib = {
-		[0] = CreateSound(self, SoundLib.d[5])
-	}
+    self:PhysicsInit(SOLID_VPHYSICS)
+    self:SetMoveType(MOVETYPE_VPHYSICS)
+    self:SetSolid(SOLID_VPHYSICS)
+    self:SetUseType(SIMPLE_USE)
+    
+    local phys = self:GetPhysicsObject()
+    if IsValid(phys) then
+        phys:Wake()
+    end
+    
+    self.data = {}
+    self.soundlib = {
+        [0] = CreateSound(self, SoundLib.d[5])
+    }
     self.mult = 1
-	self.mute = false
+    self.mute = false
     self.next_use = 0
     self.data = {}
-	
-	TK.RD:Register(self)
-	self:SetSkin(self.data.skin || 0)
-	self:SetNWBool("Active", false)
+    
+    TK.RD:Register(self)
+    self:SetSkin(self.data.skin || 0)
+    self:SetNWBool("Active", false)
     self:SetNWBool("Generator", false)
-	
-	self.WireDebugName = self.PrintName
+    
+    self.WireDebugName = self.PrintName
 end
 
 function ENT:OnRemove()
-	for k,v in pairs(self.soundlib || {}) do
-		v:Stop()
-	end
-	
-	TK.RD:RemoveEnt(self)
-	
-	if WireLib then WireLib.Remove(self) end
+    for k,v in pairs(self.soundlib || {}) do
+        v:Stop()
+    end
+    
+    TK.RD:RemoveEnt(self)
+    
+    if WireLib then WireLib.Remove(self) end
 end
 
 function ENT:AddSound(lib, idx, vol, ptc, str)
-	local id = 0
-	if str then
-		id = table.insert(self.soundlib, CreateSound(self, Sound(str)))
-	else
-		if !SoundLib[lib] || !SoundLib[lib][idx] then return 0 end
-		id = table.insert(self.soundlib, CreateSound(self, SoundLib[lib][idx]))
-	end
-	
-	if vol then
-		self.soundlib[id]:SetSoundLevel(tonumber(vol) || 100)
-	end
-	
-	if ptc then
-		self.soundlib[id]:ChangePitch(tonumber(ptc) || 100)
-	end
-	return id
+    local id = 0
+    if str then
+        id = table.insert(self.soundlib, CreateSound(self, Sound(str)))
+    else
+        if !SoundLib[lib] || !SoundLib[lib][idx] then return 0 end
+        id = table.insert(self.soundlib, CreateSound(self, SoundLib[lib][idx]))
+    end
+    
+    if vol then
+        self.soundlib[id]:SetSoundLevel(tonumber(vol) || 100)
+    end
+    
+    if ptc then
+        self.soundlib[id]:ChangePitch(tonumber(ptc) || 100)
+    end
+    return id
 end
 
 function ENT:SoundPitch(id, pitch)
-	if !self.soundlib[id] then return end
-	self.soundlib[id]:ChangePitch(tonumber(pitch) || 100)
+    if !self.soundlib[id] then return end
+    self.soundlib[id]:ChangePitch(tonumber(pitch) || 100)
 end
 
 function ENT:SoundLevel(id, level)
-	if !self.soundlib[id] then return end
-	self.soundlib[id]:SetSoundLevel(tonumber(level) || 65)
+    if !self.soundlib[id] then return end
+    self.soundlib[id]:SetSoundLevel(tonumber(level) || 65)
 end
 
 function ENT:SoundPlay(id)
-	if self.mute then return end
-	if !self.soundlib[id] then return end
-	if self.soundlib[id]:IsPlaying() then
-		self.soundlib[id]:Stop()
-	end
-	self.soundlib[id]:Play()
+    if self.mute then return end
+    if !self.soundlib[id] then return end
+    if self.soundlib[id]:IsPlaying() then
+        self.soundlib[id]:Stop()
+    end
+    self.soundlib[id]:Play()
 end
 
 function ENT:SoundStop(id)
-	if !self.soundlib[id] then return end
-	self.soundlib[id]:Stop()
+    if !self.soundlib[id] then return end
+    self.soundlib[id]:Stop()
 end
 
 function ENT:SetActive(val)
@@ -136,33 +136,33 @@ function ENT:Work()
 end
 
 function ENT:TurnOn()
-	if self:GetActive() || !self:IsLinked() then return end
+    if self:GetActive() || !self:IsLinked() then return end
     self:SetActive(true)
 end
 
 function ENT:TurnOff()
-	if !self:GetActive() then return end
+    if !self:GetActive() then return end
     self:SetActive(false)
 end
 
 function ENT:Use(ply)
-	if !IsValid(ply) || !ply:IsPlayer() then return end
+    if !IsValid(ply) || !ply:IsPlayer() then return end
     if !self:CPPICanUse(ply) then return end
     if self.next_use > CurTime() then return end
     self.next_use = CurTime() + 1
     
-	if self:GetActive() then
-		self:TurnOff()
-	else
-		self:TurnOn()
-	end
+    if self:GetActive() then
+        self:TurnOff()
+    else
+        self:TurnOn()
+    end
 end
 
 function ENT:DoMenu(ply)
-	if !IsValid(ply) || !ply:IsPlayer() then return end
-	net.Start("TKRD_MEnt")
-		net.WriteEntity(self)
-	net.Send(ply)
+    if !IsValid(ply) || !ply:IsPlayer() then return end
+    net.Start("TKRD_MEnt")
+        net.WriteEntity(self)
+    net.Send(ply)
 end
 
 function ENT:DoCommand(ply, cmd, arg)
@@ -192,11 +192,11 @@ function ENT:PreEntityCopy()
 end
 
 function ENT:PostEntityPaste(ply, ent, entlist)
-	if !self.EntityMods || !self.EntityMods.TKRDInfo then return end
-	local TKRDInfo = self.EntityMods.TKRDInfo
+    if !self.EntityMods || !self.EntityMods.TKRDInfo then return end
+    local TKRDInfo = self.EntityMods.TKRDInfo
     
     if WireLib then
-		WireLib.ApplyDupeInfo(ply, ent, TKRDInfo.wire, function(id) return entlist[id] end)
+        WireLib.ApplyDupeInfo(ply, ent, TKRDInfo.wire, function(id) return entlist[id] end)
     end
     
     self.EntityMods.TKRDInfo = nil
@@ -204,7 +204,7 @@ end
 
 
 function ENT:AddResource(idx, max, gen)
-	return TK.RD:EntAddResource(self, idx, max, gen)
+    return TK.RD:EntAddResource(self, idx, max, gen)
 end
 
 function ENT:SetPower(power)
@@ -212,27 +212,27 @@ function ENT:SetPower(power)
 end
 
 function ENT:IsLinked()
-	return TK.RD:IsLinked(self)
+    return TK.RD:IsLinked(self)
 end
 
 function ENT:Link(netid)
-	return TK.RD:Link(self, netid)
+    return TK.RD:Link(self, netid)
 end
 
 function ENT:Unlink()
-	return TK.RD:Unlink(self)
+    return TK.RD:Unlink(self)
 end
 
 function ENT:GetEntTable()
-	return TK.RD:GetEntTable(self:EntIndex())
+    return TK.RD:GetEntTable(self:EntIndex())
 end
 
 function ENT:SupplyResource(idx, amt)
-	return TK.RD:EntSupplyResource(self, idx, amt)
+    return TK.RD:EntSupplyResource(self, idx, amt)
 end
 
 function ENT:ConsumeResource(idx, amt)
-	return TK.RD:EntConsumeResource(self, idx, amt)
+    return TK.RD:EntConsumeResource(self, idx, amt)
 end
 
 function ENT:GetPowerGrid()
@@ -240,7 +240,7 @@ function ENT:GetPowerGrid()
 end
 
 function ENT:GetResourceAmount(idx)
-	return TK.RD:GetEntResourceAmount(self, idx)
+    return TK.RD:GetEntResourceAmount(self, idx)
 end
 
 function ENT:GetUnitPowerGrid()
@@ -248,13 +248,13 @@ function ENT:GetUnitPowerGrid()
 end
 
 function ENT:GetUnitResourceAmount(idx)
-	return TK.RD:GetUnitResourceAmount(self, idx)
+    return TK.RD:GetUnitResourceAmount(self, idx)
 end
 
 function ENT:GetResourceCapacity(idx)
-	return TK.RD:GetEntResourceCapacity(self, idx)
+    return TK.RD:GetEntResourceCapacity(self, idx)
 end
 
 function ENT:GetUnitResourceCapacity(idx)
-	return TK.RD:GetUnitResourceCapacity(self, idx)
+    return TK.RD:GetUnitResourceCapacity(self, idx)
 end

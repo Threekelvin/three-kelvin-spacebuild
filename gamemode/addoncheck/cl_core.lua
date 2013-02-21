@@ -8,18 +8,18 @@ AOC.Tutorial = {
     ["SVN Tutorial"]                        = "http://facepunch.com/showthread.php?t=688324"  
 }
 AOC.Legacy = {
-    ["SpaceBuild Enhancement Project"]		= "https://github.com/SnakeSVx/sbep/trunk/",
-    ["Spacebuild"]							= "https://github.com/SnakeSVx/spacebuild/trunk/",
+    ["SpaceBuild Enhancement Project"]        = "https://github.com/SnakeSVx/sbep/trunk/",
+    ["Spacebuild"]                            = "https://github.com/SnakeSVx/spacebuild/trunk/",
     ["Shadowscion's Construction Props"]    = "http://shadowscions-construction-props.googlecode.com/svn/trunk/",
-    ["TKMP"]								= "http://3k-model-pack.googlecode.com/svn/trunk/",
-    ["Wiremod"]								= "https://github.com/wiremod/wire/trunk/",
-    ["Wire Unofficial Extras"]				= "https://github.com/wiremod/wire-extras/trunk/"
+    ["TKMP"]                                = "http://3k-model-pack.googlecode.com/svn/trunk/",
+    ["Wiremod"]                                = "https://github.com/wiremod/wire/trunk/",
+    ["Wire Unofficial Extras"]                = "https://github.com/wiremod/wire-extras/trunk/"
 }
 AOC.Workshop = {
-    ["104694154"]							= "104694154",	// Mane Six
-    ["106904944"]							= "106904944",	// The Other Ponies
-    ["107155115"]							= "107155115",	// Pony Player Models
-    ["107306185"]                           = "107306185"	// Dead Space Player Model
+    ["104694154"]                            = "104694154",    // Mane Six
+    ["106904944"]                            = "106904944",    // The Other Ponies
+    ["107155115"]                            = "107155115",    // Pony Player Models
+    ["107306185"]                           = "107306185"    // Dead Space Player Model
 }
 AOC.MountedLegacy = {}
 
@@ -82,33 +82,33 @@ function AOC:BuildMenu()
     
     local close = vgui.Create("DButton", Panel)
     close:SetSize(20, 20)
-	close:SetPos( Panel:GetWide() - close:GetWide(), 0 )
+    close:SetPos( Panel:GetWide() - close:GetWide(), 0 )
     close:SetText("")
     close.DoClick = function()
         surface.PlaySound("ui/buttonclick.wav")
         Panel:Remove()
     end
     close.Paint = function(panel, w, h)
-		draw.SimpleText("r", "Marlett", w/2, h/2, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	end
+        draw.SimpleText("r", "Marlett", w/2, h/2, Color(255,255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
     
     local options = vgui.Create("DButton", Panel)
     options:SetSize(20, 22)
-	local x,_ = close:GetPos()
-	options:SetPos( x - options:GetWide(), 0 )
+    local x,_ = close:GetPos()
+    options:SetPos( x - options:GetWide(), 0 )
     options:SetText("")
     options.DoClick = function()
         local menu = DermaMenu()
-		menu:AddOption("Don't Show On Join", function()
-			RunConsoleCommand("tk_aoc_show", "0")
-		end)
+        menu:AddOption("Don't Show On Join", function()
+            RunConsoleCommand("tk_aoc_show", "0")
+        end)
         menu:Open()
     end
     options.Paint = function(panel, w, h)
-		surface.SetDrawColor(Color(255, 255, 255, 255))
-    	surface.SetMaterial( Material("icon16/cog.png") )
-    	surface.DrawTexturedRect( (w-16)/2, (h-16)/2, 16, 16 )
-	end
+        surface.SetDrawColor(Color(255, 255, 255, 255))
+        surface.SetMaterial( Material("icon16/cog.png") )
+        surface.DrawTexturedRect( (w-16)/2, (h-16)/2, 16, 16 )
+    end
     
     local copy
     local List = vgui.Create( "DListView", Panel )
@@ -119,8 +119,8 @@ function AOC:BuildMenu()
     List:AddColumn("Type"):SetFixedWidth(75)
     List:AddColumn("Installed"):SetFixedWidth(75)
     List:AddColumn("Mounted"):SetFixedWidth(75)
-	
-	local AutoHide = 0 // Prepare to set the AOC to hide if the player has all addons mounted.
+    
+    local AutoHide = 0 // Prepare to set the AOC to hide if the player has all addons mounted.
     for k,v in pairs(self.Tutorial) do
         local line = List:AddLine(k, "Tutorial", "", "", v)
         line.OnSelect = function()
@@ -129,18 +129,18 @@ function AOC:BuildMenu()
     end
     
     for k,v in pairs(self.Legacy) do
-		local mounted = self:IsLegacyMounted(k)
+        local mounted = self:IsLegacyMounted(k)
         local line = List:AddLine(k, "SVN", tostring(self:IsLegacyInstalled(k)), tostring(mounted), v)
-		if !mounted then AutoHide = 1 end
+        if !mounted then AutoHide = 1 end
         line.OnSelect = function()
             copy.txt = "Copy Selected Link"
         end
     end
     
     for k,v in pairs(self.Workshop) do
-		local mounted = self:IsWorkshopMounted(k)
+        local mounted = self:IsWorkshopMounted(k)
         local line = List:AddLine(k, "Workshop", tostring(self:IsWorkshopInstalled(k)), tostring(mounted), v)
-		if !mounted then AutoHide = 1 end
+        if !mounted then AutoHide = 1 end
         line.OnSelect = function()
             copy.txt = "Open Workshop Page"
         end
@@ -150,8 +150,8 @@ function AOC:BuildMenu()
             line:SetValue(1, data.title || k)
         end)
     end
-	
-	RunConsoleCommand("tk_aoc_show", AutoHide)
+    
+    RunConsoleCommand("tk_aoc_show", AutoHide)
     
     copy = vgui.Create("DButton", Panel)
     copy.txt = "Open Tutorial Page"
@@ -195,12 +195,12 @@ hook.Add("Initialize", "AddonCheck", function()
 end)
 
 hook.Add("HUDPaint", "AddonCheck", function()
-	if !IsValid(LocalPlayer()) || !LocalPlayer():Alive() then return end
+    if !IsValid(LocalPlayer()) || !LocalPlayer():Alive() then return end
     
     if Show:GetInt() == 1 then
         RunConsoleCommand("3k_addon_check")
     end
-	hook.Remove("HUDPaint", "AddonCheck")
+    hook.Remove("HUDPaint", "AddonCheck")
 end)
 
 concommand.Add("3k_addon_check", function(ply, cmd, arg)

@@ -6,7 +6,7 @@ PLUGIN.Command    = "Slay"
 PLUGIN.Level      = 3
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         local count, targets = TK.AM:FindTargets(ply, arg)
         
         if #arg == 0 then
@@ -30,7 +30,7 @@ if SERVER then
                 TK.AM:SystemMessage(msgdata)
             end
         end
-	end
+    end
 else
 
 end

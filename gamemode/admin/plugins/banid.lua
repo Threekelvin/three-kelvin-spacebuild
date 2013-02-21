@@ -6,7 +6,7 @@ PLUGIN.Command    = "BanID"
 PLUGIN.Level      = 6
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         local steamid = string.match(arg[1], "STEAM_[0-5]:[0-9]:[0-9]+")
         if steamid then
             local count, targets = TK.AM:FindPlayer(steamid)
@@ -49,13 +49,13 @@ if SERVER then
                         TK.AM:SystemMessage({"Invalid Ban Length"}, {ply}, 2)
                     end
                 else
-                    TK.AM:SystemMessage({"You Can Not Ban ", tar}, {ply}, 2)	
+                    TK.AM:SystemMessage({"You Can Not Ban ", tar}, {ply}, 2)    
                 end
             end
         else
-            TK.AM:SystemMessage({"Invalid Steam ID"}, {ply}, 2)	
+            TK.AM:SystemMessage({"Invalid Steam ID"}, {ply}, 2)    
         end
-	end
+    end
 else
 
 end

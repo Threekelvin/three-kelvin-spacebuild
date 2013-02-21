@@ -6,7 +6,7 @@ PLUGIN.Command    = "Unban"
 PLUGIN.Level      = 6
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         if string.match(arg[1], "STEAM_[0-5]:[0-9]:[0-9]+") then
             local steamid = string.match(arg[1], "STEAM_[0-5]:[0-9]:[0-9]+")
             TK.AM:SystemMessage({ply, " Has Unbanned ", steamid})
@@ -16,7 +16,7 @@ if SERVER then
             TK.AM:SystemMessage({ply, " Has Unbanned ", ip})
             TK:RemoveBan(ply, nil, ip, table.concat(arg, " ", 2))
         end
-	end
+    end
 else
 
 end

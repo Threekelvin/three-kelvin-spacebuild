@@ -6,13 +6,13 @@ PLUGIN.Command    = "Ban"
 PLUGIN.Level      = 5
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         local count, targets = TK.AM:FindPlayer(arg[1])
         
         if count == 0 then
             TK.AM:SystemMessage({"No Target Found"}, {ply}, 2)
         elseif count > 1 then
-            TK.AM:SystemMessage({"Multiple Targets Found"}, {ply}, 2)	
+            TK.AM:SystemMessage({"Multiple Targets Found"}, {ply}, 2)    
         else
             local tar = targets[1]
             if ply:CanRunOn(tar) && ply != tar then
@@ -35,10 +35,10 @@ if SERVER then
                     TK.AM:SystemMessage({"Invalid Ban Length"}, {ply}, 2)
                 end
             else
-                TK.AM:SystemMessage({"You Can Not Ban ", tar}, {ply}, 2)	
+                TK.AM:SystemMessage({"You Can Not Ban ", tar}, {ply}, 2)    
             end
         end
-	end
+    end
 else
 
 end

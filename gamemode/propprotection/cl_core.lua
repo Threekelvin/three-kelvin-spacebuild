@@ -1,229 +1,249 @@
 
-local PP = {
-	BuddySettings = {"Tool Gun", "Gravity Gun", "Phys Gun", "Use", "Duplicator", "CPPI"},
-	BuddyTable = {},
-	ShareTable = {}
-}
+local PP = {}
+
+PP.BuddyTable = {}
+PP.ShareTable = {}
 
 ///--- Functions ---\\\
-function PP.GetByUniqueID(uid)
-	for k,v in pairs(player.GetAll()) do
-		if v:GetNWString("UID", "") == uid then
-			return v
-		end
-	end
-	return false
+function PP:AddPermission(flag, typ)
+    local id = TK.PP.Permissions[typ]
+    flag = flag || 0
+    if !id then return flag end
+    return bit.bor(flag, id)
 end
 
-function PP.GetOwner(ent)
-	if !IsValid(ent) then return nil, nil end
-	local uid = ent:GetNWString("UID", "none")
-	if uid == "none" then return nil, nil end
-	local ply = PP.GetByUniqueID(uid)
-	if !IsValid(ply) then return NULL, uid
-	else return ply, uid end
+function PP:RemovePermission(flag, typ)
+    local id = TK.PP.Permissions[typ]
+    flag = flag || 0
+    if !id then return flag end
+    return bit.band(flag, bit.bnot(id))
 end
 
-function PP.IsBuddy(tar, method)
-	if !IsValid(tar) || !method then return false end	
-	taruid = tar:GetNWString("UID")
-	if PP.BuddyTable && PP.BuddyTable[taruid] then
-		if PP.BuddyTable[taruid][method] then return true end
-	end
-	return false
+function PP:HasPermission(flag, typ)
+    local id = TK.PP.Permissions[typ]
+    if !id then return false end
+    return bit.band(id, flag || 0) == id
 end
 
-function PP.GetBuddyTypes()
-	return PP.BuddySettings
+function PP:GetByUniqueID(uid)
+    for k,v in pairs(player.GetAll()) do
+        if v:UID() == uid then
+            return v
+        end
+    end
+    return false
 end
 
-function PP.GetShareTypes()
-	local List = {}
-	for k,v in pairs(PP.BuddySettings) do
-		if v != "CPPI" then
-			table.insert(List, v)
-		end
-	end
-	return List
+function PP:GetOwner(ent)
+    if !IsValid(ent) then return nil, nil end
+    local uid = ent:UID()
+    if !uid then return nil, nil end
+    local ply = self:GetByUniqueID(uid)
+    if !IsValid(ply) then return NULL, uid
+    else return ply, uid end
+end
+
+function PP:IsBuddy(ply, typ)
+    if !IsValid(ply) then return false end    
+    local flag = self.BuddyTable[ply:UID()] || 0
+
+    return self:HasPermission(flag, typ)
 end
 ///--- ---\\\
 
 ///--- Menus ---\\\
-local Open = false
-usermessage.Hook("PP_Menu1", function()
-	local Client = LocalPlayer()
-	
-	if !Open then
-		local tr = Client:GetEyeTrace()
-		if IsValid(tr.Entity) then
-			local owner, id = PP.GetOwner(tr.Entity)
-			if owner == Client then
-				local eid = tr.Entity:EntIndex()
-				Open = true
-				
-				local Panel = vgui.Create("DFrame")
-				Panel:SetTitle("PP Share Menu")
-				Panel:SetSize(150, 225)
-				Panel:Center()
-				Panel:SetVisible( true )
-				Panel:SetDraggable(true)
-				Panel:ShowCloseButton(false)
-				Panel:MakePopup()
-				
-				local Options = vgui.Create("DPanelList", Panel)
-				Options:SetPos(5, 25)
-				Options:SetSize(140, 170)
-				Options:SetSpacing(5)
-				Options:SetPadding(5)
-				Options:EnableHorizontal(false)
-				Options:EnableVerticalScrollbar(true)
-				
-				for k,v in pairs(PP.GetShareTypes()) do
-					local CheckBox = vgui.Create("DCheckBoxLabel")
-					CheckBox:SetText(v)
-					if PP.ShareTable[eid] && PP.ShareTable[eid][v] then
-						CheckBox:SetValue(1)
-					else
-						CheckBox:SetValue(0)
-					end
-					CheckBox:SizeToContents()
-					CheckBox.OnChange = function(CheckBox, Value)
-						PP.ShareTable[eid] = PP.ShareTable[eid] || {}
-						PP.ShareTable[eid][v] = Value
-						RunConsoleCommand("pp_updateshare", eid, v, tostring(Value))
-					end
-					Options:AddItem(CheckBox)
-				end
-				
-				local Close = vgui.Create("DButton", Panel)
-				Close:SetPos(18.75, 200)
-				Close:SetSize(112.5, 20)
-				Close:SetText("Close")
-				Close.DoClick = function(button)
-					surface.PlaySound("ui/buttonclickrelease.wav")
-					Open = false
-					Panel:Remove()
-				end
-			end
-		end
-	end
-end)
+function PP.OpenPropMenu(msg, self)
+    if IsValid(self.Menu) then return end
+    
+    local trace = LocalPlayer():GetEyeTraceNoCursor()
+    if !IsValid(trace.Entity) then return end
+    local owner = self:GetOwner(trace.Entity)
+    if owner != LocalPlayer() then return end
+    
+    local ent = trace.Entity
+    local entid = ent:EntIndex()
+    local pos = ent:GetPos()
+    pos = math.floor(pos.x)..", "..math.floor(pos.y)..", "..math.floor(pos.z)
+    local ang = ent:GetAngles()
+    ang = math.floor(ang.p)..", "..math.floor(ang.y)..", "..math.floor(ang.r)
+    
+    self.Menu = vgui.Create("DFrame")
+    self.Menu:SetSize(250, 25)
+    self.Menu:SetTitle("Prop Sharing")
+    self.Menu:SetDraggable(true)
+    self.Menu:SetScreenLock(true)
+    self.Menu:ShowCloseButton(true)
+    self.Menu:MakePopup()
 
-usermessage.Hook("PP_Menu2", function()
-	local SelectedPlayer = SelectedPlayer || nil
-	local Client = LocalPlayer()
-	
-	if !Open then
-		Open = true
-		
-		local Panel = vgui.Create("DFrame")
-		Panel.Active = "Options"
-		Panel:SetTitle("PP Menu")
-		Panel:SetSize(295, 225)
-		Panel:Center()
-		Panel:SetVisible( true )
-		Panel:SetDraggable(true)
-		Panel:ShowCloseButton(false)
-		Panel:MakePopup()
-		Panel.PaintOver = function()
-			surface.SetFont("Default")
-			local x, y = surface.GetTextSize(Panel.Active)
-			x = math.max(70, x + 5)
-			
-			draw.RoundedBox(4, 40, 25, 70, 20, Color(55, 57, 61))
-			draw.RoundedBox(4, 220 - x / 2, 25, x, 20, Color(55, 57, 61))
-			draw.SimpleText("Players", "Default", 75, 27.5, Color(255, 255, 255), TEXT_ALIGN_CENTER)
-			draw.SimpleText(Panel.Active, "Default", 220, 27.5, Color(255, 255, 255), TEXT_ALIGN_CENTER)
-		end
-		
-		local List = vgui.Create("DPanelList", Panel)
-		List:SetPos(5, 50)
-		List:SetSize(140, 145)
-		List:SetSpacing(5)
-		List:SetPadding(5)
-		List:EnableHorizontal(false)
-		List:EnableVerticalScrollbar(true)
-		
-		local Options = vgui.Create("DPanelList", Panel)
-		Options:SetPos(150, 50)
-		Options:SetSize(140, 145)
-		Options:SetSpacing(5)
-		Options:SetPadding(5)
-		Options:EnableHorizontal(false)
-		Options:EnableVerticalScrollbar(true)
-		
-		for k,v in pairs(player.GetAll()) do
-			local uid = v:GetNWString("UID")
-			local button = vgui.Create("DButton")
-			button:SetText(v:Name())
-			button.DoClick = function(button)
-				Panel.Active = v:Name()
-				Options:Clear()
-				if Client == v then
-					local clean = vgui.Create("DButton")
-					clean:SetText("Clean Up Props")
-					clean.DoClick = function(clean)
-						RunConsoleCommand("pp_cleanup")
-					end
-					Options:AddItem(clean)
-				else
-					for l,b in pairs(PP.GetBuddyTypes()) do
-						local CheckBox = vgui.Create("DCheckBoxLabel")
-						CheckBox:SetText(b)
-						if PP.BuddyTable[uid] && PP.BuddyTable[uid][b] then
-							CheckBox:SetValue(1)
-						else
-							CheckBox:SetValue(0)
-						end
-						CheckBox:SizeToContents()
-						CheckBox.OnChange = function(CheckBox, Value)
-							PP.BuddyTable[uid] = PP.BuddyTable[uid] || {}
-							PP.BuddyTable[uid][b] = Value
-							RunConsoleCommand("pp_updatebuddy", uid, b, tostring(Value))
-						end
-						Options:AddItem(CheckBox)
-					end
-					
-					if Client:HasAccess(4) && Client:CanRunOn(v) then
-						local clean = vgui.Create("DButton")
-						clean:SetText("Clean Up Props")
-						clean.DoClick = function(clean)
-							RunConsoleCommand("pp_cleanup", v:GetNWString("UID"))
-						end
-						Options:AddItem(clean)
-					end
-				end
-			end
-			List:AddItem(button)
-		end
-		
-		if Client:HasAccess(4) then
-			local button = vgui.Create("DButton")
-			button:SetText("Disconnected")
-			button.DoClick = function(button)
-				Panel.Active = "Disconnected"
-				Options:Clear()
-				local clean = vgui.Create("DButton")
-				clean:SetText("Clean Up Props")
-				clean.DoClick = function(clean)
-					RunConsoleCommand("pp_cleanup", "DCP")
-				end
-				Options:AddItem(clean)
-			end
-			List:AddItem(button)
-		end
-		
-		local Close = vgui.Create("DButton", Panel)
-		Close:SetPos(91.5, 200)
-		Close:SetSize(112.5, 20)
-		Close:SetText("Close")
-		Close.DoClick = function(button)
-			surface.PlaySound("ui/buttonclickrelease.wav")
-			Open = false
-			Panel:Remove()
-		end
-	end
-end)
+    for k,v in pairs(TK.PP.SharePermissions) do
+        local tick = vgui.Create("DCheckBoxLabel", self.Menu)
+        tick:SetSize(25, 95)
+        tick:SetPos(4, self.Menu:GetTall() + 5)
+        tick:SetText(v)
+        tick:SetValue(self:HasPermission(self.ShareTable[entid], v) && 1 || 0)
+        tick:SizeToContents()
+        tick.OnChange = function(tick, val)
+            local flag = self.ShareTable[entid]
+            if tobool(val) then
+                flag = self:AddPermission(flag, v)
+            else
+                flag = self:RemovePermission(flag, v)
+            end
+
+            self.ShareTable[entid] = flag
+            RunConsoleCommand("pp_updateshare", entid, flag)
+        end
+        
+        self.Menu:SetTall(self.Menu:GetTall() + 25)
+    end
+    
+    local info = vgui.Create("DPanel", self.Menu)
+    info:SetPos(self.Menu:GetWide() - 150, 30)
+    info:SetSize(145, self.Menu:GetTall() - 35)
+    info.Paint = function(panel, w, h)
+        local col = Color(200, 200, 200, 255)
+        surface.SetDrawColor(col)
+        surface.DrawLine(0,0, 0, h)
+        
+        draw.SimpleText(ent:GetClass(), "DermaDefault", w * 0.5, 5, col, TEXT_ALIGN_CENTER)
+        draw.SimpleText("Idx: "..entid, "DermaDefault", 5, 25, col)
+        draw.SimpleText("Pos: "..pos, "DermaDefault", 5, 50, col)
+        draw.SimpleText("Ang: "..ang, "DermaDefault", 5, 75, col)
+        return true
+    end
+    
+    self.Menu:Center()
+end
+
+function PP.OpenPlayerMenu(msg, self)
+    if IsValid(self.Menu) then return end
+    
+    self.Menu = vgui.Create("DFrame")
+    self.Menu:SetSize(400, 250)
+    self.Menu:SetTitle("Prop Protection")
+    self.Menu:SetDraggable(true)
+    self.Menu:SetScreenLock(true)
+    self.Menu:ShowCloseButton(true)
+    self.Menu:MakePopup()
+    self.Menu:Center()
+    
+    local plylist = vgui.Create("DListView", self.Menu)
+    plylist:SetPos(5, 30)
+    plylist:SetSize(390, 185)
+    plylist:SetMultiSelect(false)
+    plylist:AddColumn("Player"):SetFixedWidth(190)
+    plylist:AddColumn("SteamID"):SetFixedWidth(135)
+    plylist:AddColumn("Permissions"):SetFixedWidth(65)
+    plylist.OnRowRightClick = function(panel, line_id)
+        local line = plylist:GetLine(line_id)
+        local uid = line:GetValue(5)
+        local dmenu = DermaMenu()
+        
+        for k,v in pairs(TK.PP.BuddyPermissions) do
+            local tick = vgui.Create("DCheckBoxLabel", dmenu)
+            tick:SetText(v)
+            tick:SetValue(self:HasPermission(self.BuddyTable[uid], v) && 1 || 0)
+            tick:SetTextColor(Color(0,0,0))
+            tick.OnChange = function(tick, val)
+                local flag = self.BuddyTable[uid]
+                
+                if tobool(val) then
+                    flag = self:AddPermission(flag, v)
+                else
+                    flag = self:RemovePermission(flag, v)
+                end
+
+                self.BuddyTable[uid] = flag
+                line:SetValue(3, flag)
+                RunConsoleCommand("pp_updatebuddy", uid, flag)
+            end
+            dmenu:AddPanel(tick)
+        end
+        
+        dmenu:Open()
+    end
+    
+    for k,v in pairs(player.GetAll()) do
+        local uid = v:UID()
+        local line = plylist:AddLine(v:Name(), v:SteamID(), self.BuddyTable[uid] || 0, v, uid)
+
+        local text = vgui.Create("DTextEntry", line)
+        text:SetDrawBackground(false)
+        text:SetDrawBorder(false)
+        text:SetNumeric(true)
+        text.OnEnter = function()
+            local value = tonumber(text:GetValue()) || 0
+            local flag = 0
+            for k,v in pairs(TK.PP.Permissions) do
+                if !PP:HasPermission(value, k) then continue end
+                flag = PP:AddPermission(flag, k)
+            end
+            
+            self.BuddyTable[uid] = flag
+            line:SetValue(3, flag)
+            RunConsoleCommand("pp_updatebuddy", uid, flag)
+            text:KillFocus()
+        end
+        text.OnLoseFocus = function()
+            text:SetText(line:GetValue(3))
+        end
+        
+        local val = ""
+        if IsValid(line.Columns[3]) then
+            val = line.Columns[3]:GetValue()
+            line.Columns[3]:Remove()
+        end
+        line.Columns[3] = text
+        line:SetValue(3, val)
+    end
+
+    local clean = vgui.Create("DButton", self.Menu)
+    clean:SetPos(5, 220)
+    clean:SetSize(125, 25)
+    clean:SetText("Cleanup My Props")
+    clean.DoClick = function()
+        surface.PlaySound("ui/buttonclickrelease.wav")
+        RunConsoleCommand("pp_cleanup", false, LocalPlayer():UID())
+    end
+    
+    if !LocalPlayer():IsModerator() then return end
+    
+    local clean_ply = vgui.Create("DButton", self.Menu)
+    clean_ply:SetPos(137.5, 220)
+    clean_ply:SetSize(125, 25)
+    clean_ply:SetText("")
+    clean_ply:SetVisible(false)
+    clean_ply:SetEnabled(false)
+    
+    plylist.OnRowSelected = function(panel, line_id)
+        local line = plylist:GetLine(line_id)
+        if LocalPlayer():CanRunOn(line:GetValue(4)) then
+            local uid = line:GetValue(5)
+            clean_ply:SetText("Cleanup " ..line:GetValue(1))
+            clean_ply:SetVisible(true)
+            clean_ply:SetEnabled(true)
+            clean_ply.DoClick = function()
+                surface.PlaySound("ui/buttonclickrelease.wav")
+                RunConsoleCommand("pp_cleanup", false, uid)
+            end
+        else
+            clean_ply:SetVisible(false)
+            clean_ply:SetEnabled(false)
+        end
+    end
+    
+    local disconnected = vgui.Create("DButton", self.Menu)
+    disconnected:SetPos(270, 220)
+    disconnected:SetSize(125, 25)
+    disconnected:SetText("Cleanup Disconnected")
+    disconnected.DoClick = function()
+        surface.PlaySound("ui/buttonclickrelease.wav")
+        RunConsoleCommand("pp_cleanup", true)
+    end
+end
+
+usermessage.Hook("PP_Menu1", PP.OpenPropMenu, PP)
+usermessage.Hook("PP_Menu2", PP.OpenPlayerMenu, PP)
 ///--- ---\\\
 
 ///--- Datastreams ---\\\
@@ -232,64 +252,71 @@ net.Receive("PPBuddy", function()
 end)
 
 net.Receive("PPShare", function()
-	PP.ShareTable = net.ReadTable()
+    PP.ShareTable = net.ReadTable()
 end)
 ///--- ---\\\
 
 ///--- Owner Display ---\\\
 hook.Add("HUDPaint", "PP_OwnerBox", function()
-	local Client = LocalPlayer()
-	if !Client:Alive() then return end
-	local tr = Client:GetEyeTraceNoCursor()
-	if tr.HitNonWorld && IsValid(tr.Entity) then
-		local scrw, scrh = surface.ScreenWidth(), surface.ScreenHeight()
-		local owner , uid = PP.GetOwner(tr.Entity)
-		local name = "World"
-		if IsValid(owner) then
-			name = owner:Name()
-		elseif uid then
-			name = "Disconnected"
-		end 
-		
-		surface.SetFont("TKFont12")
-		local x, y = surface.GetTextSize(name)
-		
-		draw.RoundedBox(4, scrw - x - 9.5, scrh / 4 - 1, x + 7, y + 7, Color(55,57,61))
-		draw.RoundedBox(4, scrw - x - 8.5, scrh / 4, x + 5, y + 5, Color(150,150,150))
-		draw.SimpleText(name, "TKFont12", scrw - 6, scrh/4 + 2.5, Color(255,255,255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
-		
-		local class = "["..tr.Entity:EntIndex().."] "..tr.Entity:GetClass()
-		x, y = surface.GetTextSize(class)
-		
-		draw.RoundedBox(4, scrw - x - 9.5, scrh / 4 + y + 8, x + 7, y + 7, Color(55,57,61))
-		draw.RoundedBox(4, scrw - x - 8.5, scrh / 4 + y + 9, x + 5, y + 5, Color(150,150,150))
-		draw.SimpleText(class, "TKFont12", scrw - 6, scrh/4 + y + 11.5, Color(255,255,255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
-	end
+    local Client = LocalPlayer()
+    if !Client:Alive() then return end
+    local tr = Client:GetEyeTraceNoCursor()
+    if !IsValid(tr.Entity) then return end
+    
+    local scrw, scrh = surface.ScreenWidth(), surface.ScreenHeight() * 0.25
+    local owner , uid = PP:GetOwner(tr.Entity)
+    local name = "World"
+    if IsValid(owner) then
+        name = owner:Name()
+    elseif uid then
+        name = "Disconnected"
+    end 
+    
+    surface.SetFont("TKFont12")
+    local x, y = surface.GetTextSize(name)
+    
+    draw.RoundedBox(4, scrw - x - 10,   scrh,       x + 5, y + 5, Color(55,57,61))
+    draw.RoundedBox(4, scrw - x - 9,    scrh + 1,   x + 3, y + 3, Color(150,150,150))
+    draw.SimpleText(name, "TKFont12", scrw - x - 10 + 2.5, scrh + 2.5, Color(255,255,255))
+    
+    local class = "["..tr.Entity:EntIndex().."] "..tr.Entity:GetClass()
+    x, y = surface.GetTextSize(class)
+    
+    draw.RoundedBox(4, scrw - x - 10,   scrh + y + 8,   x + 5, y + 5, Color(55,57,61))
+    draw.RoundedBox(4, scrw - x - 9,    scrh + y + 9,   x + 3, y + 3, Color(150,150,150))
+    draw.SimpleText(class, "TKFont12", scrw - x - 10 + 2.5 , scrh + y + 8 + 2.5, Color(255,255,255))
 end)
 ///--- ---\\\
+
+hook.Add("EntityRemoved", "TKPP", function(ent)
+    local eid = ent:EntIndex()
+    if PP.ShareTable[eid] then
+        PP.ShareTable[eid] = nil
+    end
+end)
 
 ///--- CPPI ---\\\
 CPPI = CPPI || {}
 
 function CPPI:GetNameFromUID(uid)
-	if !uid then return nil end
-	local ply = PP.GetByUniqueID(tostring(uid))
-	if !IsValid(ply) then return nil end
-	return string.sub(ply:Name(), 1, 31)
+    if !uid then return nil end
+    local ply = PP:GetByUniqueID(tostring(uid))
+    if !IsValid(ply) then return nil end
+    return string.sub(ply:Name(), 1, 31)
 end
 
 function _R.Player:CPPIGetFriends()
-	local TrustedPlayers = {}
-	local uid = self:GetNWString("UID")
-	for k,v in pairs(player.GetAll()) do
-		if PP.IsBuddy(v, "CPPI") then
-			table.insert(TrustedPlayers, v)
-		end
-	end
-	return TrustedPlayers
+    local TrustedPlayers = {}
+    local uid = self:UID()
+    for k,v in pairs(player.GetAll()) do
+        if PP:IsBuddy(v, "CPPI") then
+            table.insert(TrustedPlayers, v)
+        end
+    end
+    return TrustedPlayers
 end
 
 function _R.Entity:CPPIGetOwner()
-	return PP.GetOwner(self)
+    return PP:GetOwner(self)
 end
 ///--- ---\\\

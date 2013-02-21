@@ -44,23 +44,23 @@ TK.HUD.Colors = {
 TK.HUD.WARNING = {}
 
 net.Receive( "HUD_WARNING", function()
-	local sender, message = net.ReadString(), net.ReadString()
-	for i=1,#TK.HUD.WARNING do
-		if TK.HUD.WARNING[i][1] == sender then
-			table.remove( TK.HUD.WARNING, i )
-			break
-		end
-	end
-	if message:gsub("%s+", "") != "" then table.insert( TK.HUD.WARNING, { sender, message } ) end
-	if IsValid(TK.HUD.Time.MOTD) then TK.HUD.Time.MOTD:SetText(TK.HUD.NextMOTD()) end
+    local sender, message = net.ReadString(), net.ReadString()
+    for i=1,#TK.HUD.WARNING do
+        if TK.HUD.WARNING[i][1] == sender then
+            table.remove( TK.HUD.WARNING, i )
+            break
+        end
+    end
+    if message:gsub("%s+", "") != "" then table.insert( TK.HUD.WARNING, { sender, message } ) end
+    if IsValid(TK.HUD.Time.MOTD) then TK.HUD.Time.MOTD:SetText(TK.HUD.NextMOTD()) end
 end)
 
 local index = 0
 TK.HUD.MOTDs = {
-	"Welcome to Three Kelvin Spacebuild!",
-	"This server has Audio Emotes! Bind +AudioEmotePanel_Show to see the menu",
-	"We have a teamspeak server: threekelvin.co.uk:9987",
-	"Not sure how to do something? Ask!",
+    "Welcome to Three Kelvin Spacebuild!",
+    "This server has Audio Emotes! Bind +AudioEmotePanel_Show to see the menu",
+    "We have a teamspeak server: threekelvin.co.uk:9987",
+    "Not sure how to do something? Ask!",
 }
 
 function TK.HUD.NextMOTD()
@@ -74,7 +74,7 @@ end
 
 hook.Add("HUDPaint", "TKHUD_Admin", function()
     if !IsValid(LocalPlayer()) then return end
-	local teamcol = team.GetColor(LocalPlayer():Team())
+    local teamcol = team.GetColor(LocalPlayer():Team())
     TK.HUD.Colors.border = (#TK.HUD.WARNING > 0) && Color(255, 0, 0, 191 + 64*math.sin( math.pi*RealTime() )) || teamcol
     TK.HUD.Colors.bar = Color(teamcol.r, teamcol.g, teamcol.b, 100)
     

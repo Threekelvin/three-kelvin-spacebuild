@@ -3,12 +3,12 @@ AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
 function ENT:Initialize()
-	self.BaseClass.Initialize(self)
-	
-	self:AddResource("nitrogen", self.data.nitrogen)
-	
-	WireLib.CreateOutputs(self, {"Nitrogen", "MaxNitrogen"})
-	self:UpdateValues()
+    self.BaseClass.Initialize(self)
+    
+    self:AddResource("nitrogen", self.data.nitrogen)
+    
+    WireLib.CreateOutputs(self, {"Nitrogen", "MaxNitrogen"})
+    self:UpdateValues()
 end
 
 function ENT:TurnOn()
@@ -28,10 +28,10 @@ function ENT:DoThink()
 end
 
 function ENT:NewNetwork(netid)
-	self:UpdateValues()
+    self:UpdateValues()
 end
 
 function ENT:UpdateValues()
-	WireLib.TriggerOutput(self, "Nitrogen", self:GetResourceAmount("nitrogen"))
-	WireLib.TriggerOutput(self, "MaxNitrogen", self:GetResourceCapacity("nitrogen"))
+    WireLib.TriggerOutput(self, "Nitrogen", self:GetResourceAmount("nitrogen"))
+    WireLib.TriggerOutput(self, "MaxNitrogen", self:GetResourceCapacity("nitrogen"))
 end

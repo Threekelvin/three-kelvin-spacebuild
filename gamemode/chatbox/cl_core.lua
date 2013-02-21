@@ -7,11 +7,11 @@ local Links = CreateClientConVar("3k_chatbox_links", 1, true, false)
 local Chatbox
 
 local function MakeChatbox()
-	if IsValid(Chatbox) then return end
-	Chatbox = vgui.Create("TKChatBox")
-	Chatbox:MakePopup()
-	Chatbox:InvalidateLayout(true)
-	Chatbox:Close()
+    if IsValid(Chatbox) then return end
+    Chatbox = vgui.Create("TKChatBox")
+    Chatbox:MakePopup()
+    Chatbox:InvalidateLayout(true)
+    Chatbox:Close()
 end
 
 net.Receive("3k_chat_b", function()
@@ -36,36 +36,36 @@ net.Receive("3k_chat_g", function()
 end)
 
 hook.Add("Initialize", "TKChatBox", function()
-	local oldchat = chat.AddText
-	function chat.AddText(...)
-		local newarg = {}
+    local oldchat = chat.AddText
+    function chat.AddText(...)
+        local newarg = {}
         
-		for k,v in ipairs({...}) do
-			if type(v) == "Entity" then
-				table.insert(Table, Color(151,211,255))
-				table.insert(Table, v:Name())
-			elseif type(v) == "Player" then
-				table.insert(newarg, v:GetRGBA())
-				table.insert(newarg, v:GetTag())
-				table.insert(newarg, team.GetColor(v:Team()))
-				table.insert(newarg, v:Name())
-			else
-				table.insert(newarg, v)
-			end
-		end
-		
-		oldchat(unpack(newarg))
+        for k,v in ipairs({...}) do
+            if type(v) == "Entity" then
+                table.insert(Table, Color(151,211,255))
+                table.insert(Table, v:Name())
+            elseif type(v) == "Player" then
+                table.insert(newarg, v:GetRGBA())
+                table.insert(newarg, v:GetTag())
+                table.insert(newarg, team.GetColor(v:Team()))
+                table.insert(newarg, v:Name())
+            else
+                table.insert(newarg, v)
+            end
+        end
+        
+        oldchat(unpack(newarg))
         
         if !IsValid(Chatbox) then
             MakeChatbox()
         end
         
         Chatbox:NewMsg(newarg, Enable:GetBool())
-	end
-	
-	function _R.Player.ChatPrint(ply, txt)
-		chat.AddText(Color(151,211,255), txt)
-	end
+    end
+    
+    function _R.Player.ChatPrint(ply, txt)
+        chat.AddText(Color(151,211,255), txt)
+    end
 end)
 
 hook.Add("ChatText", "TKChatBox", function(plyidx, plyname, txt, msgtyp)
@@ -104,15 +104,15 @@ hook.Add("FinishChat", "TKChatBox", function()
 end)
 
 cvars.AddChangeCallback("3k_chatbox_emotes", function(cvar)
-	if !IsValid(Chatbox) then return end
-	for k,v in pairs(Chatbox.msgbox:GetItems()) do
-		v:SetMsg(v.text)
-	end
+    if !IsValid(Chatbox) then return end
+    for k,v in pairs(Chatbox.msgbox:GetItems()) do
+        v:SetMsg(v.text)
+    end
 end)
 
 cvars.AddChangeCallback("3k_chatbox_links", function(cvar)
-	if !IsValid(Chatbox) then return end
-	for k,v in pairs(Chatbox.msgbox:GetItems()) do
-		v:SetMsg(v.text)
-	end
+    if !IsValid(Chatbox) then return end
+    for k,v in pairs(Chatbox.msgbox:GetItems()) do
+        v:SetMsg(v.text)
+    end
 end)

@@ -6,7 +6,7 @@ PLUGIN.Command    = "Slap"
 PLUGIN.Level     = 4
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         local dmg = tonumber(arg[#arg])
         if dmg then 
             arg[#arg] = nil 
@@ -48,7 +48,7 @@ if SERVER then
             end
             TK.AM:SystemMessage(msgdata)
         end
-	end
+    end
 else
 
 end

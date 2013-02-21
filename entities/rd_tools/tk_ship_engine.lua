@@ -1,8 +1,8 @@
 
-TOOL.Category	= "Ship Parts"
-TOOL.Name		= "Ship Engine"
-TOOL.Limit		= 1
-TOOL.Data		= {}
+TOOL.Category    = "Ship Parts"
+TOOL.Name        = "Ship Engine"
+TOOL.Limit        = 1
+TOOL.Data        = {}
 TOOL.DefaultModel = "models/punisher239/punisher239_reactor_small.mdl"
 
 function TOOL:SelectModel()

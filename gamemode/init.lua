@@ -9,8 +9,8 @@ gameevent.Listen("player_connect")
 gameevent.Listen("player_disconnect")
 
 function TK:SetSpawnPoint(ply, side)
-	local Spawn = self.SpawnPoints[side]
-    if !Spawn then Spawn = self.SpawnPoints[1] end
+    local Spawn = self.Settings.SpawnPoints[side]
+    if !Spawn then Spawn = self.Settings.SpawnPoints[1] end
     local grid = 5
     
     for X = 1, grid do
@@ -46,8 +46,8 @@ local BadConstraints = {
 }
 
 function _R.Entity:GetConstrainedEntities()
-	local out = {[self] = self}
-	if !self.Constraints then return out end
+    local out = {[self] = self}
+    if !self.Constraints then return out end
     
     local tbtab = {{self,1}}
     while #tbtab > 0 do
@@ -80,17 +80,17 @@ function _R.Entity:GetConstrainedEntities()
         end
     end
     
-	return out
+    return out
 end
 
 local AllowedWeapons = {
-	["weapon_physcannon"]	=	true,
-	["weapon_physgun"]		=	true,
-	["gmod_camera"]			=	true,
-	["gmod_tool"]			=	true,
+    ["weapon_physcannon"]    =    true,
+    ["weapon_physgun"]        =    true,
+    ["gmod_camera"]            =    true,
+    ["gmod_tool"]            =    true,
     ["hands"]               =   true,
-	["remotecontroller"]	=	true,
-	["laserpointer"]		=	true
+    ["remotecontroller"]    =    true,
+    ["laserpointer"]        =    true
 }
 
 function GM:PlayerCanPickupWeapon(ply, wep)
@@ -99,7 +99,7 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 end
 
 function GM:PlayerSetModel(ply)
-	local cl_playermodel = ply:GetInfo("cl_playermodel")
+    local cl_playermodel = ply:GetInfo("cl_playermodel")
     if ply.last_playermodel != cl_playermodel then
         local modelname = player_manager.TranslatePlayerModel(cl_playermodel)
         if TK:CanUsePlayerModel(ply, cl_playermodel) then
@@ -120,13 +120,13 @@ function GM:PlayerInitialSpawn(ply)
 end
 
 function GM:PlayerSpawn(ply)
-	ply:UnSpectate()
+    ply:UnSpectate()
 
-	player_manager.OnPlayerSpawn(ply)
-	player_manager.RunClass(ply, "Spawn")
+    player_manager.OnPlayerSpawn(ply)
+    player_manager.RunClass(ply, "Spawn")
 
-	hook.Call("PlayerLoadout", GAMEMODE, ply)
-	hook.Call("PlayerSetModel", GAMEMODE, ply)
+    hook.Call("PlayerLoadout", GAMEMODE, ply)
+    hook.Call("PlayerSetModel", GAMEMODE, ply)
 end
 ///--- ---\\\
 
@@ -141,55 +141,48 @@ end)
 ///--- Map Setup ---\\\
 hook.Add("InitPostEntity", "TKSetup", function()
     game.CleanUpMap()
-    
-    for k,v in pairs(ents.GetAll()) do
-        if !IsValid(v) then continue end
-        if v:GetClass() == "func_dustcloud" then
-            v:Remove()
-        end
-    end
 end)
 ///--- ---\\\
 
 ///--- Map Resources ---\\\
 hook.Add("Tick", "TKSpawning", function()
-	for k,v in pairs(TK.RoidFields) do
-		if CurTime() > v.NextSpawn && table.Count(v.Ents) < 20 then
-			local pos = Vector(math.random(0, 5000),0,0)
-			pos:Rotate(Angle(math.random(0, 360), math.random(0, 360), 0))
-			
-			local rand = v.Pos + pos
-			local space = TK:FindInSphere(rand, 1000)
-			local CanSpawn = true
-			for k2,v2 in pairs(space) do
-				if IsValid(v2) && IsValid(v2:GetPhysicsObject()) then
+    for k,v in pairs(TK.Settings.AsteroidFields) do
+        if CurTime() > v.NextSpawn && table.Count(v.Ents) < 20 then
+            local pos = Vector(math.random(0, 5000),0,0)
+            pos:Rotate(Angle(math.random(0, 360), math.random(0, 360), 0))
+            
+            local rand = v.Pos + pos
+            local space = TK:FindInSphere(rand, 1000)
+            local CanSpawn = true
+            for k2,v2 in pairs(space) do
+                if IsValid(v2) && IsValid(v2:GetPhysicsObject()) then
                     CanSpawn = false
                     break
-				end
-			end
-			
-			if CanSpawn then
-				local ent = ents.Create("tk_roid")
-				ent:SetPos(rand)
-				ent:SetAngles(Angle(math.random(0, 360), math.random(0, 360), math.random(0, 360)))
-				ent:Spawn()
-				ent.GetField = function()
-					return v.Ents || {}
-				end
-				ent:CallOnRemove("UpdateList", function()
-					v.Ents[ent:EntIndex()] = nil
-				end)
-				
-				v.Ents[ent:EntIndex()] = ent
-				v.NextSpawn = CurTime() + 30 * (table.Count(v.Ents)/20) + 5
-			else
-				v.NextSpawn = CurTime() + 1
-			end
-		end
-	end
-	
-	for k,v in pairs(TK.TibFields) do
-		if CurTime() < v.NextSpawn || table.Count(v.Ents) >= 10 then continue end
+                end
+            end
+            
+            if CanSpawn then
+                local ent = ents.Create("tk_roid")
+                ent:SetPos(rand)
+                ent:SetAngles(Angle(math.random(0, 360), math.random(0, 360), math.random(0, 360)))
+                ent:Spawn()
+                ent.GetField = function()
+                    return v.Ents || {}
+                end
+                ent:CallOnRemove("UpdateList", function()
+                    v.Ents[ent:EntIndex()] = nil
+                end)
+                
+                v.Ents[ent:EntIndex()] = ent
+                v.NextSpawn = CurTime() + 30 * (table.Count(v.Ents)/20) + 5
+            else
+                v.NextSpawn = CurTime() + 1
+            end
+        end
+    end
+    
+    for k,v in pairs(TK.Settings.TiberiumFields) do
+        if CurTime() < v.NextSpawn || table.Count(v.Ents) >= 10 then continue end
         local pos = Vector(math.random(0, 1100),0,0)
         pos:Rotate(Angle(0,math.random(0, 360),0))
         
@@ -222,6 +215,6 @@ hook.Add("Tick", "TKSpawning", function()
         else
             v.NextSpawn = CurTime() + 1
         end
-	end
+    end
 end)
 ///--- ---\\\

@@ -6,7 +6,7 @@ PLUGIN.Command    = "BanIP"
 PLUGIN.Level      = 6
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         local ip = string.match(arg[1], "(%d+%.%d+%.%d+%.%d+)")
         if ip then
             local count, targets = TK.AM:FindPlayer(ip)
@@ -49,13 +49,13 @@ if SERVER then
                         TK.AM:SystemMessage({"Invalid Ban Length"}, {ply}, 2)
                     end
                 else
-                    TK.AM:SystemMessage({"You Can Not Ban ", tar}, {ply}, 2)	
+                    TK.AM:SystemMessage({"You Can Not Ban ", tar}, {ply}, 2)    
                 end
             end
         else
-            TK.AM:SystemMessage({"Invalid IP"}, {ply}, 2)	
+            TK.AM:SystemMessage({"Invalid IP"}, {ply}, 2)    
         end
-	end
+    end
 else
 
 end

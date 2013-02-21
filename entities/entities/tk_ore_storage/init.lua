@@ -3,20 +3,20 @@ AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
 function ENT:Initialize()
-	self.BaseClass.Initialize(self)
+    self.BaseClass.Initialize(self)
 
-	self:AddResource("asteroid_ore", 0)
-	self.Outputs = Wire_CreateOutputs(self, {"AsteroidOre", "MaxAsteroidOre"})
+    self:AddResource("asteroid_ore", 0)
+    self.Outputs = Wire_CreateOutputs(self, {"AsteroidOre", "MaxAsteroidOre"})
 end
 
 function ENT:NewNetwork(netid)
-	WireLib.TriggerOutput(self, "AsteroidOre", self:GetResourceAmount("asteroid_ore"))
-	WireLib.TriggerOutput(self, "MaxAsteroidOre", self:GetResourceCapacity("asteroid_ore"))
+    WireLib.TriggerOutput(self, "AsteroidOre", self:GetResourceAmount("asteroid_ore"))
+    WireLib.TriggerOutput(self, "MaxAsteroidOre", self:GetResourceCapacity("asteroid_ore"))
 end
 
 function ENT:UpdateValues()
-	WireLib.TriggerOutput(self, "AsteroidOre", self:GetResourceAmount("asteroid_ore"))
-	WireLib.TriggerOutput(self, "MaxAsteroidOre", self:GetResourceCapacity("asteroid_ore"))
+    WireLib.TriggerOutput(self, "AsteroidOre", self:GetResourceAmount("asteroid_ore"))
+    WireLib.TriggerOutput(self, "MaxAsteroidOre", self:GetResourceCapacity("asteroid_ore"))
 end
 
 function ENT:Update(ply)
@@ -28,10 +28,10 @@ end
 
 function ENT:PreEntityCopy()
     self.BaseClass.PreEntityCopy(self)
-	TK.LO:MakeDupeInfo(self)
+    TK.LO:MakeDupeInfo(self)
 end
 
 function ENT:PostEntityPaste(ply, ent, entlist)
     self.BaseClass.PostEntityPaste(self, ply, ent, entlist)
-	TK.LO:ApplyDupeInfo(ply, ent, info)
+    TK.LO:ApplyDupeInfo(ply, ent, info)
 end

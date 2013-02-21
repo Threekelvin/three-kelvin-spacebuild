@@ -6,7 +6,7 @@ PLUGIN.Command    = "Bring"
 PLUGIN.Level      = 2
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         local count, targets = TK.AM:FindPlayer(arg[1])
         
         if count == 0 then
@@ -55,7 +55,7 @@ if SERVER then
                 TK.AM:SystemMessage({" You Can Not Bring ", tar}, {ply}, 2)
             end
         end
-	end
+    end
 else
 
 end

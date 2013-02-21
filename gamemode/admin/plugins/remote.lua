@@ -6,7 +6,7 @@ PLUGIN.Command    = "Remote"
 PLUGIN.Level      = 5
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         local svr, cmd = arg[1], arg[2]
         if !svr || svr == "" then return end
         if !cmd || cmd == "" then return end
@@ -25,9 +25,9 @@ if SERVER then
         
         TK.DB:SendRemoteCmd(ply, svr, table.concat(arg, " ", 2))
         TK.AM:SystemMessage({"Remote Command Sent To ", svr}, {ply}, 2)
-	end
+    end
 else
-	
+    
 end
 
 TK.AM:RegisterPlugin(PLUGIN)

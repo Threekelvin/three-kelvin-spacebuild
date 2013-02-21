@@ -3,12 +3,12 @@ AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
 function ENT:Initialize()
-	self.BaseClass.Initialize(self)
-	
-	self:AddResource("water", self.data.water)
-	
-	WireLib.CreateOutputs(self, {"Water", "MaxWater"})
-	self:UpdateValues()
+    self.BaseClass.Initialize(self)
+    
+    self:AddResource("water", self.data.water)
+    
+    WireLib.CreateOutputs(self, {"Water", "MaxWater"})
+    self:UpdateValues()
 end
 
 function ENT:TurnOn()
@@ -28,10 +28,10 @@ function ENT:DoThink()
 end
 
 function ENT:NewNetwork(netid)
-	self:UpdateValues()
+    self:UpdateValues()
 end
 
 function ENT:UpdateValues()
-	WireLib.TriggerOutput(self, "Water", self:GetResourceAmount("water"))
-	WireLib.TriggerOutput(self, "MaxWater", self:GetResourceCapacity("water"))
+    WireLib.TriggerOutput(self, "Water", self:GetResourceAmount("water"))
+    WireLib.TriggerOutput(self, "MaxWater", self:GetResourceCapacity("water"))
 end

@@ -5,10 +5,10 @@ PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "Stopsounds"
 PLUGIN.Level      = 1
 
-if SERVER then	
-	function PLUGIN.Call(ply, arg)
-		TK.AM:StopSounds(ply)
-	end
+if SERVER then    
+    function PLUGIN.Call(ply, arg)
+        TK.AM:StopSounds(ply)
+    end
 else
 
 end

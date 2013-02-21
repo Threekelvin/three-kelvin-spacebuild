@@ -12,7 +12,7 @@ hook.Add("EntitySpawned", "TKDC", function(ent)
     if ent:IsPlayer() then return end
     
     local phys = ent:GetPhysicsObject()
-    local vol = math.floor(math.sqrt(phys:GetVolume()) * 0.5)
+    local vol = math.floor(math.sqrt(phys:GetVolume() || 0) * 0.5)
     
     ent.tk_dmg = {}
     ent.tk_dmg.stats = {}
@@ -20,8 +20,8 @@ hook.Add("EntitySpawned", "TKDC", function(ent)
     ent.tk_dmg.stats.hull_max = vol
     ent.tk_dmg.stats.armor = vol * 0.5
     ent.tk_dmg.stats.armor_max = vol * 0.5
-    ent.tk_dmg.stats.shield = vol * 0.5
-    ent.tk_dmg.stats.shield_max = vol * 0.5
+    ent.tk_dmg.stats.shield = 0
+    ent.tk_dmg.stats.shield_max = vol * 0.75
     
     if ent:GetClass() != "tk_ship_core" then return end
     
@@ -39,14 +39,19 @@ function TK.DC:CanDamage(ent)
 end
 
 function TK.DC:DestoryEnt(ent)
+    if !IsValid(ent) || !ent.tk_dmg then return end
+    
     local fxdata = EffectData()
     fxdata:SetEntity(ent)
-    util.Effect("dmg_destroy", fxdata)	
+    util.Effect("dmg_destroy", fxdata)    
     
     SafeRemoveEntityDelayed(ent, 0.2)
 end
 
 function TK.DC:DestroyCore(ent)
+    if !IsValid(ent) || !ent.tk_dmg then return end
+    if ent.tk_dmg != ent then return end
+    
     for k,v in pairs(ent.hull) do
         if !IsValid(v) then continue end
         constraint.RemoveAll(v)

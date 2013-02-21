@@ -6,7 +6,7 @@ PLUGIN.Command    = "PlayerName"
 PLUGIN.Level      = 1
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         if !IsValid(ply) then return end
         
         local name_old   = ply:Name()
@@ -19,7 +19,7 @@ if SERVER then
         
         msgdata = {team_color , name_old, " Has Changed Thier Name To ",team_color, name}
         TK.AM:SystemMessage(msgdata)
-	end
+    end
 else
 
 end

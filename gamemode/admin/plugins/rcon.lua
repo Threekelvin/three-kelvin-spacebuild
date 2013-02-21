@@ -6,7 +6,7 @@ PLUGIN.Command    = "RCON"
 PLUGIN.Level      = 7
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         local cmd = {}
         for k,v in pairs(arg) do
             local temp = string.Explode(" ", v)
@@ -15,7 +15,7 @@ if SERVER then
             end
         end
         RunConsoleCommand(unpack(cmd))
-	end
+    end
 else
 
 end

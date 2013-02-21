@@ -6,22 +6,22 @@ PLUGIN.Command    = "Restart"
 PLUGIN.Level      = 5
 
 if SERVER then
-	local Restart = false
-	local function PlaySound(sound)
-		for k,v in pairs(player.GetAll()) do
-			v:ConCommand("playgamesound "..sound)
-		end
-	end
+    local Restart = false
+    local function PlaySound(sound)
+        for k,v in pairs(player.GetAll()) do
+            v:ConCommand("playgamesound "..sound)
+        end
+    end
 
-	util.AddNetworkString("HUD_WARNING")
-	local function HUDwarning( ply, message )
-		net.Start( "HUD_WARNING" )
-			net.WriteString( "restart" )
-			net.WriteString( message )
-		net.Send( ply )
-	end
+    util.AddNetworkString("HUD_WARNING")
+    local function HUDwarning( ply, message )
+        net.Start( "HUD_WARNING" )
+            net.WriteString( "restart" )
+            net.WriteString( message )
+        net.Send( ply )
+    end
 
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         if !Restart then
             if table.Count(player.GetAll()) == 0 then
                 RunConsoleCommand("changelevel", game.GetMap())
@@ -77,7 +77,7 @@ if SERVER then
             TK.AM:StopSounds()
             TK.AM:SystemMessage({ply, " Has Stopped The Restart!"})
         end
-	end
+    end
 else
 
 end

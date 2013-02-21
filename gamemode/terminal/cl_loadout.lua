@@ -7,8 +7,8 @@ local function MakePanel(panel, slot, id, item)
     btn.slot = slot
     btn.id = id
     btn.item = item
-	btn:SetSkin("Terminal")
-	btn:SetSize(0, 65)
+    btn:SetSkin("Terminal")
+    btn:SetSize(0, 65)
     btn.Paint = function(btn, w, h)
         derma.SkinHook("Paint", "TKItemPanel", btn, w, h)
         return true
@@ -39,7 +39,7 @@ local function MakeSlot(panel, slot, id)
     btn.SetModel = function(btn, strModelName)
         if IsValid(btn.Entity) then
             btn.Entity:Remove()
-            btn.Entity = nil		
+            btn.Entity = nil        
         end
 
         if !ClientsideModel then return end
@@ -103,15 +103,15 @@ local function MakeSlot(panel, slot, id)
 end
 
 function PANEL:Init()
-	self:SetSkin("Terminal")
-	self.NextThink = 0
+    self:SetSkin("Terminal")
+    self.NextThink = 0
     self.loadout = {}
     
     self.items = vgui.Create("DPanelList", self)
     self.items:SetSpacing(5)
-	self.items:SetPadding(5)
-	self.items:EnableHorizontal(false)
-	self.items:EnableVerticalScrollbar(true)
+    self.items:SetPadding(5)
+    self.items:EnableHorizontal(false)
+    self.items:EnableVerticalScrollbar(true)
     
     self.mining = {}
     self.mining[1] = MakeSlot(self, "mining", 1)
@@ -163,8 +163,8 @@ function PANEL:Think(force)
         if CurTime() < self.NextThink then return end
         self.NextThink = CurTime() + 1
     end
-	
-	self.score = TK:Format(TK.DB:GetPlayerData("player_info").score)
+    
+    self.score = TK:Format(TK.DB:GetPlayerData("player_info").score)
     self.loadout = TK.DB:GetPlayerData("player_loadout")
     
     for k,v in pairs(self.mining) do
@@ -188,8 +188,8 @@ function PANEL:Update()
 end
 
 function PANEL.Paint(self, w, h)
-	derma.SkinHook("Paint", "TKLoadout", self, w, h)
-	return true
+    derma.SkinHook("Paint", "TKLoadout", self, w, h)
+    return true
 end
 
 vgui.Register("tk_loadout", PANEL)

@@ -6,7 +6,7 @@ PLUGIN.Command    = nil
 PLUGIN.Level      = 1
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         local targets = {}
         for k,v in pairs(player.GetAll()) do
             if v:IsModerator() then
@@ -21,7 +21,7 @@ if SERVER then
             table.insert(msgdata, ": "..table.concat(arg, " "))
             TK.AM:SystemMessage(msgdata, targets)
         end
-	end
+    end
 else
 
 end

@@ -4,9 +4,9 @@ local Mat1 = Material("Models/effects/splodearc_sheet")
 local Mat2 = Material("models/alyx/emptool_glow")
 
 local function Stable(ent)
-	local EntID = ent:EntIndex()
-	if Status[EntID] == nil then return true end
-	return Status[EntID]
+    local EntID = ent:EntIndex()
+    if Status[EntID] == nil then return true end
+    return Status[EntID]
 end
 
 hook.Add("Initialize", "TKTIB", function()

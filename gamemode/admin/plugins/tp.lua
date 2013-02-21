@@ -6,8 +6,8 @@ PLUGIN.Command    = "TP"
 PLUGIN.Level      = 2
 
 if SERVER then
-	local SavedLocations = {}
-	function PLUGIN.Call(ply, arg)
+    local SavedLocations = {}
+    function PLUGIN.Call(ply, arg)
         if !ply:Alive() then return end
         if #arg == 3 then
             if ply:InVehicle() then ply:ExitVehicle() end
@@ -16,7 +16,7 @@ if SERVER then
         elseif #arg > 0 then
             if string.lower(arg[1]) == "save" then
                 if arg[2]  then
-                    local uid = ply:GetNWString("UID")
+                    local uid = ply:UID()
                     SavedLocations[uid] = SavedLocations[uid] || {}
                     SavedLocations[uid][arg[2]] = ply:GetPos()
                     TK.AM:SystemMessage({"Position "..arg[2].." Saved"}, {ply}, 2)
@@ -24,7 +24,7 @@ if SERVER then
                     TK.AM:SystemMessage({"No Index Entered"}, {ply}, 2)
                 end
             elseif arg[1] then
-                local uid = ply:GetNWString("UID")
+                local uid = ply:UID()
                 SavedLocations[uid] = SavedLocations[uid] || {}
                 if SavedLocations[uid][arg[1]] then
                     if ply:InVehicle() then ply:ExitVehicle() end
@@ -63,7 +63,7 @@ if SERVER then
             end
             ply:SetVelocity(Vector(0, 0, 0))
         end
-	end
+    end
 else
 
 end

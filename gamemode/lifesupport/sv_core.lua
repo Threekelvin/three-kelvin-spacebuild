@@ -15,8 +15,8 @@ local function PlayerUpdate(ply)
 end
 
 local function PlayerLSCheck()
-	for _,ply in pairs(player.GetAll()) do
-		if !IsValid(ply) || !ply.tk_hev || !ply:Alive() then continue end
+    for _,ply in pairs(player.GetAll()) do
+        if !IsValid(ply) || !ply.tk_hev || !ply:Alive() then continue end
         
         local env = ply:GetEnv()
         local temp, insun = env:DoTemp(ply)
@@ -113,17 +113,17 @@ local function PlayerLSCheck()
 end
 
 hook.Add("Initialize", "TKLS", function()
-	timer.Create("TKLS", 1, 0, PlayerLSCheck)
+    timer.Create("TKLS", 1, 0, PlayerLSCheck)
     
     function _R.Player:AddhevRes(res, amt)
-		if res == "energy" then
-			self.tk_hev.energy = math.min(self.tk_hev.energy + amt, self.tk_hev.energymax)
-		elseif res == "water" then
-			self.tk_hev.water = math.min(self.tk_hev.water + amt, self.tk_hev.watermax)
-		elseif res == "oxygen" then
-			self.tk_hev.oxygen = math.min(self.tk_hev.oxygen + amt, self.tk_hev.oxygenmax)
-		end
-	end
+        if res == "energy" then
+            self.tk_hev.energy = math.min(self.tk_hev.energy + amt, self.tk_hev.energymax)
+        elseif res == "water" then
+            self.tk_hev.water = math.min(self.tk_hev.water + amt, self.tk_hev.watermax)
+        elseif res == "oxygen" then
+            self.tk_hev.oxygen = math.min(self.tk_hev.oxygen + amt, self.tk_hev.oxygenmax)
+        end
+    end
 end)
 
 hook.Add("PlayerInitialSpawn", "TKLS", function(ply)
@@ -141,36 +141,36 @@ hook.Add("PlayerInitialSpawn", "TKLS", function(ply)
 end)
 
 hook.Add("PlayerSpawn", "TKLS", function(ply)
-	ply.tk_hev = ply.tk_hev || {}
-	ply.tk_hev.energy = 300
-	ply.tk_hev.oxygen = 300
-	ply.tk_hev.water = 300
-	ply.tk_hev.temp = 290
-	ply.tk_hev.airper = 5
-	ply.tk_hev.update = true
+    ply.tk_hev = ply.tk_hev || {}
+    ply.tk_hev.energy = 300
+    ply.tk_hev.oxygen = 300
+    ply.tk_hev.water = 300
+    ply.tk_hev.temp = 290
+    ply.tk_hev.airper = 5
+    ply.tk_hev.update = true
 end)
 
 hook.Add("OnAtmosphereChange", "TKLS", function(ent)
-	if ent:IsPlayer() && !ent:IsAdmin() then
-		if ent:GetEnv():CanNoclip() then return end
-		if ent:GetMoveType() == MOVETYPE_NOCLIP then
-			ent:SetMoveType(MOVETYPE_WALK)
-			ent:SetVelocity(-ent:GetVelocity() * 0.75)
-		end
-	end
+    if ent:IsPlayer() && !ent:IsAdmin() then
+        if ent:GetEnv():CanNoclip() then return end
+        if ent:GetMoveType() == MOVETYPE_NOCLIP then
+            ent:SetMoveType(MOVETYPE_WALK)
+            ent:SetVelocity(-ent:GetVelocity() * 0.75)
+        end
+    end
 end)
 
 hook.Add("PlayerNoClip", "TKLS", function(ply)
-	if ply:IsAdmin() then return end
-	if ply:GetEnv():CanNoclip() then return end
-	return false
+    if ply:IsAdmin() then return end
+    if ply:GetEnv():CanNoclip() then return end
+    return false
 end)
 
 hook.Add("SetupMove", "TKLS", function(ply, data)
-	if ply:IsAdmin() then return end
-	local env = ply:GetEnv()
-	if env:CanNoclip() || env:GetGravity() > 0 then return end
-	data:SetForwardSpeed(0)
-	data:SetSideSpeed(0)
-	data:SetUpSpeed(0)
+    if ply:IsAdmin() then return end
+    local env = ply:GetEnv()
+    if env:CanNoclip() || env:GetGravity() > 0 then return end
+    data:SetForwardSpeed(0)
+    data:SetSideSpeed(0)
+    data:SetUpSpeed(0)
 end)

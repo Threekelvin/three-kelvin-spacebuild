@@ -6,19 +6,19 @@ PLUGIN.Command    = "Give"
 PLUGIN.Level      = 1
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         if !IsValid(ply) then return end
         local count, targets = TK.AM:FindPlayer(arg[1])
         
         if count == 0 then
             TK.AM:SystemMessage({"No Target Found"}, {ply}, 2)
         elseif count > 1 then
-            TK.AM:SystemMessage({"Multiple Targets Found"}, {ply}, 2)	
+            TK.AM:SystemMessage({"Multiple Targets Found"}, {ply}, 2)    
         else
             local tar = targets[1]
             local amount = tonumber(arg[2])
             if !amount || amount <= 0 then
-                TK.AM:SystemMessage({"Invalid Amount"}, {ply}, 2)	
+                TK.AM:SystemMessage({"Invalid Amount"}, {ply}, 2)    
                 return
             end
             
@@ -34,7 +34,7 @@ if SERVER then
             TK.AM:SystemMessage({"Given ", tar, " "..TK:Format(amount).." Credits"}, {ply}, 2)
             TK.AM:SystemMessage({"Recived ", TK:Format(amount).." Credits From ", ply}, {tar}, 2)
         end
-	end
+    end
 else
 
 end

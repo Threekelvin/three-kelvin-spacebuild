@@ -6,7 +6,7 @@ PLUGIN.Command    = "Send"
 PLUGIN.Level      = 4
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         local count1, target1 = TK.AM:FindPlayer(arg[1])
         local count2, target2 = TK.AM:FindPlayer(arg[2])
         
@@ -57,7 +57,7 @@ if SERVER then
                 TK.AM:SystemMessage({" You Can Not Send ", tar1}, {ply}, 2)
             end
         end
-	end
+    end
 else
 
 end

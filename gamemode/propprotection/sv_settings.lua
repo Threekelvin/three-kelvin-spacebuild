@@ -1,7 +1,7 @@
 
-TK.PP = {}
+TK.PP = TK.PP || {}
 
-TK.PP.BuddySettings = {"Tool Gun", "Gravity Gun", "Phys Gun", "Use", "Duplicator", "CPPI"}
+TK.PP.BuddySettings = {"Tool Gun", "Grav Gun", "Phys Gun", "Use", "Dupe", "CPPI"}
 
 TK.PP.Settings = {
     ["Tool Gun"] = {
@@ -18,7 +18,7 @@ TK.PP.Settings = {
             SuperAdmin = false
         }
     },
-    ["Gravity Gun"] = {
+    ["Grav Gun"] = {
         Prop = {
             User = false,
             Moderator = true,
@@ -66,7 +66,7 @@ TK.PP.Settings = {
             SuperAdmin = true
         }
     },
-    ["Duplicator"] = {
+    ["Dupe"] = {
         Prop = {
             User = false,
             Moderator = false,
@@ -87,18 +87,6 @@ TK.PP.Settings = {
 
 TK.PP.CleanupBlackList = {
     "player",
-    "info_player_allies",
-    "info_player_axis",
-    "info_player_combine",
-    "info_player_counterterrorist",
-    "info_player_deathmatch",
-    "info_player_logo",
-    "info_player_rebel",
-    "info_player_start",
-    "info_player_terrorist",
-    "info_player_blu",
-    "info_player_red",
-    "prop_dynamic",
     "physgun_beam",
     "player_manager",
     "predicted_viewmodel",

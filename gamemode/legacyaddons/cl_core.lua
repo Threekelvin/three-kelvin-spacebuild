@@ -34,7 +34,7 @@ function Legacy:PopulateNode(root, dir, parent, pnl, vp)
             end
         end
         
-		pnl:SwitchPanel(vp)
+        pnl:SwitchPanel(vp)
     end
 end
 
@@ -44,7 +44,7 @@ end
 
 hook.Add("PopulateContent", "Legacy Addons", function(pnlContent, tree, node)
     local ViewPanel = vgui.Create("ContentContainer", pnlContent)
-	ViewPanel:SetVisible(false)
+    ViewPanel:SetVisible(false)
     local parent = node:AddNode("Legacy Addons", "icon16/folder_database.png")
     
     for k,v in pairs(Legacy:GetAddons()) do

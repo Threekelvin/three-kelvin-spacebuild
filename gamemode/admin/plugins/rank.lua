@@ -6,7 +6,7 @@ PLUGIN.Command    = "Rank"
 PLUGIN.Level      = 7
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         local count, targets = TK.AM:TargetPlayer(ply, arg[1])
         
         if count == 0 then
@@ -24,14 +24,14 @@ if SERVER then
             else
                 local time = tonumber(arg[3]) || 0
                 if !time || time == 0 then
-                    timer.Remove("temp_lvl_"..tar:GetNWString("UID"))
+                    timer.Remove("temp_lvl_"..tar:UID())
                     TK.DB:UpdatePlayerData(tar, "player_info", {rank = lvl})
                     TK.AM:SystemMessage({ply, " Has Set ", tar, " To ", TK.AM.Rank.RGBA[lvl], "["..TK.AM.Rank.Group[lvl].."]"})
                 else
-                    timer.Remove("temp_lvl_"..tar:GetNWString("UID"))
-                    timer.Create("temp_lvl_"..tar:GetNWString("UID"), time * 60, 1, function()
+                    timer.Remove("temp_lvl_"..tar:UID())
+                    timer.Create("temp_lvl_"..tar:UID(), time * 60, 1, function()
                         if IsValid(tar) then
-                            local lvl_old = TK.DB:GetPlayerData(tar:GetNWString("UID"), "player_info").rank
+                            local lvl_old = TK.DB:GetPlayerData(tar:UID(), "player_info").rank
                             TK.AM:SetRank(tar, lvl_old)
                             TK.AM:SystemMessage({tar, " Is Now ", TK.AM.Rank.RGBA[lvl_old], "["..TK.AM.Rank.Group[lvl_old].."]"})
                         end
@@ -42,7 +42,7 @@ if SERVER then
                 end
             end
         end
-	end
+    end
 else
 
 end

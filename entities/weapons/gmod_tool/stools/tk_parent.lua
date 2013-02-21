@@ -1,7 +1,7 @@
-TOOL.Category		= "Constraints"
-TOOL.Name			= "#Parent"
-TOOL.Command		= nil
-TOOL.ConfigName		= ""
+TOOL.Category        = "Constraints"
+TOOL.Name            = "#Parent"
+TOOL.Command        = nil
+TOOL.ConfigName        = ""
 TOOL.Parent = nil
 TOOL.Selected = {}
 TOOL.OldColor = {}
@@ -12,9 +12,9 @@ TOOL.ClientConVar["pushaway"] = "1"
 
 function TOOL:CanSelectEnt(trace)
     if !IsValid(trace.Entity) then return false end
-	if trace.Entity:IsPlayer() then return false end
+    if trace.Entity:IsPlayer() then return false end
     if SERVER and !IsValid(trace.Entity:GetPhysicsObject()) then return false end
-	return true
+    return true
 end
 
 function TOOL:IsEntSelected(ent)
@@ -148,7 +148,7 @@ function TOOL:RightClick(trace)
     
     self:UnSelectEnt(self.Parent)
     self.Selected = {}
-	self.OldColor = {}
+    self.OldColor = {}
     ply:SendLua('GAMEMODE:AddNotify("Parenting Completed", NOTIFY_HINT, 3)')
 end
 
@@ -161,7 +161,7 @@ function TOOL:Reload(trace)
     end
     
     self.Selected = {}
-	self.OldColor = {}
+    self.OldColor = {}
 end
 
 if SERVER then return end

@@ -35,36 +35,36 @@ net.Receive("3k_chat_r", function(len, ply)
 end)
 
 local function AddChatBubble(ply)
-	if IsValid(ply.bubble) then
-		ply.bubble:SetSkin(0)
-		return
-	end
-	
-	local ent = ents.Create("tk_bubble")
-	ent:SetPos(ply:GetPos() + Vector(0,0,90))
-	ent:SetAngles(ply:GetAngles())
-	ent:Spawn()
-	ent:SetParent(ply)
-	ent:SetSkin(0)
-	ply.bubble = ent
+    if IsValid(ply.bubble) then
+        ply.bubble:SetSkin(0)
+        return
+    end
+    
+    local ent = ents.Create("tk_bubble")
+    ent:SetPos(ply:GetPos() + Vector(0,0,90))
+    ent:SetAngles(ply:GetAngles())
+    ent:Spawn()
+    ent:SetParent(ply)
+    ent:SetSkin(0)
+    ply.bubble = ent
 end
 
 local function RemoveChatBubble(ply)
-	if !IsValid(ply.bubble) then return end
-	if ply.afk then
-		ply.bubble:SetSkin(1)
-		return
-	end
-	ply.bubble:Remove()
+    if !IsValid(ply.bubble) then return end
+    if ply.afk then
+        ply.bubble:SetSkin(1)
+        return
+    end
+    ply.bubble:Remove()
 end
 
 concommand.Add("tk_chat_bubble", function(ply, cmd, arg)
     if !IsValid(ply) then return end
-	if tobool(arg[1]) then
-		AddChatBubble(ply)
-	else
-		RemoveChatBubble(ply)
-	end
+    if tobool(arg[1]) then
+        AddChatBubble(ply)
+    else
+        RemoveChatBubble(ply)
+    end
 end)
 
 hook.Add("player_connect", "TKChatBox", function(data)

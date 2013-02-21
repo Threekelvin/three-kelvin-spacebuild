@@ -4,8 +4,8 @@ local PlayerData = {}
 local OSTime = 0
 
 net.Receive("DB_Sync", function()
-	local dbtable = net.ReadString()
-	PlayerData[dbtable] = PlayerData[dbtable] || {}
+    local dbtable = net.ReadString()
+    PlayerData[dbtable] = PlayerData[dbtable] || {}
     local idx = net.ReadString()
     local typ = net.ReadInt(4)
     
@@ -21,16 +21,16 @@ net.Receive("DB_Sync", function()
 end)
 
 net.Receive("DB_Time", function()
-	OSTime = os.time() - net.ReadInt(32)
+    OSTime = os.time() - net.ReadInt(32)
 end)
 
 function TK.DB:GetPlayerData(dbtable)
-	local data = PlayerData[dbtable] || {}
-	return table.Copy(data)
+    local data = PlayerData[dbtable] || {}
+    return table.Copy(data)
 end
 
 function TK.DB:OSTime()
-	return os.time() - OSTime
+    return os.time() - OSTime
 end
 
 hook.Add("Initialize", "PlayerData", function()

@@ -8,40 +8,40 @@ local table = table
 local math = math
 
 local function EnvPrioritySort(a, b)
-	if a.atmosphere.priority == b.atmosphere.priority then
-		return a.atmosphere.radius < b.atmosphere.radius
-	end
-	return a.atmosphere.priority < b.atmosphere.priority
+    if a.atmosphere.priority == b.atmosphere.priority then
+        return a.atmosphere.radius < b.atmosphere.radius
+    end
+    return a.atmosphere.priority < b.atmosphere.priority
 end
 
 function ENT:Initialize()
-	self.BaseClass.Initialize(self)
+    self.BaseClass.Initialize(self)
     self.ghd = false
-	
-	self.atmosphere = {}
-	
-	self.atmosphere.name = "Ship"
-	self.atmosphere.sphere	= false
-	self.atmosphere.noclip 	= false
+    
+    self.atmosphere = {}
+    
+    self.atmosphere.name = "Ship"
+    self.atmosphere.sphere    = false
+    self.atmosphere.noclip     = false
     self.atmosphere.combat  = true
-	self.atmosphere.priority	= 2
-	self.atmosphere.radius 		= 0
-	self.atmosphere.gravity 	= 1
-	self.atmosphere.windspeed 	= 0
-	self.atmosphere.tempcold	= 290
-	self.atmosphere.temphot		= 290
-	self.atmosphere.resources 	= {}
-	
-	self:SetNWBool("Generator", true)
-	self:AddResource("oxygen", 0)
-	self:AddResource("nitrogen", 0)
+    self.atmosphere.priority    = 2
+    self.atmosphere.radius         = 0
+    self.atmosphere.gravity     = 1
+    self.atmosphere.windspeed     = 0
+    self.atmosphere.tempcold    = 290
+    self.atmosphere.temphot        = 290
+    self.atmosphere.resources     = {}
+    
+    self:SetNWBool("Generator", true)
+    self:AddResource("oxygen", 0)
+    self:AddResource("nitrogen", 0)
     
     self.Inputs = WireLib.CreateInputs(self, {"Activate"})
     self.Outputs = WireLib.CreateOutputs(self, {"Shield", "Max Shield", "Armor", "Max Armor", "Hull", "Max Hull"})
 
     self.hull = {}
     self.hull_size = 0
-	self.brushes = {}
+    self.brushes = {}
 end
 
 function ENT:EnableGHD()
@@ -59,6 +59,10 @@ function ENT:AddHull(ent, addBrush)
         self.tk_dmg.total[k] = self.tk_dmg.total[k] + v
     end
     
+    ent:CallOnRemove("TKSC", function()
+        self:RemoveHull(ent)
+    end)
+    
     if ent:BoundingRadius() < 135 then return end
     if ent.IsTKRD then return end
     self.hull_size = self.hull_size + 1
@@ -75,20 +79,28 @@ function ENT:AddHull(ent, addBrush)
 end
 
 function ENT:RemoveHull(ent)
-    if IsValid(ent) then
-        ent.tk_env.core = nil
-        ent.tk_dmg.core = nil
-    end
+    if !IsValid(ent) then return end
+    
+    ent.tk_env.core = nil
+    ent.tk_dmg.core = nil
     self.hull[ent] = nil
     
+    ent.tk_dmg.stats.shield = 0
+    ent.tk_dmg.stats.armor = ent.tk_dmg.stats.armor * (self.tk_dmg.total.armor / self.tk_dmg.total.armor_max)
+    ent.tk_dmg.stats.hull = ent.tk_dmg.stats.hull * (self.tk_dmg.total.hull / self.tk_dmg.total.hull_max)
+    
     for k,v in pairs(ent.tk_dmg.stats) do
-        self.tk_dmg.total[k] = self.tk_dmg.total[k] + v
+        self.tk_dmg.total[k] = self.tk_dmg.total[k] - v
     end
+    
+    self.tk_dmg.total.shield = self.tk_dmg.total.shield - (ent.tk_dmg.stats.shield_max * self.tk_dmg.total.shield / self.tk_dmg.total.shield_max)
     
     if IsValid(self.brushes[ent]) then
         self.brushes[ent]:Remove()
     end
     self.brushes[ent] = nil
+    
+    ent:RemoveCallOnRemove("TKSC")
     
     if ent:BoundingRadius() < 135 then return end
     if ent.IsTKRD then return end
@@ -96,7 +108,7 @@ function ENT:RemoveHull(ent)
 end
 
 function ENT:OnRemove()
-	self.BaseClass.OnRemove(self)
+    self.BaseClass.OnRemove(self)
     
     for k,v in pairs(self.hull) do
         self:RemoveHull(v)
@@ -104,8 +116,8 @@ function ENT:OnRemove()
 end
 
 function ENT:TurnOn()
-	if self:GetActive() || !self:IsLinked() then return end
-	if self.ghd then
+    if self:GetActive() || !self:IsLinked() then return end
+    if self.ghd then
         GH.RegisterHull(self, 0)
         GH.UpdateHull(self, self:GetUp())
         
@@ -122,14 +134,14 @@ function ENT:TurnOn()
         self:SetActive(true)
     end
     
-    self.atmosphere.resources 	= {}
+    self.atmosphere.resources     = {}
     self:UpdateOutputs()
 end
 
 function ENT:TurnOff()
-	if !self:GetActive() then return end
-	self:SetActive(false)
-	
+    if !self:GetActive() then return end
+    self:SetActive(false)
+    
     if self.ghd then
         GH.UnHull(self)
     else
@@ -142,9 +154,9 @@ function ENT:TurnOff()
 end
 
 function ENT:DoThink(eff)
-	if !self:GetActive() then return end
+    if !self:GetActive() then return end
     
-	local env = TK.AT:GetSpace()
+    local env = TK.AT:GetSpace()
     local conents = self.ghd && (GH.SHIPS[self].Welds || self:GetConstrainedEntities()) || self:GetConstrainedEntities()
     
     for k,v in pairs(conents) do
@@ -191,23 +203,26 @@ function ENT:DoThink(eff)
             self.atmosphere.resources[k] = nil
         end
     end
-	
-	for k,v in ipairs(self.tk_env.envlist) do
-		if v != self then
-			env = v
-			break
-		end
-	end
-	
-	self.atmosphere.noclip = env.atmosphere.noclip
+    
+    for k,v in ipairs(self.tk_env.envlist) do
+        if v != self then
+            env = v
+            break
+        end
+    end
+    
+    self.atmosphere.noclip = env.atmosphere.noclip
     self.atmosphere.tempcold = 290 - (290 - env.atmosphere.tempcold) * (1 - eff)
     self.atmosphere.temphot = 290 - (290 - env.atmosphere.temphot) * (1 - eff)
+    
+    self.tk_dmg.total.shield = math.Clamp(self.tk_dmg.total.shield + self:GetPowerGrid(), 0, self.tk_dmg.total.shield_max)
+    WireLib.TriggerOutput(self, "Shield", self.tk_dmg.total.shield)
 end
 
 function ENT:NewNetwork(netid)
-	if netid == 0 then
-		self:TurnOff()
-	end
+    if netid == 0 then
+        self:TurnOff()
+    end
 end
 
 function ENT:UpdateValues()
@@ -224,23 +239,23 @@ function ENT:UpdateOutputs()
 end
 
 function ENT:IsStar()
-	return false
+    return false
 end
 
 function ENT:IsShip()
-	return true
+    return true
 end
 
 function ENT:IsPlanet()
-	return false
+    return false
 end
 
 function ENT:IsSpace()
-	return false
+    return false
 end
 
 function ENT:GetRadius()
-	return 0
+    return 0
 end
 
 function ENT:GetRadius2()
@@ -252,7 +267,7 @@ function ENT:GetGravity()
 end
 
 function ENT:GetVolume()
-	return 0
+    return 0
 end
 
 function ENT:Sunburn()
@@ -282,68 +297,68 @@ function ENT:InAtmosphere(pos)
         return GH.PointInShip(self, pos)
     end
     
-	for k,v in pairs(self.brushes) do
+    for k,v in pairs(self.brushes) do
         if !IsValid(v) then continue end
-		local cen, min, max = v:GetPos(), v:GetCollisionBounds()
-		if pos.x < cen.x + min.x && pos.x > cen.x + max.x && pos.y < cen.y + min.y && pos.y > cen.y + max.y && pos.z < cen.z + min.z && pos.z > cen.z + max.z then
-			return true
-		end
-	end
-	return false
+        local cen, min, max = v:GetPos(), v:GetCollisionBounds()
+        if pos.x < cen.x + min.x && pos.x > cen.x + max.x && pos.y < cen.y + min.y && pos.y > cen.y + max.y && pos.z < cen.z + min.z && pos.z > cen.z + max.z then
+            return true
+        end
+    end
+    return false
 end
 
 function ENT:DoGravity(ent)
-	if !IsValid(ent) || !ent.tk_env || ent.tk_env.nogravity then return end
-	local phys = ent:GetPhysicsObject()
-	if !IsValid(phys) then return end
+    if !IsValid(ent) || !ent.tk_env || ent.tk_env.nogravity then return end
+    local phys = ent:GetPhysicsObject()
+    if !IsValid(phys) then return end
 
-	local grav = self.atmosphere.gravity
-	if !ent.tk_env.gravity != grav then
-		local bool = grav > 0
-		phys:EnableGravity(bool)
-		phys:EnableDrag(bool)
-		ent:SetGravity(grav + 0.0001)
-		ent.tk_env.gravity = grav
-	end
+    local grav = self.atmosphere.gravity
+    if !ent.tk_env.gravity != grav then
+        local bool = grav > 0
+        phys:EnableGravity(bool)
+        phys:EnableDrag(bool)
+        ent:SetGravity(grav + 0.0001)
+        ent.tk_env.gravity = grav
+    end
 end
 
 function ENT:InSun(ent)
-	if !IsValid(ent) then return false end
-	local pos = ent:LocalToWorld(ent:OBBCenter())
-	for k,v in pairs(TK.AT:GetSuns()) do
-		local trace = {}
-		trace.start = pos - (pos - v):GetNormal() * 2048
-		trace.endpos = pos
-		trace.filter = {ent, ent:GetParent()}
-		local tr = util.TraceLine(trace)
-		if !tr.Hit then
-			return true
-		end
-	end
-	return false
+    if !IsValid(ent) then return false end
+    local pos = ent:LocalToWorld(ent:OBBCenter())
+    for k,v in pairs(TK.AT:GetSuns()) do
+        local trace = {}
+        trace.start = pos - (pos - v):GetNormal() * 2048
+        trace.endpos = pos
+        trace.filter = {ent, ent:GetParent()}
+        local tr = util.TraceLine(trace)
+        if !tr.Hit then
+            return true
+        end
+    end
+    return false
 end
 
 function ENT:DoTemp(ent)
-	if !IsValid(ent) then return 3, false end
+    if !IsValid(ent) then return 3, false end
 
-	if self:InSun(ent) then
-		return self.atmosphere.temphot, true
-	end
-	return self.atmosphere.tempcold, false
+    if self:InSun(ent) then
+        return self.atmosphere.temphot, true
+    end
+    return self.atmosphere.tempcold, false
 end
 
 hook.Add("EnterShip", "Ship Core", function(p, e, g)
     if !p.tk_env || !e:IsShip() then return end
     
     local oldenv = p:GetEnv()
-	table.insert(p.tk_env.envlist, e)
-	table.sort(p.tk_env.envlist, EnvPrioritySort)
-	local newenv = p:GetEnv()
-	
-	if oldenv != newenv then
-		newenv:DoGravity(p)
-		gamemode.Call("OnAtmosphereChange", p, oldenv, newenv)
-	end
+    table.insert(p.tk_env.envlist, e)
+    table.sort(p.tk_env.envlist, EnvPrioritySort)
+    local newenv = p:GetEnv()
+    
+    if oldenv != newenv then
+        newenv:DoGravity(p)
+        gamemode.Call("OnAtmosphereChange", p, oldenv, newenv)
+    end
 end)
 
 hook.Add("ExitShip", "Ship Core", function(p, e, g)

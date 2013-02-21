@@ -6,7 +6,7 @@ PLUGIN.Command    = nil
 PLUGIN.Level      = 1
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         local count, targets = TK.AM:FindPlayer(arg[1])
         
         if count == 0 then
@@ -18,7 +18,7 @@ if SERVER then
             table.insert(msgdata, ": "..table.concat(arg, " ", 2))
             TK.AM:SystemMessage(msgdata, {ply, targets[1]})
         end
-	end
+    end
 else
 
 end

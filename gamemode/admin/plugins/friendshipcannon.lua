@@ -6,7 +6,7 @@ PLUGIN.Command    = "OFC"
 PLUGIN.Level      = 6
 
 if SERVER then
-	function PLUGIN.Call(ply, arg)
+    function PLUGIN.Call(ply, arg)
         local tr
         local tar
         local count, targets = TK.AM:TargetPlayer(ply, arg[1])
@@ -96,7 +96,7 @@ if SERVER then
                             if IsValid(p) then
                                 p:ExitVehicle()
                                 p:Kill()
-                            end							
+                            end                            
                         elseif v:IsNPC() then
                             local dmginfo = DamageInfo()
                             dmginfo:SetDamage(2)
@@ -117,7 +117,7 @@ if SERVER then
                 targ:Remove()
             end)
         end)
-	end
+    end
 end
 
 TK.AM:RegisterPlugin(PLUGIN)

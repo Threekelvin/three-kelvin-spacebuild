@@ -41,23 +41,23 @@ end
 
 local function math_qmul(lhs, rhs)
     local lhs, rhs = lhs, rhs
-	return {
-		lhs[1] * rhs[1] - lhs[2] * rhs[2] - lhs[3] * rhs[3] - lhs[4] * rhs[4],
-		lhs[1] * rhs[2] + lhs[2] * rhs[1] + lhs[3] * rhs[4] - lhs[4] * rhs[3],
-		lhs[1] * rhs[3] + lhs[3] * rhs[1] + lhs[4] * rhs[2] - lhs[2] * rhs[4],
-		lhs[1] * rhs[4] + lhs[4] * rhs[1] + lhs[2] * rhs[3] - lhs[3] * rhs[2]
-	}
+    return {
+        lhs[1] * rhs[1] - lhs[2] * rhs[2] - lhs[3] * rhs[3] - lhs[4] * rhs[4],
+        lhs[1] * rhs[2] + lhs[2] * rhs[1] + lhs[3] * rhs[4] - lhs[4] * rhs[3],
+        lhs[1] * rhs[3] + lhs[3] * rhs[1] + lhs[4] * rhs[2] - lhs[2] * rhs[4],
+        lhs[1] * rhs[4] + lhs[4] * rhs[1] + lhs[2] * rhs[3] - lhs[3] * rhs[2]
+    }
 end
 
 local function math_qdiv(lhs, rhs)
     local lhs, rhs = lhs, rhs
-	local l = rhs[1] * rhs[1] + rhs[2] * rhs[2] + rhs[3] * rhs[3] + rhs[4] * rhs[4]
-	return {
-		( lhs[1] * rhs[1] + lhs[2] * rhs[2] + lhs[3] * rhs[3] + lhs[4] * rhs[4]) / l,
-		(-lhs[1] * rhs[2] + lhs[2] * rhs[1] - lhs[3] * rhs[4] + lhs[4] * rhs[3]) / l,
-		(-lhs[1] * rhs[3] + lhs[3] * rhs[1] - lhs[4] * rhs[2] + lhs[2] * rhs[4]) / l,
-		(-lhs[1] * rhs[4] + lhs[4] * rhs[1] - lhs[2] * rhs[3] + lhs[3] * rhs[2]) / l
-	}
+    local l = rhs[1] * rhs[1] + rhs[2] * rhs[2] + rhs[3] * rhs[3] + rhs[4] * rhs[4]
+    return {
+        ( lhs[1] * rhs[1] + lhs[2] * rhs[2] + lhs[3] * rhs[3] + lhs[4] * rhs[4]) / l,
+        (-lhs[1] * rhs[2] + lhs[2] * rhs[1] - lhs[3] * rhs[4] + lhs[4] * rhs[3]) / l,
+        (-lhs[1] * rhs[3] + lhs[3] * rhs[1] - lhs[4] * rhs[2] + lhs[2] * rhs[4]) / l,
+        (-lhs[1] * rhs[4] + lhs[4] * rhs[1] - lhs[2] * rhs[3] + lhs[3] * rhs[2]) / l
+    }
 end
 
 local function math_rotationvector(tang, cang)
@@ -84,17 +84,17 @@ local function math_rotationvector(tang, cang)
     
     //-- Rotation Vec --\\
     local l2 = q[1]*q[1] + q[2]*q[2] + q[3]*q[3] + q[4]*q[4]
-	local m2 = math.max(q[2]*q[2] + q[3]*q[3] + q[4]*q[4], 0)
-	if l2 == 0 || m2 == 0 then return Vector(0, 0, 0) end
-	local s = 2 * math.acos(math.Clamp(q[1] / math.sqrt(l2), -1, 1)) * rad2deg
-	if s > 180 then s = s - 360 end
-	s = s / math.sqrt(m2)
+    local m2 = math.max(q[2]*q[2] + q[3]*q[3] + q[4]*q[4], 0)
+    if l2 == 0 || m2 == 0 then return Vector(0, 0, 0) end
+    local s = 2 * math.acos(math.Clamp(q[1] / math.sqrt(l2), -1, 1)) * rad2deg
+    if s > 180 then s = s - 360 end
+    s = s / math.sqrt(m2)
     
-	return Vector(q[2] * s, q[3] * s, q[4] * s)
+    return Vector(q[2] * s, q[3] * s, q[4] * s)
 end
 
 function ENT:Initialize()
-	self.BaseClass.Initialize(self)
+    self.BaseClass.Initialize(self)
     self.data = {}
     self.Eff = 0
     self.Aim = false
@@ -112,8 +112,8 @@ function ENT:Initialize()
 end
 
 function ENT:OnRemove()
-	self.BaseClass.OnRemove(self)
-	
+    self.BaseClass.OnRemove(self)
+    
     for k,v in pairs(self.Ents) do
         if !IsValid(v) then continue end
         self:ResetGravity(v)
@@ -127,7 +127,7 @@ function ENT:TriggerInput(iname, value)
         else
             self:TurnOff()
         end
-	elseif iname == "Thrust" then
+    elseif iname == "Thrust" then
         self.Thrust = math_vecclamp(value, -1, 1)
     elseif iname == "AngThrust" then
         self.AngThrust = math_angclamp(value, -1, 1)
@@ -171,7 +171,7 @@ function ENT:ResetGravity(ent)
 end
 
 function ENT:TurnOn()
-	if self:GetActive() || !self:IsLinked() then return end
+    if self:GetActive() || !self:IsLinked() then return end
     self:SetActive(true)
     
     self.TotalMass = 0
@@ -182,8 +182,8 @@ function ENT:TurnOn()
 end
 
 function ENT:TurnOff()
-	if !self:GetActive() then return end
-	self:SetActive(false)
+    if !self:GetActive() then return end
+    self:SetActive(false)
     
     for k,v in pairs(self.Ents) do
         if !IsValid(v) then continue end
@@ -192,7 +192,7 @@ function ENT:TurnOff()
 end
 
 function ENT:DoThink(eff)
-	if !self:GetActive() then return end
+    if !self:GetActive() then return end
     self.Eff = eff
     
     local conents = self:GetConstrainedEntities()
@@ -207,7 +207,7 @@ function ENT:DoThink(eff)
     end
 
     self.Ents = conents
-	self.data.power = math.floor(table.Count(self.Ents) * -5)
+    self.data.power = math.floor(table.Count(self.Ents) * -5)
     if !self:Work() then return end
 end
 
@@ -271,9 +271,9 @@ function ENT:Think()
 end
 
 function ENT:NewNetwork(netid)
-	if netid == 0 then
-		self:TurnOff()
-	end
+    if netid == 0 then
+        self:TurnOff()
+    end
 end
 
 function ENT:UpdateValues()
