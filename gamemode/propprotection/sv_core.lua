@@ -204,8 +204,8 @@ function PP.CleanUpDisconnected()
             SafeRemoveEntity(ent)
         end
         
+        timer.Remove(tostring(k).." cleanup")
         PP.EntityTrace[k] = nil
-        timer.Remove(k.." cleanup")
     end
 end
 ///--- ---\\\
@@ -223,8 +223,8 @@ end)
 
 concommand.Add("pp_cleanup", function(ply, cmd, arg)
     if ply:IsModerator() then
-        local dcp, uid = tobool(arg[1]), arg[2]
-        if dcp then
+        local dcp, uid = tonumber(arg[1]), arg[2]
+        if dcp == 1 then
             PP.CleanUpDisconnected()
             TK.AM:SystemMessage({ply, " Has Cleaned Up Disconnected User Props"})
         elseif uid == ply:UID() then
@@ -232,7 +232,8 @@ concommand.Add("pp_cleanup", function(ply, cmd, arg)
             TK.AM:SystemMessage({"Your Props Have Been Cleaned Up"}, {ply})
         else
             local tar = PP.GetByUniqueID(uid)
-            if !tar then return end
+            if !IsValid(tar) then return end
+            if !ply:CanRunOn(tar) then return end
             PP.CleanUpPlayer(tar)
             TK.AM:SystemMessage({ply, " Has Cleaned Up ", tar,"'s  Props"})
         end

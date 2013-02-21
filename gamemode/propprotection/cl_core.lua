@@ -164,6 +164,7 @@ function PP.OpenPlayerMenu(msg, self)
     end
     
     for k,v in pairs(player.GetAll()) do
+        if v == LocalPlayer() then continue end
         local uid = v:UID()
         local line = plylist:AddLine(v:Name(), v:SteamID(), self.BuddyTable[uid] || 0, v, uid)
 
@@ -203,7 +204,7 @@ function PP.OpenPlayerMenu(msg, self)
     clean:SetText("Cleanup My Props")
     clean.DoClick = function()
         surface.PlaySound("ui/buttonclickrelease.wav")
-        RunConsoleCommand("pp_cleanup", false, LocalPlayer():UID())
+        RunConsoleCommand("pp_cleanup", 0, LocalPlayer():UID())
     end
     
     if !LocalPlayer():IsModerator() then return end
@@ -224,7 +225,7 @@ function PP.OpenPlayerMenu(msg, self)
             clean_ply:SetEnabled(true)
             clean_ply.DoClick = function()
                 surface.PlaySound("ui/buttonclickrelease.wav")
-                RunConsoleCommand("pp_cleanup", false, uid)
+                RunConsoleCommand("pp_cleanup", 0, uid)
             end
         else
             clean_ply:SetVisible(false)
@@ -238,7 +239,7 @@ function PP.OpenPlayerMenu(msg, self)
     disconnected:SetText("Cleanup Disconnected")
     disconnected.DoClick = function()
         surface.PlaySound("ui/buttonclickrelease.wav")
-        RunConsoleCommand("pp_cleanup", true)
+        RunConsoleCommand("pp_cleanup", 1)
     end
 end
 
