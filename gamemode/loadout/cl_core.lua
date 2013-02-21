@@ -19,7 +19,7 @@ net.Receive("TKLO_Ent", function()
                 table.insert(TK.LO.BuildingEnts[uid], {['id']=id, ['time']=CurTime()+TK.LO.RebuildTime})
             end
         end
-        TK.LO.SpawnList:Populate()
+        if TK.LO.SpawnList:IsValid() then TK.LO.SpawnList:Populate() end
     end, uid)
     TK.LO.SpawnedEnts[uid] = TK.LO.SpawnedEnts[uid] || {}
     table.insert(TK.LO.SpawnedEnts[uid], ent)
