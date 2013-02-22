@@ -73,31 +73,28 @@ function ENT:GetUnitResourceCapacity(idx)
 end
 
 function ENT:Think()
-    for k,v in ipairs(self.netdata.entities) do
+    local produce, comsume = 1, 1
+    for k,v in pairs(self.netdata.entities) do
         if !IsValid(v) then
             self.netdata.entities[k] = nil
             continue
         end
         
-        if (v:GetPos() - self:GetPos()):LengthSqr() <= self.rangesqr then continue end
-        
-        v:Unlink()
-        v:SoundPlay(0)
-    end
-    
-    local produce = 1
-    local comsume = 1
-    for k,v in pairs(self.netdata.entities) do
-        local power = v:GetUnitPowerGrid()
-        if power > 0 then
-            produce = produce + power
+        if (v:GetPos() - self:GetPos()):LengthSqr() > self.rangesqr then 
+            v:Unlink()
+            v:SoundPlay(0)
         else
-            comsume = comsume - power
+            local power = v:GetUnitPowerGrid()
+            if power > 0 then
+                produce = produce + power
+            else
+                comsume = comsume - power
+            end
         end
     end
     local efficenty = produce == 1 && 0 || math.min((produce / comsume)^2, 1)
 
-    for k,v in ipairs(self.netdata.entities) do
+    for k,v in pairs(self.netdata.entities) do
         local valid, info = pcall(v.DoThink, v, efficenty)
         if !valid then print(info) end
     end
@@ -105,7 +102,7 @@ function ENT:Think()
     if !self.netdata.update.network then
         self.netdata.update.network = true
         
-        for k,v in ipairs(self.netdata.entities) do
+        for k,v in pairs(self.netdata.entities) do
             local valid, info = pcall(v.UpdateValues, v)
             if !valid then print(info) end
         end
@@ -122,7 +119,7 @@ end
 function ENT:PreEntityCopy()
     local info = {}
     
-    for k,v in ipairs(self.netdata.entities) do
+    for k,v in pairs(self.netdata.entities) do
         table.insert(info, v:EntIndex())
     end
     

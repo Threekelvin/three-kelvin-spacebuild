@@ -16,17 +16,14 @@ local function BlackList(ent)
     if class == "gmod_ghost" then return false end
     if class == "prop_door_rotating" then return false end
     if class == "predicted_viewmodel" then return false end
-    if string.Left(class, 4) == "env_" then return false end
-    if string.Left(class, 5) == "info_" then return false end
-    if string.Left(class, 5) == "func_" then return false end
-    if string.Left(class, 5) == "phys_" then return false end
-    if string.Left(class, 6) == "logic_" then return false end
+    if string.match(class, "^phys_") then return false end
+    if string.match(class, "^logic_") then return false end
     return true
 end
 
 local function CanInfect(ent)
     if !IsValid(ent) then return false end
-    if ent:UID() == "none" then return false end
+    if !ent:UID() then return false end
     if Tib:IsInfected(ent) then return false end
     return BlackList(ent)
 end

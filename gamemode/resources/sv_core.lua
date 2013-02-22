@@ -195,7 +195,12 @@ function TK.RD:Link(ent, netid)
         end
     end
     
-    table.insert(netdata.entities, ent)
+    local idx = 0
+    for k,v in pairs(netdata.entities) do
+        idx = k > idx && k || idx
+    end
+    table.insert(netdata.entities, idx + 1, ent)
+    
     entdata.netid = netid
     entdata.update = {}
     netdata.update = {}
@@ -207,8 +212,7 @@ end
 function TK.RD:Unlink(ent, relink)
     if !IsValid(ent) || !ent.IsTKRD then return false end
     if ent.IsNode then
-        local entlist = table.Copy(ent.netdata.entities)
-        for k,v in ipairs(entlist) do
+        for k,v in pairs(ent.netdata.entities) do
             self:Unlink(v)
         end
         entlist = nil
@@ -230,9 +234,9 @@ function TK.RD:Unlink(ent, relink)
             end
         end
 
-        for k,v in ipairs(netdata.entities) do
+        for k,v in pairs(netdata.entities) do
             if v == ent then
-                table.remove(netdata.entities, k)
+                netdata.entities[k] = nil
                 break
             end
         end
@@ -347,8 +351,7 @@ function TK.RD:NetSupplyResource(netid, idx, amt)
     end
     
     local left = iamt
-    for i = 1, #netdata.entities, 1 do
-        local ent = netdata.entities[i]
+    for _,ent in SortedPairs(netdata.entities) do
         local entdata = ent_table[ent:EntIndex()]
         if entdata.res[idx] && entdata.res[idx].cur < entdata.res[idx].max then
             if entdata.res[idx].cur + left > entdata.res[idx].max then
@@ -407,8 +410,7 @@ function TK.RD:NetConsumeResource(netid, idx, amt)
     end
     
     local left = iamt
-    for i = #netdata.entities, 1, -1 do
-        local ent = netdata.entities[i]
+    for _,ent in SortedPairs(netdata.entities, true) do
         local entdata = ent_table[ent:EntIndex()]
         if entdata.res[idx] && entdata.res[idx].cur > 0 then
             if left > entdata.res[idx].cur then
