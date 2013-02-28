@@ -86,8 +86,8 @@ function ENT:DoThink(eff)
         end
         local yield = math.floor(self.data.yield * self.PowerLevel * eff)
         
-        if self.Stable != crystal.Stable then
-            self.Stable = crystal.Stable
+        if self.Stable != crystal.isStable then
+            self.Stable = crystal.isStable
             if self.Stable then
                 self:SoundStop(3)
                 self:SoundPlay(2)

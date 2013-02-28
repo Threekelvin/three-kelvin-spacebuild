@@ -597,8 +597,9 @@ hook.Add("PlayerSpawnedVehicle", "TKRD", function(ply, ent)
         
         if !self:Work() then return end
         if !IsValid(ply) then return end
+        if !ply.tk_hev then return end
         
-        if ply.tk_hev.engery < ply.tk_hev.energymax then
+        if ply.tk_hev.energy < ply.tk_hev.energymax then
             ply:AddhevRes("energy", 5 * eff)
         end
         if ply.tk_hev.water < ply.tk_hev.watermax then

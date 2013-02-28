@@ -2,24 +2,25 @@ local Show = CreateClientConVar("tk_aoc_show", 1, true, false)
 local Version = CreateClientConVar("tk_aoc_version", 0, true, false)
 
 local AOC = {}
-AOC.ListVersion = 1 //change this to make it popup for everyone
+AOC.ListVersion = 2 //change this to make it popup for everyone
 
 AOC.Tutorial = {
     ["SVN Tutorial"]                        = "http://facepunch.com/showthread.php?t=688324"  
 }
 AOC.Legacy = {
-    ["SpaceBuild Enhancement Project"]        = "https://github.com/SnakeSVx/sbep/trunk/",
-    ["Spacebuild"]                            = "https://github.com/SnakeSVx/spacebuild/trunk/",
+    ["SpaceBuild Enhancement Project"]      = "https://github.com/SnakeSVx/sbep/trunk/",
+    ["Spacebuild"]                          = "https://github.com/SnakeSVx/spacebuild/trunk/",
     ["Shadowscion's Construction Props"]    = "http://shadowscions-construction-props.googlecode.com/svn/trunk/",
     ["TKMP"]                                = "http://3k-model-pack.googlecode.com/svn/trunk/",
-    ["Wiremod"]                                = "https://github.com/wiremod/wire/trunk/",
-    ["Wire Unofficial Extras"]                = "https://github.com/wiremod/wire-extras/trunk/"
+    ["Wiremod"]                             = "https://github.com/wiremod/wire/trunk/",
+    ["Wire Unofficial Extras"]              = "https://github.com/wiremod/wire-extras/trunk/"
 }
 AOC.Workshop = {
-    ["104694154"]                            = "104694154",    // Mane Six
-    ["106904944"]                            = "106904944",    // The Other Ponies
-    ["107155115"]                            = "107155115",    // Pony Player Models
-    ["107306185"]                           = "107306185"    // Dead Space Player Model
+    ["104694154"]                           = "104694154",    // Mane Six
+    ["106904944"]                           = "106904944",    // The Other Ponies
+    ["107155115"]                           = "107155115",    // Pony Player Models
+    ["107306185"]                           = "107306185",    // Dead Space Player Model
+    ["107305209"]                           = "107305209"     // Dead Space Engi Player Model
 }
 AOC.MountedLegacy = {}
 

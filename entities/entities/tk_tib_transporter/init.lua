@@ -69,7 +69,7 @@ end
 
 function ENT:Touch(ent)
     if !IsValid(ent) || IsValid(ent:GetParent()) then return end
-    if ent:GetClass() != "tk_tib_storage" || !ent:IsPlayerHolding() || Tib:IsInfected(ent) then return end
+    if ent:GetClass() != "tk_tib_storage" || !ent:IsPlayerHolding() || TK.TI:IsInfected(ent) then return end
     local owner = ent:CPPIGetOwner()
     if !IsValid(owner) || owner:GetPos():Distance(ent:GetPos()) > 500 then return end
     if IsValid(self.Storage.Slot1) && IsValid(self.Storage.Slot2) then return end

@@ -1,37 +1,25 @@
 include('shared.lua')
+
 local OutlineDang = Material("models/alyx/emptool_glow")
 
 function ENT:Initialize()
-    self.MdlScaleMax = math.Rand(0.1, 0.5)
-    self.MdlScale = 0
+    self.scale_max = math.Rand(0.2, 0.6)
+    self.scale = 0
+    self:SetModelScale(0, 0)
 end
 
 function ENT:Draw()
-    self:DrawModel()
-    
-    local scale = Vector(self.MdlScale, self.MdlScale, self.MdlScale) * 1.1
-    local mat = Matrix()
-    mat:Scale(scale)
-    
-    self:EnableMatrix("RenderMultiply", mat)
+    self:SetModelScale(self.scale * 1.1, 0)
     render.MaterialOverride(OutlineDang)
     self:DrawModel()
     
-    scale = Vector(self.MdlScale, self.MdlScale, self.MdlScale)
-    mat = Matrix()
-    mat:Scale(scale)
-    
-    self:EnableMatrix("RenderMultiply", mat)
+    self:SetModelScale(self.scale, 0)
     render.MaterialOverride(nil)
-    self:SetModelScale(1, 0)
+    self:DrawModel()
+    
+    self.scale = math.min(self.scale + 0.1 * FrameTime(), self.scale_max)
 end
 
 function ENT:DrawTranslucent()
     self:Draw()
-end
-
-function ENT:Think()
-    if self.MdlScale < self.MdlScaleMax then
-        self.MdlScale = self.MdlScale + 0.0002
-    end
 end

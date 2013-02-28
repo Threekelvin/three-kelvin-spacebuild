@@ -7,7 +7,7 @@ Legacy.Queue = {}
 function Legacy:GetAddons()
     local data = {}
     local files, folders = file.Find("addons/*", "GAME")
-    for k,v in pairs(folders) do
+    for k,v in pairs(folders || {}) do
         if !file.Exists("addons/" ..v.. "/addon.txt", "GAME") then continue end
         if !file.Exists("addons/" ..v.. "/models", "GAME") then continue end
         table.insert(data, v)
@@ -17,7 +17,7 @@ end
 
 function Legacy:PopulateNode(root, dir, parent, pnl, vp)
     local _, folders = file.Find(root .. dir .. "*", "GAME")
-    for k,v in pairs(folders) do
+    for k,v in pairs(folders || {}) do
         local child = parent:AddNode(v, "icon16/folder_database.png")
         self:AddToQueue(root, dir .. v .. "/", child, pnl, vp)
     end
@@ -26,7 +26,7 @@ function Legacy:PopulateNode(root, dir, parent, pnl, vp)
         vp:Clear(true)
         
         local files = file.Find(root .. dir .. "*", "GAME")
-        for k,v in pairs(files) do
+        for k,v in pairs(files || {}) do
             if string.match(v, "[%w]+$") != "mdl" then continue end
             local cp = spawnmenu.GetContentType("model")
             if cp then

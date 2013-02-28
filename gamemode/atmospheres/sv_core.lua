@@ -1,5 +1,5 @@
 
-TK.AT = {}
+TK.AT = TK.AT || {}
 
 local Suns = {}
 local Stars = {}
@@ -338,8 +338,11 @@ function TK.AT:GetAtmosphereOnPos(pos)
     return env
 end
 
+util.AddNetworkString("TKAT")
+
 hook.Add("Initialize", "TKAT", function()
-    GAMEMODE.OnAtmosphereChange = function()
+    GAMEMODE.OnAtmosphereChange = function(ent, new, old)
+        
     end
     
     function _R.Entity:GetEnv()

@@ -114,7 +114,7 @@ function TK.DC:DmgHull(hull, amt, typ)
     return hull - dmg, dmg / dmg_max
 end
 
-function TK.DC:DoDamge(ent, amt, typ)
+function TK.DC:Damge(ent, amt, typ)
     if !IsValid(ent) || !ent.tk_dmg then return end
     if !self:CanDamage(ent) then return end
     local useCore = IsValid(ent.tk_dmg.core)
@@ -157,5 +157,9 @@ function TK.DC:DoBlastDamage(pos, rad, amt, typ)
         else
             table.insert(takedmg, ent)
         end
+    end
+    
+    for k,v in pairs(takedmg) do
+        self:Damge(v, amt, typ)
     end
 end

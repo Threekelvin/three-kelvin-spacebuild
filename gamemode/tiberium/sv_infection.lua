@@ -1,8 +1,8 @@
 
-Tib = {}
+TK.TI = TK.TI || {}
 local Contraptions = {}
 
-function Tib:IsInfected(ent)
+function TK.TI:IsInfected(ent)
     if ent.TibInfect != nil then return true end
     return false
 end
@@ -24,7 +24,7 @@ end
 local function CanInfect(ent)
     if !IsValid(ent) then return false end
     if !ent:UID() then return false end
-    if Tib:IsInfected(ent) then return false end
+    if TK.TI:IsInfected(ent) then return false end
     return BlackList(ent)
 end
 
@@ -50,7 +50,7 @@ local function ScanNetwork(netid, entlist)
 end
 
 local function ScanForEntities(ent)
-    local entities = ent:GetConstrainedEntities()
+    local entities = constraint.GetAllConstrainedEntities(ent)
     local entlist = {}
     local nets = {0}
     
@@ -84,33 +84,14 @@ local function GetContraption(ent)
             Contraptions[idx][k] = nil
         else
             if v:GetClass() == "tk_tib_storage" then
-                v.TibContraption = {}
-                Tib:Infect(v)
+                v.tk_tib = {}
+                TK.TI:Infect(v)
             else
-                v.TibContraption = Contraptions[idx]
+                v.tk_tib = Contraptions[idx]
             end
         end
     end
     return Contraptions[idx]
-end
-
-local function SpawnInfetion(ent)
-    if ent:BoundingRadius() < 35 then return end
-    
-    local pos = Vector(1,1,1) * (ent:BoundingRadius() + 250)
-    pos:Rotate(Angle(math.random(-180,180), math.random(-180,180), math.random(-180,180)))
-    local tracedata = {}
-    tracedata.start = ent:LocalToWorld(ent:OBBCenter() + pos)
-    tracedata.endpos = ent:LocalToWorld(ent:OBBCenter())
-    local trace = util.TraceLine(tracedata)
-    
-    if IsValid(trace.Entity) && (Tib:IsInfected(trace.Entity) || ent.TibContraption[trace.Entity:EntIndex()] == trace.Entity) then
-        local inf = ents.Create("tk_tib_infection")
-        inf:SetPos(trace.HitPos)
-        inf:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
-        inf:Spawn()
-        inf:SetParent(trace.Entity)
-    end
 end
 
 local function GarbageCollection()
@@ -125,6 +106,31 @@ local function GarbageCollection()
     end
 end
 
+local function SpawnCrystal(ent)
+    if !IsValid(ent) || !IsValid(ent:GetPhysicsObject()) then return end
+    
+    for i = 0, 10 do
+        local radius = ent:BoundingRadius() * 1.25
+        local point1  = ent:LocalToWorld(ent:OBBCenter() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), math.Rand(-1, 1)) * radius)
+        local point2 = ent:NearestPoint(point1)
+        local td = {}
+        td.start = point1
+        td.endpos = point2 + (point2 - point1):GetNormal() * radius
+        local trace = util.TraceLine(td)
+        if trace.StartSolid then continue end
+        if !IsValid(trace.Entity) || !TK.TI:IsInfected(trace.Entity) then continue end
+        if !ent.tk_tib[trace.Entity:EntIndex()] == trace.Entity then continue end
+        
+        
+        local crystal = ents.Create("tk_tib_infection")
+        crystal:SetPos(trace.HitPos)
+        crystal:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
+        crystal:Spawn()
+        crystal:SetParent(trace.Entity)
+        return
+    end
+end
+
 local function InfectionThink(ent, contraption)
     if contraption then
         local Valid = false
@@ -132,7 +138,7 @@ local function InfectionThink(ent, contraption)
         for k,v in pairs(contraption) do
             if CanInfect(v) then
                 Valid = true
-                Tib:Infect(v)
+                TK.TI:Infect(v)
                 break
             end
         end
@@ -159,25 +165,25 @@ local function InfectionThink(ent, contraption)
         SafeRemoveEntity(ent)
     else
         ent.TibInfect = ent.TibInfect + 1
-        SpawnInfetion(ent)
+        SpawnCrystal(ent)
         timer.Simple(math.random(5, 10) * factor, function() InfectionThink(ent, contraption) end)
     end
 end
 
-function Tib:Infect(ent)
+function TK.TI:Infect(ent)
     if !CanInfect(ent) then return end
     ent.TibInfect = 0
-    if !ent.TibContraption then
-        ent.TibContraption = GetContraption(ent)
+    if !ent.tk_tib then
+        ent.tk_tib = GetContraption(ent)
     end
     
     local factor = math.Clamp(ent:BoundingRadius() / 100, 1, 3)
-    SpawnInfetion(ent)
-    timer.Simple(math.random(5, 10) * factor, function() InfectionThink(ent, ent.TibContraption) end)
+    SpawnCrystal(ent)
+    timer.Simple(math.random(5, 10) * factor, function() InfectionThink(ent, ent.tk_tib) end)
 end
 
-function Tib:InfectBlast(ent, radius)
+function TK.TI:InfectBlast(ent, radius)
     for k,v in pairs(TK:FindInSphere(ent:GetPos(), radius)) do
-        Tib:Infect(v)
+        self:Infect(v)
     end
 end

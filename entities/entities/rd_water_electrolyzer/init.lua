@@ -12,7 +12,7 @@ function ENT:Initialize()
     self:AddSound("l", 2, 65)
     
     WireLib.CreateInputs(self, {"On", "Multiplier", "Mute"})
-    WireLib.CreateOutputs(self, {"On", "Output"})
+    WireLib.CreateOutputs(self, {"On", "H2Output", "O2Output"})
 end
 
 function ENT:TriggerInput(iname, value)
@@ -41,7 +41,8 @@ function ENT:TurnOff()
     self:SetActive(false)
     self:SoundStop(1)
     WireLib.TriggerOutput(self, "On", 0)
-    WireLib.TriggerOutput(self, "Output", 0)
+    WireLib.TriggerOutput(self, "O2Output", 0)
+    WireLib.TriggerOutput(self, "H2Output", 0)
 end
 
 function ENT:DoThink(eff)
@@ -53,9 +54,8 @@ function ENT:DoThink(eff)
     if !self:Work() then return end
     
     water = self:ConsumeResource("water", water)
-    self:SupplyResource("oxygen", water / 2)
-    self:SupplyResource("hydrogen", water)
-    WireLib.TriggerOutput(self, "O2Output", water)
+    WireLib.TriggerOutput(self, "O2Output", self:SupplyResource("oxygen", water / 2))
+    WireLib.TriggerOutput(self, "H2Output", self:SupplyResource("hydrogen", water))
 end
 
 function ENT:NewNetwork(netid)

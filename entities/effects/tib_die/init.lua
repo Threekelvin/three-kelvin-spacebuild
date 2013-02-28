@@ -1,14 +1,12 @@
 
 function EFFECT:Init(data)
-    local pos = data:GetOrigin()
+    self.origin = data:GetOrigin()
 
-    sound.Play("ambient/energy/ion_cannon_shot"..math.random(1, 3)..".wav", pos, 75, 100)
-    
-    local emitter = ParticleEmitter( pos )
+    sound.Play("ambient/energy/ion_cannon_shot"..math.random(1, 3)..".wav", self.origin, 75, 100)
+    local emitter = ParticleEmitter(self.origin)
         
         for i = 0, 64 do
-        
-            local vPos = pos + Vector( math.Rand(-25, 25), math.Rand(-25, 25), math.Rand(-25, 25) )
+            local vPos = self.origin + Vector( math.Rand(-25, 25), math.Rand(-25, 25), math.Rand(-25, 25) )
             local vVel = Vector( math.Rand(-100, 100), math.Rand(-100, 100), math.Rand(0, 25) )
             local particle = emitter:Add( "particle/smokesprites_0010", vPos )
             if (particle) then
@@ -23,8 +21,7 @@ function EFFECT:Init(data)
                 particle:SetRollDelta( 0 )
                 particle:SetAirResistance(math.Rand(20, 25))
                 particle:SetColor(0, math.random(125, 175), 0)
-            end
-            
+            end  
         end
         
     emitter:Finish()

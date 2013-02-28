@@ -22,7 +22,7 @@ function ENT:TriggerInput(iname, value)
             self:TurnOff()
         end
     elseif iname == "Multiplier" then
-        self.multiplier = math.max(0, value)
+        self.mult = math.max(0, value)
     elseif iname == "Mute" then
         self.mute = tobool(value)
     end

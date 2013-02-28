@@ -31,7 +31,7 @@ if SERVER then
                     timer.Remove("temp_lvl_"..tar:UID())
                     timer.Create("temp_lvl_"..tar:UID(), time * 60, 1, function()
                         if IsValid(tar) then
-                            local lvl_old = TK.DB:GetPlayerData(tar:UID(), "player_info").rank
+                            local lvl_old = TK.DB:GetPlayerData(tar, "player_info").rank
                             TK.AM:SetRank(tar, lvl_old)
                             TK.AM:SystemMessage({tar, " Is Now ", TK.AM.Rank.RGBA[lvl_old], "["..TK.AM.Rank.Group[lvl_old].."]"})
                         end

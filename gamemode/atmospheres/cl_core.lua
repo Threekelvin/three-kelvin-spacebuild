@@ -1,2 +1,2 @@
 
-TK.AT = {}
+TK.AT = TK.AT || {}
