@@ -43,7 +43,7 @@ hook.Add("Initialize", "TKChatBox", function()
         for k,v in ipairs({...}) do
             if type(v) == "Entity" then
                 table.insert(Table, Color(151,211,255))
-                table.insert(Table, v:Name())
+                table.insert(Table, "Console")
             elseif type(v) == "Player" then
                 table.insert(newarg, v:GetRGBA())
                 table.insert(newarg, v:GetTag())

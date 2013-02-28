@@ -17,7 +17,7 @@ local function MessageSetup(arg)
             table.insert(Table, v)
         elseif type(v) == "Entity" then
             table.insert(Table, Color(151,211,255))
-            table.insert(Table, v:Name())
+            table.insert(Table, "Console")
         elseif type(v) == "Player" then
             table.insert(Table, v:GetRGBA())
             table.insert(Table, v:GetTag())
