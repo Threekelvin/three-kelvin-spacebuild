@@ -77,23 +77,13 @@ function _R.Entity:GetSafeName()
     return name
 end
 
-function _R.Entity:Nick()
-    if !IsValid(self) || !self:IsPlayer() then return "Console" end
-    return self:GetNWString("TKName", self:GetSafeName())
-end
-
 function _R.Player:Nick()
     if !IsValid(self) then return "Console" end
     return self:GetNWString("TKName", self:GetSafeName())
 end
 
-function _R.Entity:Name()
-    if !IsValid(self) || !self:IsPlayer() then return "Console" end
-    return self:GetNWString("TKName", self:GetSafeName())
-end
-
 function _R.Player:Name()
-    if !IsValid(self) || !self:IsPlayer() then return "Console" end
+    if !IsValid(self) then return "Console" end
     return self:GetNWString("TKName", self:GetSafeName())
 end
 
