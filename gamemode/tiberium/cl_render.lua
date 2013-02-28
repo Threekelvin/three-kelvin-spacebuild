@@ -21,13 +21,16 @@ hook.Add("Initialize", "TKTIB", function()
                 return
             elseif idx == "TKTib_M" then
                 local entid, stage = msg:ReadShort(), msg:ReadShort()
-                Models[entid] = Models[entid] || {}
+                local x, y, z = msg:ReadFloat(), msg:ReadFloat(), msg:ReadFloat()
+                if stage == 1 then Models[entid] = {} end
+                
                 Models[entid].pre = Models[entid].cur
                 Models[entid].cur = TK.Settings.Tiberium[stage].model
                 Models[entid].grow = true
                 Models[entid].offset = nil
                 Models[entid].offset_max = nil
                 Models[entid].time = SysTime()
+                Models[entid].origin = Vector(x, y, z)
                 return
             end
             
@@ -46,10 +49,6 @@ function TK.TI:DrawTib(ent)
     local entid = ent:EntIndex()
     local data = Models[entid]
     if !data then return end
-    
-    if !data.origin then
-        data.origin = ent:GetPos()
-    end
     
     if data.grow then
         if !data.offset then

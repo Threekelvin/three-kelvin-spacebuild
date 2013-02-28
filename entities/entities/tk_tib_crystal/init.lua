@@ -165,23 +165,27 @@ end
 umsg.PoolString("TKTib_S")
 umsg.PoolString("TKTib_M")
 
-function ENT:SendStatus()
-    umsg.Start("TKTib_S")
+function ENT:SendStatus(ply)
+    umsg.Start("TKTib_S", ply)
         umsg.Short(self:EntIndex())
         umsg.Bool(self.isStable)
     umsg.End()
 end
 
-function ENT:SendStage()
-    umsg.Start("TKTib_M")
+function ENT:SendStage(ply)
+    local pos = self:GetPos()
+    umsg.Start("TKTib_M", ply)
         umsg.Short(self:EntIndex())
         umsg.Short(self.Stage)
+        umsg.Float(pos.x)
+        umsg.Float(pos.y)
+        umsg.Float(pos.z)
     umsg.End()
 end
 
 hook.Add("PlayerInitialSpawn", "TKTib_SendStatus", function(ply)
     for _,ent in pairs(ents.FindByClass("tk_tib_crystal")) do
-        ent:SendStatus()
-        ent:SendStage()
+        ent:SendStatus(ply)
+        ent:SendStage(ply)
     end
 end)
