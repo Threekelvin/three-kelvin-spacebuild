@@ -22,13 +22,11 @@ hook.Add("Initialize", "TKTIB", function()
             elseif idx == "TKTib_M" then
                 local entid, stage = msg:ReadShort(), msg:ReadShort()
                 local x, y, z = msg:ReadFloat(), msg:ReadFloat(), msg:ReadFloat()
-                if stage == 1 then Models[entid] = {} end
                 
-                Models[entid].pre = Models[entid].cur
+                Models[entid] = {}                
+                Models[entid].pre = (TK.Settings.Tiberium[stage - 1] || {}).model
                 Models[entid].cur = TK.Settings.Tiberium[stage].model
                 Models[entid].grow = true
-                Models[entid].offset = nil
-                Models[entid].offset_max = nil
                 Models[entid].time = SysTime()
                 Models[entid].origin = Vector(x, y, z)
                 return
@@ -59,7 +57,7 @@ function TK.TI:DrawTib(ent)
         if util.IsValidModel(data.pre || "") then
             local progress = data.offset / data.offset_max
             
-            ent:SetRenderOrigin(data.origin - Vector(0,0, (data.offset_max - data.offset) / 2))
+            ent:SetRenderOrigin(data.origin - ent:GetUp() * (data.offset_max - data.offset) / 2)
             ent:SetModel(data.pre)
             
             ent:SetModelScale(1 * progress, 0)
@@ -72,7 +70,7 @@ function TK.TI:DrawTib(ent)
             ent:SetModel(data.cur)
         end
         
-        ent:SetRenderOrigin(data.origin - Vector(0, 0, data.offset))
+        ent:SetRenderOrigin(data.origin - ent:GetUp() * data.offset)
         data.offset = data.offset - 5 * (SysTime() - data.time)
         data.time = SysTime()
         

@@ -183,7 +183,7 @@ local function ConMessageSetup(arg)
     for k,v in ipairs(arg) do
         if type(v) == "Entity" then
             if !IsValid(v) then
-                table.insert(Table, v:Name())
+                table.insert(Table, "Console")
             end
         elseif type(v) == "Player" then
             table.insert(Table, v:GetTag())
