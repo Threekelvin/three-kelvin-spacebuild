@@ -84,13 +84,13 @@ function _R.Entity:GetConstrainedEntities()
 end
 
 local AllowedWeapons = {
-    ["weapon_physcannon"]    =    true,
-    ["weapon_physgun"]        =    true,
-    ["gmod_camera"]            =    true,
-    ["gmod_tool"]            =    true,
+    ["weapon_physcannon"]   =   true,
+    ["weapon_physgun"]      =   true,
+    ["gmod_camera"]         =   true,
+    ["gmod_tool"]           =   true,
     ["hands"]               =   true,
-    ["remotecontroller"]    =    true,
-    ["laserpointer"]        =    true
+    ["remotecontroller"]    =   true,
+    ["laserpointer"]        =   true
 }
 
 function GM:PlayerCanPickupWeapon(ply, wep)
@@ -134,6 +134,25 @@ hook.Add("Initialize", "PAC_Fix", function()
     timer.Create("pac_playermodels", 0.5, 0, function()
         for _,ply in pairs(player.GetAll()) do
             gamemode.Call("PlayerSetModel", ply)
+        end
+    end)
+    
+    timer.Create("TKTI_Damage", 1, 0, function()
+        for _,ply in pairs(player.GetAll()) do
+            for k,v in pairs(TK.Settings.TiberiumFields) do
+                local crystal = table.GetFirstValue(v.Ents)
+                if !IsValid(crystal) then continue end
+                
+                local dist = (v.Pos - ply:GetPos()):LengthSqr()
+                if dist > 2250000 then continue end
+                
+                local dmginfo = DamageInfo()
+                dmginfo:SetDamage(math.ceil(25 * (1 - dist / 2250000)))
+                dmginfo:SetDamageType(DMG_RADIATION)
+                dmginfo:SetAttacker(crystal)
+                dmginfo:SetInflictor(crystal)
+                ply:TakeDamageInfo(dmginfo)
+            end
         end
     end)
 end)
@@ -211,7 +230,7 @@ hook.Add("Tick", "TKSpawning", function()
             end)
             
             v.Ents[ent:EntIndex()] = ent
-            v.NextSpawn = CurTime() + 60 * (table.Count(v.Ents)/10) + 5
+            v.NextSpawn = CurTime() + 90 * (table.Count(v.Ents)/10) + 5
         else
             v.NextSpawn = CurTime() + 1
         end

@@ -9,7 +9,8 @@ SoundLib.a = {
     Sound("buttons/button1.wav"),
     Sound("misc/hologram_start.wav"),
     Sound("vehicles/crane/crane_magnet_switchon.wav"),
-    Sound("ambient/levels/citadel/advisor_leave.wav")
+    Sound("ambient/levels/citadel/advisor_leave.wav"),
+    Sound("warpdrive/warp.wav")
 }
 SoundLib.l = {
     Sound("ambient/machines/refinery_loop_1.wav"),
@@ -34,7 +35,8 @@ SoundLib.d = {
     Sound("ambient/machines/zap2.wav"),
     Sound("ambient/machines/zap3.wav"),
     Sound("misc/hologram_malfunction.wav"),
-    Sound("ambient/machines/catapult_throw.wav")
+    Sound("ambient/machines/catapult_throw.wav"),
+    Sound("warpdrive/error2.wav")
 }
 
 function ENT:Initialize()
@@ -182,26 +184,17 @@ function ENT:UpdateValues()
 end
 
 function ENT:PreEntityCopy()
-    local info = {}
-    if WireLib then
-        info.wire = WireLib.BuildDupeInfo(self)
-    end
-    
-    if table.Count(info) == 0 then return end
-    duplicator.StoreEntityModifier(self, "TKRDInfo", info)
+    local info = WireLib.BuildDupeInfo(self)
+    if !info then return end
+    duplicator.StoreEntityModifier(self, "WireDupeInfo", info)
 end
 
 function ENT:PostEntityPaste(ply, ent, entlist)
-    if !self.EntityMods || !self.EntityMods.TKRDInfo then return end
-    local TKRDInfo = self.EntityMods.TKRDInfo
-    
-    if WireLib then
-        WireLib.ApplyDupeInfo(ply, ent, TKRDInfo.wire, function(id) return entlist[id] end)
-    end
-    
-    self.EntityMods.TKRDInfo = nil
+    if !self.EntityMods || !self.EntityMods.WireDupeInfo then return end
+    local WireDupeInfo = self.EntityMods.WireDupeInfo
+    WireLib.ApplyDupeInfo(ply, ent, WireDupeInfo, function(id) return entlist[id] end)
+    self.EntityMods.WireDupeInfo = nil
 end
-
 
 function ENT:AddResource(idx, max, gen)
     return TK.RD:EntAddResource(self, idx, max, gen)

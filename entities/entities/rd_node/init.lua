@@ -133,7 +133,7 @@ function ENT:PostEntityPaste(ply, ent, entlist)
 
     for k,v in ipairs(TKRDInfo || {}) do
         local ent2 = entlist[v]
-        if IsValid(ent2) && ent2.TKRD then
+        if IsValid(ent2) && ent2.IsTKRD then
             ent2:Link(self.netid)
         end
     end

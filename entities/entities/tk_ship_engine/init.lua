@@ -174,7 +174,6 @@ function ENT:TurnOn()
     if self:GetActive() || !self:IsLinked() then return end
     self:SetActive(true)
     
-    self.TotalMass = 0
     self.Ents = self:GetConstrainedEntities()
     for k,v in pairs(self.Ents) do
        self:DisableGravity(v)
@@ -202,7 +201,8 @@ function ENT:DoThink(eff)
     end
     
     for k,v in pairs(self.Ents) do
-        if !IsValid(v) || conents[k] then continue end
+        if conents[k] then continue end
+        if !IsValid(v) then continue end
         self:ResetGravity(v)
     end
 

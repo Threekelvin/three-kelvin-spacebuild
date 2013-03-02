@@ -6,13 +6,7 @@ end
 
 function ENT:Draw()
     TK.TI:DrawTib(self)
-end
-
-function ENT:DrawTranslucent()
-    self:Draw()
-end
-
-function ENT:Think()
+    
     if self.NextUpdate > CurTime() then return end
     self.NextUpdate = self.NextUpdate + math.random(5, 10)
     
@@ -20,4 +14,8 @@ function ENT:Think()
     fxd:SetOrigin(self:GetPos())
     fxd:SetScale(1)
     util.Effect("VortDispel", fxd, true, true)
+end
+
+function ENT:DrawTranslucent()
+    self:Draw()
 end

@@ -32,7 +32,6 @@ function ENT:Draw()
     local OverlayText = {self.PrintName, "\nNetwork ", self:GetNetID(), "\nOwner: ", name, "\nRange: ", self:GetRange(), "\n", idx = 9}
     Add(OverlayText, "\nPower Grid: ")
     
-    netdata.powergrid = netdata.powergrid || 0
     if netdata.powergrid > 0 then
         Add(OverlayText, "+")
         Add(OverlayText, netdata.powergrid)

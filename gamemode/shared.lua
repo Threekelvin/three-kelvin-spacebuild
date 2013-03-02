@@ -145,28 +145,27 @@ local function LoadModules()
     local files, dirs = file.Find(root.."*", "LUA")
     
     for _,dir in pairs(dirs) do
-        if IsValidFolder(dir) then
-            for _,lua in pairs(file.Find(root .. dir .."/*.lua", "LUA")) do
-                local path = root .. dir .."/".. lua
-                local run = string.sub(lua, 1, 3)
-                
-                if run == "sv_" then
-                    if SERVER then
-                        include(path)
-                    end
-                elseif run == "sh_" then
-                    if SERVER then
-                        AddCSLuaFile(path)
-                        include(path)
-                    else
-                        include(path)
-                    end
-                elseif run == "cl_" then
-                    if SERVER then
-                        AddCSLuaFile(path)
-                    else
-                        include(path)
-                    end
+        if !IsValidFolder(dir) then continue end
+        
+        for _,lua in pairs(file.Find(root .. dir .."/*.lua", "LUA")) do
+            local path = root .. dir .."/".. lua
+            
+            if lua:match("^sv_") then
+                if SERVER then
+                    include(path)
+                end
+            elseif lua:match("^sh_") then
+                if SERVER then
+                    AddCSLuaFile(path)
+                    include(path)
+                else
+                    include(path)
+                end
+            elseif lua:match("^cl_") then
+                if SERVER then
+                    AddCSLuaFile(path)
+                else
+                    include(path)
                 end
             end
         end

@@ -5,10 +5,6 @@ local function Add(array, data)
     array.idx = array.idx + 1
 end
 
-function ENT:Initialize()
-
-end
-
 function ENT:Draw()
     self:DrawModel()
     
@@ -16,7 +12,6 @@ function ENT:Draw()
     if LocalPlayer():GetEyeTrace().Entity != self then return end
     
     local entdata = self:GetEntTable()
-    entdata.powergrid = entdata.powergrid || 0
     local owner , uid = self:CPPIGetOwner()
     local name = "World"
     if IsValid(owner) then

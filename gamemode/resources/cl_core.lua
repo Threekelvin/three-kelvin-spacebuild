@@ -11,6 +11,7 @@ net.Receive("TKRD_DNet", function()
     local netdata = net.ReadTable()
     netdata.update = CurTime() + 1
     net_table[netid] = netdata
+    net_table[netid].powergrid = math.Round(net_table[netid].powergrid, 2)
 end)
 
 net.Receive("TKRD_KNet", function()
@@ -22,6 +23,7 @@ net.Receive("TKRD_DEnt", function()
     local entdata = net.ReadTable()
     entdata.update = CurTime() + 1
     ent_table[entid] = entdata
+    ent_table[entid].powergrid = math.Round(ent_table[entid].powergrid, 2)
 end)
 
 net.Receive("TKRD_KEnt", function()
@@ -62,7 +64,7 @@ function TK.RD:GetNetTable(netid)
     if !netdata || netdata.update < CurTime() then
         RequestData("Net", netid)
     end
-    return netdata || {res = {}}
+    return netdata || {res = {}, powergrid = 0}
 end
 
 function TK.RD:GetEntTable(entid)

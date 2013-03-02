@@ -144,19 +144,6 @@ function ENT:Think()
         end
     end
     
-    for k,v in pairs(player.GetAll()) do
-        if !IsValid(v) || !v:Alive() then continue end
-        local dist = (self:GetPos() -v:GetPos()):LengthSqr()
-        if dist > 1000000 then continue end
-        
-        local dmginfo = DamageInfo()
-        dmginfo:SetDamage(math.ceil(10 * (1 - dist / 1000000)))
-        dmginfo:SetDamageType(DMG_RADIATION)
-        dmginfo:SetAttacker(self)
-        dmginfo:SetInflictor(self)
-        v:TakeDamageInfo(dmginfo)
-    end
-    
     self:NextThink(CurTime() + 1)
     return true
 end

@@ -55,7 +55,10 @@ function ENT:Draw()
         end
     end
     
-    Add(OverlayText, "\n")
+    Add(OverlayText, "\nSpooled: ")
+    Add(OverlayText, math.Round(entdata.data.spool || 0, 2))
+    Add(OverlayText, "%\n")
+    
     if table.Count(res) > 0 then
         Add(OverlayText, "\nResources:\n")
         for k,v in pairs(res) do
@@ -85,44 +88,4 @@ function ENT:Draw()
     end
     OverlayText.idx = nil
     AddWorldTip(nil, table.concat(OverlayText, ""), nil, self:LocalToWorld(self:OBBCenter()))
-end
-
-function ENT:Think()
-
-end
-
-function ENT:DoMenu()
-
-end
-
-function ENT:DoCommand(cmd, ...)
-    RunConsoleCommand("TKRD_EntCmd", self:EntIndex(), cmd, unpack({...}))
-end
-
-function ENT:GetEntTable()
-    return TK.RD:GetEntTable(self:EntIndex())
-end
-
-function ENT:GetPowerGrid()
-    return TK.RD:GetEntPowerGrid(self)
-end
-
-function ENT:GetResourceAmount(idx)
-    return TK.RD:GetEntResourceAmount(self, idx)
-end
-
-function ENT:GetUnitPowerGrid()
-    return TK.RD:GetUnitPowerGrid(self)
-end
-
-function ENT:GetUnitResourceAmount(idx)
-    return TK.RD:GetUnitResourceAmount(self, idx)
-end
-
-function ENT:GetResourceCapacity(idx)
-    return TK.RD:GetEntResourceCapacity(self, idx)
-end
-
-function ENT:GetUnitResourceCapacity(idx)
-    return TK.RD:GetUnitResourceCapacity(self, idx)
 end

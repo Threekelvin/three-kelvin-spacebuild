@@ -75,7 +75,7 @@ function PP.SetOwner(ply, ent, uid)
         if curuid == uid then return true end
         
         if PP.BlackList(ent) then return false end
-        if gamemode.Call("CPPIAssignOwnership", NullEntity(), ent) != nil then return false end
+        if gamemode.Call("CPPIAssignOwnership", NULL, ent) != nil then return false end
         
         ent:SetNWString("UID", uid)
         ent.Owner = NULL

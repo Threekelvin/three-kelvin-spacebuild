@@ -16,27 +16,27 @@ end
 
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
-    self.ghd = false
+    self.ghd = true
     
     self.atmosphere = {}
     
-    self.atmosphere.name = "Ship"
-    self.atmosphere.sphere    = false
-    self.atmosphere.noclip     = false
-    self.atmosphere.combat  = true
+    self.atmosphere.name        = "Ship"
+    self.atmosphere.sphere      = false
+    self.atmosphere.noclip      = false
+    self.atmosphere.combat      = true
     self.atmosphere.priority    = 2
-    self.atmosphere.radius         = 0
+    self.atmosphere.radius      = 0
     self.atmosphere.gravity     = 1
-    self.atmosphere.windspeed     = 0
+    self.atmosphere.windspeed   = 0
     self.atmosphere.tempcold    = 290
-    self.atmosphere.temphot        = 290
-    self.atmosphere.resources     = {}
+    self.atmosphere.temphot     = 290
+    self.atmosphere.resources   = {}
     
     self:SetNWBool("Generator", true)
     self:AddResource("oxygen", 0)
     self:AddResource("nitrogen", 0)
     
-    self.Inputs = WireLib.CreateInputs(self, {"Activate"})
+    self.Inputs = WireLib.CreateInputs(self, {"Activate", "Disable GHD"})
     self.Outputs = WireLib.CreateOutputs(self, {"Shield", "Max Shield", "Armor", "Max Armor", "Hull", "Max Hull"})
 
     self.hull = {}
@@ -44,8 +44,22 @@ function ENT:Initialize()
     self.brushes = {}
 end
 
-function ENT:EnableGHD()
-    self.ghd = true
+function ENT:TriggerInput(iname, value)
+    if iname == "Activate" then
+        if value != 0 then
+            self:TurnOn()
+        else
+            self:TurnOff()
+        end
+    elseif iname == "Disable GHD" then
+        if value != 0 then
+            self:TurnOff()
+            self.ghd = false
+        else
+            self:TurnOff()
+            self.ghd = true
+        end
+    end
 end
 
 function ENT:AddHull(ent, addBrush)
@@ -79,8 +93,6 @@ function ENT:AddHull(ent, addBrush)
 end
 
 function ENT:RemoveHull(ent)
-    if !IsValid(ent) then return end
-    
     ent.tk_env.core = nil
     ent.tk_dmg.core = nil
     self.hull[ent] = nil
@@ -117,6 +129,8 @@ end
 
 function ENT:TurnOn()
     if self:GetActive() || !self:IsLinked() then return end
+    self.hull_size = 0
+    
     if self.ghd then
         GH.RegisterHull(self, 0)
         GH.UpdateHull(self, self:GetUp())
@@ -166,7 +180,11 @@ function ENT:DoThink(eff)
     end
     
     for k,v in pairs(self.hull) do
-        if IsValid(v) && conents[k] then continue end
+        if conents[k] then continue end
+        if !IsValid(v) then
+            self.hull[k] = nil
+            continue
+        end
         self:RemoveHull(v)
         self:UpdateOutputs()
     end

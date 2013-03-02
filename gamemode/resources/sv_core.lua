@@ -427,7 +427,10 @@ function TK.RD:NetConsumeResource(netid, idx, amt)
     end
     
     if left != 0 then
-        print("ARRD ERROR 2", netid, idx, left)
+        print("TKRD ERROR 2", netid, idx, left)
+        PrintTable(netdata)
+        PrintTable(entdata)
+        print("---")
     end
     
     return iamt
