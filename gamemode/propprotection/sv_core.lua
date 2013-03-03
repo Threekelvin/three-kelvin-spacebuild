@@ -280,7 +280,7 @@ end
 
 function PP.CanTool(ply, tr, toolmode)
     if IsValid(ply.InShip) then return false end
-    if !tr.HitNonWorld || !IsValid(tr.Entity) then end
+    if !tr.HitNonWorld || !IsValid(tr.Entity) then return end
 
     local ent = tr.Entity
     if ent:IsPlayer() then return false end

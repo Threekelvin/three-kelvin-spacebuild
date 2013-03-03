@@ -115,72 +115,21 @@ if CLIENT then
         List.Populate = function(self)
             self:Clear(true)
             self.SelectedPanel = nil
-            RunConsoleCommand("tk_loadout_model", "''")
+            RunConsoleCommand("tk_loadout_item", "0")
+            RunConsoleCommand("tk_loadout_model", "")
             
             local loadout = TK.DB:GetPlayerData("player_loadout")
-            local uid = LocalPlayer():UID()
             
-			TK.LO.Overlays = {}
             for k,itemid in pairs(loadout) do
 				if string.match(k, "[%w]+$") != "item" || itemid == 0 then continue end
                 
                 local item = TK.TD:GetItem(itemid)
                 local icon = vgui.Create("SpawnIcon")
-                local overlay = vgui.Create("DButton", icon)
-                overlay:SetText("")
-                local w, h = icon:GetSize()
-                overlay:SetSize( w, h )
-                local r = w+h
-                local cos, sin = math.cos, math.sin
-				function overlay:Update()
-					self.nextSpawn = 0
-					local found = false
-					for _,v in pairs(TK.LO.BuildingEnts[uid] || {}) do
-						if v.id != itemid then continue end
-						found = true
-						self.nextSpawn = v.time
-						break
-					end
-					if !found then
-						for _,v in pairs(TK.LO.SpawnedEnts[uid] || {}) do
-							if v.itemid != itemid then continue end
-							found = true
-							self.nextSpawn = -1
-							break
-						end
-					end
-				end
-				local pi, sin, cos = math.pi, math.sin, math.cos
-                //function overlay:Paint(w,h)
-				//	local r = w+h
-				//	local A = 1.0
-				//	if self.nextSpawn > 0 then
-				//		A = ( self.nextSpawn - CurTime() ) / TK.LO.RebuildTime
-				//	elseif self.nextSpawn == 0 then
-				//		return
-				//	end
-				//	A = math.Clamp( A, 0, 1 )
-				//	A = A * 2 * pi
-				//	
-				//	local verticies = { {x=w/2, y=h/2}, {x=w/2, y=0} }
-				//	for i=1,4 do
-				//		table.insert( verticies, {x=r*sin(i*A/4), y=-r*cos(i*A/4)} )
-				//	end
-				//	
-				//	surface.SetTexture(0)
-				//	surface.SetDrawColor( 0, 0, 0, 100 )
-				//	surface.DrawPoly(verticies)
-                //end
-                function overlay:DoClick()
-                    self:GetParent():DoClick()
-                end
-                function overlay:DoRightClick()
-                    RunConsoleCommand( "playgamesound", "ui/buttonclickrelease.wav" )
-                    SetClipboardText(item.mdl)
+                icon.DoRightClick = function()
+                    surface.PlaySound("ui/buttonclickrelease.wav")
+                    SetClipboardText(k)
                     GAMEMODE:AddNotify("Model path copied to clipboard.", NOTIFY_HINT, 5)
                 end
-				overlay:Update()
-				table.insert( TK.LO.Overlays, overlay )
                 icon:SetModel(item.mdl)
                 icon:SetSize(64, 64)
                 icon:SetToolTip(item.name)

@@ -47,7 +47,16 @@ local Items = {
         }
     },
     weapon = {
-    
+        {
+            idx = 5,
+            name = "Basic Ballistic Turret",
+            class = "tk_turret",
+            mdl = "models/techbot/turret/flak/flak_turret.mdl",
+            data = {},
+            r = 50,
+            buy = 100000,
+            sell = 7500
+        }
     }
 }
 

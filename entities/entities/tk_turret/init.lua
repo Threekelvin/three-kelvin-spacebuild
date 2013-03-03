@@ -3,16 +3,7 @@ AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
 function ENT:Initialize()
-    self:SetModel("models/techbot/turret/flak/flak_turret.mdl")
-    self:PhysicsInit(SOLID_VPHYSICS)
-    self:SetMoveType(MOVETYPE_VPHYSICS)
-    self:SetSolid(SOLID_VPHYSICS)
-    self:ResetSequence(0)
 
-    local phys = self:GetPhysicsObject()
-    if phys:IsValid() then
-        phys:Wake()
-    end
 end
 
 function ENT:Think()
@@ -30,4 +21,9 @@ function ENT:Think()
     
     self:NextThink(CurTime())
     return true
+end
+
+function ENT:Update(ply)
+    local data = TK.TD:GetItem(self.itemid).data
+
 end

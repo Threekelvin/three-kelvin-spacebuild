@@ -3,12 +3,12 @@ TOOL = nil
 
 for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
     local class = string.match(v, "[%w_]+")
-    TOOL             = ToolObj:Create()
-    TOOL.Name         = class
+    TOOL            = ToolObj:Create()
+    TOOL.Name       = class
     TOOL.Mode       = class
-    TOOL.Category    = "Other"
-    TOOL.Limit         = 6
-    TOOL.Data     = {}
+    TOOL.Category   = "Other"
+    TOOL.Limit      = 6
+    TOOL.Data       = {}
     
     TOOL.ClientConVar["weld"] = 0
     TOOL.ClientConVar["weldingtoworld"] = 0
@@ -121,7 +121,7 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
             for k,v in pairs(TK.RD.EntityData[class]) do
                 local icon = vgui.Create("SpawnIcon")
                 icon.DoRightClick = function()
-                    RunConsoleCommand( "playgamesound", "ui/buttonclickrelease.wav" )
+                    surface.PlaySound("ui/buttonclickrelease.wav")
                     SetClipboardText(k)
                     GAMEMODE:AddNotify("Model path copied to clipboard.", NOTIFY_HINT, 5)
                 end
