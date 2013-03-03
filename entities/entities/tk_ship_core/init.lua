@@ -411,6 +411,7 @@ end
 
 hook.Add("PlayerInitialSpawn", "TKCore", function(ply)
     timer.Simple(5, function()
+        if !IsValid(ply) then return end
         for _,ent in pairs(ents.FindByClass("tk_ship_core")) do
             if !ent:GetActive() then continue end
             for _,hull in pairs(ent.hull) do

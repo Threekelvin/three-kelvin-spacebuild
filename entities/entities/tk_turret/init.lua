@@ -6,6 +6,14 @@ function ENT:Initialize()
 
 end
 
+function ENT:TriggerInput(iname, value)
+
+end
+
+function ENT:DoThink(eff)
+
+end
+
 function ENT:Think()
     local owner = self:CPPIGetOwner()
     if !owner then return end

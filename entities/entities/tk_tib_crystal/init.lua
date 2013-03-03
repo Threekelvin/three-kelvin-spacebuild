@@ -172,6 +172,7 @@ end
 
 hook.Add("PlayerInitialSpawn", "TKTib_SendStatus", function(ply)
     timer.Simple(5, function()
+        if !IsValid(ply) then return end
         for _,ent in pairs(ents.FindByClass("tk_tib_crystal")) do
             ent:SendStatus(ply)
             ent:SendStage(ply)
