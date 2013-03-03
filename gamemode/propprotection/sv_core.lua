@@ -246,6 +246,7 @@ end)
 
 ///--- Can Do Stuff Hooks ---\\\
 function PP.CanToolEnt(ply, toolmode, ent)
+    if IsValid(ply.InShip) then return false end
     if !IsValid(ent) then return end
     if ent:IsPlayer() then return false end
     
@@ -278,7 +279,8 @@ function PP.CanToolEnt(ply, toolmode, ent)
 end
 
 function PP.CanTool(ply, tr, toolmode)
-    if !tr.HitNonWorld || !IsValid(tr.Entity) then return end
+    if IsValid(ply.InShip) then return false end
+    if !tr.HitNonWorld || !IsValid(tr.Entity) then end
 
     local ent = tr.Entity
     if ent:IsPlayer() then return false end

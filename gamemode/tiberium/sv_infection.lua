@@ -11,6 +11,7 @@ local function BlackList(ent)
     if ent:IsPlayer() then return false end
     if ent:IsNPC() then return false end
     if ent:IsWeapon() then return false end
+    if ent.SLIsGhost then return false end
     
     local class = ent:GetClass()
     if class == "gmod_ghost" then return false end
