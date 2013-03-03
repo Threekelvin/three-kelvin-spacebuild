@@ -12,29 +12,30 @@ local function IsStable(entid)
 end
 
 hook.Add("Initialize", "TKTIB", function()
-    if usermessage then
-        local IncomingMessage = usermessage.IncomingMessage
-        function usermessage.IncomingMessage(idx, msg)
-            if idx == "TKTib_S" then
-                local entid, stable = msg:ReadShort(), msg:ReadBool()
-                Status[entid] = stable
-                return
-            elseif idx == "TKTib_M" then
-                local entid, stage = msg:ReadShort(), msg:ReadShort()
-                local x, y, z = msg:ReadFloat(), msg:ReadFloat(), msg:ReadFloat()
-                
-                Models[entid] = {}                
-                Models[entid].pre = (TK.Settings.Tiberium[stage - 1] || {}).model
-                Models[entid].cur = TK.Settings.Tiberium[stage].model
-                Models[entid].grow = true
-                Models[entid].time = SysTime()
-                Models[entid].origin = Vector(x, y, z)
-                return
-            end
-            
-            IncomingMessage(idx, msg)
+    if net then
+        local Receive = net.Receive
+        function net.Receive(id, func)
+            if id == "TKTib_S" || id == "TKTib_M" then return end
+            Receive(id, func)
         end
     end
+end)
+
+net.Receive("TKTib_S", function()
+    local entid, stable = net.ReadInt(16), tobool(net.ReadBit())
+    Status[entid] = stable
+end)
+
+net.Receive("TKTib_M", function()
+    local entid, stage = net.ReadInt(16), net.ReadInt(8)
+    local x, y, z = net.ReadFloat(), net.ReadFloat(), net.ReadFloat()
+    
+    Models[entid] = {}                
+    Models[entid].pre = (TK.Settings.Tiberium[stage - 1] || {}).model
+    Models[entid].cur = TK.Settings.Tiberium[stage].model
+    Models[entid].grow = true
+    Models[entid].time = SysTime()
+    Models[entid].origin = Vector(x, y, z)
 end)
 
 hook.Add("EntityRemove", "TKTIB", function(ent)

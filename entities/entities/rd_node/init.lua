@@ -21,6 +21,26 @@ function ENT:Initialize()
     self:SetRange(self.data.range)
 end
 
+function ENT:DoMenu(ply)
+    if !IsValid(ply) || !ply:IsPlayer() then return end
+    net.Start("TKRD_MEnt")
+        net.WriteEntity(self)
+    net.Send(ply)
+end
+
+function ENT:DoCommand(ply, cmd, arg)
+
+end
+
+function ENT:Use(ply)
+    if !IsValid(ply) || !ply:IsPlayer() then return end
+    if !self:CPPICanUse(ply) then return end
+    if self.next_use > CurTime() then return end
+    self.next_use = CurTime() + 1
+    
+    self:DoMenu(ply)
+end
+
 function ENT:SetNetID(netid)
     self:SetNWInt("NetID", netid)
     self.netid = netid

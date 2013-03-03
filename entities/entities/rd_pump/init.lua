@@ -8,6 +8,7 @@ function ENT:Initialize()
     self:SetNWInt("Range", self.data.range)
     self:SetNWInt("Linked", 0)
     self.rangesqr = self.data.range * self.data.range
+    self.next_use = 0
     
     self:SetNWBool("Generator", true)
     self:AddSound("l", 2, 65)
@@ -31,6 +32,11 @@ function ENT:TurnOff()
 end
 
 function ENT:Use(ply)
+    if !IsValid(ply) || !ply:IsPlayer() then return end
+    if !self:CPPICanUse(ply) then return end
+    if self.next_use > CurTime() then return end
+    self.next_use = CurTime() + 1
+    
     self:DoMenu(ply)
 end
 

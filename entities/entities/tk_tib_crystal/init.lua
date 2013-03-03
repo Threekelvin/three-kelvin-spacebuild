@@ -149,30 +149,32 @@ function ENT:Think()
 end
 
 ///--- Tib Sync ---\\\
-umsg.PoolString("TKTib_S")
-umsg.PoolString("TKTib_M")
+util.AddNetworkString("TKTib_S")
+util.AddNetworkString("TKTib_M")
 
 function ENT:SendStatus(ply)
-    umsg.Start("TKTib_S", ply)
-        umsg.Short(self:EntIndex())
-        umsg.Bool(self.isStable)
-    umsg.End()
+    net.Start("TKTib_S")
+        net.WriteInt(self:EntIndex(), 16)
+        net.WriteBit(self.isStable)
+    net.Send(ply || player.GetAll())
 end
 
 function ENT:SendStage(ply)
     local pos = self:GetPos()
-    umsg.Start("TKTib_M", ply)
-        umsg.Short(self:EntIndex())
-        umsg.Short(self.Stage)
-        umsg.Float(pos.x)
-        umsg.Float(pos.y)
-        umsg.Float(pos.z)
-    umsg.End()
+    net.Start("TKTib_M")
+        net.WriteInt(self:EntIndex(), 16)
+        net.WriteInt(self.Stage, 8)
+        net.WriteFloat(pos.x)
+        net.WriteFloat(pos.y)
+        net.WriteFloat(pos.z)
+    net.Send(ply || player.GetAll())
 end
 
 hook.Add("PlayerInitialSpawn", "TKTib_SendStatus", function(ply)
-    for _,ent in pairs(ents.FindByClass("tk_tib_crystal")) do
-        ent:SendStatus(ply)
-        ent:SendStage(ply)
-    end
+    timer.Simple(5, function()
+        for _,ent in pairs(ents.FindByClass("tk_tib_crystal")) do
+            ent:SendStatus(ply)
+            ent:SendStage(ply)
+        end
+    end)
 end)

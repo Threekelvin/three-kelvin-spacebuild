@@ -6,6 +6,7 @@ Build.docks = {"LRC1", "LRC2", "LRC3", "LRC4", "LRC5","LRC6"}
 Build.search = {}
 Build.snaped = {}
 Build.moving = {}
+Build.tick = 0
 
 ///--- Functions ---\\\
 function Build.CanPickUp(ply, ent)
@@ -21,6 +22,7 @@ end
 function Build.CanAttach(ent, ply, eir)
     if ent == eir then return false end
     if ent.SLIsGhost || eir.SLIsGhost then return false end
+    if eir.Type == "Brush" then return false end
     if !eir:CPPICanTool(ply, "none") then return false end
     return true
 end
@@ -167,6 +169,10 @@ function Build.KeyRelease(ply, ent, key)
 end
 
 function Build.Tick()
+    Build.tick = Build.tick  + 1
+    if Build.tick < 4 then return end
+    Build.tick = 0
+    
     for idx,tbl in pairs(Build.search) do
         local ent, ply = tbl[1], tbl[3]
         if IsValid(ent) && IsValid(ply) then
@@ -180,7 +186,7 @@ function Build.Tick()
                         Build.snaped[idx] = tbl
                         Build.search[idx] = nil
                         Build.AttachProps(ent, point1, eir, point2)
-                        return
+                        break
                     end
                 end
             end

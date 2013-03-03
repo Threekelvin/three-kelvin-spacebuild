@@ -75,6 +75,14 @@ function ENT:Draw()
     cam.End3D2D()
 end
 
+function ENT:DoMenu()
+
+end
+
+function ENT:DoCommand(cmd, ...)
+    RunConsoleCommand("TKRD_EntCmd", self:EntIndex(), cmd, unpack({...}))
+end
+
 function ENT:GetNetTable()
     return TK.RD:GetNetTable(self:GetNetID())
 end

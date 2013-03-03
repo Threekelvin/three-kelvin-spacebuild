@@ -8,6 +8,7 @@ local table = table
 function ENT:Initialize()
     self:SetMoveType(MOVETYPE_NONE)
     self:SetSolid(SOLID_NONE)
+    self.Type = "Brush"
     
     local parent = self:GetParent()
     if !IsValid(parent) then self:Remove() return end

@@ -222,7 +222,7 @@ hook.Add("Initialize", "EntSpawn", function()
             if phys:IsValid() then phys:EnableMotion(false) end
             if v.notsolid then ent:SetNotSolid(true) end
             if v.color then 
-                ent:SetColor(v.color) 
+                ent:SetColor(v.color)
                 ent:SetRenderMode(RENDERMODE_TRANSALPHA)
             end
         end
@@ -236,8 +236,9 @@ function TK:FindInSphere(pos, rad)
         local res = ents.RealFindInSphere(pos, rad)
         for k,v in pairs(res) do
             if !v.SLIsGhost then continue end
-            table.remove(res, k)
+            res[k] = nil
         end
+
         return res
     end
     return ents.FindInSphere(pos, rad)

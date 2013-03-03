@@ -15,7 +15,3 @@ function ENT:Draw()
     fxd:SetScale(1)
     util.Effect("VortDispel", fxd, true, true)
 end
-
-function ENT:DrawTranslucent()
-    self:Draw()
-end

@@ -62,6 +62,12 @@ function ENT:TriggerInput(iname, value)
     end
 end
 
+function ENT:IsLargeHull(ent)
+    if ent:BoundingRadius() < 135 then return false end
+    if ent.IsTKRD then return false end
+    return true
+end
+
 function ENT:AddHull(ent, addBrush)
     if !ent.tk_env || !ent.tk_dmg then return end
     if IsValid(ent.tk_env.core) || IsValid(ent.tk_dmg.core) then return end
@@ -77,9 +83,9 @@ function ENT:AddHull(ent, addBrush)
         self:RemoveHull(ent)
     end)
     
-    if ent:BoundingRadius() < 135 then return end
-    if ent.IsTKRD then return end
+    if !self:IsLargeHull(ent) then return end
     self.hull_size = self.hull_size + 1
+    self:SendUpdate(ent, true)
     
     if !addBrush then return end
     local brush = ents.Create("at_brush")
@@ -114,9 +120,9 @@ function ENT:RemoveHull(ent)
     
     ent:RemoveCallOnRemove("TKSC")
     
-    if ent:BoundingRadius() < 135 then return end
-    if ent.IsTKRD then return end
+    if !self:IsLargeHull(ent) then return end
     self.hull_size = self.hull_size - 1
+    self:SendUpdate(ent, false)
 end
 
 function ENT:OnRemove()
@@ -148,7 +154,7 @@ function ENT:TurnOn()
         self:SetActive(true)
     end
     
-    self.atmosphere.resources     = {}
+    self.atmosphere.resources = {}
     self:UpdateOutputs()
 end
 
@@ -156,14 +162,12 @@ function ENT:TurnOff()
     if !self:GetActive() then return end
     self:SetActive(false)
     
-    if self.ghd then
-        GH.UnHull(self)
-    else
-        for k,v in pairs(self.hull) do
-            self:RemoveHull(v)
-        end
+    if self.ghd then GH.UnHull(self) end
+    for k,v in pairs(self.hull) do
+        self:RemoveHull(v)
     end
     
+    self.hull_size = 0
     self:UpdateOutputs()
 end
 
@@ -395,4 +399,26 @@ hook.Add("ExitShip", "Ship Core", function(p, e, g)
         newenv:DoGravity(p)
         gamemode.Call("OnAtmosphereChange", p, oldenv, newenv)
     end
+end)
+
+///--- Shield Render ---\\\
+util.AddNetworkString("TKCore")
+
+function ENT:SendUpdate(ent, isHull, ply)
+    net.Start("TKCore")
+        net.WriteEntity(ent)
+        net.WriteBit(isHull)
+    net.Send(ply || player.GetAll())
+end
+
+hook.Add("PlayerInitialSpawn", "TKCore", function(ply)
+    timer.Simple(5, function()
+        for _,ent in pairs(ents.FindByClass("tk_ship_core")) do
+            if !ent:GetActive() then continue end
+            for _,hull in pairs(ent.hull) do
+                if !self:IsLargeHull(hull) then continue end
+                ent:SendUpdate(hull, true, ply)
+            end
+        end
+    end)
 end)
