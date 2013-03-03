@@ -111,7 +111,7 @@ function ENT:RemoveHull(ent)
         self.tk_dmg.total[k] = self.tk_dmg.total[k] - v
     end
     
-    self.tk_dmg.total.shield = self.tk_dmg.total.shield - (ent.tk_dmg.stats.shield_max * self.tk_dmg.total.shield / self.tk_dmg.total.shield_max)
+    self.tk_dmg.total.shield = self.tk_dmg.total.shield - (ent.tk_dmg.stats.shield_max * self.tk_dmg.total.shield / (self.tk_dmg.total.shield_max + ent.tk_dmg.stats.shield_max))
     
     if IsValid(self.brushes[ent]) then
         self.brushes[ent]:Remove()
