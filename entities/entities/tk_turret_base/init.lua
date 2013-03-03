@@ -2,18 +2,6 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
-function ENT:SpawnFunction(ply, tr)
-    if !tr.Hit then return end
-    
-    local ent = ents.Create("tk_turret_base")
-    ent:SetPos(tr.HitPos)
-    ent:SetAngles(tr.HitNormal:Angle() + Angle(90,0,0))
-    ent:Spawn()
-    ent:SetPos(tr.HitPos + tr.HitNormal * ((ent:OBBMaxs().z - ent:OBBMins().z) / 2 - ent:OBBCenter().z))
-    
-    return ent
-end
-
 function ENT:Initialize()
     self:SetModel("models/techbot/turret/flak/flak_turret.mdl")
     self:PhysicsInit(SOLID_VPHYSICS)

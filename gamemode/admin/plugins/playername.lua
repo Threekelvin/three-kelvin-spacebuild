@@ -17,7 +17,7 @@ if SERVER then
         
         TK.DB:UpdatePlayerData(ply, "player_info", {name = name})
         
-        msgdata = {team_color , name_old, " Has Changed Thier Name To ",team_color, name}
+        msgdata = {team_color , name_old, " Has Changed Their Name To ",team_color, name}
         TK.AM:SystemMessage(msgdata)
     end
 else

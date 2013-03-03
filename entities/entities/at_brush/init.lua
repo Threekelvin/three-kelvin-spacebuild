@@ -1,21 +1,23 @@
 
 DEFINE_BASECLASS("base_anim")
+ENT.SLIsGhost = true
 
 local IsValid = IsValid
 local pairs = pairs
 local table = table
 
 function ENT:Initialize()
-    self:SetMoveType(MOVETYPE_NONE)
+    if !IsValid(self.parent) then self:Remove() return end
+    local min, max = self.parent:GetCollisionBounds()
+    
     self:SetSolid(SOLID_NONE)
-    self.Type = "Brush"
+    self:SetMoveType(MOVETYPE_NONE)
     
-    local parent = self:GetParent()
-    if !IsValid(parent) then self:Remove() return end
-    local min, max = parent:GetCollisionBounds()
-    
-    self:SetModel(parent:GetModel())
+    self:SetModel(self.parent:GetModel())
     self:PhysicsInit(SOLID_OBB)
+    self:SetPos(self.parent:GetPos())
+    self:SetAngles(self.parent:GetAngles())
+    self:SetParent(self.parent)
     
     local phys = self:GetPhysicsObject()
     if IsValid(phys) then
@@ -26,7 +28,7 @@ function ENT:Initialize()
     self:SetTrigger(true)
     self:SetNotSolid(true)
     self:DrawShadow(false)
-    self:SetCollisionBounds(min - Vector(5,5,5), max + Vector(5,5,5))
+    self:SetCollisionBounds(min, max)
     
     self.inside = {}
 end
@@ -40,7 +42,7 @@ end
 
 function ENT:StartTouch(ent)
     if !IsValid(self.env) || !ent.tk_env then return end
-    if !IsValid(ent.tk_env.core) then return end
+    if IsValid(ent.tk_env.core) then return end
     
     self.inside[ent:EntIndex()] = ent
     

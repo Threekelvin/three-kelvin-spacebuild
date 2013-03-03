@@ -1,5 +1,6 @@
 
 TK.HUD = TK.HUD || {}
+local Admin = CreateClientConVar("3k_admin_overlay", 1, true, false)
 
 surface.CreateFont("Terminal", {
     font = "home remedy", 
@@ -78,6 +79,7 @@ hook.Add("HUDPaint", "TKHUD_Admin", function()
     TK.HUD.Colors.border = (#TK.HUD.WARNING > 0) && Color(255, 0, 0, 191 + 64*math.sin( math.pi*RealTime() )) || teamcol
     TK.HUD.Colors.bar = Color(teamcol.r, teamcol.g, teamcol.b, 100)
     
+    if !Admin:GetBool() then return end
     if !LocalPlayer():Alive() || !LocalPlayer():IsModerator() then return end
     
     for k,ply in pairs(player.GetAll()) do

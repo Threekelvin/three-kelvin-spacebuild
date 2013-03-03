@@ -90,9 +90,7 @@ function ENT:AddHull(ent, addBrush)
     if !addBrush then return end
     local brush = ents.Create("at_brush")
     brush.env = self
-    brush:SetPos(ent:GetPos())
-    brush:SetAngles(ent:GetAngles())
-    brush:SetParent(ent)
+    brush.parent = ent
     brush:Spawn()
     
     self.brushes[ent] = brush
