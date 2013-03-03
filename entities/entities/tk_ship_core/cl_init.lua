@@ -21,7 +21,6 @@ net.Receive("TKCore", function()
     if !IsValid(ent) then return end
     
     if isHull then
-        print(ent.Draw)
         ent.RenderOverride = ShieldRender
     else
         ent.RenderOverride = nil
