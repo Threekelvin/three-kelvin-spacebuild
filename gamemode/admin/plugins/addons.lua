@@ -1,5 +1,4 @@
 
-local PLUGIN = {}
 PLUGIN.Name       = "Addons"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "Addons"
@@ -12,5 +11,3 @@ if SERVER then
 else
 
 end
-
-TK.AM:RegisterPlugin(PLUGIN)

@@ -1,5 +1,5 @@
 
-local PLUGIN = {}
+
 PLUGIN.Name       = "Unban"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "Unban"
@@ -21,4 +21,3 @@ else
 
 end
 
-TK.AM:RegisterPlugin(PLUGIN)

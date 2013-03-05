@@ -1,5 +1,5 @@
 
-local PLUGIN = {}
+
 PLUGIN.Name       = "Remote Command"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "Remote"
@@ -30,4 +30,3 @@ else
     
 end
 
-TK.AM:RegisterPlugin(PLUGIN)

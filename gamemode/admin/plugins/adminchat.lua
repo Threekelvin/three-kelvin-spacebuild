@@ -1,5 +1,5 @@
 
-local PLUGIN = {}
+
 PLUGIN.Name       = "ChatAdmin"
 PLUGIN.Prefix     = "@"
 PLUGIN.Command    = nil
@@ -26,4 +26,3 @@ else
 
 end
 
-TK.AM:RegisterPlugin(PLUGIN)

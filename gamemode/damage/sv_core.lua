@@ -1,9 +1,32 @@
 
 TK.DC = TK.DC || {}
+local Bullets = {}
 
 DMG_KINETIC = 1
 DMG_THERMAL = 2
 DMG_EXPLOSIVE = 3
+
+local function LoadBullets()
+    print([[///--- TKDC Loading Bullets ---\\\]])
+    local JustInCase = BULLET
+    for _,lua in pairs(file.Find(GM.FolderName .."/gamemode/damage/bullets/*.lua", "LUA")) do
+        local path = GM.FolderName .."/gamemode/damage/bullets/"..lua
+        BULLET = {}
+        include(path)
+        
+        local idx = lua:match("^[%w_ ]+")
+        Bullets[idx] = BULLET
+        print("TKDC Bullet -", idx, "- Loaded")
+    end
+    BULLET = JustInCase
+    print([[///--- TKDC Loaded All Bullets ---\\\]])
+end
+
+function TK.DC:GetBullet(id)
+    local bullet = Bullets[id]
+    
+    return bullet
+end
 
 hook.Add("EntitySpawned", "TKDC", function(ent)
     if ent.Type == "brush" || ent.Type == "point" then return end
@@ -11,17 +34,16 @@ hook.Add("EntitySpawned", "TKDC", function(ent)
     if ent:GetMoveType() == 0 then return end
     if ent:IsPlayer() then return end
     
-    local phys = ent:GetPhysicsObject()
-    local vol = math.floor(math.sqrt(phys:GetVolume() || 0) * 0.5)
+    local base_hp = math.floor(math.sqrt(ent:GetPhysicsObject():GetVolume() || 0) * 0.5)
     
     ent.tk_dmg = {}
     ent.tk_dmg.stats = {}
-    ent.tk_dmg.stats.hull = vol
-    ent.tk_dmg.stats.hull_max = vol
-    ent.tk_dmg.stats.armor = vol * 0.5
-    ent.tk_dmg.stats.armor_max = vol * 0.5
+    ent.tk_dmg.stats.hull = base_hp
+    ent.tk_dmg.stats.hull_max = base_hp
+    ent.tk_dmg.stats.armor = base_hp * 0.5
+    ent.tk_dmg.stats.armor_max = base_hp * 0.5
     ent.tk_dmg.stats.shield = 0
-    ent.tk_dmg.stats.shield_max = vol * 0.75
+    ent.tk_dmg.stats.shield_max = base_hp * 0.75
     
     if ent:GetClass() != "tk_ship_core" then return end
     
@@ -114,7 +136,7 @@ function TK.DC:DmgHull(hull, amt, typ)
     return hull - dmg, dmg / dmg_max
 end
 
-function TK.DC:Damge(ent, amt, typ)
+function TK.DC:DoDamge(ent, amt, typ)
     if !IsValid(ent) || !ent.tk_dmg then return end
     if !self:CanDamage(ent) then return end
     local useCore = IsValid(ent.tk_dmg.core)
@@ -163,3 +185,5 @@ function TK.DC:DoBlastDamage(pos, rad, amt, typ)
         self:Damge(v, amt, typ)
     end
 end
+
+LoadBullets()

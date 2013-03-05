@@ -1,5 +1,5 @@
 
-local PLUGIN = {}
+
 PLUGIN.Name       = "Stopsounds"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "Stopsounds"
@@ -13,4 +13,3 @@ else
 
 end
 
-TK.AM:RegisterPlugin(PLUGIN)

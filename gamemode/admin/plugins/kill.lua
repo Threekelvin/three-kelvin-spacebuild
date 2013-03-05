@@ -1,5 +1,5 @@
 
-local PLUGIN = {}
+
 PLUGIN.Name       = "Kill"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "Kill"
@@ -13,4 +13,3 @@ else
 
 end
 
-TK.AM:RegisterPlugin(PLUGIN)

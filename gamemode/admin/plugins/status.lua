@@ -1,5 +1,5 @@
 
-local PLUGIN = {}
+
 PLUGIN.Name       = "status"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "status"
@@ -18,4 +18,3 @@ else
 
 end
 
-TK.AM:RegisterPlugin(PLUGIN)

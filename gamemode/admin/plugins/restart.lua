@@ -1,5 +1,5 @@
 
-local PLUGIN = {}
+
 PLUGIN.Name       = "Restart"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "Restart"
@@ -82,4 +82,3 @@ else
 
 end
 
-TK.AM:RegisterPlugin(PLUGIN)

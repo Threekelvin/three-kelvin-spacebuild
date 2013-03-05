@@ -1,5 +1,5 @@
 
-local PLUGIN = {}
+
 PLUGIN.Name       = "Send"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "Send"
@@ -62,4 +62,3 @@ else
 
 end
 
-TK.AM:RegisterPlugin(PLUGIN)

@@ -1,5 +1,5 @@
 
-local PLUGIN = {}
+
 PLUGIN.Name       = "UnGod"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    ="UnGod"
@@ -29,4 +29,3 @@ else
 
 end
 
-TK.AM:RegisterPlugin(PLUGIN)

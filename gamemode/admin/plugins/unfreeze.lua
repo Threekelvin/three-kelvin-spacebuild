@@ -1,5 +1,5 @@
 
-local PLUGIN = {}
+
 PLUGIN.Name       = "UnFreeze"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "UnFreeze"
@@ -29,4 +29,3 @@ else
 
 end
 
-TK.AM:RegisterPlugin(PLUGIN)

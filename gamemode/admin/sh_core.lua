@@ -17,43 +17,39 @@ local Plugins = {}
 function TK.AM:GetAllPlugins()
     return table.Copy(Plugins)
 end
-if SERVER then
-    function TK.AM:CallPlugin(name, ply, arg)
-        for _,plugin in pairs(Plugins) do
-            if plugin.Name == name then
-                if ply:HasAccess(plugin.Level) then
-                    local status, error = pcall(plugin.Call, ply, arg)
-                    if !status then ErrorNoHalt(error.."\n") end
-                    break
-                else
-                    TK.AM:SystemMessage({"Access Denied!"}, {ply}, 1)
-                end
-            end
-        end
-    end
-end
 
-function TK.AM:RegisterPlugin(Plugin)    
-    print("3K Admin Plugin - "..Plugin.Name.." - Loaded")
-    table.insert(Plugins, Plugin)
+function TK.AM:CallPlugin(id, ply, arg)
+    local plugin = Plugins[id]
+    if ply:HasAccess(plugin.Level) then
+        local status, error = pcall(plugin.Call, ply, arg)
+        if !status then ErrorNoHalt(error.."\n") end
+    else
+        TK.AM:SystemMessage({"Access Denied!"}, {ply}, 1)
+    end
 end
 
 local function LoadPlugins()
-    for k,v in pairs(file.Find(GM.FolderName .."/gamemode/admin/plugins/*.lua", "LUA")) do
-        local path = GM.FolderName .."/gamemode/admin/plugins/"..v
-        
+    print([[///--- TKAM Loading Plugins ---\\\]])
+    local JustInCase = PLUGIN
+    for _,lua in pairs(file.Find(GM.FolderName .."/gamemode/admin/plugins/*.lua", "LUA")) do
+        local path = GM.FolderName .."/gamemode/admin/plugins/"..lua
+        PLUGIN = {}
         if SERVER then
             include(path)
-            AddCSLuaFile(path) 
+            AddCSLuaFile(path)
         else
             include(path)
         end
+        
+        local idx = lua:match("^[%w_ ]+")
+        Plugins[idx] = PLUGIN
+        print("TKAM Plugin -", PLUGIN.Name, "- Loaded")
     end
-    
-    TK.AM.RegisterPlugin = nil
+    PLUGIN = JustInCase
+    print([[///--- TKAM Loaded Plugins ---\\\]])
 end
 
-///--- Player functions ---\\\
+///--- Player Functions ---\\\
 local SafeLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890,<>#~!£&_=|: "
 local BadLetters = {"(", "[", "^", "$", "%", ".", "*", "+", "-", "?", "]", ")"}
 

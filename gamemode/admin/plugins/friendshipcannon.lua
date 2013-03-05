@@ -1,5 +1,5 @@
 
-local PLUGIN = {}
+
 PLUGIN.Name       = "Orbital Friendship Cannon"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "OFC"
@@ -120,4 +120,3 @@ if SERVER then
     end
 end
 
-TK.AM:RegisterPlugin(PLUGIN)

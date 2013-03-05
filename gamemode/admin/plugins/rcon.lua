@@ -1,5 +1,5 @@
 
-local PLUGIN = {}
+
 PLUGIN.Name       = "RCON"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "RCON"
@@ -20,4 +20,3 @@ else
 
 end
 
-TK.AM:RegisterPlugin(PLUGIN)

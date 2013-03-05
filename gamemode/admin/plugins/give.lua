@@ -1,5 +1,5 @@
 
-local PLUGIN = {}
+
 PLUGIN.Name       = "Give Credits"
 PLUGIN.Prefix     = "!"
 PLUGIN.Command    = "Give"
@@ -39,4 +39,3 @@ else
 
 end
 
-TK.AM:RegisterPlugin(PLUGIN)

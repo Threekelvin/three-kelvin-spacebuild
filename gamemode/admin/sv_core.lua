@@ -110,7 +110,7 @@ local function RunCmd(ply, cmd, arg)
     for k,v in pairs(TK.AM:GetAllPlugins()) do
         if v.Command then
             if string.lower(command) == string.lower(v.Command) then
-                TK.AM:CallPlugin(v.Name, ply, arg)
+                TK.AM:CallPlugin(k, ply, arg)
                 return
             end
         end
@@ -133,13 +133,13 @@ hook.Add("PlayerSay", "TKChatCommands", function(ply, text, toteam)
                 local temp = string.sub(Chat[1], string.len(p) + 1)
                 table.remove(Chat, 1)
                 table.insert(Chat, 1, temp)
-                TK.AM:CallPlugin(v.Name, ply, Chat)
+                TK.AM:CallPlugin(k, ply, Chat)
                 return false
             end
         else
             if string.lower(Chat[1]) == string.lower(p..c) then
                 table.remove(Chat, 1)
-                TK.AM:CallPlugin(v.Name, ply, Chat)
+                TK.AM:CallPlugin(k, ply, Chat)
                 return false
             end
         end
