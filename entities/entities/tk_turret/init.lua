@@ -46,18 +46,28 @@ function ENT:TriggerInput(iname, value)
 end
 
 function ENT:DoThink(eff)
-
+    
 end
 
 function ENT:Think()
-    local owner = self:CPPIGetOwner()
-    if !owner then return end
-    local pos = self:WorldToLocal(owner:LocalToWorld(owner:OBBCenter()))
+    local aim_vec
+    if self.t_auto then
+    
+    elseif self.t_mode == 1 then 
+        if !IsValid(self.t_ent) then
+            aim_vec = Vector(0,0,0)
+        else
+            aim_vec = self.t_ent:LocalToWorld(self.t_ent:OBBCenter())
+        end
+    elseif self.t_mode == 0 then
+        aim_vec = self.t_pos
+    end
+    
 
-    local bearing = math.Rad2Deg(-math.atan2(pos.y, pos.x)) + 90
+    local bearing = math.Rad2Deg(-math.atan2(aim_vec.y, aim_vec.x)) + 90
     bearing = bearing > 180 && bearing - 360 || bearing < -180 && bearing + 360 || bearing
 
-    local elevation = math.Rad2Deg(math.asin(pos.z / pos:Length()))
+    local elevation = math.Rad2Deg(math.asin(aim_vec.z / aim_vec:Length()))
     
     self:SetPoseParameter("aim_yaw", bearing)
     self:SetPoseParameter("aim_pitch", elevation)
@@ -66,13 +76,29 @@ function ENT:Think()
     return true
 end
 
-function ENT:Fire()
+function ENT:CanFire()
+    return self:GetEnv():CanCombat()
+end
 
+function ENT:Fire()
+    if !self:CanFire() then return end
+
+    if self.Bullet.Type == "shell" then
+        local ent = ents.Create("tk_shell")
+        ent.Bullet = self.Bullet
+        ent.Cannon = self
+        ent:SetPos(self:GetBarrle())
+        ent:SetAngles(self.aim_vec:Angle() + Angle(90,0,0))
+    elseif self.Bullet.Type == "beam" then
+    
+    elseif self.Bullet.Type == "missle" then
+    
+    end
 end
 
 function ENT:Update(ply)
     local data = TK.TD:GetItem(self.itemid).data
-    self.bullet = TK.DC:GetBullet(data.bullet)
+    self.Bullet = TK.DC:GetBullet(data.bullet)
     
-    self.data.power = self.bullet.Power || 0
+    self.data.power = self.Bullet.Power || 0
 end

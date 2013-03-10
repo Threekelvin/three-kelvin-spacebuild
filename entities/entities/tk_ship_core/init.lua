@@ -64,7 +64,7 @@ end
 
 function ENT:IsLargeHull(ent)
     if ent:BoundingRadius() < 135 then return false end
-    if ent.IsTKRD then return false end
+    if ent.IsTKRD && !ent:IsVehicle() then return false end
     return true
 end
 
@@ -314,15 +314,12 @@ function ENT:InAtmosphere(pos)
     if !self:GetActive() then return false end
     
     if self.ghd then
-        return GH.PointInShip(self, pos)
+        local data = GH.SHIPS[self]
+        return GH.PointInShip(self, data.MainGhost:RealWorldToLocal(pos))
     end
     
-    for k,v in pairs(self.brushes) do
-        if !IsValid(v) then continue end
-        local cen, min, max = v:GetPos(), v:GetCollisionBounds()
-        if pos.x < cen.x + min.x && pos.x > cen.x + max.x && pos.y < cen.y + min.y && pos.y > cen.y + max.y && pos.z < cen.z + min.z && pos.z > cen.z + max.z then
-            return true
-        end
+    for k,v in pairs(self.hull) do
+    
     end
     return false
 end

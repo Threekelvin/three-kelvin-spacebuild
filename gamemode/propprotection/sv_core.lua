@@ -418,6 +418,10 @@ hook.Add("PlayerSpawnedVehicle",    "TKPP", function(ply, ent)      PP.SetOwner(
 hook.Add("PlayerSpawnedNPC",        "TKPP", function(ply, ent)      PP.SetOwner(ply, ent) end)
 hook.Add("PlayerSpawnedSENT",       "TKPP", function(ply, ent)      PP.SetOwner(ply, ent) end)
 
+hook.Add("PlayerSpawnSENT", "TKPP", function(ply, class)
+    if table.HasValue(TK.PP.EntityBlackList, class) then return false end
+end)
+
 hook.Add("Initialize", "PP_FO", function()
     if cleanup then
         local CleanUpOld = cleanup.Add

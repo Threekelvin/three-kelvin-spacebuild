@@ -34,7 +34,7 @@ function TOOL:LeftClick(trace)
     local pos = trace.HitPos
     local angles = trace.HitNormal:Angle() + Angle(90,0,0)
     local ent = TK.LO:SpawnItem(ply, item, pos, angles)
-    ent:SetPos(trace.HitPos + trace.HitNormal * ((ent:OBBMaxs().z - ent:OBBMins().z) / 2 - ent:OBBCenter().z))
+    ent:SetPos(trace.HitPos - trace.HitNormal * ent:OBBMins().z)
     
     if self:GetClientNumber("dontweld", 0) == 0 then
         local hit = trace.Entity
@@ -82,7 +82,7 @@ function TOOL:Think()
         local trace = self:GetOwner():GetEyeTrace()
         if !trace.Hit then return end
         self.GhostEntity:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
-        self.GhostEntity:SetPos(trace.HitPos + trace.HitNormal * ((self.GhostEntity:OBBMaxs().z - self.GhostEntity:OBBMins().z) / 2 - self.GhostEntity:OBBCenter().z))
+        self.GhostEntity:SetPos(trace.HitPos - trace.HitNormal * self.GhostEntity:OBBMins().z)
     end    
 end
 

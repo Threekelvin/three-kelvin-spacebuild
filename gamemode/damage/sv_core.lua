@@ -186,4 +186,12 @@ function TK.DC:DoBlastDamage(pos, rad, amt, typ)
     end
 end
 
+function TK.DC:FireShell(bullet)
+
+end
+
+function TK.DC:FireBeam(bullet)
+
+end
+
 LoadBullets()

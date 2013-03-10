@@ -15,7 +15,8 @@ BULLET.DmgRadius    = 25
 
 BULLET.Speed        = 100
 BULLET.Accuracy     = 0.01
-BULLET.HasGravity   = true
+BULLET.Lifetime     = nil
+
 
 BULLET.ReloadTime   = 0
 BULLET.ClipSize     = 0

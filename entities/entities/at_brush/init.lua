@@ -8,7 +8,6 @@ local table = table
 
 function ENT:Initialize()
     if !IsValid(self.parent) then self:Remove() return end
-    local min, max = self.parent:GetCollisionBounds()
     
     self:SetSolid(SOLID_NONE)
     self:SetMoveType(MOVETYPE_NONE)
@@ -28,8 +27,7 @@ function ENT:Initialize()
     self:SetTrigger(true)
     self:SetNotSolid(true)
     self:DrawShadow(false)
-    self:SetCollisionBounds(min, max)
-    
+    self:SetCollisionBounds(self.parent:GetCollisionBounds())
     self.inside = {}
 end
 

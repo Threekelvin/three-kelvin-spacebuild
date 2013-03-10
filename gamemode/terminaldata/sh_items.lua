@@ -51,7 +51,7 @@ local Items = {
             idx = 5,
             name = "Basic Ballistic Turret",
             class = "tk_turret",
-            mdl = "models/techbot/turret/flak/flak_turret.mdl",
+            mdl = "models/tk/turret/flak/flak_turret.mdl",
             data = {power = 0, bullet = "20mm_cannon"},
             r = 50,
             buy = 100000,

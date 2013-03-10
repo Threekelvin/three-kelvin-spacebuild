@@ -36,8 +36,8 @@ local function EnvPrioritySort(a, b)
 end
 
 function ENT:Initialize()
-    self:SetSolid(SOLID_NONE)
     self:SetMoveType(MOVETYPE_NONE)
+    self:SetSolid(SOLID_NONE)
 
     self.atmosphere = {}
     self.atmosphere.name = "Base Atmosphere"
