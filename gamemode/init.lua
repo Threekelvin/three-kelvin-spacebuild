@@ -252,15 +252,29 @@ hook.Add("Initialize", "PAC_Fix", function()
 end)
 
 hook.Add("PlayerLeaveVehicle", "Vehicle_Exit", function(ply, ent)
+    local hasExit = false
     local env = ent:GetEnv()
-    local grid, spacing = 5, 27
     local pos = ent:GetPos()
+    local grid, spacing = 5, 27
     local td = {}
     td.mins = ply:OBBMins()
     td.mins.z = td.mins.z * 0.5
     td.maxs = ply:OBBMaxs()
     td.maxs.z = td.maxs.z * 0.5
     td.Filter = ply
+    
+    
+    for k,v in pairs(ent:GetConstrainedEntities()) do
+        if !v.VehicleExitPoint then continue end
+        hasExit = v
+        break
+    end
+    
+    if hasExit then
+        env = hasExit:GetEnv()
+        pos = hasExit:GetPos()
+        td.Filter = {ply, hasExit}
+    end
     
     for X = 1, grid do
         for Y = 1, grid do
@@ -283,6 +297,8 @@ hook.Add("PlayerLeaveVehicle", "Vehicle_Exit", function(ply, ent)
             end
         end
     end
+    
+    ply:SetPos(pos)
 end)
 
 ///--- Map Setup ---\\\

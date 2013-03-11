@@ -80,19 +80,43 @@ function ENT:CanFire()
     return self:GetEnv():CanCombat()
 end
 
+function ENT:GetBarrel()
+
+end
+
 function ENT:Fire()
     if !self:CanFire() then return end
-
+    local fire_pos = self:GetBarrel()
+    local fire_ang = self.aim_vec:Angle() + Angle(90,0,0)
+    
     if self.Bullet.Type == "shell" then
         local ent = ents.Create("tk_shell")
         ent.Bullet = self.Bullet
         ent.Cannon = self
-        ent:SetPos(self:GetBarrle())
-        ent:SetAngles(self.aim_vec:Angle() + Angle(90,0,0))
+        ent:SetPos(fire_pos)
+        ent:SetAngles(fire_ang)
+        ent:Spawn()
     elseif self.Bullet.Type == "beam" then
     
     elseif self.Bullet.Type == "missle" then
+        local ent = ents.Create("tk_missle")
+        ent.Bullet = self.Bullet
+        ent.Cannon = self
+        ent:SetPos(fire_pos)
+        ent:SetAngles(fire_ang)
+        ent:Spawn()
+    end
     
+    if self.Bullet.FireEffect then
+        local fxd = EffectData()
+        fxd:SetEntity(self)
+        fxd:SetOrigin(fire_pos)
+        fxd:SetAngles(fire_ang)
+        util.Effect(self.Bullet.FireEffect, fxd)
+    end
+    
+    if self.Bullet.FireSound then
+        sound.Play(self.Bullet.FireSound, fire_pos)
     end
 end
 

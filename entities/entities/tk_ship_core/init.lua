@@ -318,8 +318,12 @@ function ENT:InAtmosphere(pos)
         return GH.PointInShip(self, data.MainGhost:RealWorldToLocal(pos))
     end
     
-    for k,v in pairs(self.hull) do
-    
+    for _,ent in pairs(self.hull) do
+        local lp = ent:WorldToLocal(pos)
+        local min, max = ent:OBBMins(), ent:OBBMaxs()
+        if lp.x < min.x || lp.y < min.y || lp.z < min.z then continue end
+        if lp.x > max.x || lp.y > max.y || lp.z > max.z then continue end
+        return true
     end
     return false
 end

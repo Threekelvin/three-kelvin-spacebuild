@@ -41,28 +41,24 @@ function Build.MakeMenu(Panel)
     local Enable = vgui.Create("DCheckBoxLabel")
     Enable:SetText("Enable")
     Enable:SetConVar(concmd.."enabled")
-    Enable:SetValue(1)
     Enable:SizeToContents()
     Panel:AddItem(Enable)
     
     local SkinMatch = vgui.Create("DCheckBoxLabel")
     SkinMatch:SetText("Skin Match")
     SkinMatch:SetConVar(concmd.."skinmatch")
-    SkinMatch:SetValue(1)
     SkinMatch:SizeToContents()
     Panel:AddItem(SkinMatch)
     
     local Sprites = vgui.Create("DCheckBoxLabel")
     Sprites:SetText("Show Sprites")
     Sprites:SetConVar(concmd.."sprites")
-    Sprites:SetValue(1)
     Sprites:SizeToContents()
     Panel:AddItem(Sprites)
     
     local Orientation = vgui.Create("DCheckBoxLabel")
     Orientation:SetText("Show Orientation")
     Orientation:SetConVar(concmd.."orientation")
-    Orientation:SetValue(1)
     Orientation:SizeToContents()
     Panel:AddItem(Orientation)
 end
@@ -112,6 +108,18 @@ function Build.HUDPaint()
         end 
     cam.End3D()
 end
+
+hook.Add("PopulateMenuBar", "TK_SBEPBuild", function(menubar)
+	local m = menubar:AddOrGetMenu("SBEP Build Mode")
+	
+	m:AddCVar("Enable Build Mode", concmd.."enabled", "1", "0")
+	
+	m:AddSpacer()
+	
+	m:AddCVar("Skin Match", concmd.."skinmatch", "1", "0")
+	m:AddCVar("Show Sprites", concmd.."sprites", "1", "0")
+	m:AddCVar("Show Orientation", concmd.."orientation", "1", "0")
+end)
 
 hook.Add("PopulateToolMenu", "TK_SBEPBuild", function()
     spawnmenu.AddToolMenuOption("Options", "Player", "SBEPBuildMode", "SBEP Build Mode", "", "", Build.MakeMenu, {SwitchConVar = "3k_sbep_build_mode_enabled"})
