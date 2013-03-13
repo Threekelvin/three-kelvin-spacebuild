@@ -27,11 +27,10 @@ function Legacy:PopulateNode(root, dir, parent, pnl, vp)
         
         local files = file.Find(root .. dir .. "*", "GAME")
         for k,v in pairs(files || {}) do
-            if string.match(v, "[%w]+$") != "mdl" then continue end
+            if !v:match(".mdl$") then continue end
             local cp = spawnmenu.GetContentType("model")
-            if cp then
-                cp(vp, {model = dir .. v})
-            end
+            if !cp then continue end
+            cp(vp, {model = dir .. v})
         end
         
         pnl:SwitchPanel(vp)
@@ -55,11 +54,11 @@ end)
 
 
 hook.Add("Tick", "LegacyAddons", function()
-    if !Legacy.Queue[1] then return end
     if Legacy.NextThink > CurTime() then return end
     Legacy.NextThink = CurTime() + 0.1
+    local id, data = next(Legacy.Queue)
+    if !id then return end
     
-    local data = Legacy.Queue[1]
     Legacy:PopulateNode(data[1], data[2], data[3], data[4], data[5])
-    table.remove(Legacy.Queue, 1)
+    Legacy.Queue[id] = nil
 end)

@@ -7,7 +7,7 @@ BULLET.Trail        = nil
 BULLET.FireSound    = nil
 BULLET.FireEffect   = "dmg_muzzle_flash_small"
 BULLET.HitSound     = nil
-BULLET.HitEffect    = nil
+BULLET.HitEffect    = "dmg_explosion_small"
 
 BULLET.DmgType      = DMG_KINETIC
 BULLET.DmgValue     = 25
