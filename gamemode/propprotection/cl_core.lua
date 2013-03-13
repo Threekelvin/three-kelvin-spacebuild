@@ -61,6 +61,7 @@ function PP.OpenPropMenu(msg, self)
     if owner != LocalPlayer() then return end
     
     local ent = trace.Entity
+    local entclass = ent:GetClass()
     local entid = ent:EntIndex()
     local pos = ent:GetPos()
     pos = math.floor(pos.x)..", "..math.floor(pos.y)..", "..math.floor(pos.z)
@@ -74,6 +75,10 @@ function PP.OpenPropMenu(msg, self)
     self.Menu:SetScreenLock(true)
     self.Menu:ShowCloseButton(true)
     self.Menu:MakePopup()
+    self.Menu.Think = function()
+        if IsValid(ent) then return end
+        self.Menu:Remove()
+    end
 
     for k,v in pairs(TK.PP.SharePermissions) do
         local tick = vgui.Create("DCheckBoxLabel", self.Menu)
@@ -105,7 +110,7 @@ function PP.OpenPropMenu(msg, self)
         surface.SetDrawColor(col)
         surface.DrawLine(0,0, 0, h)
         
-        draw.SimpleText(ent:GetClass(), "DermaDefault", w * 0.5, 5, col, TEXT_ALIGN_CENTER)
+        draw.SimpleText(entclass, "DermaDefault", w * 0.5, 5, col, TEXT_ALIGN_CENTER)
         draw.SimpleText("Idx: "..entid, "DermaDefault", 5, 25, col)
         draw.SimpleText("Pos: "..pos, "DermaDefault", 5, 50, col)
         draw.SimpleText("Ang: "..ang, "DermaDefault", 5, 75, col)

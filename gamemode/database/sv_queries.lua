@@ -223,10 +223,6 @@ local Queries = {
         terminal_upgrades = true,
     },
     
-    json = {
-        player_inventory = {"inventory"}
-    },
-    
     dont_sync = {
         captcha = true
     }
@@ -234,24 +230,23 @@ local Queries = {
 
 local function StopInjection(data, noquotes)
     if data == nil then return "" end
+    local typ = type(data)
     
-    if data == true then
-        data = "UNIX_TIMESTAMP()"
-    elseif data == false then
-        data = "CONNECTION_ID()"
-    elseif type(data) == "number" then
+    if typ == "boolean" then
+        if data then
+            data = "UNIX_TIMESTAMP()"
+        else
+            data = "CONNECTION_ID()"
+        end
+    elseif typ == "table" then
+        data = SQLStr(util.TableToJSON(data))
+    elseif typ == "number" then
         data = SQLStr(data, true)
     else
         data = SQLStr(data, noquotes && true || false)
     end
-    
-    return data
-end
 
-local function ShouldJson(dbtable, index)
-    if !Queries.json[dbtable] then return false end
-    if !Queries.json[dbtable][index] then return false end
-    return true
+    return data
 end
 
 function TK.DB:DontSync(idx)
@@ -328,7 +323,7 @@ function TK.DB:FormatUpdateQuery(dbtable, values, where)
     
     local query = {"UPDATE ", dbtable, " SET "}
     for idx,data in pairs(values) do
-        table.insert(query, StopInjection(idx, true) .." = ".. StopInjection(ShouldJson(dbtable, idx) && util.TableToJSON(data) || data))
+        table.insert(query, StopInjection(idx, true) .." = ".. StopInjection(data))
         table.insert(query, ", ")
     end
     

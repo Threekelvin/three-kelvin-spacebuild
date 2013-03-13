@@ -2,17 +2,27 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
+local math = math
+
 local Barrle_Attachments = {
     "barrel_l",
     "barrel_r"
 }
 
 function ENT:Initialize()
+    self.BaseClass.Initialize(self)
+    
+    self.rps = 25 / 66.67
+    
     self.t_pos = Vector(0,0,0)
     self.t_ent = NULL
     self.t_mode = 0
-    self.t_auto = false
+    self.t_auto = true
     self.t_shouldfire = false
+    
+    self.aim_vec = Vector(0,0,0)
+    self.bearing = 0
+    self.elevation = 0
     
     self.barrels = {}
     self.barrel_idx = 0
@@ -24,7 +34,7 @@ function ENT:Initialize()
     end
     
 
-    WireLib.CreateInputs(self, {"Activate", "X", "Y", "Z", "Pos [VECTOR]", "Target [ENTITY]", "Fire", "Auto"})
+    WireLib.CreateInputs(self, {"Activate", "X", "Y", "Z", "Pos [VECTOR]", "Target [ENTITY]", "Auto", "Fire"})
     WireLib.CreateOutputs(self, {"Can Fire", "Ammo"})
 end
 
@@ -67,7 +77,7 @@ end
 
 function ENT:Think()
     if self.t_auto then
-    
+        self.aim_vec = self.Owner:LocalToWorld(self.Owner:OBBCenter())
     elseif self.t_mode == 1 then 
         if !IsValid(self.t_ent) then
             self.aim_vec = Vector(0,0,0)
@@ -78,14 +88,17 @@ function ENT:Think()
         self.aim_vec = self.t_pos
     end
     
+    local vec = self:WorldToLocal(self.aim_vec)
+    local bearing = math.deg(-math.atan2(vec.y, vec.x)) + 90
+    local elevation = math.deg(math.asin(vec.z / vec:Length()))
 
-    local bearing = math.Rad2Deg(-math.atan2(self.aim_vec.y, self.aim_vec.x)) + 90
-    bearing = bearing > 180 && bearing - 360 || bearing < -180 && bearing + 360 || bearing
-
-    local elevation = math.Rad2Deg(math.asin(self.aim_vec.z / self.aim_vec:Length()))
+    self.bearing = (math.ApproachAngle(self.bearing, bearing, self.rps) + 180) % 360 - 180
+    self.elevation = math.ApproachAngle(self.elevation, elevation, self.rps * 0.5)
     
-    self:SetPoseParameter("aim_yaw", bearing)
-    self:SetPoseParameter("aim_pitch", elevation)
+    print(self.bearing)
+
+    self:SetPoseParameter("aim_yaw", self.bearing)
+    self:SetPoseParameter("aim_pitch", self.elevation)
     
     self:NextThink(CurTime())
     return true
