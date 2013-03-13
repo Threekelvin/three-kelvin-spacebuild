@@ -471,7 +471,7 @@ end)
 
 local function ValidParticle( particle )
     if table.HasValue(ParticleBlackList, name) then return false end
-    if ParticleCount < sbox_E2_maxParticles:GetInt( ) then
+    if ParticleCount < CV_MaxParticles:GetInt( ) then
         ParticleCount = ParticleCount + 1
         return true
     end
@@ -537,7 +537,7 @@ end)
 
 local function ValidEffect( name )
     if table.HasValue(EffectBlackList, name) then return false end
-    if EffectCount < sbox_E2_maxEffects:GetInt( ) then
+    if EffectCount < CV_MaxEffects:GetInt( ) then
         EffectCount = EffectCount + 1
         return true
     end
