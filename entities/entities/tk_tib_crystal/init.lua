@@ -149,25 +149,25 @@ function ENT:Think()
 end
 
 ///--- Tib Sync ---\\\
-util.AddNetworkString("TKTib_S")
-util.AddNetworkString("TKTib_M")
+umsg.PoolString("TKTib_S")
+umsg.PoolString("TKTib_M")
 
 function ENT:SendStatus(ply)
-    net.Start("TKTib_S")
-        net.WriteInt(self:EntIndex(), 16)
-        net.WriteBit(self.isStable)
-    net.Send(ply || player.GetAll())
+    umsg.Start("TKTib_S", ply)
+        umsg.Short(self:EntIndex())
+        umsg.Bool(self.isStable)
+    umsg.End()
 end
 
 function ENT:SendStage(ply)
     local pos = self:GetPos()
-    net.Start("TKTib_M")
-        net.WriteInt(self:EntIndex(), 16)
-        net.WriteInt(self.Stage, 8)
-        net.WriteFloat(pos.x)
-        net.WriteFloat(pos.y)
-        net.WriteFloat(pos.z)
-    net.Send(ply || player.GetAll())
+    umsg.Start("TKTib_M", ply)
+        umsg.Short(self:EntIndex())
+        umsg.Short(self.Stage)
+        umsg.Float(pos.x)
+        umsg.Float(pos.y)
+        umsg.Float(pos.z)
+    umsg.End()
 end
 
 hook.Add("PlayerInitialSpawn", "TKTib_SendStatus", function(ply)

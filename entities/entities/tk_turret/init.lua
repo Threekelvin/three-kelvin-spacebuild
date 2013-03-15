@@ -94,8 +94,6 @@ function ENT:Think()
 
     self.bearing = (math.ApproachAngle(self.bearing, bearing, self.rps) + 180) % 360 - 180
     self.elevation = math.ApproachAngle(self.elevation, elevation, self.rps * 0.5)
-    
-    print(self.bearing)
 
     self:SetPoseParameter("aim_yaw", self.bearing)
     self:SetPoseParameter("aim_pitch", self.elevation)

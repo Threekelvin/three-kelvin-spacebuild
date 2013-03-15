@@ -6,5 +6,3 @@ ENT.PrintName = "3K Asteroid Laser"
 ENT.Author = "Ghost400"
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 
-ENT.Spawnable = false
-ENT.AdminSpawnable = false

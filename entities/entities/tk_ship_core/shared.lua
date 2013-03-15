@@ -6,5 +6,3 @@ ENT.Author            = "Ghost400"
 ENT.Contact            = "3K Spacebuild"
 ENT.Category = "3K Spacebuild"
 
-ENT.Spawnable = false
-ENT.AdminSpawnable = false

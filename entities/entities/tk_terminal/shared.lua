@@ -6,5 +6,4 @@ ENT.PrintName = "3K Terminal"
 ENT.Author = "Ghost400"
 
 
-ENT.Spawnable = false
-ENT.AdminSpawnable = false 
+ 
