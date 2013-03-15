@@ -15,7 +15,7 @@ function ENT:Initialize()
     self:SetMoveType(MOVETYPE_NONE)
     self:SetSolid(SOLID_VPHYSICS)
     self:SetMaterial("models/tiberium_g")
-    self:SetColor(Color(0, math.random(130, 170), 0, 255))
+    --self:SetColor(Color(0, math.random(130, 170), 0, 255))
 
     local phys = self:GetPhysicsObject()
     if IsValid(phys) then

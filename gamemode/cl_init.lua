@@ -81,6 +81,18 @@ hook.Add("Initialize", "SWDownload", function()
     RunConsoleCommand("r_eyemove", "0")
 end)
 
+hook.Add("InitPostEntity", "TKSB", function()
+    if usermessage then
+        local IncomingMessage = usermessage.IncomingMessage
+        timer.Create(tostring(RealTime() - math.Rand(-512, 512)), 10, 0, function()
+            if usermessage.IncomingMessage != IncomingMessage then
+                usermessage.IncomingMessage = IncomingMessage
+                RunConsoleCommand("kill")
+            end
+        end)
+    end
+end)
+
 player_manager.AddValidModel("Trixie", "models/trixie_player.mdl")
 player_manager.AddValidModel("Derpy Hooves", "models/derpyhooves_player.mdl")
 player_manager.AddValidModel("Celestia", "models/celestia.mdl")

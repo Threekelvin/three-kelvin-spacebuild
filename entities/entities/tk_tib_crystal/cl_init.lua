@@ -1,6 +1,7 @@
 include('shared.lua')
 
 function ENT:Initialize()
+    self.RandCol = math.random(0, 360)
     self.NextUpdate = CurTime() + math.random(5, 10)
 end
 

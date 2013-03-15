@@ -57,6 +57,8 @@ function TK.TI:DrawTib(ent)
     local data = Models[entid]
     if !data then return end
     
+    ent:SetColor(Color(0, 150 + 20 * math.sin(math.pi * (RealTime() - ent.RandCol)), 0, 255))
+    
     if data.grow then
         if !data.offset then
             data.offset_max = (ent:OBBMaxs() - ent:OBBMins()).z + 20
@@ -66,7 +68,7 @@ function TK.TI:DrawTib(ent)
         if util.IsValidModel(data.pre || "") then
             local progress = data.offset / data.offset_max
             
-            ent:SetRenderOrigin(data.origin - ent:GetUp() * (data.offset_max - data.offset) / 2)
+            ent:SetRenderOrigin(data.origin - ent:GetUp() * (data.offset_max - data.offset) * 0.5)
             ent:SetModel(data.pre)
             
             ent:SetModelScale(1 * progress, 0)

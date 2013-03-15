@@ -169,7 +169,7 @@ function TK.DC:DoDamge(ent, amt, typ)
 end
 
 function TK.DC:DoBlastDamage(pos, rad, amt, typ)
-    local hits = ents.FindInSphere(pos, rad)
+    local hits = TK:FindInSphere(pos, rad)
     local takedmg = {}
     for _,ent in pairs(hits) do
         if !ent.tk_dmg then continue end
@@ -182,7 +182,7 @@ function TK.DC:DoBlastDamage(pos, rad, amt, typ)
     end
     
     for k,v in pairs(takedmg) do
-        self:Damge(v, amt, typ)
+        self:DoDamge(v, amt, typ)
     end
 end
 

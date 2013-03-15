@@ -177,6 +177,7 @@ function Terminal:Open()
     gamemode.Call("TKOpenTerminal")
 end
 
+usermessage.Hook("3k_Secure", function() end)
 usermessage.Hook("3k_terminal_open", function(msg)
     Terminal:Open()
 end)
@@ -190,6 +191,17 @@ concommand.Add("3k_rebuild_terminal", function(ply, cmd, arg)
     Terminal:Rebuild()
 end)
 
+local function Msg_Secure(msg)
+    local one, two, three = msg:ReadShort(), msg:ReadLong(), msg:ReadShort()
+    local pass = util.CRC(one + two - three)
+    if Terminal.Secure then
+        RunConsoleCommand("3k_term", pass, unpack(Terminal.Secure))
+        Terminal.Secure = nil
+    else
+        RunConsoleCommand("3k_term", pass, "error")
+    end
+end
+
 hook.Add("Initialize", "TKTerminal", function()
     function GAMEMODE:TKOpenTerminal()
     end
@@ -198,14 +210,7 @@ hook.Add("Initialize", "TKTerminal", function()
         local IncomingMessage = usermessage.IncomingMessage
         function  usermessage.IncomingMessage(idx, msg)
             if idx == "3k_Secure" then 
-                local one, two, three = msg:ReadShort(), msg:ReadLong(), msg:ReadShort()
-                local pass = util.CRC(one + two - three)
-                if Terminal.Secure then
-                    RunConsoleCommand("3k_term", pass, unpack(Terminal.Secure))
-                    Terminal.Secure = nil
-                else
-                    RunConsoleCommand("3k_term", pass, "error")
-                end
+                Msg_Secure(msg)
             else
                 IncomingMessage(idx, msg)
             end

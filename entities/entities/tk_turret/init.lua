@@ -11,14 +11,14 @@ local Barrle_Attachments = {
 
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
-    
+    self.tick = 1 / 66.67
     self.rps = 25 / 66.67
     
     self.t_pos = Vector(0,0,0)
     self.t_ent = NULL
     self.t_mode = 0
-    self.t_auto = true
     self.t_shouldfire = false
+    self.t_predict = true
     
     self.aim_vec = Vector(0,0,0)
     self.bearing = 0
@@ -34,8 +34,8 @@ function ENT:Initialize()
     end
     
 
-    WireLib.CreateInputs(self, {"Activate", "X", "Y", "Z", "Pos [VECTOR]", "Target [ENTITY]", "Auto", "Fire"})
-    WireLib.CreateOutputs(self, {"Can Fire", "Ammo"})
+    WireLib.CreateInputs(self, {"Activate", "X", "Y", "Z", "Pos [VECTOR]", "Target [ENTITY]", "Predict", "Fire"})
+    WireLib.CreateOutputs(self, {"Aim Vec [VECTOR]", "Can Fire"})
 end
 
 function ENT:TriggerInput(iname, value)
@@ -60,13 +60,11 @@ function ENT:TriggerInput(iname, value)
     elseif iname == "Target" then
         self.t_ent = value
         self.t_mode = 1
+    elseif iname == "Predict" then
+        self.t_predict = value != 0 && true || false
     elseif iname == "Fire" then
-        self:Fire()
-    elseif iname == "Auto" then
         if value != 0 then
-            self.t_auto = true
-        else
-            self.t_auto = false
+            self:FireBullet()
         end
     end
 end
@@ -76,13 +74,15 @@ function ENT:DoThink(eff)
 end
 
 function ENT:Think()
-    if self.t_auto then
-        self.aim_vec = self.Owner:LocalToWorld(self.Owner:OBBCenter())
-    elseif self.t_mode == 1 then 
+    if self.t_mode == 1 then 
         if !IsValid(self.t_ent) then
             self.aim_vec = Vector(0,0,0)
         else
-            self.aim_vec = self.t_ent:LocalToWorld(self.t_ent:OBBCenter())
+            if self.t_predict then
+                self.aim_vec = self:PredictEnt(self.t_ent)
+            else
+                self.aim_vec = self.t_ent:NearestPoint(self:GetPos())
+            end
         end
     elseif self.t_mode == 0 then
         self.aim_vec = self.t_pos
@@ -92,18 +92,39 @@ function ENT:Think()
     local bearing = math.deg(-math.atan2(vec.y, vec.x)) + 90
     local elevation = math.deg(math.asin(vec.z / vec:Length()))
 
-    self.bearing = (math.ApproachAngle(self.bearing, bearing, self.rps) + 180) % 360 - 180
-    self.elevation = math.ApproachAngle(self.elevation, elevation, self.rps * 0.5)
-
-    self:SetPoseParameter("aim_yaw", self.bearing)
+    self.bearing = math.ApproachAngle(self.bearing, bearing, self.rps)
+    self.elevation = math.ApproachAngle(self.elevation, elevation, self.rps)
+    
+    local dif_b = math.abs(self.bearing - bearing)
+    local dif_e = math.abs(self.elevation - elevation)
+    self.t_shouldfire = dif_b < 1 && dif_e < 1
+    
+    self:SetPoseParameter("aim_yaw", (self.bearing + 180) % 360 - 180)
     self:SetPoseParameter("aim_pitch", self.elevation)
+    
+    WireLib.TriggerOutput(self, "Aim Vec", self.aim_vec)
+    WireLib.TriggerOutput(self, "Can Fire", self:CanFire() && 1 || 0)
     
     self:NextThink(CurTime())
     return true
 end
 
+function ENT:PredictEnt(ent)
+    local phys = ent:GetPhysicsObject()
+    if !IsValid(phys) then return false end
+    
+    local vel = phys:GetVelocity()
+    local pos = ent:NearestPoint(self:GetPos())
+    local dis = self:GetPos():Distance(pos)
+    return pos + vel * self.tick * dis / self.Bullet.Speed
+end
+
 function ENT:CanFire()
-    return self.t_shouldfire && self:GetEnv():CanCombat()
+    if !self.t_shouldfire then return false end
+    for _,ent in pairs(self.tk_env.envlist) do
+        if !ent:CanCombat() then return false end
+    end    
+    return true
 end
 
 function ENT:GetBarrel()
@@ -112,18 +133,18 @@ function ENT:GetBarrel()
         self.barrel_idx = 1
     end
     
-    local barrel = self.barrels[barrel_idx]
+    local barrel = self.barrels[self.barrel_idx]
     if !barrel then
-        return self:GetPos() + self:GetUp() * self:OBBMaxs().z
+        return {Pos = self:LocalToWorld(self:OBBCenter() + Vector(self.OBBMaxs().x - self.OBBMins().x, 0, 0)), Ang = self:GetForward():Angle()}
     end
     
     return self:GetAttachment(barrel)
 end
 
-function ENT:Fire()
+function ENT:FireBullet()
     if !self:CanFire() then return end
-    local fire_pos = self:GetBarrel()
-    local fire_ang = self.aim_vec:Angle() + Angle(90,0,0)
+    local angpos = self:GetBarrel()
+    local fire_pos, fire_ang = angpos.Pos, angpos.Ang + Angle(0,0,-90)
     
     if self.Bullet.Type == "shell" then
         local ent = ents.Create("tk_shell")

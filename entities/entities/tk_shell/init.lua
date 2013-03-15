@@ -4,9 +4,11 @@ include('shared.lua')
 ENT.SLIsGhost = true
 
 function ENT:Initialize()
-    self.Entity:PhysicsInit(SOLID_OBB) 	
-	self.Entity:SetMoveType(MOVETYPE_NONE)
-	self.Entity:SetSolid(SOLID_NONE)
+    self:SetModel(self.Bullet.Model)
+    self:PhysicsInit(SOLID_OBB) 	
+	self:SetMoveType(MOVETYPE_NONE)
+	self:SetSolid(SOLID_NONE)
+    
     self:SetTrigger(true)
     self:SetNotSolid(true)
     self:DrawShadow(false)
@@ -16,7 +18,7 @@ function ENT:Initialize()
     self.vel = self:GetUp() * self.Bullet.Speed * self.tick
     self.life = false
     if self.Bullet.Lifetime then
-        self.life = SysTime() + self.Bullet.Lifetime
+        self.life = CurTime() + self.Bullet.Lifetime
     end
     
     if self.Bullet.Material then
@@ -61,7 +63,7 @@ end
 
 function ENT:Think()
     if self.life then
-        if SysTime() > self.life then 
+        if CurTime() > self.life then 
             self:Detonate()
             return
         end
@@ -87,12 +89,12 @@ function ENT:Think()
     td.filter = {self, self.Cannon}
     
     local trace = util.TraceLine(td)
-    if trace.hit then
+    if trace.Hit then
         self.pos = trace.HitPos
         self:Detonate()
         return
     end
     
-    self:NextThink(0)
+    self:NextThink(CurTime())
     return true
 end

@@ -13,7 +13,8 @@ BULLET.DmgType      = DMG_KINETIC
 BULLET.DmgValue     = 25
 BULLET.DmgRadius    = 25
 
-BULLET.Speed        = 100
+BULLET.Range        = 1000
+BULLET.Speed        = 1000
 BULLET.Accuracy     = 0.01
 BULLET.Lifetime     = nil
 
