@@ -90,6 +90,7 @@ hook.Add("Initialize", "TKTerminal", function()
     function GAMEMODE:TKOpenTerminal()
     end
     
+    Terminal:Create()
     Terminal.encrypt = aeslua.encrypt
     Terminal.decrypt = aeslua.decrypt
     Terminal.encrypt_key = string.random(32)
@@ -180,15 +181,6 @@ function Terminal:Create()
     end
 end
 
-function Terminal:Rebuild()
-    if Terminal.Menu then
-        Terminal.Menu:Remove()
-    end
-    
-    Terminal:Create()
-    Terminal.Menu:SetVisible(false)
-end
-
 function Terminal:Open()
     if !Terminal.Menu then
         Terminal:Create()
@@ -222,8 +214,4 @@ end)
 hook.Add("TKDBPlayerData", "UpdateTerm", function(dbtable, idx, data)
     if !Terminal.Menu then return end
     Terminal.Menu:Update()
-end)
-
-concommand.Add("3k_rebuild_terminal", function(ply, cmd, arg)
-    Terminal:Rebuild()
 end)

@@ -21,6 +21,7 @@ TK.Settings.PlyMdls = {
     ["models/rainbowscout_player.mdl"] =        {rank = 2},
     ["models/raindrops_player.mdl"] =           {rank = 2},
     ["models/rarity_player.mdl"] =              {rank = 2},
+    ["models/daringdoo_player.mdl"] =           {rank = 2},
     ["models/trixie_player.mdl"] =              {rank = 2},
     ["models/trixienodress_player.mdl"] =       {rank = 2},
     ["models/twilightsparkle_player.mdl"] =     {rank = 2},
