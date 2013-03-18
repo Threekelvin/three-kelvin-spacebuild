@@ -44,6 +44,10 @@ function ENT:Initialize()
     self.brushes = {}
 end
 
+function ENT:HasFlag(id)
+    return bit.band(id, self.atmosphere.flags) == id
+end
+
 function ENT:TriggerInput(iname, value)
     if iname == "Activate" then
         if value != 0 then
@@ -308,6 +312,10 @@ end
 
 function ENT:GetResourcePercent(res)
     return self.atmosphere.resources[res] || 0
+end
+
+function ENT:CheckEntity(ent)
+
 end
 
 function ENT:InAtmosphere(pos)

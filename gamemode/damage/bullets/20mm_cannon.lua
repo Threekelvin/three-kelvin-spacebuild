@@ -14,15 +14,12 @@ BULLET.DmgValue     = 25
 BULLET.DmgRadius    = 25
 
 BULLET.Range        = 1000
-BULLET.Speed        = 1000
+BULLET.Speed        = 2500
 BULLET.Accuracy     = 0.01
 BULLET.Lifetime     = nil
 
-
 BULLET.ReloadTime   = 0
 BULLET.ClipSize     = 0
-BULLET.Clip         = 0
-BULLET.Ammo         = 0
-BULLET.AmmonReload  = 0
+BULLET.AmmoSize     = 0 
 
 BULLET.Power        = 0

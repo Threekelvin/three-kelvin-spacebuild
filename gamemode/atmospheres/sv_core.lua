@@ -7,6 +7,10 @@ local Ships = {}
 local Planets = {}
 local MapData
 
+///--- Flags ---\\\
+ATMOSPHERE_SUNBURN = 2
+///--- ---\\\
+
 ///--- SPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACE ---\\\
 local Space = {}
 
@@ -22,6 +26,10 @@ Space.atmosphere.windspeed  = 0
 Space.atmosphere.tempcold   = 3
 Space.atmosphere.temphot    = 3
 Space.atmosphere.resources  = {}
+
+function Space:HasFlag(id)
+    return bit.band(id, self.atmosphere.flags) == id
+end
 
 function Space:IsStar()
     return false
@@ -73,6 +81,10 @@ end
 
 function Space:GetResourcePercent(res)
     return 0
+end
+
+function Space:CheckEntity(ent)
+
 end
 
 function Space:InAtmosphere(pos)

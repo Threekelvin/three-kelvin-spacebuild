@@ -12,13 +12,16 @@ local Barrle_Attachments = {
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
     self.tick = 1 / 66.67
-    self.rps = 25 / 66.67
+    self.dps = 30 * self.tick
     
     self.t_pos = Vector(0,0,0)
     self.t_ent = NULL
     self.t_mode = 0
     self.t_shouldfire = false
     self.t_predict = true
+    
+    self.t_lastfire = 0
+    self.t_clip = 0
     
     self.aim_vec = Vector(0,0,0)
     self.bearing = 0
@@ -33,7 +36,6 @@ function ENT:Initialize()
         table.insert(self.barrels, id)
     end
     
-
     WireLib.CreateInputs(self, {"Activate", "X", "Y", "Z", "Pos [VECTOR]", "Target [ENTITY]", "Predict", "Fire"})
     WireLib.CreateOutputs(self, {"Aim Vec [VECTOR]", "Can Fire"})
 end
@@ -92,10 +94,10 @@ function ENT:Think()
     local bearing = math.deg(-math.atan2(vec.y, vec.x)) + 90
     local elevation = math.deg(math.asin(vec.z / vec:Length()))
 
-    self.bearing = math.ApproachAngle(self.bearing, bearing, self.rps)
-    self.elevation = math.ApproachAngle(self.elevation, elevation, self.rps)
+    self.bearing = math.ApproachAngle(self.bearing, bearing, self.dps)
+    self.elevation = math.ApproachAngle(self.elevation, elevation, self.dps)
     
-    local dif_b = math.abs(self.bearing - bearing)
+    local dif_b = math.abs((self.bearing % 360) - (bearing % 360))
     local dif_e = math.abs(self.elevation - elevation)
     self.t_shouldfire = dif_b < 1 && dif_e < 1
     
@@ -134,17 +136,13 @@ function ENT:GetBarrel()
     end
     
     local barrel = self.barrels[self.barrel_idx]
-    if !barrel then
-        return {Pos = self:LocalToWorld(self:OBBCenter() + Vector(self.OBBMaxs().x - self.OBBMins().x, 0, 0)), Ang = self:GetForward():Angle()}
-    end
-    
     return self:GetAttachment(barrel)
 end
 
 function ENT:FireBullet()
     if !self:CanFire() then return end
     local angpos = self:GetBarrel()
-    local fire_pos, fire_ang = angpos.Pos, angpos.Ang + Angle(0,0,-90)
+    local fire_pos, fire_ang = angpos.Pos, angpos.Ang
     
     if self.Bullet.Type == "shell" then
         local ent = ents.Create("tk_shell")
@@ -154,7 +152,28 @@ function ENT:FireBullet()
         ent:SetAngles(fire_ang)
         ent:Spawn()
     elseif self.Bullet.Type == "beam" then
-    
+        local td = {}
+        td.start = fire_pos
+        td.endpos = fire_pos + fire_ang:Forward() * self.Bullet.Range
+        td.filter = self
+        
+        local trace = util.TraceLine(td)
+        if trace.Hit then
+            if self.Bullet.HitEffect then
+                local fxd = EffectData()
+                fxd:SetOrigin(trace.HitPos)
+                fxd:SetAngles(trace.HitNormal:Angle())
+                util.Effect(self.Bullet.HitEffect, fxd, true, true)
+            end
+        
+            if self.Bullet.HitSound then
+                sound.Play(self.Bullet.HitSound, trace.HitPos)
+            end
+        end
+        
+        if IsValid(trace.Entity) then
+            TK.DC:DoDamage(trace.Entity, self.Bullet.DmgValue, self.Bullet.DmgType)
+        end
     elseif self.Bullet.Type == "missle" then
         local ent = ents.Create("tk_missle")
         ent.Bullet = self.Bullet
@@ -166,10 +185,9 @@ function ENT:FireBullet()
     
     if self.Bullet.FireEffect then
         local fxd = EffectData()
-        fxd:SetEntity(self)
         fxd:SetOrigin(fire_pos)
         fxd:SetAngles(fire_ang)
-        util.Effect(self.Bullet.FireEffect, fxd)
+        util.Effect(self.Bullet.FireEffect, fxd, true, true)
     end
     
     if self.Bullet.FireSound then

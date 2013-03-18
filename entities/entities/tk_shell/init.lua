@@ -15,7 +15,7 @@ function ENT:Initialize()
     
     self.tick = 1 / 66.67
     self.pos = self:GetPos()
-    self.vel = self:GetUp() * self.Bullet.Speed * self.tick
+    self.vel = self:GetForward() * self.Bullet.Speed * self.tick
     self.life = false
     if self.Bullet.Lifetime then
         self.life = CurTime() + self.Bullet.Lifetime
@@ -43,10 +43,9 @@ function ENT:Detonate()
 
     if self.Bullet.HitEffect then
         local fxd = EffectData()
-        fxd:SetEntity(self)
         fxd:SetOrigin(self.pos)
         fxd:SetAngles(self:GetUp():Angle())
-        util.Effect(self.Bullet.HitEffect, fxd)
+        util.Effect(self.Bullet.HitEffect, fxd, true, true)
     end
     
     if self.Bullet.HitSound then
@@ -83,7 +82,7 @@ function ENT:Think()
         return
     end
     self:SetPos(self.pos)
-    self:SetAngles(self.vel:Angle() + Angle(0,0,90))
+    self:SetAngles(self.vel:Angle())
     
     td.endpos = self.pos
     td.filter = {self, self.Cannon}

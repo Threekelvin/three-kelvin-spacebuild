@@ -2,31 +2,9 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include('shared.lua')
 
-local CurTime = CurTime
 local IsValid = IsValid
 local pairs = pairs
 local table = table
-local math = math
-
-local function Extract_Bit(bit, field)
-    if not bit or not field then return false end
-    local retval = 0
-    if ((field <= 7) and (bit <= 4)) then
-        if (field >= 4) then
-            field = field - 4
-            if (bit == 4) then return true end
-        end
-        if (field >= 2) then
-            field = field - 2
-            if (bit == 2) then return true end
-        end
-        if (field >= 1) then
-            field = field - 1
-            if (bit == 1) then return true end
-        end
-    end
-    return false
-end
 
 local function EnvPrioritySort(a, b)
     if a.atmosphere.priority == b.atmosphere.priority then
@@ -40,78 +18,83 @@ function ENT:Initialize()
     self:SetSolid(SOLID_NONE)
 
     self.atmosphere = {}
-    self.atmosphere.name = "Base Atmosphere"
-    self.atmosphere.sphere    = true
-    self.atmosphere.noclip     = false
-    self.atmosphere.combat     = true
+    self.atmosphere.name        = "Base Atmosphere"
+    self.atmosphere.sphere      = true
+    self.atmosphere.noclip      = false
+    self.atmosphere.combat      = true
     self.atmosphere.priority    = 5
-    self.atmosphere.radius         = 0
+    self.atmosphere.radius      = 0
     self.atmosphere.gravity     = 0
-    self.atmosphere.windspeed     = 0
+    self.atmosphere.windspeed   = 0
     self.atmosphere.tempcold    = 3
-    self.atmosphere.temphot        = 3
+    self.atmosphere.temphot     = 3
     self.atmosphere.flags       = 0
-    self.atmosphere.resources     = {}
+    self.atmosphere.resources   = {}
     
     self.outside = {}
     self.inside = {}
+end
+
+function ENT:HasFlag(id)
+    return bit.band(id, self.atmosphere.flags) == id
+end
+
+function ENT:MoveInside(ent)
+    self.inside[ent] = ent
+    self.outside[ent] = nil
+    
+    local oldenv = ent:GetEnv()
+    table.insert(ent.tk_env.envlist, self)
+    table.sort(ent.tk_env.envlist, EnvPrioritySort)
+    local newenv = ent:GetEnv()
+    
+    if oldenv != newenv then
+        newenv:DoGravity(ent)
+        gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
+    end
+end
+
+function ENT:MoveOutside(ent)
+    self.outside[ent] = ent
+    self.inside[ent] = nil
+    
+    local oldenv = ent:GetEnv()
+    for k,v in pairs(ent.tk_env.envlist) do
+        if v == self then
+            table.remove(ent.tk_env.envlist, k)
+            break
+        end
+    end
+    local newenv = ent:GetEnv()
+    
+    if oldenv != newenv then
+        newenv:DoGravity(ent)
+        gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
+    end
 end
 
 function ENT:StartTouch(ent)
     if !ent.tk_env then return end
     if self.atmosphere.sphere then
         if (ent:GetPos() - self:GetPos()):LengthSqr() <= self:GetRadius2() then
-            self.inside[ent:EntIndex()] = ent
-            
-            local oldenv = ent:GetEnv()
-            table.insert(ent.tk_env.envlist, self)
-            table.sort(ent.tk_env.envlist, EnvPrioritySort)
-            local newenv = ent:GetEnv()
-            
-            if oldenv != newenv then
-                newenv:DoGravity(ent)
-                gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
-            end
+            self:MoveInside(ent)
         else
-            self.outside[ent:EntIndex()] = ent
+            self.outside[ent] = ent
         end
     else
-        self.inside[ent:EntIndex()] = ent
-        
-        local oldenv = ent:GetEnv()
-        table.insert(ent.tk_env.envlist, self.tk_env.ship)
-        table.sort(ent.tk_env.envlist, EnvPrioritySort)
-        local newenv = ent:GetEnv()
-        
-        if oldenv != newenv then
-            newenv:DoGravity(ent)
-            gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
-        end
+        self:MoveInside(ent)
     end
 end
 
 function ENT:EndTouch(ent)
     if !ent.tk_env then return end
-    local entid = ent:EntIndex()
     
-    if self.inside[entid] == ent then
-        local oldenv = ent:GetEnv()
-        for k,v in pairs(ent.tk_env.envlist) do
-            if v == self then
-                table.remove(ent.tk_env.envlist, k)
-                break
-            end
-        end
-        local newenv = ent:GetEnv()
-        
-        if oldenv != newenv then
-            newenv:DoGravity(ent)
-            gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
-        end
+    if self.inside[ent] then
+        self:MoveOutside(ent)
     end
     
-    self.outside[entid] = nil
-    self.inside[entid] = nil
+    self.outside[ent] = nil
+    self.inside[ent] = nil
 end
 
 function ENT:Think()
@@ -120,18 +103,7 @@ function ENT:Think()
     for idx,ent in pairs(self.outside) do
         if IsValid(ent) then
             if (ent:GetPos() - self:GetPos()):LengthSqr() > self:GetRadius2() then continue end
-            self.outside[idx] = nil
-            self.inside[idx] = ent
-            
-            local oldenv = ent:GetEnv()
-            table.insert(ent.tk_env.envlist, self)
-            table.sort(ent.tk_env.envlist, EnvPrioritySort)
-            local newenv = ent:GetEnv()
-            
-            if oldenv != newenv then
-                newenv:DoGravity(ent)
-                gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
-            end
+            self:MoveInside(ent)
         else
             self.outside[idx] = nil
         end
@@ -140,48 +112,32 @@ function ENT:Think()
     for idx,ent in pairs(self.inside) do
         if IsValid(ent) then
             if (ent:GetPos() - self:GetPos()):LengthSqr() < self:GetRadius2() then continue end
-            self.outside[idx] = ent
-            self.inside[idx] = nil
-            
-            local oldenv = ent:GetEnv()
-            for k,v in pairs(ent.tk_env.envlist) do
-                if v == self then
-                    table.remove(ent.tk_env.envlist, k)
-                    break
-                end
-            end
-            local newenv = ent:GetEnv()
-            
-            if oldenv != newenv then
-                newenv:DoGravity(ent)
-                gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
-            end
+            self:MoveOutside(ent)
         else
             self.inside[idx] = nil
         end
     end
 
-    self:NextThink(CurTime() + 0.25)
+    self:NextThink(CurTime() + 0.2)
     return true
+end
+
+function ENT:CheckEntity(ent)
+    if !IsValid(ent) then return end
+    
+    if self.inside[ent] then
+        if (ent:GetPos() - self:GetPos()):LengthSqr() < self:GetRadius2() then return end
+        self:MoveOutside(ent)
+    elseif self.outside[ent] then
+        if (ent:GetPos() - self:GetPos()):LengthSqr() > self:GetRadius2() then return end
+        self:MoveInside(ent)
+    end
 end
 
 function ENT:OnRemove()
     for idx,ent in pairs(self.inside) do
-        if IsValid(ent) then
-            local oldenv = ent:GetEnv()
-            for k,v in pairs(ent.tk_env.envlist) do
-                if v == self then
-                    table.remove(ent.tk_env.envlist, k)
-                    break
-                end
-            end
-            local newenv = ent:GetEnv()
-            
-            if oldenv != newenv then
-                newenv:DoGravity(ent)
-                gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
-            end
-        end
+        if !IsValid(ent) then continue end
+        self:MoveOutside(ent)
     end
 end
 
@@ -261,7 +217,7 @@ function ENT:GetVolume()
 end
 
 function ENT:Sunburn()
-    return Extract_Bit(2, self.atmosphere.flags)
+    return self:HasFlag(ATMOSPHERE_SUNBURN)
 end
 
 function ENT:HasResource(res)

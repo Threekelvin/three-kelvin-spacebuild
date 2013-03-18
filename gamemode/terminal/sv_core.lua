@@ -1,8 +1,12 @@
 
-///--- umsg Pool ---\\\
-umsg.PoolString("3k_Secure")
-umsg.PoolString("3k_terminal_refinery_start")
-umsg.PoolString("3k_terminal_refinery_finish")
+///--- String Pool ---\\\
+util.AddNetworkString("3k_term_key")
+util.AddNetworkString("3k_term_test")
+util.AddNetworkString("3k_term_request")
+
+util.AddNetworkString("3k_term_ref_begin")
+util.AddNetworkString("3k_term_ref_finish")
+
 util.AddNetworkString("3k_terminal_resources_captcha_response")
 util.AddNetworkString("3k_terminal_resources_captcha_challenge")
 ///--- ---\\\
@@ -88,9 +92,9 @@ function Terminal.StartRefine(ply, res)
             TK.DB:UpdatePlayerData(ply, "terminal_setting", {refine_length = newtime})
         end
         
-        umsg.Start("3k_terminal_refinery_start", ply)
-            umsg.Bool(true)
-        umsg.End()
+        net.Start("3k_term_ref_start")
+            net.WriteBit(true)
+        net.Send(ply)
     end
 end
 
@@ -116,8 +120,8 @@ function Terminal.EndRefine(ply)
         
         TK.DB:UpdatePlayerData(ply, "terminal_refinery", newrefinery)
         TK.DB:UpdatePlayerData(ply, "terminal_setting", {refine_started = 0, refine_length = 0})
-        umsg.Start("3k_terminal_refinery_finish", ply)
-        umsg.End()
+        net.Start("3k_term_ref_finish")
+        net.Send(ply)
     end
 end
 
@@ -159,9 +163,9 @@ function Terminal.CancelRefine(ply, arg)
     TK.DB:UpdatePlayerData(ply, "terminal_refinery", newrefinery)
     TK.DB:UpdatePlayerData(ply, "terminal_setting", {refine_started = 0, refine_length = 0})
     
-    umsg.Start("3k_terminal_refinery_start", ply)
-        umsg.Bool(false)
-    umsg.End()
+    net.Start("3k_term_ref_start")
+        net.WriteBit(false)
+    net.Send(ply)
 end
 ///--- ---\\\
 
@@ -223,6 +227,7 @@ end
 
 ///--- Terminal ConCommand ---\\\
 local SecureInfo = {}
+local SecureKeys = {}
 
 local function CanCall(ply)
     for k,v in pairs(ents.FindByClass("tk_terminal")) do
@@ -233,65 +238,74 @@ local function CanCall(ply)
     return false
 end
 
-concommand.Add("3k_secure_ping", function(ply, cmd, arg)
-    if !IsValid(ply) then return end 
+local function BuildString(data)
+    local str = [[]]
+    for k,v in ipairs(data) do
+        str = str .. string.char(v)
+    end
+    return str
+end
+
+local function BuildTable(data)
+    return {string.byte(data, 1, string.len(data))}
+end
+
+net.Receive("3k_term_key", function(len, ply)
     local uid = ply:UID()
+    if SecureKeys[uid] then return end
+    SecureKeys[uid] = {}
     
-    if !CanCall(ply) then ErrorNoHalt(ply:Name().." cannot call - "..cmd.." - "..table.concat(arg, " ").."\n") return end
+    SecureKeys[uid].encrypt_key = BuildString(net.ReadTable())
+    SecureKeys[uid].decrypt_key = BuildString(net.ReadTable())
+
+    SecureInfo[uid] = string.random(32)
+    local crypt = aeslua.encrypt(SecureKeys[uid].decrypt_key, SecureInfo[uid])
     
-    math.randomseed(SysTime())
-    local one, two, three = math.random(-32767, 32767), math.random(-32767, 32767), math.random(-32767, 32767)
-    SecureInfo[uid] = SecureInfo[uid] || {}
-    table.insert(SecureInfo[uid], {util.CRC(one + two - three), arg[1] || ""})
-    
-    umsg.Start("3k_Secure", ply)
-        umsg.Short(one)
-        umsg.Long(two)
-        umsg.Short(three)
-    umsg.End()
+    net.Start("3k_term_test")
+        net.WriteTable(BuildTable(crypt))
+    net.Send(ply)
 end)
 
-concommand.Add("3k_term", function(ply, cmd, arg)
-    if !IsValid(ply) then return end
+net.Receive("3k_term_request", function(len, ply)
     local uid = ply:UID()
-    local pass, command = arg[1], arg[2]
-    
-    if pass != SecureInfo[uid][1][1] then 
-        ErrorNoHalt(ply:Name().." Bad Password - "..table.concat(arg, " ").."\n") 
-        return
+    if !CanCall(ply) then return end
+
+    local pwd = BuildString(net.ReadTable())
+    local crypt =  BuildString(net.ReadTable())
+    local arg = aeslua.decrypt(SecureKeys[uid].encrypt_key, crypt)
+
+    if pwd == SecureInfo[uid] then
+        arg = string.Explode(" ", arg)
+        local cmd = table.remove(arg, 1)
+        
+        if cmd == "storagetonode" then
+            Terminal.StorageToNode(ply, arg)
+        elseif cmd == "nodetostorage" then
+            Terminal.NodeTostorage(ply, arg)
+        elseif cmd == "refine" then
+            Terminal.Refine(ply, arg)
+        elseif cmd == "refineall" then
+            Terminal.RefineAll(ply, arg)
+        elseif cmd == "cancelrefine" then
+            Terminal.CancelRefine(ply, arg)
+        elseif cmd == "addresearch" then
+            Terminal.AddResearch(ply, arg)
+        elseif cmd == "setslot" then
+            Terminal.SetSlot(ply, arg)
+        end
     end
     
-    if command != SecureInfo[uid][1][2] then 
-        ErrorNoHalt(ply:Name().." Bad Command - "..table.concat(arg, " ").."\n") 
-        table.remove(SecureInfo[uid], 1)
-        return 
-    end
+    SecureInfo[uid] = string.random(32)
+    local crypt = aeslua.encrypt(SecureKeys[uid].decrypt_key, SecureInfo[uid])
     
-    table.remove(SecureInfo[uid], 1)
-    if !CanCall(ply) then 
-        ErrorNoHalt(ply:Name().." Can Not Call - "..cmd.." - "..table.concat(arg, " ").."\n") 
-        return 
-    end
-    
-    table.remove(arg, 2)
-    table.remove(arg, 1)
-    
-    if command == "storagetonode" then
-        Terminal.StorageToNode(ply, arg)
-    elseif command == "nodetostorage" then
-        Terminal.NodeTostorage(ply, arg)
-    elseif command == "refine" then
-        Terminal.Refine(ply, arg)
-    elseif command == "refineall" then
-        Terminal.RefineAll(ply, arg)
-    elseif command == "cancelrefine" then
-        Terminal.CancelRefine(ply, arg)
-    elseif command == "addresearch" then
-        Terminal.AddResearch(ply, arg)
-    elseif command == "setslot" then
-        Terminal.SetSlot(ply, arg)
-    else
-        ErrorNoHalt(ply:Name().." ["..ply:SteamID().."] used unknown command: "..command.."    args: "..table.concat(arg, " ").."\n")
-    end
+    net.Start("3k_term_test")
+        net.WriteTable(BuildTable(crypt))
+    net.Send(ply)
+end)
+
+hook.Add("PlayerDisconnected", "term", function(ply)
+    local uid = ply:UID()
+    SecureInfo[uid] = nil
+    SecureKeys[uid] = nil
 end)
 ///--- ---\\\

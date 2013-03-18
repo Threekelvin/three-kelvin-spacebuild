@@ -9,7 +9,7 @@ local ExpMat = Material( "sprites/splodesprite" )
 		for i = 0, 25 do
 		
 			local particle = self.emitter:Add( "particles/smokey", self.origin)
-			if (particle) then
+			if particle then
 				particle:SetVelocity(VectorRand() * math.Rand(50, 100))
 				particle:SetLifeTime(0)
 				particle:SetDieTime(math.Rand(1, 2))
@@ -23,7 +23,7 @@ local ExpMat = Material( "sprites/splodesprite" )
 			end
 			
 			local particle1 = self.emitter:Add( "particles/flamelet"..math.random(1,5), self.origin)
-			if (particle1) then
+			if particle1 then
 				particle1:SetVelocity(VectorRand() * math.Rand(25, 75))
 				particle1:SetLifeTime(0 )
 				particle1:SetDieTime(0.5)

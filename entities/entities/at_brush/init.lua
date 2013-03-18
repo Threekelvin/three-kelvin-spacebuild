@@ -9,11 +9,11 @@ local table = table
 function ENT:Initialize()
     if !IsValid(self.parent) then self:Remove() return end
     
-    self:SetSolid(SOLID_NONE)
-    self:SetMoveType(MOVETYPE_NONE)
-    
     self:SetModel(self.parent:GetModel())
+    self:SetMoveType(MOVETYPE_NONE)
     self:PhysicsInit(SOLID_OBB)
+    self:SetSolid(SOLID_NONE)
+    
     self:SetPos(self.parent:GetPos())
     self:SetAngles(self.parent:GetAngles())
     self:SetParent(self.parent)

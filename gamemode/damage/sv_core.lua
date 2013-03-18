@@ -140,7 +140,7 @@ function TK.DC:DoDamge(ent, amt, typ)
     if !IsValid(ent) || !ent.tk_dmg then return end
     if !self:CanDamage(ent) then return end
     local useCore = IsValid(ent.tk_dmg.core)
-    local stats = useCore && ent.tk_dmg.core.total || ent.tk_dmg.stats
+    local stats = useCore && ent.tk_dmg.core.tk_dmg.total || ent.tk_dmg.stats
     
     local dmg = 1
     local shield, dmg = self:DmgShield(stats.shield, amt * dmg,  typ)
@@ -148,9 +148,9 @@ function TK.DC:DoDamge(ent, amt, typ)
     local hull, dmg = self:DmgHull(stats.hull, amt * dmg,  typ)
     
     if useCore then
-        ent.tk_dmg.core.total.shield = shield
-        ent.tk_dmg.core.total.armor = armor
-        ent.tk_dmg.core.total.hull = hull
+        ent.tk_dmg.core.tk_dmg.total.shield = shield
+        ent.tk_dmg.core.tk_dmg.total.armor = armor
+        ent.tk_dmg.core.tk_dmg.total.hull = hull
         
         ent:UpdateOutputs()
     else
@@ -184,14 +184,6 @@ function TK.DC:DoBlastDamage(pos, rad, amt, typ)
     for k,v in pairs(takedmg) do
         self:DoDamge(v, amt, typ)
     end
-end
-
-function TK.DC:FireShell(bullet)
-
-end
-
-function TK.DC:FireBeam(bullet)
-
 end
 
 LoadBullets()

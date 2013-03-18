@@ -73,6 +73,7 @@ function TOOL:RightClick(trace)
     end
     
     for k,v in pairs(self.Selected) do
+        if !IsValid(v) then continue end
         self:UnSelectEnt(v)
         v:Link(ent.netid)
     end

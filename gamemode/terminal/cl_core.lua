@@ -1,4 +1,6 @@
 
+local net = net
+local string = string
 local Terminal = {}
 
 local Pages = {
@@ -68,6 +70,40 @@ local Pages = {
     }
 }
 
+local function BuildString(data)
+    local str = [[]]
+    for k,v in ipairs(data) do
+        str = str .. string.char(v)
+    end
+    return str
+end
+
+local function BuildTable(data)
+    return {string.byte(data, 1, string.len(data))}
+end
+
+net.Receive("3k_term_test", function()
+    Terminal.request_key = BuildString(net.ReadTable())
+end)
+
+hook.Add("Initialize", "TKTerminal", function()
+    function GAMEMODE:TKOpenTerminal()
+    end
+    
+    Terminal.encrypt = aeslua.encrypt
+    Terminal.decrypt = aeslua.decrypt
+    Terminal.encrypt_key = string.random(32)
+    Terminal.decrypt_key = string.random(32)
+    Terminal.request_key = ""
+    
+    timer.Simple(0, function()
+        net.Start("3k_term_key")
+            net.WriteTable(BuildTable(Terminal.encrypt_key))
+            net.WriteTable(BuildTable(Terminal.decrypt_key))
+        net.SendToServer()
+    end)
+end)
+
 function Terminal:Create()
     if surface.ScreenWidth() < 800 || surface.ScreenHeight() < 600 then
         ErrorNoHalt("[Terminal] Resolution Not Supported, minimum size 800 x 600\n")
@@ -107,11 +143,13 @@ function Terminal:Create()
             return
         end
         
-        local args = {...}
-        if !Terminal.Secure then
-            Terminal.Secure = args
-            RunConsoleCommand("3k_secure_ping", args[1])
-        end
+        local key = Terminal.decrypt(Terminal.decrypt_key, Terminal.request_key)
+        local querry = Terminal.encrypt(Terminal.encrypt_key, table.concat({...}, " "))
+
+        net.Start("3k_term_request")
+            net.WriteTable(BuildTable(key))
+            net.WriteTable(BuildTable(querry))
+        net.SendToServer()
     end
     
     local close = vgui.Create("DButton", frame)
@@ -177,7 +215,6 @@ function Terminal:Open()
     gamemode.Call("TKOpenTerminal")
 end
 
-usermessage.Hook("3k_Secure", function() end)
 usermessage.Hook("3k_terminal_open", function(msg)
     Terminal:Open()
 end)
@@ -189,31 +226,4 @@ end)
 
 concommand.Add("3k_rebuild_terminal", function(ply, cmd, arg)
     Terminal:Rebuild()
-end)
-
-local function Msg_Secure(msg)
-    local one, two, three = msg:ReadShort(), msg:ReadLong(), msg:ReadShort()
-    local pass = util.CRC(one + two - three)
-    if Terminal.Secure then
-        RunConsoleCommand("3k_term", pass, unpack(Terminal.Secure))
-        Terminal.Secure = nil
-    else
-        RunConsoleCommand("3k_term", pass, "error")
-    end
-end
-
-hook.Add("Initialize", "TKTerminal", function()
-    function GAMEMODE:TKOpenTerminal()
-    end
-    
-    if usermessage then
-        local IncomingMessage = usermessage.IncomingMessage
-        function  usermessage.IncomingMessage(idx, msg)
-            if idx == "3k_Secure" then 
-                Msg_Secure(msg)
-            else
-                IncomingMessage(idx, msg)
-            end
-        end
-    end
 end)

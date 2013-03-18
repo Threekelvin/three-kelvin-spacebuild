@@ -76,7 +76,16 @@ function ENT:Draw()
 end
 
 function ENT:DoMenu()
-
+    if self.Menu then return end
+    
+    self.Menu = vgui.Create("DFrame")
+    self.Menu:SetSize(400, 300)
+    self.Menu:Center()
+    self.Menu:ShowCloseButton(true)
+    self.Menu:SetDraggable(false)
+    self.Menu:MakePopup()
+    
+    
 end
 
 function ENT:DoCommand(cmd, ...)

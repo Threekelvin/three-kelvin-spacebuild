@@ -150,12 +150,12 @@ local function Confirm(panel)
     end
 end
 
-usermessage.Hook("3k_terminal_refinery_start", function(msg)
-    -- Ghost Hook
+net.Receive("3k_term_ref_begin", function()
+
 end)
 
-usermessage.Hook("3k_terminal_refinery_finish", function(msg)
-    -- Ghost Hook
+net.Receive("3k_term_ref_finish", function()
+
 end)
 
 function PANEL:Init()
@@ -252,7 +252,7 @@ function PANEL:Init()
         Confirm(self)
     end
     
-    usermessage.Hook("3k_terminal_refinery_start", function(msg)
+    net.Receive("3k_term_ref_begin", function()
         if !IsValid(self) then return end
         self.Analyzing = true
         timer.Simple(3, function()
@@ -260,13 +260,13 @@ function PANEL:Init()
             self.Analyzing = false
         end)
         
-        if msg:ReadBool() then
+        if tobool(net.ReadBit()) then
             GAMEMODE:AddNotify("Refining Process Started", NOTIFY_GENERIC, 10)
             surface.PlaySound("ambient/water/drip"..math.random(1, 4)..".wav")
         end
     end)
 
-    usermessage.Hook("3k_terminal_refinery_finish", function(msg)
+    net.Receive("3k_term_ref_finish", function()
         if !IsValid(self) then return end
         self.Analyzing = false
         GAMEMODE:AddNotify("Refining Process Complete", NOTIFY_GENERIC, 10)
