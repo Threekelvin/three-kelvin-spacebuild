@@ -92,7 +92,7 @@ function Terminal.StartRefine(ply, res)
             TK.DB:UpdatePlayerData(ply, "terminal_setting", {refine_length = newtime})
         end
         
-        net.Start("3k_term_ref_start")
+        net.Start("3k_term_ref_begin")
             net.WriteBit(true)
         net.Send(ply)
     end
@@ -163,7 +163,7 @@ function Terminal.CancelRefine(ply, arg)
     TK.DB:UpdatePlayerData(ply, "terminal_refinery", newrefinery)
     TK.DB:UpdatePlayerData(ply, "terminal_setting", {refine_started = 0, refine_length = 0})
     
-    net.Start("3k_term_ref_start")
+    net.Start("3k_term_ref_begin")
         net.WriteBit(false)
     net.Send(ply)
 end
