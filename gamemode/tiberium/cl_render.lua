@@ -1,6 +1,8 @@
 
 TK.TI = TK.TI || {}
 
+local net = net
+
 local Status = {}
 local Models = {}
 local Mat1 = Material("Models/effects/splodearc_sheet")
@@ -11,39 +13,23 @@ local function IsStable(entid)
     return Status[entid]
 end
 
-usermessage.Hook("TKTib_S", function() end)
-usermessage.Hook("TKTib_M", function() end)
-
-local function Msg_Stable(msg)
-    local entid, stable = msg:ReadShort(), msg:ReadBool()
-    Status[entid] = stable
-end
-
-local function Msg_Model(msg)
-    local entid, stage = msg:ReadShort(), msg:ReadShort()
-    local x, y, z = msg:ReadFloat(), msg:ReadFloat(), msg:ReadFloat()
+net.Receive("TKTib_S", function() 
+    local entid = net.ReadInt(16)
+    local data = net.ReadTable()
     
-    Models[entid] = {}                
-    Models[entid].pre = (TK.Settings.Tiberium[stage - 1] || {}).model
-    Models[entid].cur = TK.Settings.Tiberium[stage].model
+    Status[entid] = data.stable
+end)
+
+net.Receive("TKTib_M", function() 
+    local entid = net.ReadInt(16)
+    local data = net.ReadTable()
+    
+    Models[entid] = {}
+    Models[entid].pre = (TK.Settings.Tiberium[data.stage - 1] || {}).model
+    Models[entid].cur = TK.Settings.Tiberium[data.stage].model
     Models[entid].grow = true
     Models[entid].time = SysTime()
-    Models[entid].origin = Vector(x, y, z)
-end
-
-hook.Add("Initialize", "TKTIB", function()
-     if usermessage then
-        local IncomingMessage = usermessage.IncomingMessage
-        function  usermessage.IncomingMessage(idx, msg)
-            if idx == "TKTib_S" then
-                Msg_Stable(msg)
-            elseif idx == "TKTib_M" then
-                Msg_Model(msg)
-            else
-                IncomingMessage(idx, msg)
-            end
-        end
-    end
+    Models[entid].origin = data.pos
 end)
 
 hook.Add("EntityRemove", "TKTIB", function(ent)

@@ -93,7 +93,7 @@ function Terminal.StartRefine(ply, res)
         end
         
         net.Start("3k_term_ref_begin")
-            net.WriteBit(true)
+            net.WriteBit(1)
         net.Send(ply)
     end
 end
@@ -121,6 +121,7 @@ function Terminal.EndRefine(ply)
         TK.DB:UpdatePlayerData(ply, "terminal_refinery", newrefinery)
         TK.DB:UpdatePlayerData(ply, "terminal_setting", {refine_started = 0, refine_length = 0})
         net.Start("3k_term_ref_finish")
+            net.WriteBit(1)
         net.Send(ply)
     end
 end
@@ -164,7 +165,7 @@ function Terminal.CancelRefine(ply, arg)
     TK.DB:UpdatePlayerData(ply, "terminal_setting", {refine_started = 0, refine_length = 0})
     
     net.Start("3k_term_ref_begin")
-        net.WriteBit(false)
+        net.WriteBit(0)
     net.Send(ply)
 end
 ///--- ---\\\

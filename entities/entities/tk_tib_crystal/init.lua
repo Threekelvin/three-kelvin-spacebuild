@@ -15,7 +15,6 @@ function ENT:Initialize()
     self:SetMoveType(MOVETYPE_NONE)
     self:SetSolid(SOLID_VPHYSICS)
     self:SetMaterial("models/tiberium_g")
-    --self:SetColor(Color(0, math.random(130, 170), 0, 255))
 
     local phys = self:GetPhysicsObject()
     if IsValid(phys) then
@@ -149,25 +148,28 @@ function ENT:Think()
 end
 
 ///--- Tib Sync ---\\\
-umsg.PoolString("TKTib_S")
-umsg.PoolString("TKTib_M")
+util.AddNetworkString("TKTib_S")
+util.AddNetworkString("TKTib_M")
 
 function ENT:SendStatus(ply)
-    umsg.Start("TKTib_S", ply)
-        umsg.Short(self:EntIndex())
-        umsg.Bool(self.isStable)
-    umsg.End()
+    local data = {}
+    data.stable = self.isStable
+
+    net.Start("TKTib_S")
+        net.WriteInt(self:EntIndex(), 16)
+        net.WriteTable(data)
+    net.Send(ply || player.GetAll())
 end
 
 function ENT:SendStage(ply)
-    local pos = self:GetPos()
-    umsg.Start("TKTib_M", ply)
-        umsg.Short(self:EntIndex())
-        umsg.Short(self.Stage)
-        umsg.Float(pos.x)
-        umsg.Float(pos.y)
-        umsg.Float(pos.z)
-    umsg.End()
+    local data = {}
+    data.stage = self.Stage
+    data.pos = self:GetPos()
+    
+    net.Start("TKTib_M")
+        net.WriteInt(self:EntIndex(), 16)
+        net.WriteTable(data)
+    net.Send(ply || player.GetAll())
 end
 
 hook.Add("PlayerInitialSpawn", "TKTib_SendStatus", function(ply)
