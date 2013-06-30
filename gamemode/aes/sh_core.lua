@@ -977,7 +977,7 @@ end
 function aeslua.encrypt(password, data, keyLength, mode)
 	assert(password ~= nil, "Empty password.")
 	assert(password ~= nil, "Empty data.")
-	 
+	
     local mode = mode or aeslua.CBCMODE
     local keyLength = keyLength or aeslua.AES128
 
@@ -997,9 +997,6 @@ function aeslua.encrypt(password, data, keyLength, mode)
         return nil
     end
 end
-
-
-
 
 --
 -- Decrypts string data with password password.

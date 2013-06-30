@@ -13,34 +13,21 @@ function TKGC:CanSendMsg(ply)
     return true
 end
 
-function TKGC:ExtractFlag(num, flag)
-    if flag > 7 || num > 4 then return false end
-    if flag >= 4 then
-        flag = flag - 4
-        if num == 4 then return true end
-    end
-    if flag >= 2 then
-        flag = flag - 2
-        if num == 2 then return true end
-    end
-    if flag >= 1 then
-        flag = flag - 1
-        if num == 1 then return true end
-    end
-    return false
+local function ExtractFlag(flag, id)
+    return bit.band(id, flag) == id
 end
 
 function TKGC:SendPlyMsg(flag, server, rank, faction, name, msg)
     local plys = player.GetAll()
     
-    if TKGC:ExtractFlag(4, flag) then
+    if ExtractFlag(flag, 4) then
         print(server .."[Admin]", TK.AM.Rank.Tag[rank]..name, msg)
         
         for k,v in pairs(plys) do
             if v:IsModerator() then continue end
             plys[k] = nil
         end
-    elseif TKGC:ExtractFlag(2, flag)  then
+    elseif ExtractFlag(flag, 2)  then
         print(server .."[Team]", TK.AM.Rank.Tag[rank]..name, msg)
         
         for k,v in pairs(plys) do
@@ -127,10 +114,9 @@ end
 hook.Add("Initialize", "TKGC", function()
     TK.DB:MakeQuery(TK.DB:FormatSelectQuery("server_globalchat", {"msg_idx"}, {"msg_idx > %s", TKGC.LastMsg}, {"msg_idx"}), function(data)
         TKGC.LastMsg = data[#data].msg_idx || 0
-        --TK.DB:SendGlobalSystemMsg("Server Has Started")
     end)
 
-    timer.Create("TKTKGC", 15, 0, function()
+    timer.Create("TKTKGC", 10, 0, function()
         if !TK.DB:IsConnected() then return end
         if TKGC.LastMsg == -1 then return end
 

@@ -6,7 +6,7 @@ function PANEL:Init()
     self.NextThink = 0
     
     self.webpage = vgui.Create("HTML", self)
-    self.webpage:OpenURL("http://threekelvin.co.uk/stats")
+    self.webpage:OpenURL("http://threekelv.in/stats")
     
     hook.Add("TKOpenTerminal", "StatsRefresh", function()
         self.webpage:Refresh()

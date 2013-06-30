@@ -52,7 +52,6 @@ hook.Add("PopulateContent", "Legacy Addons", function(pnlContent, tree, node)
     end
 end)
 
-
 hook.Add("Tick", "LegacyAddons", function()
     if Legacy.NextThink > CurTime() then return end
     Legacy.NextThink = CurTime() + 0.1

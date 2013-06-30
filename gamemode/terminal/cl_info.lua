@@ -5,7 +5,7 @@ function PANEL:Init()
     self:SetSkin("Terminal")
     
     self.webpage = vgui.Create("HTML", self)
-    self.webpage:OpenURL("http://threekelvin.co.uk")
+    self.webpage:OpenURL("http://threekelv.in")
     self.webpage.FinishedURL = function()
         self.webpage:SetVisible(true)
     end

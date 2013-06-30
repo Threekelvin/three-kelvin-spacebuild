@@ -9,29 +9,33 @@ local res_table = {}
 net.Receive("TKRD_DNet", function()
     local netid = net.ReadInt(16)
     local netdata = net.ReadTable()
-    netdata.update = CurTime() + 1
     net_table[netid] = netdata
     net_table[netid].powergrid = math.Round(net_table[netid].powergrid, 2)
 end)
 
 net.Receive("TKRD_KNet", function()
-    net_table[net.ReadInt(16)] = nil
+    local id = net.ReadInt(16)
+    net_table[id] = nil
+    sync_data["Net"..id] = nil
 end)
 
 net.Receive("TKRD_DEnt", function()
     local entid = net.ReadInt(16)
     local entdata = net.ReadTable()
-    entdata.update = CurTime() + 1
     ent_table[entid] = entdata
     ent_table[entid].powergrid = math.Round(ent_table[entid].powergrid, 2)
 end)
 
 net.Receive("TKRD_KEnt", function()
-    ent_table[net.ReadInt(16)] = nil
+    local id = net.ReadInt(16)
+    ent_table[id] = nil
+    sync_data["Ent"..id] = nil
 end)
 
 net.Receive("TKRD_MEnt", function()
-    net.ReadEntity():DoMenu()
+    local ent = net.ReadEntity()
+    if !IsValid(ent) then return end
+    ent:DoMenu()
 end)
 
 hook.Add("Initialize", "TK.RD", function()
@@ -61,17 +65,13 @@ end
 
 function TK.RD:GetNetTable(netid)
     local netdata = net_table[netid]
-    if !netdata || netdata.update < CurTime() then
-        RequestData("Net", netid)
-    end
+    RequestData("Net", netid)
     return netdata || {res = {}, powergrid = 0}
 end
 
 function TK.RD:GetEntTable(entid)
     local entdata = ent_table[entid]
-    if !entdata || entdata.update < CurTime() then
-        RequestData("Ent", entid)
-    end
+    RequestData("Ent", entid)
     return entdata || {netid = 0, res = {}, data = {}, powergrid = 0}
 end
 

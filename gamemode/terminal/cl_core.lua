@@ -2,6 +2,12 @@
 local net = net
 local string = string
 local Terminal = {}
+Terminal.request_key = ""
+
+local encrypt = aeslua.encrypt
+local decrypt = aeslua.decrypt
+local encrypt_key = string.random(32)
+local decrypt_key = string.random(32)
 
 local Pages = {
     [1] = {
@@ -91,16 +97,11 @@ hook.Add("Initialize", "TKTerminal", function()
     end
     
     Terminal:Create()
-    Terminal.encrypt = aeslua.encrypt
-    Terminal.decrypt = aeslua.decrypt
-    Terminal.encrypt_key = string.random(32)
-    Terminal.decrypt_key = string.random(32)
-    Terminal.request_key = ""
     
     timer.Simple(0, function()
         net.Start("3k_term_key")
-            net.WriteTable(BuildTable(Terminal.encrypt_key))
-            net.WriteTable(BuildTable(Terminal.decrypt_key))
+            net.WriteTable(BuildTable(encrypt_key))
+            net.WriteTable(BuildTable(decrypt_key))
         net.SendToServer()
     end)
 end)
@@ -144,8 +145,8 @@ function Terminal:Create()
             return
         end
         
-        local key = Terminal.decrypt(Terminal.decrypt_key, Terminal.request_key)
-        local querry = Terminal.encrypt(Terminal.encrypt_key, table.concat({...}, " "))
+        local key = decrypt(decrypt_key, Terminal.request_key)
+        local querry = encrypt(encrypt_key, table.concat({...}, " "))
 
         net.Start("3k_term_request")
             net.WriteTable(BuildTable(key))
