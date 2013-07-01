@@ -1,7 +1,7 @@
-"Gamemode"
+"tksb"
 {
 	"base"		"sandbox"
 	"title"		"3K Spacebuild"
 	"maps"		"^sb_"
-    "menusystem"	"1"
+    	"menusystem"	"1"
 }
