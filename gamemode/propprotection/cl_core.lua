@@ -7,14 +7,14 @@ PP.ShareTable = {}
 ///--- Functions ---\\\
 function PP:AddPermission(flag, typ)
     local id = TK.PP.Permissions[typ]
-    flag = flag || 0
+    flag = flag or 0
     if !id then return flag end
     return bit.bor(flag, id)
 end
 
 function PP:RemovePermission(flag, typ)
     local id = TK.PP.Permissions[typ]
-    flag = flag || 0
+    flag = flag or 0
     if !id then return flag end
     return bit.band(flag, bit.bnot(id))
 end
@@ -22,7 +22,7 @@ end
 function PP:HasPermission(flag, typ)
     local id = TK.PP.Permissions[typ]
     if !id then return false end
-    return bit.band(id, flag || 0) == id
+    return bit.band(id, flag or 0) == id
 end
 
 function PP:GetByUniqueID(uid)
@@ -45,7 +45,7 @@ end
 
 function PP:IsBuddy(ply, typ)
     if !IsValid(ply) then return false end    
-    local flag = self.BuddyTable[ply:UID()] || 0
+    local flag = self.BuddyTable[ply:UID()] or 0
 
     return self:HasPermission(flag, typ)
 end
@@ -85,7 +85,7 @@ function PP.OpenPropMenu(msg, self)
         tick:SetSize(25, 95)
         tick:SetPos(4, self.Menu:GetTall() + 5)
         tick:SetText(v)
-        tick:SetValue(self:HasPermission(self.ShareTable[entid], v) && 1 || 0)
+        tick:SetValue(self:HasPermission(self.ShareTable[entid], v) and 1 or 0)
         tick:SizeToContents()
         tick.OnChange = function(tick, val)
             local flag = self.ShareTable[entid]
@@ -147,7 +147,7 @@ function PP.OpenPlayerMenu(msg, self)
         for k,v in pairs(TK.PP.BuddyPermissions) do
             local tick = vgui.Create("DCheckBoxLabel", dmenu)
             tick:SetText(v)
-            tick:SetValue(self:HasPermission(self.BuddyTable[uid], v) && 1 || 0)
+            tick:SetValue(self:HasPermission(self.BuddyTable[uid], v) and 1 or 0)
             tick:SetTextColor(Color(0,0,0))
             tick.OnChange = function(tick, val)
                 local flag = self.BuddyTable[uid]
@@ -171,14 +171,14 @@ function PP.OpenPlayerMenu(msg, self)
     for k,v in pairs(player.GetAll()) do
         if v == LocalPlayer() then continue end
         local uid = v:UID()
-        local line = plylist:AddLine(v:Name(), v:SteamID(), self.BuddyTable[uid] || 0, v, uid)
+        local line = plylist:AddLine(v:Name(), v:SteamID(), self.BuddyTable[uid] or 0, v, uid)
 
         local text = vgui.Create("DTextEntry", line)
         text:SetDrawBackground(false)
         text:SetDrawBorder(false)
         text:SetNumeric(true)
         text.OnEnter = function()
-            local value = tonumber(text:GetValue()) || 0
+            local value = tonumber(text:GetValue()) or 0
             local flag = 0
             for k,v in pairs(TK.PP.Permissions) do
                 if !PP:HasPermission(value, k) then continue end
@@ -302,7 +302,7 @@ hook.Add("EntityRemoved", "TKPP", function(ent)
 end)
 
 ///--- CPPI ---\\\
-CPPI = CPPI || {}
+CPPI = CPPI or {}
 
 function CPPI:GetNameFromUID(uid)
     if !uid then return nil end

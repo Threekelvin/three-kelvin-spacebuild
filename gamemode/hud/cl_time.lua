@@ -1,5 +1,5 @@
 
-TK.HUD = TK.HUD || {}
+TK.HUD = TK.HUD or {}
 
 TK.HUD.Time = {}
 local Hud = TK.HUD.Time
@@ -93,24 +93,24 @@ function Hud:ShowHide()
 
     self:RotateVerticies(-self.maxang * self.angleRatio / 100)
     
-    if self.angleRatio == 0 || self.angleRatio == 100 then
+    if self.angleRatio == 0 or self.angleRatio == 100 then
         self.moving = false 
     end
 end
 
 hook.Add("GUIMousePressed", "TKPH_Time", function(mc)
-    if mc != MOUSE_LEFT || !vgui.IsHoveringWorld() then return end
-    if !IsValid(LocalPlayer()) || !LocalPlayer():Alive() then return end
+    if mc != MOUSE_LEFT or !vgui.IsHoveringWorld() then return end
+    if !IsValid(LocalPlayer()) or !LocalPlayer():Alive() then return end
     local x, y = gui.MousePos()
     
-    if y < Hud.tallEdge && x > Hud.width - Hud.longEdge then
+    if y < Hud.tallEdge and x > Hud.width - Hud.longEdge then
         surface.PlaySound("garrysmod/ui_return.wav")
-        RunConsoleCommand("3k_show_hud_time", Hud.show:GetBool() && 0 || 1)
+        RunConsoleCommand("3k_show_hud_time", Hud.show:GetBool() and 0 or 1)
     end
 end)
 
 hook.Add("HUDPaint", "TKPH_Time", function()
-    if !IsValid(LocalPlayer()) || !LocalPlayer():Alive() then return end
+    if !IsValid(LocalPlayer()) or !LocalPlayer():Alive() then return end
     if Hud.width != surface.ScreenWidth() then Hud:CreateData() end
 
     Hud:ShowHide()
@@ -126,7 +126,7 @@ hook.Add("HUDPaint", "TKPH_Time", function()
     surface.DrawLine(Hud.verticies[3].x, Hud.verticies[3].y, Hud.verticies[4].x, Hud.verticies[4].y)
     
     //-- Info --\\
-    if Hud.moving || !Hud.show:GetBool() then return end
+    if Hud.moving or !Hud.show:GetBool() then return end
     
     local info = TK.DB:GetPlayerData("player_info")
     

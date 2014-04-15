@@ -26,8 +26,8 @@ if SERVER then
                     RotVec:Rotate(Angle(0, (360/8)*I, 0))
                     local check1 = util.QuickTrace(ply:LocalToWorld(RotVec), Vector(0, 0, 113))
                     local check2 = util.QuickTrace(ply:LocalToWorld(RotVec), Vector(0, 0, -113))
-                    if !check1.StartSolid && !check2.StartSolid then
-                        if check1.Hit && check2.Hit then
+                    if !check1.StartSolid and !check2.StartSolid then
+                        if check1.Hit and check2.Hit then
                             if check1.HitPos:Distance(check2.HitPos) > 82 then
                                 tar:SetPos(check2.HitPos + Vector(0, 0, 5))
                                 TK.AM:SystemMessage({ply, " Has Brought ", tar, " To Themself"})

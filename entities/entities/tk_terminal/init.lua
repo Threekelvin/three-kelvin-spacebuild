@@ -17,7 +17,7 @@ function ENT:Initialize()
 end
 
 function ENT:Use(act, cal)
-    if !IsValid(act) || !act:IsPlayer() then return end
+    if !IsValid(act) or !act:IsPlayer() then return end
     if act:IsAFK() then return end
     umsg.Start("3k_terminal_open", act)
     umsg.End()

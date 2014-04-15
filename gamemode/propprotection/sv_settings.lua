@@ -1,5 +1,5 @@
 
-TK.PP = TK.PP || {}
+TK.PP = TK.PP or {}
 
 TK.PP.BuddySettings = {"Tool Gun", "Grav Gun", "Phys Gun", "Use", "Dupe", "CPPI"}
 

@@ -1,5 +1,5 @@
 
-TK.HEV = TK.HEV || {}
+TK.HEV = TK.HEV or {}
 
 TK.HEV.Sounds = {
     Sound("fvox/health_dropping.wav"),

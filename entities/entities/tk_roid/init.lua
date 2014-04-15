@@ -35,7 +35,7 @@ function ENT:Initialize()
 end
 
 function ENT:Think()    
-    if !self.Ore || self.Ore <= 0 then
+    if !self.Ore or self.Ore <= 0 then
         self:Remove()
     end
     

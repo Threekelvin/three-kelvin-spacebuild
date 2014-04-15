@@ -1,11 +1,11 @@
 
-TK.DB = TK.DB || {}
+TK.DB = TK.DB or {}
 local PlayerData = {}
 local OSTime = 0
 
 net.Receive("DB_Sync", function()
     local dbtable = net.ReadString()
-    PlayerData[dbtable] = PlayerData[dbtable] || {}
+    PlayerData[dbtable] = PlayerData[dbtable] or {}
     local idx = net.ReadString()
     local typ = net.ReadInt(4)
     
@@ -25,7 +25,7 @@ net.Receive("DB_Time", function()
 end)
 
 function TK.DB:GetPlayerData(dbtable)
-    local data = PlayerData[dbtable] || {}
+    local data = PlayerData[dbtable] or {}
     return table.Copy(data)
 end
 

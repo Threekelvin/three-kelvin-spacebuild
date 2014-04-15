@@ -33,9 +33,9 @@ end
 
 local function math_physvec(vec)
     return Vector(
-        vec.x > -math.huge && (vec.x < math.huge && vec.x || 0) || 0,
-        vec.y > -math.huge && (vec.y < math.huge && vec.y || 0) || 0,
-        vec.z > -math.huge && (vec.z < math.huge && vec.z || 0) || 0
+        vec.x > -math.huge and (vec.x < math.huge and vec.x or 0) or 0,
+        vec.y > -math.huge and (vec.y < math.huge and vec.y or 0) or 0,
+        vec.z > -math.huge and (vec.z < math.huge and vec.z or 0) or 0
     )
 end
 
@@ -85,7 +85,7 @@ local function math_rotationvector(tang, cang)
     //-- Rotation Vec --\\
     local l2 = q[1]*q[1] + q[2]*q[2] + q[3]*q[3] + q[4]*q[4]
     local m2 = math.max(q[2]*q[2] + q[3]*q[3] + q[4]*q[4], 0)
-    if l2 == 0 || m2 == 0 then return Vector(0, 0, 0) end
+    if l2 == 0 or m2 == 0 then return Vector(0, 0, 0) end
     local s = 2 * math.acos(math.Clamp(q[1] / math.sqrt(l2), -1, 1)) * rad2deg
     if s > 180 then s = s - 360 end
     s = s / math.sqrt(m2)
@@ -171,7 +171,7 @@ function ENT:ResetGravity(ent)
 end
 
 function ENT:TurnOn()
-    if self:GetActive() || !self:IsLinked() then return end
+    if self:GetActive() or !self:IsLinked() then return end
     self:SetActive(true)
     
     self.Ents = self:GetConstrainedEntities()
@@ -213,7 +213,7 @@ end
 
 function ENT:Think()
     if !self:GetActive() then return end
-    local parent = IsValid(self:GetParent()) && self:GetParent() || self
+    local parent = IsValid(self:GetParent()) and self:GetParent() or self
     local pphys = parent:GetPhysicsObject()
     if !IsValid(pphys) then return end
     
@@ -236,15 +236,15 @@ function ENT:Think()
     if self.Aim == 2 then
         local lvec,_ = LocalToWorld(self.AimVector, Angle(0,0,0), pos, ang)
         local lang = LerpAngle(0.01, ang, lvec:Angle())
-        local tang = self.ShouldLevel && Angle(0, lang.y, 0) || lang
+        local tang = self.ShouldLevel and Angle(0, lang.y, 0) or lang
         Torque = math_rotationvector(tang, ang)
     elseif self.Aim == 1 then
         local lang = LerpAngle(0.01, ang, self.AimAngle)
-        local tang = self.ShouldLevel && Angle(0, lang.y, 0) || lang
+        local tang = self.ShouldLevel and Angle(0, lang.y, 0) or lang
         Torque = math_rotationvector(tang, ang)
     else
         local lvec,lang = LocalToWorld(Vector(0,0,0), self.AngThrust, pos, ang)
-        local tang = self.ShouldLevel && Angle(0, lang.y, 0) || lang
+        local tang = self.ShouldLevel and Angle(0, lang.y, 0) or lang
         Torque = math_rotationvector(tang, ang)
     end
     
@@ -252,7 +252,7 @@ function ENT:Think()
     local magnitude = Torque:Length()
     
     local off
-    if math.abs(Torque.x) > magnitude * 0.1 || math.abs(Torque.z) > magnitude * 0.1 then
+    if math.abs(Torque.x) > magnitude * 0.1 or math.abs(Torque.z) > magnitude * 0.1 then
         off = Vector(-Torque.z, 0, Torque.x)
     else
         off = Vector(-Torque.y, Torque.x, 0)

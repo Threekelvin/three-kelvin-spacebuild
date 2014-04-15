@@ -11,7 +11,7 @@ if SERVER then
         local tar
         local count, targets = TK.AM:TargetPlayer(ply, arg[1])
         
-        if #arg == 0 && !IsValid(ply) then
+        if #arg == 0 and !IsValid(ply) then
             return
         elseif #arg == 0 then
             tr = ply:GetEyeTrace()
@@ -83,7 +83,7 @@ if SERVER then
             hook.Add("Tick", "OFCThink", function()
                 for k, v in pairs(TK:FindInSphere(HitPos, radius)) do
                     if IsValid(v) then
-                        if v:IsPlayer() && v:Alive() then
+                        if v:IsPlayer() and v:Alive() then
                             v:GodDisable()
                             local dmginfo = DamageInfo()
                             dmginfo:SetDamage(2)

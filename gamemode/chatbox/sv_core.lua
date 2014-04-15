@@ -25,7 +25,7 @@ net.Receive("3k_chat_r", function(len, ply)
         plys = player.GetAll()
     end
     
-    print((toTeam && "(TEAM) " || "") .. ply:Name() .. ": " .. msg)
+    print((toTeam and "(TEAM) " or "") .. ply:Name() .. ": " .. msg)
     
     net.Start("3k_chat_b")
         net.WriteBit(toTeam)

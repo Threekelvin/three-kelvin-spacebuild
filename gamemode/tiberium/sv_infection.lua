@@ -1,5 +1,5 @@
 
-TK.TI = TK.TI || {}
+TK.TI = TK.TI or {}
 local Contraptions = {}
 
 function TK.TI:IsInfected(ent)
@@ -60,7 +60,7 @@ local function ScanForEntities(ent)
     end
     
     for k,v in pairs(entlist) do
-        if !v.IsTKRD || v.IsNode then continue end
+        if !v.IsTKRD or v.IsNode then continue end
         local netid = v:GetEntTable().netid
         if !table.HasValue(nets, netid) then
             table.insert(nets, netid)
@@ -99,7 +99,7 @@ local function GarbageCollection()
     for k,v in pairs(Contraptions) do
         local Valid = false
         for l,b in pairs(v) do
-            if !Valid && CanInfect(b) then
+            if !Valid and CanInfect(b) then
                 Valid = true
             end
         end
@@ -108,7 +108,7 @@ local function GarbageCollection()
 end
 
 local function SpawnCrystal(ent)
-    if !IsValid(ent) || !IsValid(ent:GetPhysicsObject()) then return end
+    if !IsValid(ent) or !IsValid(ent:GetPhysicsObject()) then return end
     
     for i = 0, 10 do
         local radius = ent:BoundingRadius() * 1.25
@@ -119,7 +119,7 @@ local function SpawnCrystal(ent)
         td.endpos = point2 + (point2 - point1):GetNormal() * radius
         local trace = util.TraceLine(td)
         if trace.StartSolid then continue end
-        if !IsValid(trace.Entity) || !TK.TI:IsInfected(trace.Entity) then continue end
+        if !IsValid(trace.Entity) or !TK.TI:IsInfected(trace.Entity) then continue end
         if !ent.tk_tib[trace.Entity:EntIndex()] == trace.Entity then continue end
         
         
@@ -159,7 +159,7 @@ local function InfectionThink(ent, contraption)
         
         if ent:IsVehicle() then
             local driver = ent:GetDriver()
-            if IsValid(driver) && driver:IsPlayer() then
+            if IsValid(driver) and driver:IsPlayer() then
                 driver:ExitVehicle()
             end
         end

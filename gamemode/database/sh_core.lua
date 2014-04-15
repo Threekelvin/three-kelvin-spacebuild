@@ -1,5 +1,5 @@
 
-TK.DB = TK.DB || {}
+TK.DB = TK.DB or {}
 TK.DB.CaptchaLength = 5
 
 function TK.DB:MakePlayerData()

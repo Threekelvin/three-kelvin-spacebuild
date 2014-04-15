@@ -2,7 +2,7 @@
 local string = string
 local table = table
 
-TK.AM = TK.AM || {}
+TK.AM = TK.AM or {}
 
 TK.AM.Rank = {
     Group = {"User", "VIP", "DJ", "Moderator", "Admin", "SuperAdmin", "Owner"},
@@ -56,7 +56,7 @@ local BadLetters = {"(", "[", "^", "$", "%", ".", "*", "+", "-", "?", "]", ")"}
 function TK.AM:NameMakeSafe(str)
     local safestr = ""
     for k,v in ipairs(string.ToTable(str)) do
-        if !table.HasValue(BadLetters, v) && string.find(SafeLetters, v) then
+        if !table.HasValue(BadLetters, v) and string.find(SafeLetters, v) then
             safestr = safestr..v
         end
     end
@@ -68,7 +68,7 @@ function TK.AM:NameMakeSafe(str)
 end
 
 function _R.Entity:GetSafeName()
-    if !IsValid(self) || !self:IsPlayer() then return "Console" end
+    if !IsValid(self) or !self:IsPlayer() then return "Console" end
     local name = TK.AM:NameMakeSafe(self:GetName())
     return name
 end
@@ -159,7 +159,7 @@ end
 
 function _R.Entity:HasAccess(lvl)
     if !IsValid(self) then return true end
-    return self:GetNWInt("TKRank", 1) >= (lvl || 0)
+    return self:GetNWInt("TKRank", 1) >= (lvl or 0)
 end
 
 function _R.Entity:CanRunOn(ply)

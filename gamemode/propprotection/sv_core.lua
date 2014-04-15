@@ -10,7 +10,7 @@ PP.EntityTrace = {}
 function PP.HasPermission(flag, typ)
     local id = TK.PP.Permissions[typ]
     if !id then return false end
-    return bit.band(id, flag || 0) == id
+    return bit.band(id, flag or 0) == id
 end
 
 function PP.GetByUniqueID(uid)
@@ -32,7 +32,7 @@ function PP.GetOwner(ent)
 end
 
 function PP.BlackList(ent)
-    if ent:GetClass() == "prop_physics" && table.HasValue(TK.PP.PropBlackList, ent:GetModel()) then
+    if ent:GetClass() == "prop_physics" and table.HasValue(TK.PP.PropBlackList, ent:GetModel()) then
         SafeRemoveEntity(ent)
         return true
     elseif table.HasValue(TK.PP.EntityBlackList, ent:GetClass()) then
@@ -44,13 +44,13 @@ function PP.BlackList(ent)
 end
 
 function PP.AddCleanup(uid, ent)
-    PP.EntityTrace[uid] = PP.EntityTrace[uid] || {}
+    PP.EntityTrace[uid] = PP.EntityTrace[uid] or {}
     local eid = ent:EntIndex()
     PP.EntityTrace[uid][eid] = ent
 end
 
 function PP.RemoveCleanup(uid, ent)
-    PP.EntityTrace[uid] = PP.EntityTrace[uid] || {}
+    PP.EntityTrace[uid] = PP.EntityTrace[uid] or {}
     local eid = ent:EntIndex()
     PP.EntityTrace[uid][eid] = nil
 end
@@ -59,7 +59,7 @@ function PP.SetOwner(ply, ent, uid)
     if !IsValid(ent) then return false end
     local eid, curuid = ent:EntIndex(), ent:UID()
     
-    if IsValid(ply) && ply:IsPlayer() then
+    if IsValid(ply) and ply:IsPlayer() then
         uid = ply:UID()
         if curuid == uid then return true end
         
@@ -92,7 +92,7 @@ end
 
 function PP.UpdateBuddy(ply, tid, flag)
     local uid = ply:UID()
-    PP.BuddyTable[uid] = PP.BuddyTable[uid] || {}
+    PP.BuddyTable[uid] = PP.BuddyTable[uid] or {}
     local cppi = PP.HasPermission(PP.BuddyTable[uid][tid], "CPPI")
     PP.BuddyTable[uid][tid] = flag
     
@@ -119,7 +119,7 @@ function PP.UpdateShare(ply, eid, flag)
 end
 
 function PP.CanOverride(ply, typ, dir, tar)
-    if IsValid(tar) && tar:IsPlayer() then 
+    if IsValid(tar) and tar:IsPlayer() then 
         if !ply:CanRunOn(tar) then return false end
     end
     
@@ -164,7 +164,7 @@ end
 function PP.CleanUpPlayer(ply)
     if !IsValid(ply) then return end
     local uid = ply:UID()
-    PP.EntityTrace[uid] = PP.EntityTrace[uid] || {}
+    PP.EntityTrace[uid] = PP.EntityTrace[uid] or {}
     
     for _,ent in pairs(PP.EntityTrace[uid]) do
         if !IsValid(ent) then continue end
@@ -184,7 +184,7 @@ function PP.CleanUpUID(uid)
         return
     end
 
-    PP.EntityTrace[uid] = PP.EntityTrace[uid] || {}
+    PP.EntityTrace[uid] = PP.EntityTrace[uid] or {}
     
     for _,ent in pairs(PP.EntityTrace[uid]) do
         if !IsValid(ent) then continue end
@@ -252,7 +252,7 @@ function PP.CanToolEnt(ply, toolmode, ent)
     
     local owner, uid = PP.GetOwner(ent)
     if IsValid(owner) then
-        if toolmode == "adv_duplicator" || toolmode == "duplicator" || toolmode == "advdupe2" then
+        if toolmode == "adv_duplicator" or toolmode == "duplicator" or toolmode == "advdupe2" then
             if !PP.CheckConstraints(ply, ent, "Dupe") then return false end
             
             if ply == owner then return end
@@ -260,7 +260,7 @@ function PP.CanToolEnt(ply, toolmode, ent)
             if PP.IsBuddy(uid, ply, "Dupe") then return end
             if PP.IsShared(ent, "Dupe") then return end
             return false
-        elseif toolmode == "remover" && (ply:KeyDown(IN_ATTACK2) || ply:KeyDownLast(IN_ATTACK2)) then
+        elseif toolmode == "remover" and (ply:KeyDown(IN_ATTACK2) or ply:KeyDownLast(IN_ATTACK2)) then
             if !PP.CheckConstraints(ply, ent, "Tool Gun") then return false end
         end
         
@@ -269,7 +269,7 @@ function PP.CanToolEnt(ply, toolmode, ent)
         if PP.IsBuddy(uid, ply, "Tool Gun") then return end
         if PP.IsShared(ent, "Tool Gun") then return end
     else
-        if toolmode == "adv_duplicator" || toolmode == "duplicator" || toolmode == "advdupe2" then
+        if toolmode == "adv_duplicator" or toolmode == "duplicator" or toolmode == "advdupe2" then
             if PP.CanOverride(ply, "Dupe", "World") then return end
         else
             if PP.CanOverride(ply, "Tool Gun", "World") then return end
@@ -280,14 +280,14 @@ end
 
 function PP.CanTool(ply, tr, toolmode)
     if IsValid(ply.InShip) then return false end
-    if !tr.HitNonWorld || !IsValid(tr.Entity) then return end
+    if !tr.HitNonWorld or !IsValid(tr.Entity) then return end
 
     local ent = tr.Entity
     if ent:IsPlayer() then return false end
 
     local owner, uid = PP.GetOwner(ent)
     if IsValid(owner) then
-        if toolmode == "adv_duplicator" || toolmode == "duplicator" || toolmode == "advdupe2" then
+        if toolmode == "adv_duplicator" or toolmode == "duplicator" or toolmode == "advdupe2" then
             if !PP.CheckConstraints(ply, ent, "Dupe") then return false end
             
             if ply == owner then return end
@@ -295,7 +295,7 @@ function PP.CanTool(ply, tr, toolmode)
             if PP.IsBuddy(uid, ply, "Dupe") then return end
             if PP.IsShared(ent, "Dupe") then return end
             return false
-        elseif toolmode == "remover" && (ply:KeyDown(IN_ATTACK2) || ply:KeyDownLast(IN_ATTACK2)) then
+        elseif toolmode == "remover" and (ply:KeyDown(IN_ATTACK2) or ply:KeyDownLast(IN_ATTACK2)) then
             if !PP.CheckConstraints(ply, ent, "Tool Gun") then return false end
         elseif toolmode == "nail" then
             local tracedata = {}
@@ -304,7 +304,7 @@ function PP.CanTool(ply, tr, toolmode)
             tracedata.filter = {ply, ent}
             
             if PP.CanTool(ply, util.TraceLine(tracedata), "none") == false then return false end
-        elseif table.HasValue(TK.PP.BadTools, toolmode) && (ply:KeyDown(IN_ATTACK2) || ply:KeyDownLast(IN_ATTACK2)) then
+        elseif table.HasValue(TK.PP.BadTools, toolmode) and (ply:KeyDown(IN_ATTACK2) or ply:KeyDownLast(IN_ATTACK2)) then
             local tracedata = {}
             tracedata.start = tr.HitPos
             tracedata.endpos = tr.HitPos + (tr.HitNormal * 16384)
@@ -318,7 +318,7 @@ function PP.CanTool(ply, tr, toolmode)
         if PP.IsBuddy(uid, ply, "Tool Gun") then return end
         if PP.IsShared(ent, "Tool Gun") then return end
     else
-        if toolmode == "adv_duplicator" || toolmode == "duplicator" || toolmode == "advdupe2" then
+        if toolmode == "adv_duplicator" or toolmode == "duplicator" or toolmode == "advdupe2" then
             if PP.CanOverride(ply, "Dupe", "World") then return end
         else
             if PP.CanOverride(ply, "Tool Gun", "World") then return end
@@ -360,7 +360,7 @@ end
 
 function PP.CanPhysGunReload(wep, ply)
     local tr = ply:GetEyeTraceNoCursor()
-    if tr.HitNonWorld && IsValid(tr.Entity) then
+    if tr.HitNonWorld and IsValid(tr.Entity) then
         if tr.Entity:IsPlayer() then return false end
         local owner, uid = PP.GetOwner(tr.Entity)
         if IsValid(owner) then
@@ -475,7 +475,7 @@ hook.Add("EntitySpawned", "TKPP", function(ent)
     timer.Simple(0.1, function()
         if !IsValid(ent) then return end
         local owner, uid = PP.GetOwner(ent)
-        if !owner && !uid then
+        if !owner and !uid then
             local Parent = ent:GetParent()
             if IsValid(Parent) then
                 local owner, uid = PP.GetOwner(Parent)
@@ -565,7 +565,7 @@ end)
 ///--- ---\\\
 
 ///--- CPPI ---\\\
-CPPI = CPPI || {}
+CPPI = CPPI or {}
 
 function CPPI:GetNameFromUID(uid)
     if !uid then return nil end

@@ -74,7 +74,7 @@ function TOOL:Think()
     if CLIENT then return end
     local ply = self:GetOwner()
     local weapon = ply:GetActiveWeapon()
-    if !IsValid(weapon) || weapon:GetClass() != "gmod_tool" then return end
+    if !IsValid(weapon) or weapon:GetClass() != "gmod_tool" then return end
     if ply:GetInfo("gmod_toolmode") != "tk_weight" then return end
     local trace = ply:GetEyeTrace()
     if !CanSetWeight(trace) then return end
@@ -97,7 +97,7 @@ if CLIENT then
     hook.Add("HUDPaint", "WeightToolTip", function()
         local ply = LocalPlayer()
         local weapon = ply:GetActiveWeapon()
-        if !IsValid(weapon) || weapon:GetClass() != "gmod_tool" then return end
+        if !IsValid(weapon) or weapon:GetClass() != "gmod_tool" then return end
         if ply:GetInfo("gmod_toolmode") != "tk_weight" then return end
         
         local trace = ply:GetEyeTrace()

@@ -1,5 +1,5 @@
 
-TK.Settings = TK.Settings || {}
+TK.Settings = TK.Settings or {}
 
 TK.Settings.SpawnPoints = {}
 TK.Settings.AsteroidFields = {}

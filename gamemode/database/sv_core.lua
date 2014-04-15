@@ -1,7 +1,7 @@
 
 require("mysqloo")
 
-TK.DB = TK.DB || {}
+TK.DB = TK.DB or {}
 
 local MySQL = {}
 local PlayerData = {}
@@ -30,7 +30,7 @@ function MySQL.Msg(msg)
     print(msg)
     net.Start( "HUD_WARNING" )
         net.WriteString( "database" )
-        net.WriteString( MySQL.Connected && "" || "No database connection" )
+        net.WriteString( MySQL.Connected and "" or "No database connection" )
     net.Broadcast()
 end
 
@@ -146,12 +146,12 @@ util.AddNetworkString("terminal_upgrades")
 function TK.DB:GetPlayerData(ply, dbtable)
     if !IsValid(ply) then return end
     
-    return PlayerData[ply.uid][dbtable] || {}
+    return PlayerData[ply.uid][dbtable] or {}
 end
 
 function TK.DB:AddBan(admin, tarid, tarip, length, reason)
-    local a_sid = IsValid(admin) && admin:SteamID() || "Console"
-    local a_ip = IsValid(admin) && admin:Ip() || TK:HostName()
+    local a_sid = IsValid(admin) and admin:SteamID() or "Console"
+    local a_ip = IsValid(admin) and admin:Ip() or TK:HostName()
 
     MySQL.MakePriorityQuery(self:FormatInsertQuery("server_ban_data", 
     {
@@ -168,7 +168,7 @@ end
 function TK.DB:SetPlayerData(ply, dbtable, content)
     if !IsValid(ply) then return end
     
-    PlayerData[ply.uid][dbtable] = PlayerData[ply.uid][dbtable] || {}
+    PlayerData[ply.uid][dbtable] = PlayerData[ply.uid][dbtable] or {}
     local data = PlayerData[ply.uid][dbtable]
 
     for k,v in pairs(content) do
@@ -312,7 +312,7 @@ end
 
 ///--- Hooks ---\\\
 hook.Add("Tick", "MySQLQuery", function()
-    if MySQL.Running || (#MySQL.PriorityCache == 0 && #MySQL.Cache == 0) then return end
+    if MySQL.Running or (#MySQL.PriorityCache == 0 and #MySQL.Cache == 0) then return end
     
     if MySQL.Connected then
         if #MySQL.PriorityCache != 0 then
@@ -443,7 +443,7 @@ hook.Add("PlayerAuthed", "TKLoadPlayer", function(ply, steamid, uid)
 end)
 
 hook.Add("PlayerDisconnected", "TKDisUpdate", function(ply)
-    if !IsValid(ply) || !MySQL.Connected || !ply:IsLoaded() then return end
+    if !IsValid(ply) or !MySQL.Connected or !ply:IsLoaded() then return end
     local data = TK.DB:GetPlayerData(ply, "player_info")
     local update = {}
     

@@ -10,9 +10,9 @@ if SERVER then
         local count1, target1 = TK.AM:FindPlayer(arg[1])
         local count2, target2 = TK.AM:FindPlayer(arg[2])
         
-        if count1 == 0 || count2 == 0 then
+        if count1 == 0 or count2 == 0 then
             TK.AM:SystemMessage({"No Target Found"}, {ply}, 2)
-        elseif count1 > 1 || count2 > 1 then
+        elseif count1 > 1 or count2 > 1 then
             TK.AM:SystemMessage({"Multiple Targets Found"}, {ply}, 2)
         else
             local tar1 = target1[1]
@@ -28,8 +28,8 @@ if SERVER then
                     RotVec:Rotate(Angle(0, (360/8)*I, 0))
                     local check1 = util.QuickTrace(tar2:LocalToWorld(RotVec), Vector(0, 0, 113))
                     local check2 = util.QuickTrace(tar2:LocalToWorld(RotVec), Vector(0, 0, -113))
-                    if !check1.StartSolid && !check2.StartSolid then
-                        if check1.Hit && check2.Hit then
+                    if !check1.StartSolid and !check2.StartSolid then
+                        if check1.Hit and check2.Hit then
                             if check1.HitPos:Distance(check2.HitPos) > 82 then
                                 tar1:SetPos(check2.HitPos + Vector(0, 0, 5))
                                 TK.AM:SystemMessage({ply, " Has Sent ", tar1, " To ", tar2})

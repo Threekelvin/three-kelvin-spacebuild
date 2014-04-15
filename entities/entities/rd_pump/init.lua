@@ -18,7 +18,7 @@ function ENT:Initialize()
 end
 
 function ENT:TurnOn()
-    if self:GetActive() || !self:IsLinked() || self:GetLinked() == 0 then return end
+    if self:GetActive() or !self:IsLinked() or self:GetLinked() == 0 then return end
     self:SetActive(true)
     self:SoundPlay(1)
     WireLib.TriggerOutput(self, "On", 1)
@@ -32,7 +32,7 @@ function ENT:TurnOff()
 end
 
 function ENT:Use(ply)
-    if !IsValid(ply) || !ply:IsPlayer() then return end
+    if !IsValid(ply) or !ply:IsPlayer() then return end
     if !self:CPPICanUse(ply) then return end
     if self.next_use > CurTime() then return end
     self.next_use = CurTime() + 1
@@ -54,7 +54,7 @@ function ENT:DoCommand(ply, cmd, arg)
     elseif cmd == "link" then
         local entid = tonumber(arg[1])
         local ent = Entity(entid)
-        if !IsValid(ent) || !ent.IsTKRD || !ent.IsNode then return end
+        if !IsValid(ent) or !ent.IsTKRD or !ent.IsNode then return end
         if ent == TK.RD:GetNetTable(self:GetEntTable().netid).node then return end
         self:SetLinked(ent:GetNWInt("NetID"))
     elseif cmd == "set" then

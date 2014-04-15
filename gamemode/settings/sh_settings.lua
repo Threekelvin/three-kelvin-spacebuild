@@ -1,5 +1,5 @@
 
-TK.Settings = TK.Settings || {}
+TK.Settings = TK.Settings or {}
 
 TK.Settings.Term = {Pos = Vector(0,0,0), Size = 0}
 

@@ -59,7 +59,7 @@ function ENT:SendResources(ent)
             ent:Unlink()
             local Tib = ent:GetResourceAmount("raw_tiberium")
             local storage = TK.DB:GetPlayerData(owner, "terminal_storage")
-            TK.DB:UpdatePlayerData(owner, "terminal_storage", {raw_tiberium = math.floor((storage.raw_tiberium || 0) + Tib)})
+            TK.DB:UpdatePlayerData(owner, "terminal_storage", {raw_tiberium = math.floor((storage.raw_tiberium or 0) + Tib)})
             
             self:EmitSound(Sounds["Send"..math.random(1, 4)], 75, 100)
             ent:Remove()
@@ -68,13 +68,13 @@ function ENT:SendResources(ent)
 end
 
 function ENT:Touch(ent)
-    if !IsValid(ent) || IsValid(ent:GetParent()) then return end
-    if ent:GetClass() != "tk_tib_storage" || !ent:IsPlayerHolding() || TK.TI:IsInfected(ent) then return end
+    if !IsValid(ent) or IsValid(ent:GetParent()) then return end
+    if ent:GetClass() != "tk_tib_storage" or !ent:IsPlayerHolding() or TK.TI:IsInfected(ent) then return end
     local owner = ent:CPPIGetOwner()
-    if !IsValid(owner) || owner:GetPos():Distance(ent:GetPos()) > 500 then return end
-    if IsValid(self.Storage.Slot1) && IsValid(self.Storage.Slot2) then return end
+    if !IsValid(owner) or owner:GetPos():Distance(ent:GetPos()) > 500 then return end
+    if IsValid(self.Storage.Slot1) and IsValid(self.Storage.Slot2) then return end
     
-    if (ent:GetPos():Distance(self:Slot1Pos()) < ent:GetPos():Distance(self:Slot2Pos()) && !IsValid(self.Storage.Slot1)) || IsValid(self.Storage.Slot2) then
+    if (ent:GetPos():Distance(self:Slot1Pos()) < ent:GetPos():Distance(self:Slot2Pos()) and !IsValid(self.Storage.Slot1)) or IsValid(self.Storage.Slot2) then
         self.Storage.Slot1 = ent
         ent:Unlink()
         ent:SetPos(self:Slot1Pos())

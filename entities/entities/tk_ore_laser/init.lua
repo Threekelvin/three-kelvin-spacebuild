@@ -20,7 +20,7 @@ function ENT:Initialize()
 end
 
 function ENT:TurnOn()
-    if self:GetActive() || !self:IsLinked() then return end
+    if self:GetActive() or !self:IsLinked() then return end
     self:SetActive(true)
     WireLib.TriggerOutput(self, "On", 1)
     self:SoundPlay(1)
@@ -63,12 +63,12 @@ function ENT:DoThink(eff)
             
             local value = TK.TD:Ore(owner, "asteroid_ore")
             if !owner:IsAFK() then
-                owner.tk_cache.score = math.floor((owner.tk_cache.score || 0) + value * yield * 0.75)
-                owner.tk_cache.exp = math.floor((owner.tk_cache.exp || 0) + value * yield * 0.375)
+                owner.tk_cache.score = math.floor((owner.tk_cache.score or 0) + value * yield * 0.75)
+                owner.tk_cache.exp = math.floor((owner.tk_cache.exp or 0) + value * yield * 0.375)
             end
             
             ent.Ore = ent.Ore - yield
-        elseif ent:IsPlayer() || ent:IsNPC() then
+        elseif ent:IsPlayer() or ent:IsNPC() then
             local dmginfo = DamageInfo()
             dmginfo:SetDamage(math.random(5, 25))
             dmginfo:SetDamageType(DMG_RADIATION)

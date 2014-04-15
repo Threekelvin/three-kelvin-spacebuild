@@ -2,7 +2,7 @@
 local string = string
 local table = table
 
-TK.AM = TK.AM || {}
+TK.AM = TK.AM or {}
 
 ///--- FindTargets ---\\\
 function _R.Player:Ip()
@@ -38,13 +38,13 @@ end
 
 function TK.AM:FindTargets(ply, tab)
     local Targets = {}
-    for k,v in pairs(tab || {}) do
+    for k,v in pairs(tab or {}) do
         if v == "*" then
             return TK.AM:TargetsList(ply)
         else
             for l,b in pairs(player.GetAll()) do
                 if TK.AM:Match(b, v) then
-                    if ply:CanRunOn(b) && !table.HasValue(Targets, b) then
+                    if ply:CanRunOn(b) and !table.HasValue(Targets, b) then
                         table.insert(Targets, b)
                         break
                     end
@@ -89,7 +89,7 @@ util.AddNetworkString("TKSysMsg")
 function TK.AM:SystemMessage(arg, ply, sound)
     net.Start("TKSysMsg")
         net.WriteTable(arg)
-        net.WriteInt(tonumber(sound || 0), 4)
+        net.WriteInt(tonumber(sound or 0), 4)
         
     if ply then
         net.Send(ply)
@@ -104,7 +104,7 @@ end
 ///--- Console Commands ---\\\
 local function RunCmd(ply, cmd, arg)
     local command = arg[1]
-    if !command || command == "" then return end
+    if !command or command == "" then return end
     table.remove(arg, 1)
     
     for k,v in pairs(TK.AM:GetAllPlugins()) do
@@ -128,7 +128,7 @@ hook.Add("PlayerSay", "TKChatCommands", function(ply, text, toteam)
     for k,v in pairs(TK.AM:GetAllPlugins()) do
         local p, c = v.Prefix, v.Command
         
-        if !c || c == "" then
+        if !c or c == "" then
             if string.lower(string.Left(Chat[1], string.len(p))) == p then
                 local temp = string.sub(Chat[1], string.len(p) + 1)
                 table.remove(Chat, 1)
@@ -152,7 +152,7 @@ local Inputs = {IN_JUMP, IN_DUCK, IN_FORWARD, IN_BACK, IN_LEFT, IN_RIGHT, IN_MOV
 
 function TK.AM:SetAFK(ply, isAFK, txt)
     if !IsValid(ply) then return end
-    if ply:IsAFK() && !isAFK then
+    if ply:IsAFK() and !isAFK then
         ply:SetNWBool("TKAFK", false)
         timer.Create("AFK_".. ply:UserID(), 600, 1, function() TK.AM:SetAFK(ply, true) end)
         umsg.Start("TKAFK", ply)
@@ -160,15 +160,15 @@ function TK.AM:SetAFK(ply, isAFK, txt)
         umsg.End()
         
         TK.AM:SystemMessage({ply, " Is Back"})
-    elseif !ply:IsAFK() && isAFK then
+    elseif !ply:IsAFK() and isAFK then
         ply:SetNWBool("TKAFK", true)
         timer.Remove("AFK_".. ply:UserID())
         umsg.Start("TKAFK", ply)
             umsg.Bool(true)
         umsg.End()
         
-        local msg = "'"..(txt || "").."'"
-        TK.AM:SystemMessage({ply, " Is AFK ".. (msg == "''" && "" || msg)})
+        local msg = "'"..(txt or "").."'"
+        TK.AM:SystemMessage({ply, " Is AFK ".. (msg == "''" and "" or msg)})
     end
 end
 

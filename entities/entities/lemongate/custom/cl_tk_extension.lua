@@ -5,7 +5,7 @@ net.Receive("particlebeam", function( )
 	local particle = net.ReadString( )
 	local this = Entity( net.ReadInt( 16 ) )
 	local ent = Entity( net.ReadInt( 16 ) )
-	if !IsValid( this ) || !IsValid( ent ) then return end
+	if !IsValid( this ) or !IsValid( ent ) then return end
 	
 	local CP1 = {
         ["entity"] = this,

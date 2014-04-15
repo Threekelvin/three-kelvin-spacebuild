@@ -22,8 +22,8 @@ if SERVER then
             elseif !lvl then
                 TK.AM:SystemMessage({"No Level Selected"}, {ply}, 2)
             else
-                local time = tonumber(arg[3]) || 0
-                if !time || time == 0 then
+                local time = tonumber(arg[3]) or 0
+                if !time or time == 0 then
                     timer.Remove("temp_lvl_"..tar:UID())
                     TK.DB:UpdatePlayerData(tar, "player_info", {rank = lvl})
                     TK.AM:SystemMessage({ply, " Has Set ", tar, " To ", TK.AM.Rank.RGBA[lvl], "["..TK.AM.Rank.Group[lvl].."]"})

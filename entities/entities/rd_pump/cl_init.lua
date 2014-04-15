@@ -33,7 +33,7 @@ function ENT:Draw()
     Add(OverlayText, "\nRange: ")
     Add(OverlayText, self:GetRange())
     Add(OverlayText, "\nStatus: ")
-    Add(OverlayText, self:GetActive() && "On" || "Off")
+    Add(OverlayText, self:GetActive() and "On" or "Off")
     Add(OverlayText, "\nPower Grid: ")
     
     if entdata.powergrid > 0 then
@@ -84,7 +84,7 @@ function ENT:DoMenu()
         local inrange = {}
         
         for k,v in pairs(ents.FindByClass("rd_node")) do
-            if (v:GetPos() - self:GetPos()):LengthSqr() <= range && v:GetNWInt("NetID", 0) != entdata.netid then
+            if (v:GetPos() - self:GetPos()):LengthSqr() <= range and v:GetNWInt("NetID", 0) != entdata.netid then
                 inrange[v:EntIndex()] = v:GetNetID()
             end
         end
@@ -101,14 +101,14 @@ function ENT:DoMenu()
             end
         end
         
-        toggle:SetText(self:GetActive() && "Turn Off" || "Turn On")
+        toggle:SetText(self:GetActive() and "Turn Off" or "Turn On")
         
         local energy = 0
         for k,v in pairs(resources:GetLines()) do
             if v == resources:GetSelected()[1] then
                 energy = energy + math.ceil(tonumber(rate_input:GetValue()) * 0.01)
             else
-                energy = energy + math.ceil((entdata.data[v:GetValue(2)] || 0) * 0.01)
+                energy = energy + math.ceil((entdata.data[v:GetValue(2)] or 0) * 0.01)
             end
         end
         usage_input:SetText(tostring(energy).. " kW")
@@ -122,7 +122,7 @@ function ENT:DoMenu()
     resources:AddColumn("Resources")
     resources.OnRowSelected = function(panel, idx, line)
         local entdata = self:GetEntTable()
-        local val = entdata.data[line:GetValue(2)] || 0
+        local val = entdata.data[line:GetValue(2)] or 0
         rate_input:SetText(tostring(val))
         
         local energy = 0
@@ -130,7 +130,7 @@ function ENT:DoMenu()
             if v == resources:GetSelected()[1] then
                 energy = energy + math.ceil(tonumber(rate_input:GetValue()) * 0.01)
             else
-                energy = energy + math.ceil((entdata.data[v:GetValue(2)] || 0) * 0.01)
+                energy = energy + math.ceil((entdata.data[v:GetValue(2)] or 0) * 0.01)
             end
         end
         usage_input:SetText(tostring(energy).. " kW")
@@ -154,7 +154,7 @@ function ENT:DoMenu()
     rate_input:SetText("0")
     rate_input.OnTextChanged = function()
         local entdata = self:GetEntTable()
-        local val = math.floor(math.Clamp(tonumber(rate_input:GetValue()) || 0, 0, 1000))
+        local val = math.floor(math.Clamp(tonumber(rate_input:GetValue()) or 0, 0, 1000))
         local pos = rate_input:GetCaretPos()
         rate_input:SetText(tostring(val))
         rate_input:SetCaretPos(pos)
@@ -164,7 +164,7 @@ function ENT:DoMenu()
             if v == resources:GetSelected()[1] then
                 energy = energy + math.ceil(val * 0.01)
             else
-                energy = energy + math.ceil((entdata.data[v:GetValue(2)] || 0) * 0.01)
+                energy = energy + math.ceil((entdata.data[v:GetValue(2)] or 0) * 0.01)
             end
         end
         usage_input:SetText(tostring(energy).. " kW")

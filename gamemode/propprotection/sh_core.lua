@@ -1,5 +1,5 @@
 
-TK.PP = TK.PP || {}
+TK.PP = TK.PP or {}
 
 TK.PP.Permissions = {
     ["Tool Gun"]    = 1,
@@ -12,7 +12,7 @@ TK.PP.Permissions = {
 TK.PP.BuddyPermissions = {"Tool Gun", "Grav Gun", "Phys Gun", "Use", "Dupe", "CPPI"}
 TK.PP.SharePermissions = {"Tool Gun", "Grav Gun", "Phys Gun", "Use", "Dupe"}
 
-CPPI = CPPI || {}
+CPPI = CPPI or {}
 CPPI.CPPI_DEFER = -1
 CPPI.CPPI_NOTIMPLEMENTED = -2
 
@@ -31,7 +31,7 @@ end
 hook.Add("Initialize", "TKPP", function()
     function _R.Entity:UID()
         local uid = self:GetNWString("UID", false)
-        if !uid && self:IsPlayer() then
+        if !uid and self:IsPlayer() then
             uid = tostring(self:UniqueID())
             self:SetNWString("UID", uid)
         end

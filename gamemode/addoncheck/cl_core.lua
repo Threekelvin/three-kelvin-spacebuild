@@ -2,25 +2,22 @@ local Show = CreateClientConVar("tk_aoc_show", 1, true, false)
 local Version = CreateClientConVar("tk_aoc_version", 0, true, false)
 
 local AOC = {}
-AOC.ListVersion = 2 //change this to make it popup for everyone
+AOC.ListVersion = 1 //change this to make it popup for everyone
 
 AOC.Tutorial = {
     ["SVN Tutorial"]                        = "http://facepunch.com/showthread.php?t=688324"  
 }
 AOC.Legacy = {
     ["SpaceBuild Enhancement Project"]      = "https://github.com/SnakeSVx/sbep/trunk/",
-    ["Spacebuild"]                          = "https://github.com/SnakeSVx/spacebuild/trunk/",
-    ["Shadowscion's Construction Props"]    = "http://shadowscions-construction-props.googlecode.com/svn/trunk/",
     ["TKMP"]                                = "http://3k-model-pack.googlecode.com/svn/trunk/",
-    ["Wiremod"]                             = "https://github.com/wiremod/wire/trunk/",
-    ["Wire Unofficial Extras"]              = "https://github.com/wiremod/wire-extras/trunk/"
 }
 AOC.Workshop = {
-    ["104694154"]                           = "104694154",    // Mane Six
-    ["106904944"]                           = "106904944",    // The Other Ponies
-    ["107155115"]                           = "107155115",    // Pony Player Models
-    ["107306185"]                           = "107306185",    // Dead Space Player Model
-    ["107305209"]                           = "107305209"     // Dead Space Engi Player Model
+	["160250458"]							= "160250458",		//Wiremod
+	["163806212"]							= "163806212",		//AdvDupe
+	["173482196"]							= "173482196",		//SProps Workshop Edition
+    ["104694154"]                           = "104694154",		//Mane Six
+    ["106904944"]                           = "106904944",    	//The Other Ponies
+    ["107155115"]                           = "107155115",    	//Pony Player Models
 }
 AOC.MountedLegacy = {}
 
@@ -29,14 +26,14 @@ function AOC:GetLegacyAddons()
     
     for _,dir in pairs(root) do
         if file.Exists("addons/" ..dir.. "/info.txt", "GAME") then
-            local data = util.KeyValuesToTable(file.Read("addons/"..dir.."/info.txt", "GAME") || "")
+            local data = util.KeyValuesToTable(file.Read("addons/"..dir.."/info.txt", "GAME") or "")
             if data.name then
                 AOC.MountedLegacy[data.name] = false
             end
         end
         
         if file.Exists("addons/" ..dir.. "/addon.txt", "GAME") then
-            local data = util.KeyValuesToTable(file.Read("addons/"..dir.."/addon.txt", "GAME") || "")
+            local data = util.KeyValuesToTable(file.Read("addons/"..dir.."/addon.txt", "GAME") or "")
             if data.name then
                 AOC.MountedLegacy[data.name] = true
             end
@@ -49,7 +46,7 @@ function AOC:IsLegacyInstalled(id)
 end
 
 function AOC:IsLegacyMounted(id)
-    return AOC.MountedLegacy[id] || false
+    return AOC.MountedLegacy[id] or false
 end
 
 function AOC:IsWorkshopInstalled(id)
@@ -148,7 +145,7 @@ function AOC:BuildMenu()
         
         steamworks.FileInfo(k, function(data) 
             if !data then return end
-            line:SetValue(1, data.title || k)
+            line:SetValue(1, data.title or k)
         end)
     end
     
@@ -176,7 +173,7 @@ function AOC:BuildMenu()
             if line[1]:GetValue(2) == "Tutorial" then
                 gui.OpenURL(line[1]:GetValue(5))
             elseif line[1]:GetValue(2) == "SVN" then
-                SetClipboardText(line[1]:GetValue(5) || "")
+                SetClipboardText(line[1]:GetValue(5) or "")
             elseif line[1]:GetValue(2) == "Workshop" then
                 steamworks.ViewFile(line[1]:GetValue(5))
             end
@@ -196,7 +193,7 @@ hook.Add("Initialize", "AddonCheck", function()
 end)
 
 hook.Add("HUDPaint", "AddonCheck", function()
-    if !IsValid(LocalPlayer()) || !LocalPlayer():Alive() then return end
+    if !IsValid(LocalPlayer()) or !LocalPlayer():Alive() then return end
     
     if Show:GetInt() == 1 then
         RunConsoleCommand("3k_addon_check")

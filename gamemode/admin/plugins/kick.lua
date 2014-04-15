@@ -15,7 +15,7 @@ if SERVER then
             TK.AM:SystemMessage({"Multiple Targets Found"}, {ply}, 2)    
         else
             local tar = targets[1]
-            if ply:CanRunOn(tar) && ply != tar then
+            if ply:CanRunOn(tar) and ply != tar then
                 local reason = table.concat(arg, " ", 2)
                 TK.AM:SystemMessage({ply, " Has Kicked ", tar})
                 game.ConsoleCommand("kickid "..tar:SteamID().." "..reason.."\n")

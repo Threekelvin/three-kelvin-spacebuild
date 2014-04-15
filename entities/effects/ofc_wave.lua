@@ -8,22 +8,22 @@ function EFFECT:Init(data)
             part:SetVelocity(Vector(math.random(-10,10),math.random(-10,10),0):GetNormal() * math.random(1700,2000))
             local rad = math.abs(math.atan2(part:GetVelocity().x,part:GetVelocity().y))
             local angle = (rad/math.pi*1536)
-            if(angle < 255 && angle >= 0) then
+            if(angle < 255 and angle >= 0) then
                 part:SetColor(255,angle,0)
             end
-            if(angle < 511 && angle >= 255) then
+            if(angle < 511 and angle >= 255) then
                 part:SetColor(511-angle,255,0)
             end   
-            if(angle < 767 && angle >= 511) then
+            if(angle < 767 and angle >= 511) then
                 part:SetColor(0,255,angle-511)
             end
-            if(angle < 1023 && angle >= 767) then
+            if(angle < 1023 and angle >= 767) then
                 part:SetColor(0,1023-angle,255)
             end 
-            if(angle < 1279 && angle >= 1023) then
+            if(angle < 1279 and angle >= 1023) then
                 part:SetColor(angle-1023,0,255)
             end
-            if(angle < 1535 && angle >= 1279) then
+            if(angle < 1535 and angle >= 1279) then
                 part:SetColor(255,0,1535-angle)
             end 
             if(angle > 1535) then

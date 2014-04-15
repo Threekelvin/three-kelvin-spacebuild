@@ -1,5 +1,5 @@
 
-TK.HUD = TK.HUD || {}
+TK.HUD = TK.HUD or {}
 
 TK.HUD.Health = {}
 local Hud = TK.HUD.Health
@@ -85,24 +85,24 @@ function Hud:ShowHide()
     
     self:RotateVerticies(-self.maxang * self.angleRatio / 100)
     
-    if self.angleRatio == 0 || self.angleRatio == 100 then 
+    if self.angleRatio == 0 or self.angleRatio == 100 then 
         self.moving = false 
     end
 end
 
 hook.Add("GUIMousePressed", "TKPH_Health", function(mc)
-    if mc != MOUSE_LEFT || !vgui.IsHoveringWorld() then return end
-    if !IsValid(LocalPlayer()) || !LocalPlayer():Alive() then return end
+    if mc != MOUSE_LEFT or !vgui.IsHoveringWorld() then return end
+    if !IsValid(LocalPlayer()) or !LocalPlayer():Alive() then return end
     local x, y = gui.MousePos()
     
-    if y > Hud.height - Hud.tallEdge && x < Hud.longEdge then
+    if y > Hud.height - Hud.tallEdge and x < Hud.longEdge then
         surface.PlaySound("garrysmod/ui_return.wav")
-        RunConsoleCommand("3k_show_hud_health", Hud.show:GetBool() && 0 || 1)
+        RunConsoleCommand("3k_show_hud_health", Hud.show:GetBool() and 0 or 1)
     end
 end)
 
 hook.Add("HUDPaint", "TKPH_Health", function()
-    if !IsValid(LocalPlayer()) || !LocalPlayer():Alive() then return end
+    if !IsValid(LocalPlayer()) or !LocalPlayer():Alive() then return end
     if Hud.width != surface.ScreenWidth() then
         Hud:CreateData()
     end
@@ -121,7 +121,7 @@ hook.Add("HUDPaint", "TKPH_Health", function()
 
     //-- Info --\\
     local yOffset = Hud.barSpacing
-    if Hud.moving || !Hud.show:GetBool() then return end
+    if Hud.moving or !Hud.show:GetBool() then return end
     surface.SetDrawColor(Color(255, 255, 255, 255))
 
     local HealthRatio = math.Clamp( LocalPlayer():Health() / math.max(LocalPlayer():Health(), 100), 0, 1 )

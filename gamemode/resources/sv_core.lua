@@ -66,7 +66,7 @@ concommand.Add("TKRD_RequestData", RequestData)
 local function RegisterEnt(ent)
     if !IsValid(ent) then return end
     local entid = ent:EntIndex()
-    if ent_table[entid] && ent_table[entid].ent == ent then return end
+    if ent_table[entid] and ent_table[entid].ent == ent then return end
     ent_table[entid] = {
         netid = 0,
         powergrid = 0,
@@ -103,7 +103,7 @@ function TK.RD:Register(ent, node)
     end
     
     if self.EntityData[ent:GetClass()] then
-        ent.data = self.EntityData[ent:GetClass()][ent:GetModel()] || {}
+        ent.data = self.EntityData[ent:GetClass()][ent:GetModel()] or {}
     end
 end
 
@@ -123,7 +123,7 @@ end
 
 concommand.Add("TKRD_EntCmd", function(ply, cmd, arg)
     local ent = Entity(tonumber(arg[1]))
-    if !IsValid(ent) || !ent.IsTKRD then return end
+    if !IsValid(ent) or !ent.IsTKRD then return end
     if !ent:CPPICanUse(ply) then return end
     local command, arguments = "", {}
     for k,v in ipairs(arg) do
@@ -142,21 +142,21 @@ end)
 
 ///--- Functions ---\\\
 local function ValidAmount(amt)
-    amt = math.floor(amt || 0)
-    return amt < 0 && 0 || amt
+    amt = math.floor(amt or 0)
+    return amt < 0 and 0 or amt
 end
 
 function TK.RD:AddResource(idx, name)
     idx = tostring(idx)
-    name = tostring(name) || idx
+    name = tostring(name) or idx
     res_table[idx] = name
     util.AddNetworkString(idx)
 end
 
 function TK.RD:SetPower(ent, power)
     if !IsValid(ent) then return end
-    if !ent.IsTKRD || ent.IsNode then return end
-    power = tonumber(power || 0)
+    if !ent.IsTKRD or ent.IsNode then return end
+    power = tonumber(power or 0)
     local entdata = ent_table[ent:EntIndex()]
     local prepower = entdata.powergrid
     if prepower == power then return end
@@ -170,14 +170,14 @@ function TK.RD:SetPower(ent, power)
 end
 
 function TK.RD:IsLinked(ent)
-    if !IsValid(ent) || !ent.IsTKRD then return false end
+    if !IsValid(ent) or !ent.IsTKRD then return false end
     local entdata = ent_table[ent:EntIndex()]
     return entdata.netid > 0
 end
 
 function TK.RD:Link(ent, netid)
     if !IsValid(ent) then return false end
-    if !ent.IsTKRD || ent.IsNode then return false end
+    if !ent.IsTKRD or ent.IsNode then return false end
     local entdata = ent_table[ent:EntIndex()]
     local netdata = net_table[netid]
     if entdata.netid == netid then return false end
@@ -189,7 +189,7 @@ function TK.RD:Link(ent, netid)
     
     for k,v in pairs(entdata.res) do
         if v.max > 0 then
-            netdata.res[k] = netdata.res[k] || {cur = 0, max = 0}
+            netdata.res[k] = netdata.res[k] or {cur = 0, max = 0}
             netdata.res[k].cur = netdata.res[k].cur + v.cur
             netdata.res[k].max = netdata.res[k].max + v.max
         end
@@ -197,7 +197,7 @@ function TK.RD:Link(ent, netid)
     
     local idx = 0
     for k,v in pairs(netdata.entities) do
-        idx = k > idx && k || idx
+        idx = k > idx and k or idx
     end
     table.insert(netdata.entities, idx + 1, ent)
     
@@ -210,7 +210,7 @@ function TK.RD:Link(ent, netid)
 end
 
 function TK.RD:Unlink(ent, relink)
-    if !IsValid(ent) || !ent.IsTKRD then return false end
+    if !IsValid(ent) or !ent.IsTKRD then return false end
     if ent.IsNode then
         for k,v in pairs(ent.netdata.entities) do
             self:Unlink(v)
@@ -254,10 +254,10 @@ function TK.RD:Unlink(ent, relink)
 end
 
 function TK.RD:EntAddResource(ent, idx, max, gen)
-    if !IsValid(ent) || !ent.IsTKRD then return false end
+    if !IsValid(ent) or !ent.IsTKRD then return false end
     local entdata = ent_table[ent:EntIndex()]
     max = ValidAmount(max)
-    if entdata.res[idx] && entdata.res[idx].max == max then return false end
+    if entdata.res[idx] and entdata.res[idx].max == max then return false end
     
     if entdata.netid != 0 then
         local netid = entdata.netid
@@ -338,7 +338,7 @@ end
 function TK.RD:NetSupplyResource(netid, idx, amt)
     local netdata = net_table[netid]
     local iamt = ValidAmount(amt)
-    if !netdata || iamt == 0 then return 0 end
+    if !netdata or iamt == 0 then return 0 end
     if !netdata.res[idx] then return 0 end
     
     if netdata.res[idx].cur + iamt > netdata.res[idx].max then
@@ -353,7 +353,7 @@ function TK.RD:NetSupplyResource(netid, idx, amt)
     local left = iamt
     for _,ent in SortedPairs(netdata.entities) do
         local entdata = ent_table[ent:EntIndex()]
-        if entdata.res[idx] && entdata.res[idx].cur < entdata.res[idx].max then
+        if entdata.res[idx] and entdata.res[idx].cur < entdata.res[idx].max then
             if entdata.res[idx].cur + left > entdata.res[idx].max then
                 left = left - (entdata.res[idx].max - entdata.res[idx].cur)
                 entdata.res[idx].cur = entdata.res[idx].max
@@ -371,7 +371,7 @@ function TK.RD:NetSupplyResource(netid, idx, amt)
 end
 
 function TK.RD:EntSupplyResource(ent, idx, amt)
-    if !IsValid(ent) || !ent.IsTKRD then return 0 end
+    if !IsValid(ent) or !ent.IsTKRD then return 0 end
     local iamt = ValidAmount(amt)
     if iamt == 0 then return 0 end
     local entdata = ent_table[ent:EntIndex()]
@@ -397,7 +397,7 @@ end
 function TK.RD:NetConsumeResource(netid, idx, amt)
     local netdata = net_table[netid]
     local iamt = ValidAmount(amt)
-    if !netdata || iamt == 0 then return 0 end
+    if !netdata or iamt == 0 then return 0 end
     if !netdata.res[idx] then return 0 end
     
     if iamt > netdata.res[idx].cur then
@@ -412,7 +412,7 @@ function TK.RD:NetConsumeResource(netid, idx, amt)
     local left = iamt
     for _,ent in SortedPairs(netdata.entities, true) do
         local entdata = ent_table[ent:EntIndex()]
-        if entdata.res[idx] && entdata.res[idx].cur > 0 then
+        if entdata.res[idx] and entdata.res[idx].cur > 0 then
             if left > entdata.res[idx].cur then
                 left = left - entdata.res[idx].cur
                 entdata.res[idx].cur = 0
@@ -437,7 +437,7 @@ function TK.RD:NetConsumeResource(netid, idx, amt)
 end
 
 function TK.RD:EntConsumeResource(ent, idx, amt)
-    if !IsValid(ent) || !ent.IsTKRD then return 0 end
+    if !IsValid(ent) or !ent.IsTKRD then return 0 end
     local iamt = ValidAmount(amt)
     if iamt == 0 then return 0 end
     local entdata = ent_table[ent:EntIndex()]
@@ -463,7 +463,7 @@ end
 function TK.RD:GetNetPowerGrid(netid)
     local netdata = net_table[netid]
     if !netdata then return 0 end
-    return netdata.powergrid || 0
+    return netdata.powergrid or 0
 end
 
 function TK.RD:GetNetResourceAmount(netid, idx)
@@ -478,14 +478,14 @@ function TK.RD:GetEntPowerGrid(ent)
     local entdata = ent_table[ent:EntIndex()]
     if entdata.netid != 0 then
         local netdata = net_table[entdata.netid]
-        return netdata.powergrid || 0
+        return netdata.powergrid or 0
     else
-        return entdata.powergrid || 0
+        return entdata.powergrid or 0
     end
 end
 
 function TK.RD:GetEntResourceAmount(ent, idx)
-    if !IsValid(ent) || !ent.IsTKRD then return 0 end
+    if !IsValid(ent) or !ent.IsTKRD then return 0 end
     local entdata = ent_table[ent:EntIndex()]
     if entdata.netid != 0 then
         local netdata = net_table[entdata.netid]
@@ -500,11 +500,11 @@ end
 function TK.RD:GetUnitPowerGrid(ent)
     if !IsValid(ent) then return 0 end
     local entdata = ent_table[ent:EntIndex()]
-    return entdata.powergrid || 0
+    return entdata.powergrid or 0
 end
 
 function TK.RD:GetUnitResourceAmount(ent, idx)
-    if !IsValid(ent) || !ent.IsTKRD then return 0 end
+    if !IsValid(ent) or !ent.IsTKRD then return 0 end
     local entdata = ent_table[ent:EntIndex()]
     if !entdata.res[idx] then return 0 end
     return entdata.res[idx].cur
@@ -518,7 +518,7 @@ function TK.RD:GetNetResourceCapacity(netid, idx)
 end
 
 function TK.RD:GetEntResourceCapacity(ent, idx)
-    if !IsValid(ent) || !ent.IsTKRD then return 0 end
+    if !IsValid(ent) or !ent.IsTKRD then return 0 end
     local entdata = ent_table[ent:EntIndex()]
     if entdata.netid != 0 then
         local netdata = net_table[entdata.netid]
@@ -531,7 +531,7 @@ function TK.RD:GetEntResourceCapacity(ent, idx)
 end
 
 function TK.RD:GetUnitResourceCapacity(ent, idx)
-    if !IsValid(ent) || !ent.IsTKRD then return 0 end
+    if !IsValid(ent) or !ent.IsTKRD then return 0 end
     local entdata = ent_table[ent:EntIndex()]
     if !entdata.res[idx] then return 0 end
     return entdata.res[idx].max
@@ -539,15 +539,15 @@ end
 
 function TK.RD:GetConnectedEnts(netid)
     local netdata = net_table[netid]
-    return netdata.entities || {}
+    return netdata.entities or {}
 end
 
 function TK.RD:GetNetTable(netid)
-    return net_table[netid] || {}
+    return net_table[netid] or {}
 end
 
 function TK.RD:GetEntTable(entid)
-    return ent_table[entid] || {}
+    return ent_table[entid] or {}
 end
 
 function TK.RD:GetResources()
@@ -563,7 +563,7 @@ function TK.RD:IsResource(str)
 end
 
 function TK.RD:GetResourceName(idx)
-    return res_table[idx] || idx
+    return res_table[idx] or idx
 end
 ///--- ---\\\
 
@@ -596,7 +596,7 @@ hook.Add("PlayerSpawnedVehicle", "TKRD", function(ply, ent)
 
     function ent:DoThink(eff)
         local ply = self:GetDriver()
-        self.data.power = IsValid(ply) && -5 || 0
+        self.data.power = IsValid(ply) and -5 or 0
         
         if !self:Work() then return end
         if !IsValid(ply) then return end

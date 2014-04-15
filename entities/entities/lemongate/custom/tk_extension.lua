@@ -31,7 +31,7 @@ end
 local function ValidAction(self, ent)
 	Check_Enabled( self )
 	
-	if !IsValid( ent ) || ent:IsPlayer( ) then return false end
+	if !IsValid( ent ) or ent:IsPlayer( ) then return false end
 	if !E_A.IsOwner(self.Player, ent) then return false end
 	return true
 end
@@ -42,7 +42,7 @@ local function GetLoadout( self )
     local loadout = TK.DB:GetPlayerData(self.Player, "player_loadout")
     local validents = E_A.NewTable( )
     for k,v in pairs( loadout ) do
-        if string.match(k, "[%w]+$") != "item" || v == 0 then continue end
+        if string.match(k, "[%w]+$") != "item" or v == 0 then continue end
         k = string.sub(k, 1, -6)
         validents:Set(k, "n", v)
     end
@@ -108,9 +108,9 @@ local function CreateRDent(self, class, model, pos, angles, freeze)
 end
 
 local function IsWire( ent )
-    if ent.IsWire && ent.IsWire == true then return true end
-    if ent.Inputs || ent.Outputs  then return true end
-    if ent.inputs || ent.outputs  then return true end
+    if ent.IsWire and ent.IsWire == true then return true end
+    if ent.Inputs or ent.Outputs  then return true end
+    if ent.inputs or ent.outputs  then return true end
     return false
 end
 
@@ -128,12 +128,12 @@ E_A:RegisterFunction("tkextend","","n",
 E_A:RegisterFunction("link", "e:e", "n",
 	function(self, A, B)
 		local ent, node = A( self ), B( self )
-		if !ValidAction(self, ent) || !ValidAction(self, node) then
+		if !ValidAction(self, ent) or !ValidAction(self, node) then
 			return 0
 		end
 		if !ent.IsTKRD then return 0 end
 		if !node.IsNode then return 0 end
-		return ent:Link( node.netid ) && 1 || 0
+		return ent:Link( node.netid ) and 1 or 0
 	end)
 
 E_A:RegisterFunction("unLink", "e:", "n",
@@ -142,7 +142,7 @@ E_A:RegisterFunction("unLink", "e:", "n",
 		
 		if !ValidAction(self, ent) then return 0 end
 		if !ent.IsTKRD then return 0 end
-		return ent:Unlink( ) && 1 || 0
+		return ent:Unlink( ) and 1 or 0
 	end)
 
 E_A:RegisterFunction("getPowerGrid", "e:", "n",
@@ -348,7 +348,7 @@ E_A:RegisterFunction("sequenceGet", "e:", "n",
 		local ent = A( self )
 		
 		if !ValidAction(self, ent) then return 0 end
-		return ent:GetSequence() || 0
+		return ent:GetSequence() or 0
 	end)
 
 E_A:RegisterFunction("sequenceLookUp", "e:s", "n",
@@ -357,7 +357,7 @@ E_A:RegisterFunction("sequenceLookUp", "e:s", "n",
 		
 		if !ValidAction(self, ent) then return 0 end
 		local id, dur = ent:LookupSequence(name)
-		return id || 0
+		return id or 0
 	end)
 
 E_A:RegisterFunction("sequenceDuration", "e:s", "n",
@@ -366,7 +366,7 @@ E_A:RegisterFunction("sequenceDuration", "e:s", "n",
 		
 		if !ValidAction(self, ent) then return 0 end
 		local id, dur = ent:LookupSequence(name)
-		return dur || 0
+		return dur or 0
 	end)
 
 E_A:RegisterFunction("sequenceSet", "e:n", "",
@@ -616,7 +616,7 @@ E_A:RegisterFunction("isVip", "e:", "n",
 		
 		if !IsValid( ply ) then return 0 end
 		if !ply:IsPlayer( ) then return 0 end
-		return ply:IsVip( ) && 1 || 0
+		return ply:IsVip( ) and 1 or 0
 	end)
 
 E_A:RegisterFunction("isDJ", "e:", "n",
@@ -627,7 +627,7 @@ E_A:RegisterFunction("isDJ", "e:", "n",
 		
 		if !IsValid( ply ) then return 0 end
 		if !ply:IsPlayer( ) then return 0 end
-		return ply:IsDJ( ) && 1 || 0
+		return ply:IsDJ( ) and 1 or 0
 	end)
 
 E_A:RegisterFunction("isModerator", "e:", "n",
@@ -638,7 +638,7 @@ E_A:RegisterFunction("isModerator", "e:", "n",
 		
 		if !IsValid( ply ) then return 0 end
 		if !ply:IsPlayer( ) then return 0 end
-		return ply:IsModerator( ) && 1 || 0
+		return ply:IsModerator( ) and 1 or 0
 	end)
 
 E_A:RegisterFunction("isAdmin", "e:", "n",
@@ -649,7 +649,7 @@ E_A:RegisterFunction("isAdmin", "e:", "n",
 		
 		if !IsValid( ply ) then return 0 end
 		if !ply:IsPlayer( ) then return 0 end
-		return ply:IsAdmin( ) && 1 || 0
+		return ply:IsAdmin( ) and 1 or 0
 	end)
 
 E_A:RegisterFunction("isSuperAdmin", "e:", "n",
@@ -660,7 +660,7 @@ E_A:RegisterFunction("isSuperAdmin", "e:", "n",
 		
 		if !IsValid( ply ) then return 0 end
 		if !ply:IsPlayer( ) then return 0 end
-		return ply:IsSuperAdmin( ) && 1 || 0
+		return ply:IsSuperAdmin( ) and 1 or 0
 	end)
 
 E_A:RegisterFunction("isOwner", "e:", "n",
@@ -671,7 +671,7 @@ E_A:RegisterFunction("isOwner", "e:", "n",
 		
 		if !IsValid( ply ) then return 0 end
 		if !ply:IsPlayer( ) then return 0 end
-		return ply:IsOwner( ) && 1 || 0
+		return ply:IsOwner( ) and 1 or 0
 	end)
 
 /*==============================================================================================

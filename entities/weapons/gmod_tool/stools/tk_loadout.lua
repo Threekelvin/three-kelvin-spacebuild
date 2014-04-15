@@ -76,7 +76,7 @@ function TOOL:Reload(trace)
 end
 
 function TOOL:Think()
-    if !IsValid(self.GhostEntity) || self.GhostEntity:GetModel() != self:SelectModel() then
+    if !IsValid(self.GhostEntity) or self.GhostEntity:GetModel() != self:SelectModel() then
         self:MakeGhostEntity(self:SelectModel(), Vector(0,0,0), Angle(0,0,0))
     else
         local trace = self:GetOwner():GetEyeTrace()
@@ -121,7 +121,7 @@ if CLIENT then
             local loadout = TK.DB:GetPlayerData("player_loadout")
             
             for k,itemid in pairs(loadout) do
-				if string.match(k, "[%w]+$") != "item" || itemid == 0 then continue end
+				if string.match(k, "[%w]+$") != "item" or itemid == 0 then continue end
                 
                 local item = TK.TD:GetItem(itemid)
                 local icon = vgui.Create("SpawnIcon")

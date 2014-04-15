@@ -2,7 +2,7 @@
 local string = string
 local table = table
 
-TK.AM = TK.AM || {}
+TK.AM = TK.AM or {}
 
 ///--- Messages ---\\\
 local function MessageSetup(arg)
@@ -69,11 +69,11 @@ hook.Add("OnChatTab", "TKOnChatTab", function(text)
     local Words = string.Explode(" ", text)
     local LastWord = Words[#Words]
 
-    if !LastWord || LastWord == "" then return text end
+    if !LastWord or LastWord == "" then return text end
 
     for k,v in pairs(player.GetAll()) do
         local name = v:Name()
-        if string.len(LastWord) < string.len(name) && string.find(string.lower(name), string.lower(LastWord)) == 1  then
+        if string.len(LastWord) < string.len(name) and string.find(string.lower(name), string.lower(LastWord)) == 1  then
             text = string.sub(text, 1, (string.len(LastWord) * -1) - 1)
             text = text .. name
             return text

@@ -51,7 +51,7 @@ local function MakePropNoEffect(...)
 end
 
 function tk_PropCore.CreateProp(self,model,pos,angles,freeze)
-    if(!util.IsValidModel(model) || !util.IsValidProp(model) || not tk_PropCore.ValidSpawn() )then
+    if(!util.IsValidModel(model) or !util.IsValidProp(model) or not tk_PropCore.ValidSpawn() )then
         return nil
     end
     pos = E2Lib.clampPos( pos )

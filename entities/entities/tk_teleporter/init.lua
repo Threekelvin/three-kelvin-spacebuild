@@ -40,7 +40,7 @@ end
 
 concommand.Add("3k_teleporter_send", function(ply, cmd, args)
     local ent = Entity(tonumber(args[1]))
-    if !IsValid(ply) || !IsValid(ent) || ent:GetClass() != "tk_teleporter" then return end
+    if !IsValid(ply) or !IsValid(ent) or ent:GetClass() != "tk_teleporter" then return end
     
     local pos = ent:GetPos()
     local grid = 5

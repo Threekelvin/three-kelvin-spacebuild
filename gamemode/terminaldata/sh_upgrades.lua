@@ -1,5 +1,5 @@
 
-TK.TD = TK.TD || {}
+TK.TD = TK.TD or {}
 
 local Upgrades = {
     ingan_gain_medium = {
@@ -313,7 +313,7 @@ function TK.TD:GetUpgradeCat(str)
 end
 
 function TK.TD:GetUpgrade(str)
-    return Upgrades[str] || {}
+    return Upgrades[str] or {}
 end
 
 if SERVER then
@@ -323,7 +323,7 @@ if SERVER then
         
         for id,up in pairs(self:GetUpgradeCat(str)) do
             for k,v in pairs(up.data) do
-                stats[k] = (stats[k] || 0) + v * upgrades[id]
+                stats[k] = (stats[k] or 0) + v * upgrades[id]
             end
         end
         
@@ -336,7 +336,7 @@ else
         
         for id,up in pairs(self:GetUpgradeCat(str)) do
             for k,v in pairs(up.data) do
-                stats[k] = (stats[k] || 0) + v * upgrades[id]
+                stats[k] = (stats[k] or 0) + v * upgrades[id]
             end
         end
         

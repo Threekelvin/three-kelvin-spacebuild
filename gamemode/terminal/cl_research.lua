@@ -63,7 +63,7 @@ local function MakeResearchBox(panel, idx, data)
         info:SetPos(5, 45)
         info:SetMultiline(true)
         info:SetEditable(false)
-        info:SetText(data.info || "")
+        info:SetText(data.info or "")
         info.style = {"dark"}
         info.Paint = function(panel, w, h)
             derma.SkinHook("Paint", "TKTopTextBox", info, w, h)
@@ -76,7 +76,7 @@ local function MakeResearchBox(panel, idx, data)
         bonus:SetPos(5, 190)
         bonus:SetMultiline(true)
         bonus:SetEditable(false)
-        bonus:SetText(data.bonus || "")
+        bonus:SetText(data.bonus or "")
         bonus.style = {"dark"}
         bonus.Paint = function(panel, w, h)
             derma.SkinHook("Paint", "TKTopTextBox", bonus, w, h)
@@ -105,7 +105,7 @@ local function MakeResearchBox(panel, idx, data)
             end
             
             local upgrades = TK.DB:GetPlayerData("terminal_upgrades")
-            for k,v in pairs(btn.data.req || {}) do
+            for k,v in pairs(btn.data.req or {}) do
                 local updata = TK.TD:GetUpgrade(v)
                 if upgrades[v] != updata.maxlvl then
                     panel:ShowError("Requires " ..updata.name.. " Level ".. updata.maxlvl) 
@@ -159,7 +159,7 @@ local function MakeTechTree(parent, panel, cat)
 end
 
 local function ContainerThink(panel)
-    if panel.maxscrollx <= panel:GetWide() && panel.maxscrolly <= panel:GetTall() then return end
+    if panel.maxscrollx <= panel:GetWide() and panel.maxscrolly <= panel:GetTall() then return end
     if panel.Depressed then
         if !panel.Drag then
             panel.Drag = {gui.MouseX() - panel.scrollx, gui.MouseY() - panel.scrolly}

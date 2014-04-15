@@ -78,7 +78,7 @@ local function MakeSlot(panel, slot, id)
     end
     btn.Update = function()
         local itemid = btn.loadout[btn.slot.. "_" ..btn.id.. "_item"]
-        if !itemid || itemid == btn.item then return end
+        if !itemid or itemid == btn.item then return end
         btn.item = itemid
         local item = TK.TD:GetItem(itemid)
         

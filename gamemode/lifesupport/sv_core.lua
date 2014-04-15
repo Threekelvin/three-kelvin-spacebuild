@@ -16,13 +16,13 @@ end
 
 local function PlayerLSCheck()
     for _,ply in pairs(player.GetAll()) do
-        if !IsValid(ply) || !ply.tk_hev || !ply:Alive() then continue end
+        if !IsValid(ply) or !ply.tk_hev or !ply:Alive() then continue end
         
         local env = ply:GetEnv()
         local temp, insun = env:DoTemp(ply)
         local airper = math.floor(env:GetResourcePercent("oxygen"))
         
-        if insun && env:Sunburn() then
+        if insun and env:Sunburn() then
             ply:TakeDamage(5)
         end
         
@@ -79,7 +79,7 @@ local function PlayerLSCheck()
             ply.tk_hev.update = true
         end
         
-        if ply.tk_hev.airper < 5 || ply:WaterLevel() == 3 then
+        if ply.tk_hev.airper < 5 or ply:WaterLevel() == 3 then
             local required = 5
             
             if ply.tk_hev.oxygen >= required then
@@ -99,7 +99,7 @@ local function PlayerLSCheck()
             end
         end
         
-        if ply.tk_hev.health == ply:Health() && ply:Health() < 100 then
+        if ply.tk_hev.health == ply:Health() and ply:Health() < 100 then
             ply:SetHealth(math.min(ply:Health() + 1, 100))
         end
         
@@ -141,7 +141,7 @@ hook.Add("PlayerInitialSpawn", "TKLS", function(ply)
 end)
 
 hook.Add("PlayerSpawn", "TKLS", function(ply)
-    ply.tk_hev = ply.tk_hev || {}
+    ply.tk_hev = ply.tk_hev or {}
     ply.tk_hev.energy = 300
     ply.tk_hev.oxygen = 300
     ply.tk_hev.water = 300
@@ -151,7 +151,7 @@ hook.Add("PlayerSpawn", "TKLS", function(ply)
 end)
 
 hook.Add("OnAtmosphereChange", "TKLS", function(ent)
-    if ent:IsPlayer() && !ent:IsAdmin() then
+    if ent:IsPlayer() and !ent:IsAdmin() then
         if ent:GetEnv():CanNoclip() then return end
         if ent:GetMoveType() == MOVETYPE_NOCLIP then
             ent:SetMoveType(MOVETYPE_WALK)
@@ -169,7 +169,7 @@ end)
 hook.Add("SetupMove", "TKLS", function(ply, data)
     if ply:IsAdmin() then return end
     local env = ply:GetEnv()
-    if env:CanNoclip() || env:GetGravity() > 0 then return end
+    if env:CanNoclip() or env:GetGravity() > 0 then return end
     data:SetForwardSpeed(0)
     data:SetSideSpeed(0)
     data:SetUpSpeed(0)

@@ -56,7 +56,7 @@ local function AddResource(panel)
     textbox:SetPos(5, 25)
     textbox:SetNumeric(true)
     textbox:SetMultiline(false)
-    textbox:SetText(tostring(storage[panel.RefineSetting] || 0))
+    textbox:SetText(tostring(storage[panel.RefineSetting] or 0))
     textbox:RequestFocus()
     textbox.style = {"dark"}
     textbox.Paint = function(panel, w, h)
@@ -79,7 +79,7 @@ local function AddResource(panel)
         if !IsValid(panel.Terminal) then return end
         surface.PlaySound("ui/buttonclickrelease.wav")
         local storage = TK.DB:GetPlayerData("terminal_storage")
-        local val = math.floor(tonumber(textbox:GetValue()) || 0)
+        local val = math.floor(tonumber(textbox:GetValue()) or 0)
         if val == 0 then
             mouseblock:Remove()
         elseif val < 0 then
@@ -138,7 +138,7 @@ local function Confirm(panel)
         return true
     end
     accept.DoClick = function()
-        if !IsValid(panel.Terminal) || panel.Analyzing then return end
+        if !IsValid(panel.Terminal) or panel.Analyzing then return end
         surface.PlaySound("ui/buttonclickrelease.wav")
         if panel.refining then
             panel.Terminal.AddQuery("cancelrefine")
@@ -213,7 +213,7 @@ function PANEL:Init()
         return true
     end
     self.addresource.DoClick = function()
-        if !IsValid(self.Terminal) || self.Analyzing then return end
+        if !IsValid(self.Terminal) or self.Analyzing then return end
         surface.PlaySound("ui/buttonclickrelease.wav")
         gui.SetMousePos(surface.ScreenWidth() * 0.5 + math.random(-400, 400), surface.ScreenHeight() * 0.5 + math.random(-300, 300))
         AddResource(self)
@@ -246,7 +246,7 @@ function PANEL:Init()
         return true
     end
     self.refineall.DoClick = function()
-        if !IsValid(self.Terminal) || self.Analyzing then return end
+        if !IsValid(self.Terminal) or self.Analyzing then return end
         surface.PlaySound("ui/buttonclickrelease.wav")
         gui.SetMousePos(surface.ScreenWidth() * 0.5 + math.random(-400, 400), surface.ScreenHeight() * 0.5 + math.random(-300, 300))
         Confirm(self)

@@ -37,7 +37,7 @@ else
 
     function TOOL:CanSelect(ent)
         if !IsValid(ent) then return false end
-        if !ent.IsTKRD || ent.IsNode then return false end
+        if !ent.IsTKRD or ent.IsNode then return false end
         return true
     end
 end
@@ -67,7 +67,7 @@ function TOOL:RightClick(trace)
     local ply = self:GetOwner()
     local ent = trace.Entity
     
-    if !ent.IsTKRD || !ent.IsNode then
+    if !ent.IsTKRD or !ent.IsNode then
         ply:SendLua('GAMEMODE:AddNotify("Not A Valid Node", NOTIFY_ERROR, 3)')
         return
     end

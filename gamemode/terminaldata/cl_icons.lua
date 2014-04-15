@@ -1,5 +1,5 @@
 
-TK.TD = TK.TD || {}
+TK.TD = TK.TD or {}
 
 local Icons = {
     ["default"] = Material("icon64/default.png"),
@@ -25,5 +25,5 @@ local Icons = {
 }
 
 function TK.TD:GetIcon(str)
-    return Icons[str] || Icons["default"]
+    return Icons[str] or Icons["default"]
 end

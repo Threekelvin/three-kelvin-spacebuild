@@ -39,7 +39,7 @@ local function EnvPrioritySort(a, b)
 end
 
 function ENT:StartTouch(ent)
-    if !IsValid(self.env) || !ent.tk_env then return end
+    if !IsValid(self.env) or !ent.tk_env then return end
     if IsValid(ent.tk_env.core) then return end
     
     self.inside[ent:EntIndex()] = ent
@@ -58,7 +58,7 @@ end
 function ENT:EndTouch(ent)
     local entid = ent:EntIndex()
     
-    if self.inside[entid] && IsValid(self.env) then
+    if self.inside[entid] and IsValid(self.env) then
         local oldenv = ent:GetEnv()
         for k,v in pairs(ent.tk_env.envlist) do
             if v == self.env then

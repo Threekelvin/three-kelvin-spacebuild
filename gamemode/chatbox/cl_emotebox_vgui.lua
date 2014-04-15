@@ -80,8 +80,8 @@ function PANEL:OnMousePressed(mc)
     local w, h = 5, 5 + self.offset
     
     for k,v in pairs(self.emotelist) do
-        if (h) < py && (h + self.size) > py then
-            if w < px && (w + self.size) > px then
+        if (h) < py and (h + self.size) > py then
+            if w < px and (w + self.size) > px then
                 surface.PlaySound("ui/buttonclickrelease.wav")
                 self:Selected(k)
                 self:MouseCapture(true)

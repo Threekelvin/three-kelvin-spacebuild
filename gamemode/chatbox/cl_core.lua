@@ -75,11 +75,11 @@ hook.Add("ChatText", "TKChatBox", function(plyidx, plyname, txt, msgtyp)
 end)
 
 hook.Add("PlayerBindPress", "TKChatBox", function(ply, key, press)
-    if Enable:GetBool() && IsValid(Chatbox) && press && key == "messagemode" then
+    if Enable:GetBool() and IsValid(Chatbox) and press and key == "messagemode" then
         Chatbox.isTeam = false
         Chatbox:Open()
         return true
-    elseif Enable:GetBool() && press && key == "messagemode2" then
+    elseif Enable:GetBool() and press and key == "messagemode2" then
         Chatbox.isTeam = true
         Chatbox:Open()
         return true
@@ -87,7 +87,7 @@ hook.Add("PlayerBindPress", "TKChatBox", function(ply, key, press)
 end)
 
 hook.Add("HUDShouldDraw", "TKChatBox", function(Element)
-    if Enable:GetBool() && Element == "CHudChat" then 
+    if Enable:GetBool() and Element == "CHudChat" then 
         if !IsValid(Chatbox) then
             MakeChatbox()
         end

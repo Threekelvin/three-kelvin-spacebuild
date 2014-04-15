@@ -60,7 +60,7 @@ function ENT:Initialize()
     self.data = {}
     
     TK.RD:Register(self)
-    self:SetSkin(self.data.skin || 0)
+    self:SetSkin(self.data.skin or 0)
     self:SetNWBool("Active", false)
     self:SetNWBool("Generator", false)
     
@@ -68,7 +68,7 @@ function ENT:Initialize()
 end
 
 function ENT:OnRemove()
-    for k,v in pairs(self.soundlib || {}) do
+    for k,v in pairs(self.soundlib or {}) do
         v:Stop()
     end
     
@@ -82,28 +82,28 @@ function ENT:AddSound(lib, idx, vol, ptc, str)
     if str then
         id = table.insert(self.soundlib, CreateSound(self, Sound(str)))
     else
-        if !SoundLib[lib] || !SoundLib[lib][idx] then return 0 end
+        if !SoundLib[lib] or !SoundLib[lib][idx] then return 0 end
         id = table.insert(self.soundlib, CreateSound(self, SoundLib[lib][idx]))
     end
     
     if vol then
-        self.soundlib[id]:SetSoundLevel(tonumber(vol) || 100)
+        self.soundlib[id]:SetSoundLevel(tonumber(vol) or 100)
     end
     
     if ptc then
-        self.soundlib[id]:ChangePitch(tonumber(ptc) || 100)
+        self.soundlib[id]:ChangePitch(tonumber(ptc) or 100)
     end
     return id
 end
 
 function ENT:SoundPitch(id, pitch)
     if !self.soundlib[id] then return end
-    self.soundlib[id]:ChangePitch(tonumber(pitch) || 100)
+    self.soundlib[id]:ChangePitch(tonumber(pitch) or 100)
 end
 
 function ENT:SoundLevel(id, level)
     if !self.soundlib[id] then return end
-    self.soundlib[id]:SetSoundLevel(tonumber(level) || 65)
+    self.soundlib[id]:SetSoundLevel(tonumber(level) or 65)
 end
 
 function ENT:SoundPlay(id)
@@ -138,7 +138,7 @@ function ENT:Work()
 end
 
 function ENT:TurnOn()
-    if self:GetActive() || !self:IsLinked() then return end
+    if self:GetActive() or !self:IsLinked() then return end
     self:SetActive(true)
 end
 
@@ -148,7 +148,7 @@ function ENT:TurnOff()
 end
 
 function ENT:Use(ply)
-    if !IsValid(ply) || !ply:IsPlayer() then return end
+    if !IsValid(ply) or !ply:IsPlayer() then return end
     if !self:CPPICanUse(ply) then return end
     if self.next_use > CurTime() then return end
     self.next_use = CurTime() + 1
@@ -161,7 +161,7 @@ function ENT:Use(ply)
 end
 
 function ENT:DoMenu(ply)
-    if !IsValid(ply) || !ply:IsPlayer() then return end
+    if !IsValid(ply) or !ply:IsPlayer() then return end
     net.Start("TKRD_MEnt")
         net.WriteEntity(self)
     net.Send(ply)
@@ -190,7 +190,7 @@ function ENT:PreEntityCopy()
 end
 
 function ENT:PostEntityPaste(ply, ent, entlist)
-    if !self.EntityMods || !self.EntityMods.WireDupeInfo then return end
+    if !self.EntityMods or !self.EntityMods.WireDupeInfo then return end
     local WireDupeInfo = self.EntityMods.WireDupeInfo
     WireLib.ApplyDupeInfo(ply, ent, WireDupeInfo, function(id) return entlist[id] end)
     self.EntityMods.WireDupeInfo = nil

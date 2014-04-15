@@ -17,7 +17,7 @@ if SERVER then
             if string.lower(arg[1]) == "save" then
                 if arg[2]  then
                     local uid = ply:UID()
-                    SavedLocations[uid] = SavedLocations[uid] || {}
+                    SavedLocations[uid] = SavedLocations[uid] or {}
                     SavedLocations[uid][arg[2]] = ply:GetPos()
                     TK.AM:SystemMessage({"Position "..arg[2].." Saved"}, {ply}, 2)
                 else
@@ -25,7 +25,7 @@ if SERVER then
                 end
             elseif arg[1] then
                 local uid = ply:UID()
-                SavedLocations[uid] = SavedLocations[uid] || {}
+                SavedLocations[uid] = SavedLocations[uid] or {}
                 if SavedLocations[uid][arg[1]] then
                     if ply:InVehicle() then ply:ExitVehicle() end
                     ply:SetPos(SavedLocations[uid][arg[1]])
@@ -42,8 +42,8 @@ if SERVER then
             if tr.HitNormal != Vector(0, 0, 0) then
                 local check1 = util.QuickTrace(tr.HitPos + tr.HitNormal * Vector(32, 32, 0), Vector(0, 0, 113))
                 local check2 = util.QuickTrace(tr.HitPos + tr.HitNormal * Vector(32, 32, 0), Vector(0, 0, -113))
-                if !check1.StartSolid && !check2.StartSolid then
-                    if check1.Hit && check2.Hit then
+                if !check1.StartSolid and !check2.StartSolid then
+                    if check1.Hit and check2.Hit then
                         if check1.HitPos:Distance(check2.HitPos) > 82 then
                             ply:SetPos(check2.HitPos + tr.HitNormal * Vector(32, 32, 0) + Vector(0, 0, 5))
                         else

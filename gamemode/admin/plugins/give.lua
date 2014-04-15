@@ -17,7 +17,7 @@ if SERVER then
         else
             local tar = targets[1]
             local amount = tonumber(arg[2])
-            if !amount || amount <= 0 then
+            if !amount or amount <= 0 then
                 TK.AM:SystemMessage({"Invalid Amount"}, {ply}, 2)    
                 return
             end

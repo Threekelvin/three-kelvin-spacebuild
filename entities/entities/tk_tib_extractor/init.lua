@@ -29,7 +29,7 @@ function ENT:UpdateTransmitState()
 end
 
 function ENT:TurnOn()
-    if self:GetActive() || !self:IsLinked() then return end
+    if self:GetActive() or !self:IsLinked() then return end
     self:SetActive(true)
     self:SoundPlay(1)
     self:SoundPlay(2)
@@ -104,8 +104,8 @@ function ENT:DoThink(eff)
         local value = TK.TD:Ore(owner, "raw_tiberium")
         
         if !owner:IsAFK() then
-            owner.tk_cache.score = math.floor((owner.tk_cache.score || 0) + value * yield * 0.75)
-            owner.tk_cache.exp = math.floor((owner.tk_cache.exp || 0) + value * yield * 0.375)
+            owner.tk_cache.score = math.floor((owner.tk_cache.score or 0) + value * yield * 0.75)
+            owner.tk_cache.exp = math.floor((owner.tk_cache.exp or 0) + value * yield * 0.375)
         end
         
         crystal.Tib = crystal.Tib - yield

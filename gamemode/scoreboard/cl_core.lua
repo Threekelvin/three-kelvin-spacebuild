@@ -104,28 +104,28 @@ local PLAYER_LINE =
             return
         end
         
-        if ( self.NumRank == nil || self.NumRank != self.Player:GetNWInt("TKRank", 0) ) then
+        if ( self.NumRank == nil or self.NumRank != self.Player:GetNWInt("TKRank", 0) ) then
             self.NumRank        =    self.Player:GetNWInt("TKRank", 0)
             self.Rank:SetMaterial( self.Player:GetIcon() )
             self.Rank:SetToolTip( self.Player:GetGroup() )
         end
         
-        if ( self.StrName == nil || self.StrName != self.Player:Name() ) then
+        if ( self.StrName == nil or self.StrName != self.Player:Name() ) then
             self.StrName        =    self.Player:Name()
             self.Name:SetText( self.StrName )
         end
 
-        if ( self.NumScore == nil || self.NumScore != self.Player:GetNWInt("TKScore", 0) ) then
+        if ( self.NumScore == nil or self.NumScore != self.Player:GetNWInt("TKScore", 0) ) then
             self.NumScore        =    self.Player:GetNWInt("TKScore", 0)
             self.Score:SetText( TK:Format(self.NumScore) )
         end
 
-        if ( self.NumPlaytime == nil || self.NumPlaytime != self.Player:GetNWInt("TKPlaytime", 0) ) then
+        if ( self.NumPlaytime == nil or self.NumPlaytime != self.Player:GetNWInt("TKPlaytime", 0) ) then
             self.NumPlaytime    =    self.Player:GetNWInt("TKPlaytime", 0)
             self.Playtime:SetText( TK:FormatTime(self.NumPlaytime) )
         end
 
-        if ( self.NumPing == nil || self.NumPing != self.Player:Ping() ) then
+        if ( self.NumPing == nil or self.NumPing != self.Player:Ping() ) then
             self.NumPing        =    self.Player:Ping()
             self.Ping:SetText( self.NumPing )
         end
@@ -133,7 +133,7 @@ local PLAYER_LINE =
         --
         -- Change the icon of the mute button based on state
         --
-        if ( self.muted == nil || self.muted != self.Player:IsMuted() ) then
+        if ( self.muted == nil or self.muted != self.Player:IsMuted() ) then
 
             self.muted = self.Player:IsMuted()
             if ( self.muted ) then

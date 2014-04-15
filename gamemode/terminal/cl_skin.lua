@@ -30,7 +30,7 @@ function SKIN:PaintTKFrame(panel, w, h)
     draw.RoundedBox(4, 0, 0, w, h, self.dark)
     draw.RoundedBox(4, 1, 1, w - 2, h - 2, self.dim)
     draw.RoundedBoxEx(4, 1, 1, w - 2, 20, self.normal, true, true)
-    draw.SimpleText(panel.title || "", "TKFont15", 6, 10, self.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText(panel.title or "", "TKFont15", 6, 10, self.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     draw.SimpleText("r", "Marlett", w - 11, 10, self.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 
@@ -39,7 +39,7 @@ function SKIN:PaintTKUpFrame(panel, w, h)
     draw.RoundedBox(4, 0, 0, w, h, self.dark)
     draw.RoundedBox(4, 1, 1, w - 2, h - 2, self.dim)
     draw.RoundedBoxEx(4, 1, 1, w - 2, 20, self.normal, true, true)
-    draw.SimpleText(panel.title || "", "TKFont15", 6, 10, self.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText(panel.title or "", "TKFont15", 6, 10, self.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     draw.SimpleText("r", "Marlett", w - 11, 10, self.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     
     draw.RoundedBox(4, 5, 25, 275, 25, self.normal)
@@ -72,7 +72,7 @@ function SKIN:PaintTKStats(panel, w, h)
     draw.SimpleText("Leaderboard", "TKFont30", 390, 6, self.text, TEXT_ALIGN_CENTER)
     
     draw.RoundedBox(4, 5, 45, 765, 25, self.normal)
-    draw.SimpleText("Score: "..(panel.score || ""), "TKFont20", 10, 57.5, self.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText("Score: "..(panel.score or ""), "TKFont20", 10, 57.5, self.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     
     draw.RoundedBox(4, 5, 75, 765, 450, self.dim)
     draw.RoundedBox(4, 10, 80, 755, 40, self.dark)
@@ -258,7 +258,7 @@ function SKIN:PaintTKButton(btn, w, h)
     else
         draw.RoundedBox(4, 0, 0, w, h, self[btn.style[2]])
     end
-    draw.SimpleText(btn.text || "", "TKFont25", w / 2, h / 2, self.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    draw.SimpleText(btn.text or "", "TKFont25", w / 2, h / 2, self.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 
 function SKIN:PaintTKLOButton(btn, w, h)
@@ -312,11 +312,11 @@ end
 function SKIN:PaintTKResPanel(btn, w, h)
     draw.RoundedBox(4, 0, 0, w, h, self.light)
     draw.RoundedBoxEx(4, h, 5, w - 65, 25, self.dark, true, false, true)
-    draw.SimpleText(btn.pres || "", "TKFont20", h + 5, 17.5, self.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText(btn.pres or "", "TKFont20", h + 5, 17.5, self.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     draw.RoundedBoxEx(4, h, 40, w - 65, 20, self.dim, true, false, true)
     draw.SimpleText(TK:Format(btn.val), "TKFont18", w - 10, 50, self.text, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
     
-    surface.SetMaterial(TK.TD:GetIcon(btn.res || "default"))
+    surface.SetMaterial(TK.TD:GetIcon(btn.res or "default"))
     surface.SetDrawColor(255, 255, 255, 255)
     surface.DrawTexturedRect(0.5, 0.5, 64, 64)
 end
@@ -324,7 +324,7 @@ end
 function SKIN:PaintTKUpPanel(btn, w, h)
     draw.RoundedBox(4, 0, 0, w, h, self.light)
     draw.RoundedBox(4, h, 5, w - h - 5, 30, self.dark)
-    draw.SimpleText(btn.data.name || "", "TKFont20", h + 5, 10, self.text)
+    draw.SimpleText(btn.data.name or "", "TKFont20", h + 5, 10, self.text)
     draw.RoundedBox(4, h, 40, w - h - 5, 30, self.dim)
     draw.SimpleText("Level", "TKFont20", h + 5, 45, self.text)
     draw.SimpleText(btn.rank.." / "..btn.data.maxlvl, "TKFont20", w - 10, 45, self.text, TEXT_ALIGN_RIGHT)
@@ -347,7 +347,7 @@ function SKIN:PaintTKContainer(panel, w, h)
 
     for k,v in pairs(panel.children) do
         v:SetPos(panel.scrollx + v.posx, panel.scrolly + v.posy)
-        for _,req in pairs(v.data.req || {}) do
+        for _,req in pairs(v.data.req or {}) do
             local pos = TK.TD:GetUpgrade(req).pos
             local w, h = v:GetSize()
             local X, Y = 5 + ((w + 100) * (pos[1] - 1)), 5 + ((h + 10) * (pos[2] - 1))

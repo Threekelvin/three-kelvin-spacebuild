@@ -42,7 +42,7 @@ function ENT:Draw()
     
     if self:IsGenerator() then
         Add(OverlayText, "\nStatus: ")
-        Add(OverlayText, self:GetActive() && "On" || "Off")
+        Add(OverlayText, self:GetActive() and "On" or "Off")
         Add(OverlayText, "\nPower Grid: ")
         
         if entdata.powergrid > 0 then

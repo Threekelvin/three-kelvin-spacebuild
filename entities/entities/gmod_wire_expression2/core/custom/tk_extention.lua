@@ -1,6 +1,6 @@
 
 local function ValidAction(self, ent)
-    if !IsValid(ent) || ent:IsPlayer() then return false end
+    if !IsValid(ent) or ent:IsPlayer() then return false end
     if !E2Lib.isOwner(self, ent) then return false end
     
     return true
@@ -10,15 +10,15 @@ __e2setcost(5)
 
 ///--- Resources ---\\\
 e2function number entity:link(entity ent)
-    if !ValidAction(self, this) || !ValidAction(self, ent) then return 0 end
-    if !this.IsTKRD || this.IsNode || !ent.IsNode then return 0 end
-    return this:Link(ent.netid) && 1 || 0
+    if !ValidAction(self, this) or !ValidAction(self, ent) then return 0 end
+    if !this.IsTKRD or this.IsNode or !ent.IsNode then return 0 end
+    return this:Link(ent.netid) and 1 or 0
 end
 
 e2function number entity:unLink()
     if !ValidAction(self, this) then return 0 end
     if !this.IsTKRD then return 0 end
-    return this:Unlink() && 1 || 0
+    return this:Unlink() and 1 or 0
 end
 
 e2function number entity:getPowerGrid()
@@ -64,7 +64,7 @@ local function GetLoadout(self)
     local validents = {n={},ntypes={},s={},stypes={},size=0}
     local n = 0
     for k,v in pairs(loadout) do
-        if string.match(k, "[%w]+$") != "item" || v == 0 then continue end
+        if string.match(k, "[%w]+$") != "item" or v == 0 then continue end
         n = n + 1
         local key = string.sub( k, 1, -6 )
         validents.s[key] = v
@@ -214,19 +214,19 @@ end
 ///--- Sequence ---\\\
 e2function number entity:sequenceGet()
     if !ValidAction(self, this) then return 0 end
-    return this:GetSequence() || 0
+    return this:GetSequence() or 0
 end
 
 e2function number entity:sequenceLookUp(string name)
     if !ValidAction(self, this) then return 0 end
     local id = this:LookupSequence(name)
-    return id || 0
+    return id or 0
 end
 
 e2function number entity:sequenceDuration(string name)
     if !ValidAction(self, this) then return 0 end
     local id, dur = this:LookupSequence(name)
-    return dur || 0
+    return dur or 0
 end
 
 e2function void entity:sequenceSet(number id)
@@ -258,9 +258,9 @@ end
 
 ///--- Wirelink ---\\\
 local function IsWire(ent)
-    if ent.IsWire && ent.IsWire == true then return true end
-    if ent.Inputs || ent.Outputs  then return true end
-    if ent.inputs || ent.outputs  then return true end
+    if ent.IsWire and ent.IsWire == true then return true end
+    if ent.Inputs or ent.Outputs  then return true end
+    if ent.inputs or ent.outputs  then return true end
     return false
 end
 
@@ -448,12 +448,12 @@ end
 
 ///--- 3k ---\\\
 e2function number entity:credits()
-    if !IsValid(this) || !this:IsPlayer() then return 0 end
+    if !IsValid(this) or !this:IsPlayer() then return 0 end
     return TK.DB:GetPlayerData(this, "player_info").credits
 end
 
 e2function number entity:score()
-    if !IsValid(this) || !this:IsPlayer() then return 0 end
+    if !IsValid(this) or !this:IsPlayer() then return 0 end
     return TK.DB:GetPlayerData(this, "player_info").score
 end
 

@@ -7,7 +7,7 @@ util.AddNetworkString("TKGC_Msg")
 
 function TKGC:CanSendMsg(ply)
     local uid = ply:UID()
-    TKGC.Flood[uid] = (TKGC.Flood[uid] || 0) + 1
+    TKGC.Flood[uid] = (TKGC.Flood[uid] or 0) + 1
 
     if TKGC.Flood[uid] >= 6 then return false end
     return true
@@ -60,14 +60,14 @@ function TKGC:SendSysMsg(server, msg)
 end
 
 function TKGC:RemoteFunction(server, toserver, cmd, rank, faction, name)
-    if toserver != "*" && !string.find(string.lower(TK.HostName()), string.lower(toserver)) then return end
+    if toserver != "*" and !string.find(string.lower(TK.HostName()), string.lower(toserver)) then return end
     
     print(server, " Remote Command From "..TK.AM.Rank.Tag[rank]..name, cmd)
     RunConsoleCommand("3k", unpack(string.Explode(" ", cmd)))
 end
 
 function TK.DB:SendGlobalMsg(ply, msg, flag)
-    if !IsValid(ply) || !ply:IsPlayer() then return end
+    if !IsValid(ply) or !ply:IsPlayer() then return end
     if !TKGC:CanSendMsg(ply) then
         TK.AM:SystemMessage({"Global Message Limit, please wait"}, {ply}, 2)
         return
@@ -80,7 +80,7 @@ function TK.DB:SendGlobalMsg(ply, msg, flag)
         msg_flag = flag,
         msg_data = msg,
         sender_rank = ply:GetRank(),
-        sender_faction = IsValid(ply) && ply:Team() || 0,
+        sender_faction = IsValid(ply) and ply:Team() or 0,
         sender_name = ply:Name()
     }))
     
@@ -106,14 +106,14 @@ function TK.DB:SendRemoteCmd(ply, svr, cmd)
         msg_recipient = svr,
         msg_data = cmd,
         sender_rank = ply:GetRank(),
-        sender_faction = IsValid(ply) && ply:Team() || 0,
+        sender_faction = IsValid(ply) and ply:Team() or 0,
         sender_name = ply:Name()
     }))
 end
 
 hook.Add("Initialize", "TKGC", function()
     TK.DB:MakeQuery(TK.DB:FormatSelectQuery("server_globalchat", {"msg_idx"}, {"msg_idx > %s", TKGC.LastMsg}, {"msg_idx"}), function(data)
-        TKGC.LastMsg = data[#data].msg_idx || 0
+        TKGC.LastMsg = data[#data].msg_idx or 0
     end)
 
     timer.Create("TKTKGC", 10, 0, function()
@@ -141,7 +141,7 @@ end)
 
 hook.Add("PlayerSay", "TKGC", function(ply, text, toteam)
     if string.sub(text, 1, 2) == "; " then 
-        local flag, msg = toteam && 2 || 0, ""
+        local flag, msg = toteam and 2 or 0, ""
         if string.sub(text, 3, 5) == "/me" then
             flag = flag + 1
             msg = string.Trim(string.sub(text, 6))

@@ -30,7 +30,7 @@ if SERVER then
             Restart = true
             HUDwarning( player.GetAll(), "Restart in progress..." )
             RunConsoleCommand("sv_password", "restarting")
-            local Time = math.Clamp(tonumber(arg[1]) || 120, 10, 120)
+            local Time = math.Clamp(tonumber(arg[1]) or 120, 10, 120)
             
             TK.AM:SystemMessage({ply, " Has Started A Restart!"})
             

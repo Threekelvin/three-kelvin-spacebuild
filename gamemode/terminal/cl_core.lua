@@ -107,7 +107,7 @@ hook.Add("Initialize", "TKTerminal", function()
 end)
 
 function Terminal:Create()
-    if surface.ScreenWidth() < 800 || surface.ScreenHeight() < 600 then
+    if surface.ScreenWidth() < 800 or surface.ScreenHeight() < 600 then
         ErrorNoHalt("[Terminal] Resolution Not Supported, minimum size 800 x 600\n")
         GAMEMODE:AddNotify("Resolution Not Supported, minimum size 800 x 600", NOTIFY_ERROR, 5)
         return

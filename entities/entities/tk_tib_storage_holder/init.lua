@@ -24,11 +24,11 @@ function ENT:Slot2Pos()
 end
 
 function ENT:AddStorage(ent)
-    if !IsValid(ent) || IsValid(ent:GetParent()) then return end
-    if IsValid(self.Storage.Slot1) && IsValid(self.Storage.Slot2) then return end
+    if !IsValid(ent) or IsValid(ent:GetParent()) then return end
+    if IsValid(self.Storage.Slot1) and IsValid(self.Storage.Slot2) then return end
     local net = self:GetEntTable().netid
     
-    if ((ent:GetPos() - self:Slot1Pos()):LengthSqr() < (ent:GetPos() - self:Slot2Pos()):LengthSqr() && !IsValid(self.Storage.Slot1)) || IsValid(self.Storage.Slot2) then
+    if ((ent:GetPos() - self:Slot1Pos()):LengthSqr() < (ent:GetPos() - self:Slot2Pos()):LengthSqr() and !IsValid(self.Storage.Slot1)) or IsValid(self.Storage.Slot2) then
         self.Storage.Slot1 = ent
         constraint.RemoveAll(ent)
         ent:SetCollisionGroup(COLLISION_GROUP_PUSHAWAY)
@@ -43,7 +43,7 @@ function ENT:AddStorage(ent)
         end
         ent:SetParent(self)
         
-        if net && net != 0 then
+        if net and net != 0 then
             ent:Link(net)
         end
     else
@@ -61,7 +61,7 @@ function ENT:AddStorage(ent)
         end
         ent:SetParent(self)
         
-        if net && net != 0 then
+        if net and net != 0 then
             ent:Link(net)
         end
     end
@@ -131,14 +131,14 @@ end
 
 function ENT:Touch(ent)
     if !IsValid(ent) then return end
-    if !self:GetActive() || ent:GetClass() != "tk_tib_storage" then return end
+    if !self:GetActive() or ent:GetClass() != "tk_tib_storage" then return end
     if !self:CPPICanUse(ent:CPPIGetOwner()) then return end
     self:AddStorage(ent)
 end
 
 function ENT:DoThink()
     if !self:GetActive() then return end
-    if IsValid(self.Storage.Slot1) && IsValid(self.Storage.Slot2) then return end
+    if IsValid(self.Storage.Slot1) and IsValid(self.Storage.Slot2) then return end
     
     local owner = self:CPPIGetOwner()
     for k,v in pairs(ents.FindByClass("tk_tib_storage")) do
@@ -181,7 +181,7 @@ function ENT:PreEntityCopy()
 end
 
 function ENT:PostEntityPaste(Player, Ent, CreatedEntities)
-    if Ent.EntityMods && Ent.EntityMods.TKTibHolder then
+    if Ent.EntityMods and Ent.EntityMods.TKTibHolder then
         self.Storage = {}
         for k,v in pairs(Ent.EntityMods.TKTibHolder) do
             self.Storage[k] = CreatedEntities[v]

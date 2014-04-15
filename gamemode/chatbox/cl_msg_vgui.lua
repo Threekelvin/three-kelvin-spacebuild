@@ -7,8 +7,6 @@ local surface = surface
 local string = string
 local table = table
 
-local LastEmote = 0
-
 local PANEL = {}
 
 function PANEL:Init()
@@ -68,7 +66,7 @@ end
 
 function PANEL:IsLink(txt)
     if !Links:GetBool() then return false end
-    return string.match(txt, "^http://[^ ]+", 0) || string.match(txt, "^https://[^ ]+", 0)
+    return string.match(txt, "^http://[^ ]+", 0) or string.match(txt, "^https://[^ ]+", 0)
 end
 
 function PANEL:DoLayout()
@@ -95,7 +93,7 @@ function PANEL:DoLayout()
             for _,word in ipairs(string.Explode(" ", v)) do
                 local isEmote, isLink = self:IsEmote(word), self:IsLink(word)
                 
-                if !isPlayer && isEmote then
+                if !isPlayer and isEmote then
                     table.insert(self.layout, {tempStr, X, Y, Col})
                     tempStr = ""
                     
@@ -108,7 +106,7 @@ function PANEL:DoLayout()
                         X = tempX + 50 + space
                         tempX, tempHeight = X, 50
                     end
-                elseif !isPlayer && isLink then
+                elseif !isPlayer and isLink then
                     local wide = self:TextLenght(word)
                     table.insert(self.layout, {tempStr, X, Y, Col})
                     tempStr = ""
@@ -195,16 +193,16 @@ function PANEL:PerformLayout()
 end
 
 function PANEL:SetMsg(data)
-    if !data || type(data) != "table" then return end
+    if !data or type(data) != "table" then return end
     self.data = data
     self:DoLayout()
 end
 
 function PANEL.Paint(self, wide, tall)
-    local alpha = self.hide && self.fade || 255
+    local alpha = self.hide and self.fade or 255
     if alpha <= 0 then return true end
     
-    if self.fade > 0 && SysTime() > self.delay then
+    if self.fade > 0 and SysTime() > self.delay then
         self.fade = math.max(self.fade - (100 * (SysTime() - self.delay)), 0)
         self.delay = SysTime()
     end
@@ -227,11 +225,11 @@ function PANEL.Paint(self, wide, tall)
 end
 
 function PANEL:Think()
-    if self.Hovered && !self.hide then
+    if self.Hovered and !self.hide then
         local mx, my = gui.MousePos()
         local px, py = self:LocalToScreen()
         for k,v in pairs(self.links) do
-            if mx >= px + v.x && mx <= px + v.x + v.w && my >= py + v.y && my <= py + v.y + v.h then
+            if mx >= px + v.x and mx <= px + v.x + v.w and my >= py + v.y and my <= py + v.y + v.h then
                 self:SetCursor("hand")
                 return true
             end
@@ -248,7 +246,7 @@ function PANEL:OnMousePressed(mc)
         local mx, my = gui.MousePos()
         local px, py = self:LocalToScreen()
         for k,v in pairs(self.links) do
-            if mx >= px + v.x && mx <= px + v.x + v.w && my >= py + v.y && my <= py + v.y + v.h then
+            if mx >= px + v.x and mx <= px + v.x + v.w and my >= py + v.y and my <= py + v.y + v.h then
                 if mc == MOUSE_LEFT then
                     gui.OpenURL(v.url)
                 elseif mc == MOUSE_RIGHT then

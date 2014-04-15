@@ -30,7 +30,7 @@ function ENT:TriggerInput(iname, value)
 end
 
 function ENT:TurnOn()
-    if self:GetActive() || !self:IsLinked() then return end
+    if self:GetActive() or !self:IsLinked() then return end
     self:SetActive(true)
     self:SoundPlay(1)
     WireLib.TriggerOutput(self, "On", 1)

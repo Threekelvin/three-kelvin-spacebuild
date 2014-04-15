@@ -1,7 +1,7 @@
 
 local table = table
 
-TK.DB = TK.DB || {}
+TK.DB = TK.DB or {}
 
 local Queries = {
     create = {
@@ -243,7 +243,7 @@ local function StopInjection(data, noquotes)
     elseif typ == "number" then
         data = SQLStr(data, true)
     else
-        data = SQLStr(data, noquotes && true || false)
+        data = SQLStr(data, noquotes and true or false)
     end
 
     return data
@@ -263,7 +263,7 @@ end
 
 function TK.DB:FormatInsertQuery(dbtable, values)
     if !Queries.insert[dbtable] then return end
-    if !values || table.Count(values) == 0 then return end
+    if !values or table.Count(values) == 0 then return end
     
     local query_idx = {"INSERT INTO ", dbtable, "("}
     local query_values = {"VALUES("}
@@ -282,10 +282,10 @@ end
 
 function TK.DB:FormatSelectQuery(dbtable, values, where, order)
     if !Queries.insert[dbtable] then return end
-    if !where || #where == 0 then return end
+    if !where or #where == 0 then return end
     
     local query = {"SELECT "}
-    if !values || table.Count(values) == 0 then
+    if !values or table.Count(values) == 0 then
         table.insert(query, "*")
         table.insert(query, ", ")
     else
@@ -317,8 +317,8 @@ end
 
 function TK.DB:FormatUpdateQuery(dbtable, values, where)
     if !Queries.update[dbtable] then return end
-    if !values || table.Count(values) == 0 then return end
-    if !where || #where == 0 then return end
+    if !values or table.Count(values) == 0 then return end
+    if !where or #where == 0 then return end
 
     
     local query = {"UPDATE ", dbtable, " SET "}

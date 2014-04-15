@@ -7,7 +7,7 @@ GM.Website         = ""
 DeriveGamemode("sandbox")
 _R = debug.getregistry()
 
-TK = TK || {}
+TK = TK or {}
 
 local string = string
 local math = math
@@ -22,7 +22,7 @@ team.SetUp(5, "I <3 DOTA 2", Color(200,75,75))
 ///--- ---\\\
 
 function TK:HostName()
-    return string.match(GetHostName(), "%[%w+%]") || "[Server]"
+    return string.match(GetHostName(), "%[%w+%]") or "[Server]"
 end
 
 function TK:Format(num)
@@ -116,15 +116,15 @@ function TK:CanUsePlayerModel(ply, mdl)
     local modelname = player_manager.TranslatePlayerModel(mdl)
     
     if TK.Settings.PlyMdls[modelname] then
-        local canuse = !TK.Settings.PlyMdls[modelname].sid && true || false
+        local canuse = !TK.Settings.PlyMdls[modelname].sid and true or false
         
-        for k,v in pairs(TK.Settings.PlyMdls[modelname].sid || {}) do
+        for k,v in pairs(TK.Settings.PlyMdls[modelname].sid or {}) do
             if ply:SteamID() != v then continue end
             canuse = true
             break
         end
         
-        if ply:GetRank() < (TK.Settings.PlyMdls[modelname].rank || 1) then
+        if ply:GetRank() < (TK.Settings.PlyMdls[modelname].rank or 1) then
             canuse = false
         end
         
@@ -135,7 +135,7 @@ function TK:CanUsePlayerModel(ply, mdl)
 end
 
 local function IsValidFolder(dir)
-    if dir == "." || dir == ".." then return false end
+    if dir == "." or dir == ".." then return false end
     if string.GetExtensionFromFilename(dir) then return false end
     return true
 end
@@ -191,7 +191,7 @@ hook.Add("Initialize", "EntSpawn", function()
     
     local CleanUp = game.CleanUpMap
     function game.CleanUpMap(bln, filters)
-        local data = filters || {}
+        local data = filters or {}
         table.insert(data, "at_planet")
         table.insert(data, "at_star")
         

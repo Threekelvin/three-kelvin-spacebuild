@@ -1,5 +1,5 @@
 
-TK.TD = TK.TD || {}
+TK.TD = TK.TD or {}
 
 local Items = {
     mining = {

@@ -23,7 +23,7 @@ function ENT:Initialize()
 end
 
 function ENT:DoMenu(ply)
-    if !IsValid(ply) || !ply:IsPlayer() then return end
+    if !IsValid(ply) or !ply:IsPlayer() then return end
     net.Start("TKRD_MEnt")
         net.WriteEntity(self)
     net.Send(ply)
@@ -34,7 +34,7 @@ function ENT:DoCommand(ply, cmd, arg)
 end
 
 function ENT:Use(ply)
-    if !IsValid(ply) || !ply:IsPlayer() then return end
+    if !IsValid(ply) or !ply:IsPlayer() then return end
     if !self:CPPICanUse(ply) then return end
     if self.next_use > CurTime() then return end
     self.next_use = CurTime() + 1
@@ -113,7 +113,7 @@ function ENT:Think()
             end
         end
     end
-    local efficenty = produce == 1 && 0 || math.min((produce / comsume)^2, 1)
+    local efficenty = produce == 1 and 0 or math.min((produce / comsume)^2, 1)
 
     for k,v in pairs(self.netdata.entities) do
         local valid, info = pcall(v.DoThink, v, efficenty)
@@ -149,12 +149,12 @@ function ENT:PreEntityCopy()
 end
 
 function ENT:PostEntityPaste(ply, ent, entlist)
-    if !self.EntityMods || !self.EntityMods.TKRDInfo then return end
+    if !self.EntityMods or !self.EntityMods.TKRDInfo then return end
     local TKRDInfo = self.EntityMods.TKRDInfo
 
-    for k,v in ipairs(TKRDInfo || {}) do
+    for k,v in ipairs(TKRDInfo or {}) do
         local ent2 = entlist[v]
-        if IsValid(ent2) && ent2.IsTKRD then
+        if IsValid(ent2) and ent2.IsTKRD then
             ent2:Link(self.netid)
         end
     end

@@ -58,14 +58,14 @@ function ENT:DoThink(eff)
         entdata.update = {}
     end
     
-    local temp = eff && env:DoTemp(self) || 0
+    local temp = eff and env:DoTemp(self) or 0
     if entdata.data.temp != temp then
         entdata.data.temp = temp
         WireLib.TriggerOutput(self, "Tempurature", temp)
         entdata.update = {}
     end
     
-    local gravity = eff && env.atmosphere.gravity || 0
+    local gravity = eff and env.atmosphere.gravity or 0
     if entdata.data.gravity != gravity then
         entdata.data.gravity = gravity
         WireLib.TriggerOutput(self, "Gravity", temp)
@@ -75,8 +75,8 @@ function ENT:DoThink(eff)
     local data = {n={},ntypes={},s={},stypes={},size=0}
     local size, update = 0, false
     for k,v in pairs(env.atmosphere.resources) do
-        local val = eff && v || 0
-        if !entdata.data.resources[k] || entdata.data.resources[k] != val then
+        local val = eff and v or 0
+        if !entdata.data.resources[k] or entdata.data.resources[k] != val then
             entdata.data.resources[k] = val
             entdata.update = {}
             update = true

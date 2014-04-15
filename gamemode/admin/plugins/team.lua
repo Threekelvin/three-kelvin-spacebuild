@@ -18,7 +18,7 @@ if SERVER then
             local faction = math.floor(tonumber(arg[2]))
             local teams = team.GetAllTeams()
             
-            if !teams[faction] || !teams[faction].Joinable then
+            if !teams[faction] or !teams[faction].Joinable then
                 TK.AM:SystemMessage({"No Valid Team Selected"}, {ply}, 2)
             else
                 TK.DB:UpdatePlayerData(tar, "player_team", {team = faction})

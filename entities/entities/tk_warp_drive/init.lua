@@ -34,12 +34,12 @@ end
 function ENT:Jump()
     if self.j_spool != 100 then self:SoundPlay(2) return end
     
-    self.j_par = IsValid(self:GetParent()) && self:GetParent() || self
+    self.j_par = IsValid(self:GetParent()) and self:GetParent() or self
     local conent = self.j_par:GetConstrainedEntities()
     self.j_data = {}
     
     for _,ent in pairs(conent) do
-        ent = IsValid(ent:GetParent()) && ent:GetParent() || ent
+        ent = IsValid(ent:GetParent()) and ent:GetParent() or ent
         local data = {}
         data.ent = ent
         data.phys = {}
@@ -122,7 +122,7 @@ function ENT:TriggerInput(iname, value)
 end
 
 function ENT:TurnOn()
-    if self:GetActive() || !self:IsLinked() then return end
+    if self:GetActive() or !self:IsLinked() then return end
     self:SetActive(true)
 end
 

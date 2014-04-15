@@ -34,7 +34,7 @@ function TOOL:SelectEnt(ent, ply)
     if !IsValid(ent) then return end
     local idx = ent:EntIndex()
     local col = ent:GetColor()
-    ent:SetColor(IsValid(self.Parent) && Color(0, 200, 0, 100) || Color(200, 0, 0, 100))
+    ent:SetColor(IsValid(self.Parent) and Color(0, 200, 0, 100) or Color(200, 0, 0, 100))
     if !IsValid(self.Parent) then 
         self.Parent = ent
         ply:SendLua('GAMEMODE:AddNotify("Parent Selected", NOTIFY_HINT, 3)')
@@ -75,7 +75,7 @@ function TOOL:RightClick(trace)
     if CLIENT then return true end
     local ply = self:GetOwner()
     
-    if !IsValid(self.Parent) || !IsValid(self.Parent:GetPhysicsObject()) then
+    if !IsValid(self.Parent) or !IsValid(self.Parent:GetPhysicsObject()) then
         ply:SendLua('GAMEMODE:AddNotify("No Valid Parent Selected", NOTIFY_ERROR, 3)')
         
         for k,v in pairs(self.Selected) do

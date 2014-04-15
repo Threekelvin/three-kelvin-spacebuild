@@ -37,7 +37,7 @@ function PANEL:Init()
             self:Close()
             panel:SetText("")
         elseif key == KEY_TAB then
-            local str = tostring(gamemode.Call("OnChatTab", panel:GetValue()) || " ")
+            local str = tostring(gamemode.Call("OnChatTab", panel:GetValue()) or " ")
             if str != " " then
                 panel:SetText(str)
                 panel:SetCaretPos(string.len(str))
@@ -170,18 +170,18 @@ function PANEL:Think()
     
     if self.Sizing then
         local px, py = self:GetPos()
-        local x = math.Clamp(gui.MouseX() - self.Sizing[1], self.isOpen && 320 + 145 || 320, surface.ScreenWidth() - px)
+        local x = math.Clamp(gui.MouseX() - self.Sizing[1], self.isOpen and 320 + 145 or 320, surface.ScreenWidth() - px)
         local y = math.Clamp(gui.MouseY() - self.Sizing[2], 240, surface.ScreenHeight() - py)
 
         self:SetSize(x, y)
-        self.wide = self.isOpen && x - 145 || x
+        self.wide = self.isOpen and x - 145 or x
         return
     end
     
-    if self.Hovered && !self.moving && gui.MouseY() <= self.y + 5 then
+    if self.Hovered and !self.moving and gui.MouseY() <= self.y + 5 then
         self:SetCursor("sizeall")
         return
-    elseif self.Hovered && !self.moving && gui.MouseX() >= self.x + wide - 5 && gui.MouseY() >= self.y + tall - 5 then
+    elseif self.Hovered and !self.moving and gui.MouseX() >= self.x + wide - 5 and gui.MouseY() >= self.y + tall - 5 then
         self:SetCursor("sizenwse")
         return
     end
@@ -190,13 +190,13 @@ function PANEL:Think()
 end
 
 function PANEL:OnMousePressed()
-    if !self.moving && gui.MouseX() >= self.x + self:GetWide() - 5 && gui.MouseY() >= self.y + self:GetTall() - 5 then            
+    if !self.moving and gui.MouseX() >= self.x + self:GetWide() - 5 and gui.MouseY() >= self.y + self:GetTall() - 5 then            
         self.Sizing = {gui.MouseX() - self:GetWide(), gui.MouseY() - self:GetTall()}
         self:MouseCapture(true)
         return
     end
     
-    if !self.moving && gui.MouseY() <= self.y + 5 then
+    if !self.moving and gui.MouseY() <= self.y + 5 then
         self.Dragging = {gui.MouseX() - self.x, gui.MouseY() - self.y}
         self:MouseCapture(true)
         return
@@ -215,7 +215,7 @@ function PANEL:NewMsg(data, show)
     local msg = vgui.Create("TKMsg")
     msg.idx = self.msgcount
     msg.box = self.msgbox
-    msg.fade = show && 255 || 0
+    msg.fade = show and 255 or 0
     msg.emotelist = self.emotelist
     
     msg:SetMsg(data)

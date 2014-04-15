@@ -68,13 +68,13 @@ end
 
 function ENT:IsLargeHull(ent)
     if ent:BoundingRadius() < 135 then return false end
-    if ent.IsTKRD && !ent:IsVehicle() then return false end
+    if ent.IsTKRD and !ent:IsVehicle() then return false end
     return true
 end
 
 function ENT:AddHull(ent, addBrush)
-    if !ent.tk_env || !ent.tk_dmg then return end
-    if IsValid(ent.tk_env.core) || IsValid(ent.tk_dmg.core) then return end
+    if !ent.tk_env or !ent.tk_dmg then return end
+    if IsValid(ent.tk_env.core) or IsValid(ent.tk_dmg.core) then return end
     ent.tk_env.core = self
     ent.tk_dmg.core = self
     self.hull[ent] = ent
@@ -136,14 +136,14 @@ function ENT:OnRemove()
 end
 
 function ENT:TurnOn()
-    if self:GetActive() || !self:IsLinked() then return end
+    if self:GetActive() or !self:IsLinked() then return end
     self.hull_size = 0
     
     if self.ghd then
         GH.RegisterHull(self, 0)
         GH.UpdateHull(self, self:GetUp())
         
-        for k,v in pairs(GH.SHIPS[self].Welds || {}) do
+        for k,v in pairs(GH.SHIPS[self].Welds or {}) do
             self:AddHull(v)
         end
         
@@ -177,7 +177,7 @@ function ENT:DoThink(eff)
     if !self:GetActive() then return end
     
     local env = TK.AT:GetSpace()
-    local conents = self.ghd && (GH.SHIPS[self].Welds || self:GetConstrainedEntities()) || self:GetConstrainedEntities()
+    local conents = self.ghd and (GH.SHIPS[self].Welds or self:GetConstrainedEntities()) or self:GetConstrainedEntities()
     
     for k,v in pairs(conents) do
         if self.hull[k] then continue end
@@ -201,9 +201,9 @@ function ENT:DoThink(eff)
     if !self:Work() then return end
     rate = rate * 1 / math.Max(eff, 0.1)
 
-    self.atmosphere.resources.oxygen = self.atmosphere.resources.oxygen || 0
+    self.atmosphere.resources.oxygen = self.atmosphere.resources.oxygen or 0
     self.atmosphere.resources.oxygen = math.max(self.atmosphere.resources.oxygen - 1, 0)
-    self.atmosphere.resources.nitrogen = self.atmosphere.resources.nitrogen || 0
+    self.atmosphere.resources.nitrogen = self.atmosphere.resources.nitrogen or 0
     self.atmosphere.resources.nitrogen = math.max(self.atmosphere.resources.nitrogen - 1, 0)
     
     for k,v in pairs(self.atmosphere.resources) do
@@ -212,14 +212,14 @@ function ENT:DoThink(eff)
                 self.atmosphere.resources[k] = math.floor(v - 1)
             elseif v < 20 then
                 local o2 = self:ConsumeResource("oxygen", rate)
-                self.atmosphere.resources[k] = math.floor(v + (v < 19 && 2 || 1) * o2 / rate)
+                self.atmosphere.resources[k] = math.floor(v + (v < 19 and 2 or 1) * o2 / rate)
             end
         elseif k == "nitrogen" then
             if v > 80 then
                 self.atmosphere.resources[k] = math.floor(v - 1)
             elseif v < 80 then
                 local n2 = self:ConsumeResource("nitrogen", rate)
-                self.atmosphere.resources[k] = math.floor(v + (v < 79 && 2 || 1) * n2 / rate)
+                self.atmosphere.resources[k] = math.floor(v + (v < 79 and 2 or 1) * n2 / rate)
             end
         elseif v > 0 then
             self.atmosphere.resources[k] = math.floor(v - 1)
@@ -299,7 +299,7 @@ function ENT:Sunburn()
 end
 
 function ENT:HasResource(res)
-    return self.atmosphere.resources[res] && self.atmosphere.resources[res] > 0
+    return self.atmosphere.resources[res] and self.atmosphere.resources[res] > 0
 end
 
 function ENT:CanNoclip()
@@ -311,7 +311,7 @@ function ENT:CanCombat()
 end
 
 function ENT:GetResourcePercent(res)
-    return self.atmosphere.resources[res] || 0
+    return self.atmosphere.resources[res] or 0
 end
 
 function ENT:CheckEntity(ent)
@@ -329,15 +329,15 @@ function ENT:InAtmosphere(pos)
     for _,ent in pairs(self.hull) do
         local lp = ent:WorldToLocal(pos)
         local min, max = ent:OBBMins(), ent:OBBMaxs()
-        if lp.x < min.x || lp.y < min.y || lp.z < min.z then continue end
-        if lp.x > max.x || lp.y > max.y || lp.z > max.z then continue end
+        if lp.x < min.x or lp.y < min.y or lp.z < min.z then continue end
+        if lp.x > max.x or lp.y > max.y or lp.z > max.z then continue end
         return true
     end
     return false
 end
 
 function ENT:DoGravity(ent)
-    if !IsValid(ent) || !ent.tk_env || ent.tk_env.nogravity then return end
+    if !IsValid(ent) or !ent.tk_env or ent.tk_env.nogravity then return end
     local phys = ent:GetPhysicsObject()
     if !IsValid(phys) then return end
 
@@ -377,7 +377,7 @@ function ENT:DoTemp(ent)
 end
 
 hook.Add("EnterShip", "Ship Core", function(p, e, g)
-    if !p.tk_env || !e:IsShip() then return end
+    if !p.tk_env or !e:IsShip() then return end
     
     local oldenv = p:GetEnv()
     table.insert(p.tk_env.envlist, e)
@@ -391,7 +391,7 @@ hook.Add("EnterShip", "Ship Core", function(p, e, g)
 end)
 
 hook.Add("ExitShip", "Ship Core", function(p, e, g)
-    if !p.tk_env || !e:IsShip() then return end
+    if !p.tk_env or !e:IsShip() then return end
     
     local oldenv = p:GetEnv()
     for k,v in pairs(p.tk_env.envlist) do
@@ -415,7 +415,7 @@ function ENT:SendUpdate(ent, isHull, ply)
     net.Start("TKCore")
         net.WriteEntity(ent)
         net.WriteBit(isHull)
-    net.Send(ply || player.GetAll())
+    net.Send(ply or player.GetAll())
 end
 
 hook.Add("PlayerInitialSpawn", "TKCore", function(ply)

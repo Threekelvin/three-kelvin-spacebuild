@@ -1,5 +1,5 @@
 
-TK.TI = TK.TI || {}
+TK.TI = TK.TI or {}
 
 local net = net
 
@@ -25,7 +25,7 @@ net.Receive("TKTib_M", function()
     local data = net.ReadTable()
     
     Models[entid] = {}
-    Models[entid].pre = (TK.Settings.Tiberium[data.stage - 1] || {}).model
+    Models[entid].pre = (TK.Settings.Tiberium[data.stage - 1] or {}).model
     Models[entid].cur = TK.Settings.Tiberium[data.stage].model
     Models[entid].grow = true
     Models[entid].time = SysTime()
@@ -51,7 +51,7 @@ function TK.TI:DrawTib(ent)
             data.offset = data.offset_max
         end
         
-        if util.IsValidModel(data.pre || "") then
+        if util.IsValidModel(data.pre or "") then
             local progress = data.offset / data.offset_max
             
             ent:SetRenderOrigin(data.origin - ent:GetUp() * (data.offset_max - data.offset) * 0.5)
@@ -94,11 +94,11 @@ end
 
 function TK.TI:DrawExtractor(ent)
     if ent:GetActive() then
-        if !ent.mining || ent.mining != ent:GetCrystal() then
+        if !ent.mining or ent.mining != ent:GetCrystal() then
             ent.mining = ent:GetCrystal()
             local crystal = Entity(ent.mining)
             ent:StopParticles()
-            if ent.mining == 0 || !IsValid(crystal) then return end
+            if ent.mining == 0 or !IsValid(crystal) then return end
             ent.stable = IsStable(ent.mining)
             
             local CPoint0 = {
@@ -120,7 +120,7 @@ function TK.TI:DrawExtractor(ent)
             end
         else
             local crystal = Entity(ent.mining)
-            if ent.mining == 0 || !IsValid(crystal) then return end
+            if ent.mining == 0 or !IsValid(crystal) then return end
             
             local CPoint0 = {
                 ["entity"] = crystal,

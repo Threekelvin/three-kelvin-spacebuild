@@ -51,14 +51,14 @@ end)
 
 local function RequestData(typ, id)
     local idx, time = typ..id, CurTime()
-    if sync_data[idx] && sync_data[idx] > time then return end
+    if sync_data[idx] and sync_data[idx] > time then return end
     sync_data[idx] = time + 1
     RunConsoleCommand("TKRD_RequestData", typ, id)
 end
 
 function TK.RD:AddResource(idx, name)
     idx = tostring(idx)
-    name = tostring(name) || idx
+    name = tostring(name) or idx
     
     res_table[idx] = name
 end
@@ -66,13 +66,13 @@ end
 function TK.RD:GetNetTable(netid)
     local netdata = net_table[netid]
     RequestData("Net", netid)
-    return netdata || {res = {}, powergrid = 0}
+    return netdata or {res = {}, powergrid = 0}
 end
 
 function TK.RD:GetEntTable(entid)
     local entdata = ent_table[entid]
     RequestData("Ent", entid)
-    return entdata || {netid = 0, res = {}, data = {}, powergrid = 0}
+    return entdata or {netid = 0, res = {}, data = {}, powergrid = 0}
 end
 
 function TK.RD:IsLinked(ent)
@@ -84,7 +84,7 @@ end
 function TK.RD:GetNetPowerGrid(netid)
     local netdata = TK.RD:GetNetTable(entdata.netid)
     if !netdata then return 0 end
-    return netdata.powergrid || 0
+    return netdata.powergrid or 0
 end
 
 function TK.RD:GetNetResourceAmount(netid, idx)
@@ -99,9 +99,9 @@ function TK.RD:GetEntPowerGrid(ent)
     local entdata = TK.RD:GetEntTable(ent:EntIndex())
     if entdata.netid != 0 then
         local netdata = TK.RD:GetNetTable(entdata.netid)
-        return netdata.powergrid || 0
+        return netdata.powergrid or 0
     else
-        return entdata.powergrid || 0
+        return entdata.powergrid or 0
     end
 end
 
@@ -121,7 +121,7 @@ end
 function TK.RD:GetUnitPowerGrid(ent)
     if !IsValid(ent) then return 0 end
     local entdata = TK.RD:GetEntTable(ent:EntIndex())
-    return entdata.powergrid || 0
+    return entdata.powergrid or 0
 end
 
 function TK.RD:GetUnitResourceAmount(ent, idx)
@@ -171,5 +171,5 @@ function TK.RD:IsResource(str)
 end
 
 function TK.RD:GetResourceName(idx)
-    return res_table[idx] || idx
+    return res_table[idx] or idx
 end

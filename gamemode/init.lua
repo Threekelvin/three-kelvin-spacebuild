@@ -69,7 +69,7 @@ function _R.Entity:GetConstrainedEntities()
         
         if bd[2] > #bde.Constraints then
             tbtab[#tbtab] = nil
-        elseif !IsValid(bdc) || !IsValid(ce) || BadConstraints[bdc:GetClass()] then
+        elseif !IsValid(bdc) or !IsValid(ce) or BadConstraints[bdc:GetClass()] then
             bd[2] = bd[2] + 1
         else
             if !out[ce] then
@@ -97,12 +97,12 @@ local AllowedWeapons = {
 }
 
 hook.Add("PlayerCanPickupWeapon", "TKSB", function(ply, wep)
-    if AllowedWeapons[wep:GetClass()] || ply:IsAdmin() then return true end
+    if AllowedWeapons[wep:GetClass()] or ply:IsAdmin() then return true end
     return false
 end)
 
 hook.Add("PlayerSpawnSWEP", "TKSB", function(ply, wep)
-    if AllowedWeapons[wep] || ply:IsAdmin() then return true end
+    if AllowedWeapons[wep] or ply:IsAdmin() then return true end
     return false
 end)
 
@@ -178,7 +178,7 @@ hook.Add("Initialize", "PAC_Fix", function()
             Ent:SetModel( Model )
             
             -- Fill in the keyvalues if we have them
-            if ( VTable && VTable.KeyValues ) then
+            if ( VTable and VTable.KeyValues ) then
                 for k, v in pairs( VTable.KeyValues ) do
                     Ent:SetKeyValue( k, v )
                 end		
@@ -310,7 +310,7 @@ end)
 ///--- Map Resources ---\\\
 hook.Add("Tick", "TKSpawning", function()
     for k,v in pairs(TK.Settings.AsteroidFields) do
-        if CurTime() > v.NextSpawn && table.Count(v.Ents) < 20 then
+        if CurTime() > v.NextSpawn and table.Count(v.Ents) < 20 then
             local pos = Vector(math.random(0, 5000),0,0)
             pos:Rotate(Angle(math.random(0, 360), math.random(0, 360), 0))
             
@@ -318,7 +318,7 @@ hook.Add("Tick", "TKSpawning", function()
             local space = TK:FindInSphere(rand, 1000)
             local CanSpawn = true
             for k2,v2 in pairs(space) do
-                if IsValid(v2) && IsValid(v2:GetPhysicsObject()) then
+                if IsValid(v2) and IsValid(v2:GetPhysicsObject()) then
                     CanSpawn = false
                     break
                 end
@@ -330,7 +330,7 @@ hook.Add("Tick", "TKSpawning", function()
                 ent:SetAngles(Angle(math.random(0, 360), math.random(0, 360), math.random(0, 360)))
                 ent:Spawn()
                 ent.GetField = function()
-                    return v.Ents || {}
+                    return v.Ents or {}
                 end
                 ent:CallOnRemove("UpdateList", function()
                     v.Ents[ent:EntIndex()] = nil
@@ -345,7 +345,7 @@ hook.Add("Tick", "TKSpawning", function()
     end
     
     for k,v in pairs(TK.Settings.TiberiumFields) do
-        if CurTime() < v.NextSpawn || table.Count(v.Ents) >= 10 then continue end
+        if CurTime() < v.NextSpawn or table.Count(v.Ents) >= 10 then continue end
         local pos = Vector(math.random(0, 1100),0,0)
         pos:Rotate(Angle(0,math.random(0, 360),0))
         
@@ -367,7 +367,7 @@ hook.Add("Tick", "TKSpawning", function()
             ent:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
             ent:Spawn()
             ent.GetField = function()
-                return v.Ents || {}
+                return v.Ents or {}
             end
             ent:CallOnRemove("UpdateList", function()
                 v.Ents[ent:EntIndex()] = nil

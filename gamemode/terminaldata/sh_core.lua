@@ -1,5 +1,5 @@
 
-TK.TD = TK.TD || {}
+TK.TD = TK.TD or {}
 
 TK.TD.Settings = {
     upgrade_base = 10000,
@@ -21,7 +21,7 @@ local Resources = {
 }
 
 function TK.TD:AcceptResource(res, typ)
-    if typ == "node" && res == "raw_tiberium" then return false end
+    if typ == "node" and res == "raw_tiberium" then return false end
     return table.HasValue(Resources, res)
 end
 

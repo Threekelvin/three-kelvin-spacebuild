@@ -1,5 +1,5 @@
 
-TK.DC = TK.DC || {}
+TK.DC = TK.DC or {}
 local Bullets = {}
 
 DMG_KINETIC = 1
@@ -29,12 +29,12 @@ function TK.DC:GetBullet(id)
 end
 
 hook.Add("EntitySpawned", "TKDC", function(ent)
-    if ent.Type == "brush" || ent.Type == "point" then return end
+    if ent.Type == "brush" or ent.Type == "point" then return end
     if !IsValid(ent:GetPhysicsObject()) then return end
     if ent:GetMoveType() == 0 then return end
     if ent:IsPlayer() then return end
     
-    local base_hp = math.floor(math.sqrt(ent:GetPhysicsObject():GetVolume() || 0) * 0.5)
+    local base_hp = math.floor(math.sqrt(ent:GetPhysicsObject():GetVolume() or 0) * 0.5)
     
     ent.tk_dmg = {}
     ent.tk_dmg.stats = {}
@@ -61,7 +61,7 @@ function TK.DC:CanDamage(ent)
 end
 
 function TK.DC:DestoryEnt(ent)
-    if !IsValid(ent) || !ent.tk_dmg then return end
+    if !IsValid(ent) or !ent.tk_dmg then return end
     
     local fxdata = EffectData()
     fxdata:SetEntity(ent)
@@ -71,7 +71,7 @@ function TK.DC:DestoryEnt(ent)
 end
 
 function TK.DC:DestroyCore(ent)
-    if !IsValid(ent) || !ent.tk_dmg then return end
+    if !IsValid(ent) or !ent.tk_dmg then return end
     if ent.tk_dmg != ent then return end
     
     for k,v in pairs(ent.hull) do
@@ -137,10 +137,10 @@ function TK.DC:DmgHull(hull, amt, typ)
 end
 
 function TK.DC:DoDamge(ent, amt, typ)
-    if !IsValid(ent) || !ent.tk_dmg then return end
+    if !IsValid(ent) or !ent.tk_dmg then return end
     if !self:CanDamage(ent) then return end
     local useCore = IsValid(ent.tk_dmg.core)
-    local stats = useCore && ent.tk_dmg.core.tk_dmg.total || ent.tk_dmg.stats
+    local stats = useCore and ent.tk_dmg.core.tk_dmg.total or ent.tk_dmg.stats
     
     local dmg = 1
     local shield, dmg = self:DmgShield(stats.shield, amt * dmg,  typ)

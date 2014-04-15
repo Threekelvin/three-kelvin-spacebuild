@@ -28,7 +28,7 @@ function ENT:TriggerInput(iname, value)
 end
 
 function ENT:TurnOn()
-    if self:GetActive() || !self:IsLinked() then return end
+    if self:GetActive() or !self:IsLinked() then return end
     self:SetActive(true)
     self:SoundPlay(1)
     WireLib.TriggerOutput(self, "On", 1)
@@ -46,7 +46,7 @@ function ENT:DoThink(eff)
     if !self:GetActive() then return end
     
     local env = self:GetEnv()
-    if !env:IsPlanet() || !env:HasResource("hydrogen") then self:TurnOff() return end
+    if !env:IsPlanet() or !env:HasResource("hydrogen") then self:TurnOff() return end
     if !self:Work() then return end
     
     local hydrogen = self.data.hydrogen * self.mult * env:GetResourcePercent("hydrogen") / 100 * eff

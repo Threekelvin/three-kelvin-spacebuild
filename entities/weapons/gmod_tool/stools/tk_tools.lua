@@ -79,7 +79,7 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
     end
 
     function TOOL:Think()
-        if !IsValid(self.GhostEntity) || self.GhostEntity:GetModel() != self:SelectModel() then
+        if !IsValid(self.GhostEntity) or self.GhostEntity:GetModel() != self:SelectModel() then
             self:MakeGhostEntity(self:SelectModel(), Vector(0,0,0), Angle(0,0,0))
         else
             local trace = self:GetOwner():GetEyeTrace()

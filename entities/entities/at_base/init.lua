@@ -165,7 +165,7 @@ function ENT:PhysicsSetup()
 end
 
 function ENT:SetupAtomsphere(data)
-    for k,v in pairs(data || {}) do
+    for k,v in pairs(data or {}) do
         local typ = type(self.atmosphere[k])
         
         if typ == "number" then
@@ -221,7 +221,7 @@ function ENT:Sunburn()
 end
 
 function ENT:HasResource(res)
-    return self.atmosphere.resources[res] && self.atmosphere.resources[res] > 0
+    return self.atmosphere.resources[res] and self.atmosphere.resources[res] > 0
 end
 
 function ENT:CanNoclip()
@@ -233,7 +233,7 @@ function ENT:CanCombat()
 end
 
 function ENT:GetResourcePercent(res)
-    return self.atmosphere.resources[res] || 0
+    return self.atmosphere.resources[res] or 0
 end
 
 function ENT:InAtmosphere(pos)
@@ -243,7 +243,7 @@ function ENT:InAtmosphere(pos)
         end
     else
         local cen, rad = self:GetPos(), self:GetRadius()
-        if pos.x < cen.x + rad && pos.x > cen.x - rad && pos.y < cen.y + rad && pos.y > cen.y - rad && pos.z < cen.z + rad && pos.z > cen.z - rad then
+        if pos.x < cen.x + rad and pos.x > cen.x - rad and pos.y < cen.y + rad and pos.y > cen.y - rad and pos.z < cen.z + rad and pos.z > cen.z - rad then
             return true
         end
     end
@@ -251,7 +251,7 @@ function ENT:InAtmosphere(pos)
 end
 
 function ENT:DoGravity(ent)
-    if !IsValid(ent) || !ent.tk_env || ent.tk_env.nogravity then return end
+    if !IsValid(ent) or !ent.tk_env or ent.tk_env.nogravity then return end
     local phys = ent:GetPhysicsObject()
     if !IsValid(phys) then return end
 

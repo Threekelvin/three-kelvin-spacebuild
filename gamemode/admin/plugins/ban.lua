@@ -15,9 +15,9 @@ if SERVER then
             TK.AM:SystemMessage({"Multiple Targets Found"}, {ply}, 2)    
         else
             local tar = targets[1]
-            if ply:CanRunOn(tar) && ply != tar then
+            if ply:CanRunOn(tar) and ply != tar then
                 local length = tonumber(arg[2])
-                if length && length >= 0 then
+                if length and length >= 0 then
                     length = math.ceil(length * 3600)
                     local steamid = tar:SteamID()
                     local reason = table.concat(arg, " ", 3)

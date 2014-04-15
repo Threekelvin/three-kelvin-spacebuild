@@ -16,8 +16,8 @@ local Terminal = {}
 ///--- Resources ---\\\
 function Terminal.StorageToNode(ply, arg)
     local Node, res, amt = Entity(tonumber(arg[1])), arg[2], tonumber(arg[3])
-    if !IsValid(Node) || Node:CPPIGetOwner() != ply then return end
-    if !Node.IsTKRD || !Node.IsNode then print("error", Node) return end
+    if !IsValid(Node) or Node:CPPIGetOwner() != ply then return end
+    if !Node.IsTKRD or !Node.IsNode then print("error", Node) return end
     if (Node:GetPos() - TK.Settings.Term.Pos):LengthSqr() > TK.Settings.Term.Size then return end
     local storage = TK.DB:GetPlayerData(ply, "terminal_storage")
     if !storage[res] then return end
@@ -31,12 +31,12 @@ end
 
 function Terminal.NodeTostorage(ply, arg)
     local Node, res, amt = Entity(tonumber(arg[1])), arg[2], tonumber(arg[3])
-    if !IsValid(Node) || Node:CPPIGetOwner() != ply then return end
-    if !Node.IsTKRD || !Node.IsNode then return end
+    if !IsValid(Node) or Node:CPPIGetOwner() != ply then return end
+    if !Node.IsTKRD or !Node.IsNode then return end
     if !TK.TD:AcceptResource(res) then return end
     if (Node:GetPos() - TK.Settings.Term.Pos):LengthSqr() > TK.Settings.Term.Size then return end
     local storage = TK.DB:GetPlayerData(ply, "terminal_storage")
-    storage[res] = storage[res] || 0
+    storage[res] = storage[res] or 0
 
     local amt = Node:ConsumeResource(res, amt)
     if amt <= 0 then return end
@@ -72,7 +72,7 @@ function Terminal.StartRefine(ply, res)
     local newtime = 0
     
     for k,v in pairs(res) do
-        if !storage[k] || storage[k] < v then continue end
+        if !storage[k] or storage[k] < v then continue end
         
         newstorage[k] = storage[k] - v
         newrefinery[k] = refinery[k] + v
@@ -145,8 +145,8 @@ end
 
 function Terminal.RefineAll(ply, arg)
     local storage, res = TK.DB:GetPlayerData(ply, "terminal_storage"), {}
-    res["asteroid_ore"] = storage["asteroid_ore"] || 0
-    res["raw_tiberium"] = storage["raw_tiberium"] || 0
+    res["asteroid_ore"] = storage["asteroid_ore"] or 0
+    res["raw_tiberium"] = storage["raw_tiberium"] or 0
     
     Terminal.StartRefine(ply, res)
 end
@@ -178,8 +178,8 @@ function Terminal.AddResearch(ply, arg)
     local cost = TK.TD:ResearchCost(ply, idx)
     local info = TK.DB:GetPlayerData(ply, "player_info")
     
-    if cost == 0 || info.exp < cost then return end
-    for k,v in pairs(data.req || {}) do
+    if cost == 0 or info.exp < cost then return end
+    for k,v in pairs(data.req or {}) do
         if upgrades[v] != TK.TD:GetUpgrade(v).maxlvl then
             return 
         end

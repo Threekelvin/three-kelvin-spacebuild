@@ -8,8 +8,8 @@ PLUGIN.Level      = 5
 if SERVER then
     function PLUGIN.Call(ply, arg)
         local svr, cmd = arg[1], arg[2]
-        if !svr || svr == "" then return end
-        if !cmd || cmd == "" then return end
+        if !svr or svr == "" then return end
+        if !cmd or cmd == "" then return end
         
         for k,v in pairs(TK.AM:GetAllPlugins()) do
             if v.Command then

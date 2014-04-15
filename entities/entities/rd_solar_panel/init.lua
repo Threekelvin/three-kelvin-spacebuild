@@ -39,7 +39,7 @@ function ENT:DoThink()
         direct = math.max(direct, ang)
     end
     
-    if direct <= 0.5 || !self:GetEnv():InSun(self) then
+    if direct <= 0.5 or !self:GetEnv():InSun(self) then
         self:TurnOff()
     else
         self:TurnOn()

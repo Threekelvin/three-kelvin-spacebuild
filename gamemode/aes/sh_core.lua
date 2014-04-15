@@ -927,7 +927,7 @@ end
 
 ///--- AES API ---\\\
 local api = {}
-aeslua = aeslua || {}
+aeslua = aeslua or {}
 --
 -- Simple API for encrypting strings.
 --

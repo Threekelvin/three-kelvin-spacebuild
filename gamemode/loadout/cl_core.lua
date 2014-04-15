@@ -1,5 +1,5 @@
 
-TK.LO = TK.LO || {}
+TK.LO = TK.LO or {}
 
 net.Receive("TKLO_Ent", function()
     local ent = net.ReadEntity()

@@ -1,5 +1,5 @@
 
-TK.HUD = TK.HUD || {}
+TK.HUD = TK.HUD or {}
 local Admin = CreateClientConVar("3k_admin_overlay", 1, true, false)
 
 surface.CreateFont("Terminal", {
@@ -76,14 +76,14 @@ end
 hook.Add("HUDPaint", "TKHUD_Admin", function()
     if !IsValid(LocalPlayer()) then return end
     local teamcol = team.GetColor(LocalPlayer():Team())
-    TK.HUD.Colors.border = (#TK.HUD.WARNING > 0) && Color(255, 0, 0, 191 + 64*math.sin( math.pi*RealTime() )) || teamcol
+    TK.HUD.Colors.border = (#TK.HUD.WARNING > 0) and Color(255, 0, 0, 191 + 64*math.sin( math.pi*RealTime() )) or teamcol
     TK.HUD.Colors.bar = Color(teamcol.r, teamcol.g, teamcol.b, 100)
     
     if !Admin:GetBool() then return end
-    if !LocalPlayer():Alive() || !LocalPlayer():IsModerator() then return end
+    if !LocalPlayer():Alive() or !LocalPlayer():IsModerator() then return end
     
     for k,ply in pairs(player.GetAll()) do
-        if ply == LocalPlayer() || !ply:Alive() then continue end
+        if ply == LocalPlayer() or !ply:Alive() then continue end
         local vec = ply:LocalToWorld( ply:OBBCenter() )
         local localvec = LocalPlayer():LocalToWorld( LocalPlayer():OBBCenter() )
         local boxAlpha = math.Clamp( (localvec - vec):LengthSqr()/4000, 45, 300 ) - 45
@@ -102,7 +102,7 @@ hook.Add("HUDPaint", "TKHUD_Admin", function()
 end)
 
 hook.Add("HUDShouldDraw", "TKPH", function(str)
-    if str == "CHudHealth" || str == "CHudBattery" then
+    if str == "CHudHealth" or str == "CHudBattery" then
         return false
     end
 end)

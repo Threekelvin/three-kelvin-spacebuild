@@ -42,7 +42,7 @@ function ENT:Draw()
     
     if self:IsGenerator() then
         Add(OverlayText, "\nStatus: ")
-        Add(OverlayText, self:GetActive() && "On" || "Off")
+        Add(OverlayText, self:GetActive() and "On" or "Off")
         Add(OverlayText, "\nPower Grid: ")
         
         if entdata.powergrid > 0 then
@@ -56,7 +56,7 @@ function ENT:Draw()
     end
     
     Add(OverlayText, "\nSpooled: ")
-    Add(OverlayText, math.Round(entdata.data.spool || 0, 2))
+    Add(OverlayText, math.Round(entdata.data.spool or 0, 2))
     Add(OverlayText, "%\n")
     
     if table.Count(res) > 0 then

@@ -21,7 +21,7 @@ end
 
 function Build.CanAttach(ent, ply, eir)
     if ent == eir then return false end
-    if ent.SLIsGhost || eir.SLIsGhost then return false end
+    if ent.SLIsGhost or eir.SLIsGhost then return false end
     if !eir:CPPICanTool(ply, "none") then return false end
     return true
 end
@@ -29,12 +29,12 @@ end
 function Build.Match(ap1, ap2)
     local t1, t2 = ap1.type, ap2.type
     if table.HasValue(Build.docks, t1) then
-        if t1 == Build.docks[1] && t2 == Build.docks[2] then return true end
-        if t1 == Build.docks[2] && t2 == Build.docks[1] then return true end
-        if t1 == Build.docks[3] && t2 == Build.docks[4] then return true end
-        if t1 == Build.docks[4] && t2 == Build.docks[3] then return true end
-        if t1 == Build.docks[5] && t2 == Build.docks[6] then return true end
-        if t1 == Build.docks[6] && t2 == Build.docks[5] then return true end
+        if t1 == Build.docks[1] and t2 == Build.docks[2] then return true end
+        if t1 == Build.docks[2] and t2 == Build.docks[1] then return true end
+        if t1 == Build.docks[3] and t2 == Build.docks[4] then return true end
+        if t1 == Build.docks[4] and t2 == Build.docks[3] then return true end
+        if t1 == Build.docks[5] and t2 == Build.docks[6] then return true end
+        if t1 == Build.docks[6] and t2 == Build.docks[5] then return true end
         return false
     else
         return t1 == t2
@@ -50,7 +50,7 @@ function Build.CheckPoints(ent, entdata, eir)
         for _,ap2 in pairs(eirdata) do
             if Build.Match(ap1, ap2) then
                 local length = (ent:LocalToWorld(ap1.pos) - eir:LocalToWorld(ap2.pos)):LengthSqr()
-                if !dist || length < dist then
+                if !dist or length < dist then
                     dist = length
                     point1, point2 = ap1, ap2
                 end
@@ -58,7 +58,7 @@ function Build.CheckPoints(ent, entdata, eir)
         end
     end
     
-    if dist && dist < 5625 then
+    if dist and dist < 5625 then
         return point1, point2
     end
 end
@@ -174,12 +174,12 @@ function Build.Tick()
     
     for idx,tbl in pairs(Build.search) do
         local ent, ply = tbl[1], tbl[3]
-        if IsValid(ent) && IsValid(ply) then
+        if IsValid(ent) and IsValid(ply) then
             local entdata = Build.partdata[ent:GetModel()]
             for _,eir in pairs(TK:FindInSphere(ent:LocalToWorld(ent:OBBCenter()), ent:BoundingRadius())) do
                 if Build.CanAttach(ent, ply, eir) then
                     local point1, point2 = Build.CheckPoints(ent, entdata, eir)
-                    if point1 && point2 then
+                    if point1 and point2 then
                         tbl[4] = eir
                         tbl[5] = point1.type
                         Build.snaped[idx] = tbl

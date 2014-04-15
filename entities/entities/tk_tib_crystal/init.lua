@@ -158,7 +158,7 @@ function ENT:SendStatus(ply)
     net.Start("TKTib_S")
         net.WriteInt(self:EntIndex(), 16)
         net.WriteTable(data)
-    net.Send(ply || player.GetAll())
+    net.Send(ply or player.GetAll())
 end
 
 function ENT:SendStage(ply)
@@ -169,7 +169,7 @@ function ENT:SendStage(ply)
     net.Start("TKTib_M")
         net.WriteInt(self:EntIndex(), 16)
         net.WriteTable(data)
-    net.Send(ply || player.GetAll())
+    net.Send(ply or player.GetAll())
 end
 
 hook.Add("PlayerInitialSpawn", "TKTib_SendStatus", function(ply)

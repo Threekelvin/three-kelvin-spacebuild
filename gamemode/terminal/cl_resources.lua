@@ -366,7 +366,7 @@ function PANEL:Think(force)
     end
     
     for k,v in pairs(Storage) do
-        if v > 0 && TK.TD:AcceptResource(k) then
+        if v > 0 and TK.TD:AcceptResource(k) then
             if !self.storage.list[k] then
                 local panel = MakePanel(k, v, function(panel)
                     if !IsValid(self.Terminal) then return end
@@ -412,7 +412,7 @@ function PANEL:Think(force)
         end
         
         for k,v in pairs(Resources) do
-            if v.cur > 0 && TK.TD:AcceptResource(k, "node") then
+            if v.cur > 0 and TK.TD:AcceptResource(k, "node") then
                 if !self.node.list[k] then
                     local panel = MakePanel(k, v.cur, function(panel)
                         if !IsValid(self.Terminal) then return end
