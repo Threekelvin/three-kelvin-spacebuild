@@ -5,9 +5,9 @@ ENT.SLIsGhost = true
 
 function ENT:Initialize()
     self:SetModel(self.Bullet.Model)
-    self:PhysicsInit(SOLID_OBB) 	
-	self:SetMoveType(MOVETYPE_NONE)
-	self:SetSolid(SOLID_NONE)
+    self:PhysicsInit(SOLID_OBB)     
+    self:SetMoveType(MOVETYPE_NONE)
+    self:SetSolid(SOLID_NONE)
     
     self:SetTrigger(true)
     self:SetNotSolid(true)
@@ -30,9 +30,9 @@ function ENT:Initialize()
     end
     
     if self.Bullet.Trail then
-		local trail = self.Bullet.Trail
-		util.SpriteTrail(self, 0, trail.Color, false, trail.StartSize, trail.EndSize, trail.Length, 1 / (trail.StartSize + trail.EndSize) * 0.5, trail.Texture)
-	end
+        local trail = self.Bullet.Trail
+        util.SpriteTrail(self, 0, trail.Color, false, trail.StartSize, trail.EndSize, trail.Length, 1 / (trail.StartSize + trail.EndSize) * 0.5, trail.Texture)
+    end
 end
 
 function ENT:Detonate()

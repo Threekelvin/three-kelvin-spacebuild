@@ -6,18 +6,14 @@ usermessage.Hook("TKOSSync", function(msg)
     TK.OSSync = math.ceil(servertime - os.time())
 end)
 
-hook.Add("Initialize", "SWDownload", function()
-    function steamworks.Download(workshopPreviewID, bool, unknown, callback)
-        if callback then callback() end
-    end
-    
+hook.Add("Initialize", "ClientInit", function()    
     list.Set("DesktopWindows", "PlayerEditor", {
         title        = "Player Model",
-        icon        = "icon64/playermodel.png",
+        icon         = "icon64/playermodel.png",
         width        = 960,
-        height        = 700,
+        height       = 700,
         onewindow    = true,
-        init        = function( icon, window )
+        init         = function( icon, window )
 
             local mdl = window:Add( "DModelPanel" )
             mdl:Dock( FILL )

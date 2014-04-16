@@ -138,7 +138,7 @@ function GM:PlayerSpawn(ply)
 end
 ///--- ---\\\
 
-hook.Add("Initialize", "PAC_Fix", function()
+hook.Add("Initialize", "ServerInit", function()
     timer.Create("pac_playermodels", 0.5, 0, function()
         for _,ply in pairs(player.GetAll()) do
             gamemode.Call("PlayerSetModel", ply)
@@ -181,7 +181,7 @@ hook.Add("Initialize", "PAC_Fix", function()
             if ( VTable and VTable.KeyValues ) then
                 for k, v in pairs( VTable.KeyValues ) do
                     Ent:SetKeyValue( k, v )
-                end		
+                end        
             end
                 
             Ent:SetAngles( Ang )
@@ -192,18 +192,18 @@ hook.Add("Initialize", "PAC_Fix", function()
             Ent:Spawn()
             Ent:Activate()
             
-            Ent.VehicleName 	= VName
-            Ent.VehicleTable 	= VTable
+            Ent.VehicleName     = VName
+            Ent.VehicleTable     = VTable
             
             -- We need to override the class in the case of the Jeep, because it 
             -- actually uses a different class than is reported by GetClass
-            Ent.ClassOverride 	= Class
+            Ent.ClassOverride     = Class
 
             if ( IsValid( Player ) ) then
                 gamemode.Call( "PlayerSpawnedVehicle", Player, Ent )
             end
 
-            return Ent	
+            return Ent    
             
         end
         

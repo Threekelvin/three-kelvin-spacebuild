@@ -7,27 +7,26 @@ local WorldToLocal = WorldToLocal
 local LocalToWorld = LocalToWorld
 local LerpAngle = LerpAngle
 
+local KeyTracker = {
+
+}
+
+local Inputs = {
+    [IN_RELOAD]    = "Activate",
+    [IN_FORWARD]   = "Forward",
+    [IN_BACK]      = "Backward",
+    [IN_MOVELEFT]  = "Left",
+    [IN_MOVERIGHT] = "Right",
+    [IN_JUMP]      = "Up",
+    [IN_SPEED]     = "Down",
+    [IN_WALK]      = "Mode",
+}
+
 local function math_angnorm(ang)
     return Angle(
         math.NormalizeAngle(ang.p),
         math.NormalizeAngle(ang.y),
         math.NormalizeAngle(ang.r)
-    )
-end
- 
-local function math_angclamp(ang, min, max)
-    return Angle(
-        math.Clamp(ang.p, min, max),
-        math.Clamp(ang.y, min, max),
-        math.Clamp(ang.r, min, max)
-    )
-end
-
-local function math_vecclamp(vec, min, max)
-    return Vector(
-        math.Clamp(vec.x, min, max),
-        math.Clamp(vec.y, min, max),
-        math.Clamp(vec.z, min, max)
     )
 end
 
@@ -97,18 +96,18 @@ function ENT:Initialize()
     self.BaseClass.Initialize(self)
     self.data = {}
     self.Eff = 0
-    self.Aim = false
-    self.Thrust = Vector(0, 0, 0)
-    self.AngThrust = Angle(0, 0, 0)
+    self.Aim = 0
+    self.VecInput = Vector(0, 0, 0)
+    self.AngInput = Angle(0, 0, 0)
     self.AimAngle = Angle(0, 0, 0)
-    self.AimVector = Vector(0 ,0, 0)
+    self.VecThrust = Vector(0, 0, 0)
+    self.AngThrust = Angle(0, 0, 0)
     self.ShouldLevel = false
     self.MaxThrust = 150
     self.Ents = {}
+    self.Pod = nil
     
     self:SetNWBool("Generator", true)
-    
-    self.Inputs = WireLib.CreateInputs(self, {"Activate", "Thrust [VECTOR]", "AngThrust [ANGLE]", "AimAngle [ANGLE]", "AimVector [VECTOR]", "Level"})
 end
 
 function ENT:OnRemove()
@@ -120,26 +119,37 @@ function ENT:OnRemove()
     end
 end
 
-function ENT:TriggerInput(iname, value)
+function ENT:TriggerKey(iname, value)
     if iname == "Activate" then
-        if tobool(value) then
-            self:TurnOn()
-        else
+        if value != 1 then return end
+        if self:GetActive() then
             self:TurnOff()
+        else
+            self:TurnOn()
         end
-    elseif iname == "Thrust" then
-        self.Thrust = math_vecclamp(value, -1, 1)
-    elseif iname == "AngThrust" then
-        self.AngThrust = math_angclamp(value, -1, 1)
-        self.Aim = 0
-    elseif iname == "AimAngle" then
-        self.AimAngle = math_angnorm(value)
-        self.Aim = 1
-    elseif inmage == "AimVector" then
-        self.AimVector = value
-        self.Aim = 2
-    elseif iname == "Level" then
-        self.ShouldLevel = tobool(value)
+    elseif iname == "Forward" then
+        self.VecInput.x = self.VecInput.x + (value == 1 and 1 or -1)
+    elseif iname == "Backward" then
+        self.VecInput.x = self.VecInput.x + (value == 1 and -1 or 1)
+    elseif iname == "Left" then
+        if self.Aim == 1 then
+            self.AngInput.r = self.AngInput.r + (value == 1 and -1 or 1)
+        else
+            self.AngInput.y = self.AngInput.y + (value == 1 and 1 or -1)
+        end
+    elseif iname == "Right" then
+        if self.Aim == 1 then
+            self.AngInput.r = self.AngInput.r + (value == 1 and 1 or -1)
+        else
+            self.AngInput.y = self.AngInput.y + (value == 1 and -1 or 1)
+        end
+    elseif iname == "Up" then
+        self.VecInput.z = self.VecInput.z + (value == 1 and 1 or -1)
+    elseif iname == "Down" then
+        self.VecInput.z = self.VecInput.z + (value == 1 and -1 or 1)
+    elseif iname == "Mode" then
+        if value != 1 then return end
+        self.Aim = self.Aim == 0 and 1 or 0
     end
 end
 
@@ -207,7 +217,7 @@ function ENT:DoThink(eff)
     end
 
     self.Ents = conents
-    self.data.power = math.floor(table.Count(self.Ents) * -5)
+    self.data.power = math.floor(table.Count(self.Ents) * -2)
     if !self:Work() then return end
 end
 
@@ -217,10 +227,22 @@ function ENT:Think()
     local pphys = parent:GetPhysicsObject()
     if !IsValid(pphys) then return end
     
-    local pos, ang = pphys:GetPos(), math_angnorm(pphys:GetAngles())
-    local propcount = table.Count(self.Ents)
+    if IsValid(self.Pod) then
+        self.Driver = self.Pod:GetDriver()
+        if IsValid(self.Driver) then
+            local s_ang, d_ang = self:GetAngles(), self.Driver:EyeAngles()
+            local ang_diff = d_ang - s_ang
+            self.AimAngle.p = (ang_diff.p > 5 or ang_diff.p < -5) and d_ang.p or s_ang.p
+            self.AimAngle.y = (ang_diff.y > 5 or ang_diff.y < -5) and d_ang.y or s_ang.y
+            self.AimAngle.r = (ang_diff.r > 5 or ang_diff.r < -5) and d_ang.r or s_ang.r
+        end
+    end
+
+    self.VecThrust = self.VecInput * 10
+    self.AngThrust = self.AngInput * 15
     
-    local vec = Vector(self.Thrust.x, self.Thrust.y, self.Thrust.z)
+    local pos, ang = pphys:GetPos(), math_angnorm(pphys:GetAngles())
+    local vec = Vector(self.VecThrust.x, self.VecThrust.y, self.VecThrust.z)
     local lvec,lang = LocalToWorld(vec, Angle(0,0,0), pos, ang)
     local Thrust = (lvec - pos) * self.MaxThrust * self.Eff
     
@@ -233,13 +255,8 @@ function ENT:Think()
     end
     
     local Torque
-    if self.Aim == 2 then
-        local lvec,_ = LocalToWorld(self.AimVector, Angle(0,0,0), pos, ang)
-        local lang = LerpAngle(0.01, ang, lvec:Angle())
-        local tang = self.ShouldLevel and Angle(0, lang.y, 0) or lang
-        Torque = math_rotationvector(tang, ang)
-    elseif self.Aim == 1 then
-        local lang = LerpAngle(0.01, ang, self.AimAngle)
+    if self.Aim == 1 then
+        local lang = self.AimAngle + self.AngThrust
         local tang = self.ShouldLevel and Angle(0, lang.y, 0) or lang
         Torque = math_rotationvector(tang, ang)
     else
@@ -279,3 +296,20 @@ end
 function ENT:UpdateValues()
 
 end
+
+hook.Add("KeyPress", "tk_ship_engine_keypress", function(ply, key)
+    local pod = ply:GetVehicle()
+    if !IsValid(pod) or !IsValid(pod.Engine) then return end
+    if !IsValid(pod.Engine.Pod) or pod.Engine.Pod != pod then return end
+    KeyTracker[ply] = KeyTracker[ply] or {}
+    KeyTracker[ply][key] = pod.Engine, key
+    
+    pod.Engine:TriggerKey(Inputs[key], 1)
+end)
+
+hook.Add("KeyRelease", "tk_ship_engine_keyrelease", function(ply, key)
+    if !KeyTracker[ply] then return end
+    if !IsValid(KeyTracker[ply][key]) then return end
+    KeyTracker[ply][key]:TriggerKey(Inputs[key], 0)
+    KeyTracker[ply][key] = nil
+end)

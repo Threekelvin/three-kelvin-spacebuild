@@ -110,15 +110,15 @@ function Build.HUDPaint()
 end
 
 hook.Add("PopulateMenuBar", "TK_SBEPBuild", function(menubar)
-	local m = menubar:AddOrGetMenu("SBEP Build Mode")
-	
-	m:AddCVar("Enable Build Mode", concmd.."enabled", "1", "0")
-	
-	m:AddSpacer()
-	
-	m:AddCVar("Skin Match", concmd.."skinmatch", "1", "0")
-	m:AddCVar("Show Sprites", concmd.."sprites", "1", "0")
-	m:AddCVar("Show Orientation", concmd.."orientation", "1", "0")
+    local m = menubar:AddOrGetMenu("SBEP Build Mode")
+    
+    m:AddCVar("Enable Build Mode", concmd.."enabled", "1", "0")
+    
+    m:AddSpacer()
+    
+    m:AddCVar("Skin Match", concmd.."skinmatch", "1", "0")
+    m:AddCVar("Show Sprites", concmd.."sprites", "1", "0")
+    m:AddCVar("Show Orientation", concmd.."orientation", "1", "0")
 end)
 
 hook.Add("PopulateToolMenu", "TK_SBEPBuild", function()

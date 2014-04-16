@@ -271,11 +271,11 @@ local function RegisterAtmospheres()
                 table.insert(MapData, {cat = "star", x = pos.x, y = pos.y, z = pos.z, data = data})
             end
         end
-		
+        
         if !file.Exists("tksb", "DATA") then
-			file.CreateDir("tksb")
-			file.CreateDir("tksb/atmospheres")
-		end
+            file.CreateDir("tksb")
+            file.CreateDir("tksb/atmospheres")
+        end
         file.Write("tksb/atmospheres/"..game.GetMap()..".txt", util.TableToKeyValues(MapData))
     end
     print("-------------------------------")

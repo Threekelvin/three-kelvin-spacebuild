@@ -192,14 +192,14 @@ gf.log = {}
 -- add two polynoms (its simply xor)
 --
 function gf.add(operand1, operand2) 
-	return bit.bxor(operand1,operand2)
+    return bit.bxor(operand1,operand2)
 end
 
 -- 
 -- subtract two polynoms (same as addition)
 --
 function gf.sub(operand1, operand2) 
-	return bit.bxor(operand1,operand2)
+    return bit.bxor(operand1,operand2)
 end
 
 --
@@ -207,13 +207,13 @@ end
 -- a^(-1) = g^(order - log(a))
 --
 function gf.invert(operand)
-	-- special case for 1 
-	if (operand == 1) then
-		return 1
-	end
-	-- normal invert
-	local exponent = gf.ord - gf.log[operand]
-	return gf.exp[exponent]
+    -- special case for 1 
+    if (operand == 1) then
+        return 1
+    end
+    -- normal invert
+    local exponent = gf.ord - gf.log[operand]
+    return gf.exp[exponent]
 end
 
 --
@@ -224,12 +224,12 @@ function gf.mul(operand1, operand2)
     if (operand1 == 0 or operand2 == 0) then
         return 0
     end
-	
+    
     local exponent = gf.log[operand1] + gf.log[operand2]
-	if (exponent >= gf.ord) then
-		exponent = exponent - gf.ord
-	end
-	return  gf.exp[exponent]
+    if (exponent >= gf.ord) then
+        exponent = exponent - gf.ord
+    end
+    return  gf.exp[exponent]
 end
 
 --
@@ -241,49 +241,49 @@ function gf.div(operand1, operand2)
         return 0
     end
     -- TODO: exception if operand2 == 0
-	local exponent = gf.log[operand1] - gf.log[operand2]
-	if (exponent < 0) then
-		exponent = exponent + gf.ord
-	end
-	return gf.exp[exponent]
+    local exponent = gf.log[operand1] - gf.log[operand2]
+    if (exponent < 0) then
+        exponent = exponent + gf.ord
+    end
+    return gf.exp[exponent]
 end
 
 --
 -- print logarithmic table
 --
 function gf.printLog()
-	for i = 1, gf.n do
-		print("log(", i-1, ")=", gf.log[i-1])
-	end
+    for i = 1, gf.n do
+        print("log(", i-1, ")=", gf.log[i-1])
+    end
 end
 
 --
 -- print exponentiation table
 --
 function gf.printExp()
-	for i = 1, gf.n do
-		print("exp(", i-1, ")=", gf.exp[i-1])
-	end
+    for i = 1, gf.n do
+        print("exp(", i-1, ")=", gf.exp[i-1])
+    end
 end
 
 --
 -- calculate logarithmic and exponentiation table
 --
 function gf.initMulTable()
-	local a = 1
+    local a = 1
 
-	for i = 0,gf.ord-1 do
-    	gf.exp[i] = a
-		gf.log[a] = i
+    for i = 0,gf.ord-1 do
+        gf.exp[i] = a
+        gf.log[a] = i
 
-		-- multiply with generator x+1 -> left shift + 1	
-		a = bit.bxor(bit.lshift(a, 1), a)
+        -- multiply with generator x+1 -> left shift + 1    
+        a = bit.bxor(bit.lshift(a, 1), a)
 
-		-- if a gets larger than order, reduce modulo irreducible polynom
-		if a > gf.ord then
-			a = gf.sub(a, gf.irrPolynom)
-		end
-	end
+        -- if a gets larger than order, reduce modulo irreducible polynom
+        if a > gf.ord then
+            a = gf.sub(a, gf.irrPolynom)
+        end
+    end
 end
 
 gf.initMulTable()
@@ -800,7 +800,7 @@ function ciphermode.encryptString(key, data, modeFunction)
     for i = 1, #data/16 do
         local offset = (i-1)*16 + 1
         local byteData = {string.byte(data,offset,offset +15)}
-		
+        
         modeFunction(keySched, byteData, iv)
 
         buffer.addString(encryptedData, string.char(unpack(byteData)))    
@@ -816,7 +816,7 @@ end
 
 -- Electronic code book mode encrypt function
 function ciphermode.encryptECB(keySched, byteData, iv) 
-	aes.encrypt(keySched, byteData, 1, byteData, 1)
+    aes.encrypt(keySched, byteData, 1, byteData, 1)
 end
 
 -- Cipher block chaining mode encrypt function
@@ -857,9 +857,9 @@ function ciphermode.decryptString(key, data, modeFunction)
     
     local keySched
     if (modeFunction == ciphermode.decryptOFB or modeFunction == ciphermode.decryptCFB) then
-    	keySched = aes.expandEncryptionKey(key)
-   	else
-   		keySched = aes.expandDecryptionKey(key)
+        keySched = aes.expandEncryptionKey(key)
+       else
+           keySched = aes.expandDecryptionKey(key)
     end
     
     local decryptedData = buffer.new()
@@ -868,7 +868,7 @@ function ciphermode.decryptString(key, data, modeFunction)
         local offset = (i-1)*16 + 1
         local byteData = {string.byte(data,offset,offset +15)}
 
-		iv = modeFunction(keySched, byteData, iv)
+        iv = modeFunction(keySched, byteData, iv)
 
         buffer.addString(decryptedData, string.char(unpack(byteData)))
     end
@@ -891,7 +891,7 @@ end
 
 -- Cipher block chaining mode decrypt function
 function ciphermode.decryptCBC(keySched, byteData, iv) 
-	local nextIV = {}
+    local nextIV = {}
     for j = 1,16 do
         nextIV[j] = byteData[j]
     end
@@ -899,7 +899,7 @@ function ciphermode.decryptCBC(keySched, byteData, iv)
     aes.decrypt(keySched, byteData, 1, byteData, 1)    
     util.xorIV(byteData, iv)
 
-	return nextIV
+    return nextIV
 end
 
 -- Output feedback mode decrypt function
@@ -975,9 +975,9 @@ end
 -- mode and keyLength must be the same for encryption and decryption.
 --
 function aeslua.encrypt(password, data, keyLength, mode)
-	assert(password ~= nil, "Empty password.")
-	assert(password ~= nil, "Empty data.")
-	
+    assert(password ~= nil, "Empty password.")
+    assert(password ~= nil, "Empty data.")
+    
     local mode = mode or aeslua.CBCMODE
     local keyLength = keyLength or aeslua.AES128
 

@@ -4,6 +4,7 @@ GM.Author         = "Ghost400"
 GM.Email         = "N/A"
 GM.Website         = ""
 
+jit.on()
 DeriveGamemode("sandbox")
 _R = debug.getregistry()
 

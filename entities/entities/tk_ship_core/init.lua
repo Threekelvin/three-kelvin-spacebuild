@@ -195,7 +195,7 @@ function ENT:DoThink(eff)
         self:UpdateOutputs()
     end
     
-    local rate = 5 * self.hull_size
+    local rate = 2 * self.hull_size
     self.data.power = -rate
     
     if !self:Work() then return end

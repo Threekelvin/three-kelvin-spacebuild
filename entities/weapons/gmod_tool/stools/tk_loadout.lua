@@ -121,7 +121,7 @@ if CLIENT then
             local loadout = TK.DB:GetPlayerData("player_loadout")
             
             for k,itemid in pairs(loadout) do
-				if string.match(k, "[%w]+$") != "item" or itemid == 0 then continue end
+                if string.match(k, "[%w]+$") != "item" or itemid == 0 then continue end
                 
                 local item = TK.TD:GetItem(itemid)
                 local icon = vgui.Create("SpawnIcon")
