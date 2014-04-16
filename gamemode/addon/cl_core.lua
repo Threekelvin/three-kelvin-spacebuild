@@ -2,7 +2,7 @@ local Show = CreateClientConVar("tk_aoc_show", 1, true, false)
 local Version = CreateClientConVar("tk_aoc_version", 0, true, false)
 
 local AOC = {}
-AOC.ListVersion = 1 //change this to make it popup for everyone
+AOC.ListVersion = 2 //change this to make it popup for everyone
 
 AOC.Tutorial = {
     ["SVN Tutorial"]                        = "http://facepunch.com/showthread.php?t=688324"  
@@ -39,18 +39,6 @@ end
 
 function AOC:IsLegacyMounted(id)
     return AOC.MountedLegacy[id] or false
-end
-
-function AOC:IsWorkshopInstalled(id)
-    return steamworks.IsSubscribed(id)
-end
-
-function AOC:IsWorkshopMounted(id)
-    for k,v in pairs(engine.GetAddons()) do
-        if v.wsid != id then continue end
-        return true
-    end
-    return false
 end
 
 function AOC:BuildMenu()
@@ -125,20 +113,6 @@ function AOC:BuildMenu()
         line.OnSelect = function()
             copy.txt = "Copy Selected Link"
         end
-    end
-    
-    for k,v in pairs(self.Workshop) do
-        local mounted = self:IsWorkshopMounted(k)
-        local line = List:AddLine(k, "Workshop", tostring(self:IsWorkshopInstalled(k)), tostring(mounted), v)
-        if !mounted then AutoHide = 1 end
-        line.OnSelect = function()
-            copy.txt = "Open Workshop Page"
-        end
-        
-        steamworks.FileInfo(k, function(data) 
-            if !data then return end
-            line:SetValue(1, data.title or k)
-        end)
     end
     
     RunConsoleCommand("tk_aoc_show", AutoHide)
