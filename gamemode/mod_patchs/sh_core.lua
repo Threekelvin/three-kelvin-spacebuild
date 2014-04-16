@@ -17,6 +17,6 @@ end
 ///--- Audio Emotes ---\\\
 AE = AE or {}
 function AE.HasPermission(ply) 
-    return ply:IsVip() end
+    return ply:IsVip()
 end
 ///--- ---\\\

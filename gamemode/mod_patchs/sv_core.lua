@@ -22,7 +22,7 @@ hook.Add("Initialize", "Pac_Fix", function()
             gamemode.Call("PlayerSetModel", ply)
         end
     end)
-end
+end)
 
 ///--- SBEP ---\\\
 hook.Add("Initialize", "SBEP_Fix", function()
@@ -49,7 +49,7 @@ hook.Add("Initialize", "SBEP_Fix", function()
             Ent:SetPos( Pos )
 
             DoPropSpawnedEffect( Ent )
-                
+            
             Ent:Spawn()
             Ent:Activate()
             
@@ -110,4 +110,4 @@ hook.Add("Initialize", "SBEP_Fix", function()
         end
     end
     ///--- ---\\\
-end
+end)
