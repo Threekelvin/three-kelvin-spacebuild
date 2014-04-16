@@ -1,8 +1,8 @@
 
 TOOL = nil
 
-for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
-    local class = string.match(v, "[%w_]+")
+for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
+    local class = string.match(t_file, "[%w_]+")
     TOOL            = ToolObj:Create()
     TOOL.Name       = class
     TOOL.Mode       = class
@@ -133,8 +133,8 @@ for k,v in pairs(file.Find("rd_tools/*.lua", "LUA")) do
         end
     end
     
-    AddCSLuaFile("rd_tools/"..v)
-    include("rd_tools/"..v)
+    AddCSLuaFile("rd_tools/"..t_file)
+    include("rd_tools/"..t_file)
     
     if SERVER then 
         TK.RD.EntityData[class] = {}

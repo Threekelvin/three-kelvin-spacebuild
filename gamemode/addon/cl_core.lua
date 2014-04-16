@@ -11,14 +11,6 @@ AOC.Legacy = {
     ["SpaceBuild Enhancement Project"]      = "https://github.com/SnakeSVx/sbep/trunk/",
     ["TKMP"]                                = "http://3k-model-pack.googlecode.com/svn/trunk/",
 }
-AOC.Workshop = {
-    ["160250458"]                            = "160250458",        //Wiremod
-    ["163806212"]                            = "163806212",        //AdvDupe
-    ["173482196"]                            = "173482196",        //SProps Workshop Edition
-    ["104694154"]                           = "104694154",        //Mane Six
-    ["106904944"]                           = "106904944",        //The Other Ponies
-    ["107155115"]                           = "107155115",        //Pony Player Models
-}
 AOC.MountedLegacy = {}
 
 function AOC:GetLegacyAddons()

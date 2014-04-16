@@ -3,34 +3,6 @@ TK.Settings = TK.Settings or {}
 
 TK.Settings.Term = {Pos = Vector(0,0,0), Size = 0}
 
-TK.Settings.PlyMdls = {
-    ["models/applejack_player.mdl"] =           {rank = 2},
-    ["models/applengineer_player.mdl"] =        {rank = 2},
-    ["models/bonbon_player.mdl"] =              {rank = 2},
-    ["models/celestia.mdl"] =                   {rank = 2},
-    ["models/colgate_player.mdl"] =             {rank = 2},
-    ["models/daringdoo_player.mdl"] =           {rank = 2},
-    ["models/derpyhooves_player.mdl"] =         {rank = 2},
-    ["models/derpyhooves_dress_player.mdl"] =   {rank = 2},
-    ["models/fluttershy_player.mdl"] =          {rank = 2},
-    ["models/googlechrome_player.mdl"] =        {rank = 2},
-    ["models/luna_player.mdl"] =                {sid = {"STEAM_0:1:21860684"}},
-    ["models/lyra_player.mdl"] =                {rank = 2},
-    ["models/pinkiepie_player.mdl"] =           {sid = {"STEAM_0:0:4832636"}},
-    ["models/rainbowdash_player.mdl"] =         {rank = 2},
-    ["models/rainbowscout_player.mdl"] =        {rank = 2},
-    ["models/raindrops_player.mdl"] =           {rank = 2},
-    ["models/rarity_player.mdl"] =              {rank = 2},
-    ["models/daringdoo_player.mdl"] =           {rank = 2},
-    ["models/trixie_player.mdl"] =              {rank = 2},
-    ["models/trixienodress_player.mdl"] =       {rank = 2},
-    ["models/twilightsparkle_player.mdl"] =     {rank = 2},
-    ["models/vinyl_goggles_player.mdl"] =       {rank = 2},
-    ["models/vinyl_player.mdl"] =               {rank = 2},
-    ["models/player/engineer_suit.mdl"] =       {rank = 2},
-    ["models/player/security_suit.mdl"] =       {rank = 2}
-}
-
 TK.Settings.Tiberium = {
     [1] = {
         limit = 0,

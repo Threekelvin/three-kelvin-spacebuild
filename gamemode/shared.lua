@@ -113,28 +113,6 @@ function string.random(Length, CharSet)
 end
 //--- ---\\
 
-function TK:CanUsePlayerModel(ply, mdl)
-    local modelname = player_manager.TranslatePlayerModel(mdl)
-    
-    if TK.Settings.PlyMdls[modelname] then
-        local canuse = !TK.Settings.PlyMdls[modelname].sid and true or false
-        
-        for k,v in pairs(TK.Settings.PlyMdls[modelname].sid or {}) do
-            if ply:SteamID() != v then continue end
-            canuse = true
-            break
-        end
-        
-        if ply:GetRank() < (TK.Settings.PlyMdls[modelname].rank or 1) then
-            canuse = false
-        end
-        
-        return canuse
-    end
-    
-    return true
-end
-
 local function IsValidFolder(dir)
     if dir == "." or dir == ".." then return false end
     if string.GetExtensionFromFilename(dir) then return false end
