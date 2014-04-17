@@ -3,13 +3,14 @@ AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
 local ModelList = {
-    [1] = "models/ce_ls3additional/asteroids/asteroid_200.mdl",
-    [2] = "models/ce_ls3additional/asteroids/asteroid_250.mdl",
-    [3] = "models/ce_ls3additional/asteroids/asteroid_300.mdl",
-    [4] = "models/ce_ls3additional/asteroids/asteroid_350.mdl",
-    [5] = "models/ce_ls3additional/asteroids/asteroid_400.mdl",
-    [6] = "models/ce_ls3additional/asteroids/asteroid_450.mdl",
-    [7] = "models/ce_ls3additional/asteroids/asteroid_500.mdl"
+    [1] = "models/mandrac/asteroid/pyroxveld1.mdl",
+    [2] = "models/mandrac/asteroid/pyroxveld2.mdl",
+    [3] = "models/mandrac/asteroid/pyroxveld3.mdl",
+    [4] = "models/mandrac/asteroid/pyroxveld4.mdl",
+    [5] = "models/mandrac/asteroid/rock2.mdl",
+    [5] = "models/mandrac/asteroid/rock3.mdl",
+    [5] = "models/mandrac/asteroid/rock4.mdl",
+    [5] = "models/mandrac/asteroid/rock5.mdl",
 }
 
 function ENT:GetField()
