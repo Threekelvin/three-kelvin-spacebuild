@@ -25,7 +25,7 @@ function getString( $steamid )
 }
 
 $x_size = 200;
-$y_size = 140;
+$y_size = 120;
 $im = imagecreatetruecolor($x_size, $y_size);
 $black = imagecolorallocate($im, 0, 0, 0);
 $grey = imagecolorallocate($im, 127, 127, 127);
