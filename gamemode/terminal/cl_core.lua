@@ -38,19 +38,11 @@ local Pages = {
         function() 
             return true 
         end,
-        "Refinery",
-        "tk_refinery",
-        "icon16/arrow_refresh.png"
-    },
-    [5] = {
-        function() 
-            return true 
-        end,
         "Research",
         "tk_research",
         "icon16/wrench.png"
     },
-    [6] = {
+    [5] = {
         function() 
             return true 
         end,
@@ -58,7 +50,7 @@ local Pages = {
         "tk_loadout",
         "icon16/briefcase.png"
     },
-    [7] = {
+    [6] = {
         function() 
             return true 
         end,
@@ -66,7 +58,7 @@ local Pages = {
         "tk_market",
         "icon16/coins.png"
     },
-    [8] = {
+    [7] = {
         function()
             return true
         end,
@@ -95,10 +87,9 @@ end)
 hook.Add("Initialize", "TKTerminal", function()
     function GAMEMODE:TKOpenTerminal()
     end
-    
-    Terminal:Create()
-    
+
     timer.Simple(0, function()
+        Terminal:Create()
         net.Start("3k_term_key")
             net.WriteTable(BuildTable(encrypt_key))
             net.WriteTable(BuildTable(decrypt_key))
@@ -150,6 +141,7 @@ function Terminal:Create()
 
         net.Start("3k_term_request")
             net.WriteTable(BuildTable(key))
+            net.WriteEntity(Terminal.Ent)
             net.WriteTable(BuildTable(querry))
         net.SendToServer()
     end
@@ -168,12 +160,12 @@ function Terminal:Create()
     propertysheet:SetPos(5, 30)
     propertysheet:SetSize(790, 565)
     
-    for k,v in ipairs(Pages) do
-        if v[1]() then
-            local page = vgui.Create(v[3])
+    for _,info in ipairs(Pages) do
+        if info[1]() then
+            local page = vgui.Create(info[3])
             page.Terminal = frame
             page:SetSize(780, 535)
-            propertysheet:AddSheet(v[2], page, v[4], false, false)
+            propertysheet:AddSheet(info[2], page, info[4], false, false)
         end
     end
     
@@ -182,7 +174,7 @@ function Terminal:Create()
     end
 end
 
-function Terminal:Open()
+function Terminal:Open(ent)
     if !Terminal.Menu then
         Terminal:Create()
     else
@@ -205,11 +197,14 @@ function Terminal:Open()
         Terminal.Menu:SetVisible(true)
         Terminal.Menu.startTime = SysTime()
     end
+    
+    Terminal.Ent = ent
     gamemode.Call("TKOpenTerminal")
 end
 
 usermessage.Hook("3k_terminal_open", function(msg)
-    Terminal:Open()
+    local ent = msg:ReadEntity()
+    Terminal:Open(ent)
 end)
 
 hook.Add("TKDBPlayerData", "UpdateTerm", function(dbtable, idx, data)

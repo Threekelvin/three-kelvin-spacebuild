@@ -2,6 +2,8 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
+umsg.PoolString("3k_node_at")
+
 function ENT:Initialize()
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetMoveType(MOVETYPE_VPHYSICS)

@@ -2,6 +2,8 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
+umsg.PoolString("3k_terminal_open")
+
 function ENT:Initialize()
     self.Entity:SetModel("models/Tiberium/factory_panel.mdl")
     self.Entity:PhysicsInit(SOLID_VPHYSICS)
@@ -19,6 +21,8 @@ end
 function ENT:Use(act, cal)
     if !IsValid(act) or !act:IsPlayer() then return end
     if act:IsAFK() then return end
+    
     umsg.Start("3k_terminal_open", act)
+        umsg.Entity(self)
     umsg.End()
 end

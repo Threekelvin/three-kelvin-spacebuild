@@ -53,7 +53,7 @@ function(com, arg)
     local List = {}
     for k,v in pairs(TK.AM:GetAllPlugins()) do
         if v.Command then
-            if string.find(string.lower(v.Command), string.Trim(string.lower(arg))) then
+            if string.find(string.lower(v.Command), string.Trim(string.lower(arg)), 0, true) then
                 table.insert(List, com.." "..v.Command)
             end
         end
@@ -73,7 +73,7 @@ hook.Add("OnChatTab", "TKOnChatTab", function(text)
 
     for k,v in pairs(player.GetAll()) do
         local name = v:Name()
-        if string.len(LastWord) < string.len(name) and string.find(string.lower(name), string.lower(LastWord)) == 1  then
+        if string.len(LastWord) < string.len(name) and string.find(string.lower(name), string.lower(LastWord), 0, true) == 1  then
             text = string.sub(text, 1, (string.len(LastWord) * -1) - 1)
             text = text .. name
             return text

@@ -140,7 +140,6 @@ util.AddNetworkString("player_loadout")
 util.AddNetworkString("player_inventory")
 util.AddNetworkString("terminal_setting")
 util.AddNetworkString("terminal_storage")
-util.AddNetworkString("terminal_refinery")
 util.AddNetworkString("terminal_upgrades")
 
 function TK.DB:GetPlayerData(ply, dbtable)
@@ -248,7 +247,6 @@ function MySQL.LoadPlayerData(ply, steamid, ip, uid)
             MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("player_inventory", {steamid = steamid, inventory = {1, 2, 3, 4}}))
             MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_setting", {steamid = steamid, captcha = string.random(5)}))
             MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_storage", {steamid = steamid}))
-            MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_refinery", {steamid = steamid}))
             MySQL.MakePriorityQuery(TK.DB:FormatInsertQuery("terminal_upgrades", {steamid = steamid}))
             
             ply:ConCommand("playx_enabled 0\n")
@@ -288,12 +286,6 @@ function MySQL.LoadPlayerData(ply, steamid, ip, uid)
         MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("terminal_storage", {}, {"steamid = %s", steamid}), function(data, ply, uid)
             data[1].steamid = nil
             TK.DB:SetPlayerData(ply, "terminal_storage", data[1])
-            ply.loaded = ply.loaded + 1
-        end, ply, uid)
-        
-        MySQL.MakePriorityQuery(TK.DB:FormatSelectQuery("terminal_refinery", {}, {"steamid = %s", steamid}), function(data, ply, uid)
-            data[1].steamid = nil
-            TK.DB:SetPlayerData(ply, "terminal_refinery", data[1])
             ply.loaded = ply.loaded + 1
         end, ply, uid)
         

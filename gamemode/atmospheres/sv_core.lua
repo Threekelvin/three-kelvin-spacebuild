@@ -5,7 +5,6 @@ local Suns = {}
 local Stars = {}
 local Ships = {}
 local Planets = {}
-local MapData
 
 ///--- Flags ---\\\
 ATMOSPHERE_SUNBURN = 2
@@ -45,6 +44,10 @@ end
 
 function Space:IsSpace()
     return false
+end
+
+function Space:GetName()
+    return self.atmosphere.name
 end
 
 function Space:GetRadius()
@@ -135,12 +138,6 @@ function Space:IsValid()
 end
 ///---   ---\\\
 
-local function LoadMapData()
-    local map = game.GetMap()
-    if !file.Exists("tksb/atmospheres/"..map..".txt", "DATA") then return end
-    MapData = util.KeyValuesToTable(file.Read("tksb/atmospheres/"..map..".txt", "DATA")) or {}
-end
-
 local function DecodeKeyValues(values)
     local cat, data = "none", {}
 
@@ -224,59 +221,42 @@ local function DecodeKeyValues(values)
     return cat, data
 end
 
-local function RegisterAtmospheres()
-    print("--- Registering Atmospheres ---")
-    if MapData then
-        print("------ Loading From File ------")
-        for k,v in pairs(MapData) do
-            if v.cat == "planet" then
-                local planet = ents.Create("at_planet")
-                planet:SetPos(Vector(v.x, v.y, v.z))
-                planet:Spawn()
-                planet:SetupAtomsphere(v.data)
-                print(planet, "Created")
-            elseif v.cat == "star" then
-                local star = ents.Create("at_star")
-                star:SetPos(Vector(v.x, v.y, v.z))
-                star:Spawn()
-                star:SetupAtomsphere(v.data)
-                print(star, "Created")
-                table.insert(Suns, Vector(v.x, v.y, v.z))
-            end
-        end
-    else
+local function LoadMapData()
+    if !TK.MapSetup.Atmospheres or #TK.MapSetup.Atmospheres == 0 then
         print("------- Loading From Map ------")
-        MapData = {}
+        TK.MapSetup.Atmospheres = {}
         
         for _,ent in pairs(ents.FindByClass("logic_case")) do
             local cat, data = DecodeKeyValues(ent:GetKeyValues())    
             local pos = ent:GetPos()
-            
-            if cat == "planet" then
-                local planet = ents.Create("at_planet")
-                planet:SetPos(pos)
-                planet:Spawn()
-                planet:SetupAtomsphere(data)
-                print(planet, "Created")
-                
-                table.insert(MapData, {cat = "planet", x = pos.x, y = pos.y, z = pos.z, data = data})
-            elseif cat == "star" then
-                local star = ents.Create("at_star")
-                star:SetPos(pos)
-                star:Spawn()
-                star:SetupAtomsphere(data)
-                print(star, "Created")
-
-                table.insert(Suns, pos)
-                table.insert(MapData, {cat = "star", x = pos.x, y = pos.y, z = pos.z, data = data})
-            end
+            table.insert(TK.MapSetup.Atmospheres, {cat = cat, x = pos.x, y = pos.y, z = pos.z, data = data})
         end
         
         if !file.Exists("tksb", "DATA") then
             file.CreateDir("tksb")
             file.CreateDir("tksb/atmospheres")
         end
-        file.Write("tksb/atmospheres/"..game.GetMap()..".txt", util.TableToKeyValues(MapData))
+        file.Write("tksb/atmospheres/"..game.GetMap()..".txt", util.TableToKeyValues(TK.MapSetup.Atmospheres))
+    end
+end
+
+local function RegisterAtmospheres()
+    print("--- Registering Atmospheres ---")
+    for k,v in pairs(TK.MapSetup.Atmospheres) do
+        if v.cat == "planet" then
+            local planet = ents.Create("at_planet")
+            planet:SetPos(Vector(v.x, v.y, v.z))
+            planet:Spawn()
+            planet:SetupAtomsphere(v.data)
+            print(planet, "Created", planet:GetGravity())
+        elseif v.cat == "star" then
+            local star = ents.Create("at_star")
+            star:SetPos(Vector(v.x, v.y, v.z))
+            star:Spawn()
+            star:SetupAtomsphere(v.data)
+            print(star, "Created")
+            table.insert(Suns, Vector(v.x, v.y, v.z))
+        end
     end
     print("-------------------------------")
 end
