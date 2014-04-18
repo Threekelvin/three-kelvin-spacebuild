@@ -73,7 +73,7 @@ hook.Add("OnChatTab", "TKOnChatTab", function(text)
 
     for k,v in pairs(player.GetAll()) do
         local name = v:Name()
-        if string.len(LastWord) < string.len(name) and string.find(string.lower(name), string.lower(LastWord)) == 1  then
+        if string.len(LastWord) < string.len(name) and string.find(string.lower(name), string.lower(LastWord), 1, true) == 1  then
             text = string.sub(text, 1, (string.len(LastWord) * -1) - 1)
             text = text .. name
             return text
