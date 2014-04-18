@@ -97,7 +97,7 @@ local function IsWire( ent )
 	return false
 end
 
-Component:AddExternal( "TKTKValidAction", ValidAction ) 
+Component:AddExternal( "TKValidAction", ValidAction ) 
 Component:AddExternal( "GetLoadout", GetLoadout ) 
 Component:AddExternal( "CreateLOent", CreateLOent ) 
 Component:AddExternal( "CreateRDent", CreateRDent ) 
