@@ -369,10 +369,10 @@ local function ValidParticle( particle )
 	return false
 end
 
-Context:AddExternal( "ValidParticle", ValidParticle )
-Context:AddExternal( "ParticleEffect", ParticleEffect )
-Context:AddExternal( "ParticleEffectAttach", ParticleEffectAttach )
-Context:AddExternal( "SendParticleBeamData", function( particle, this, ent ) 
+Component:AddExternal( "ValidParticle", ValidParticle )
+Component:AddExternal( "ParticleEffect", ParticleEffect )
+Component:AddExternal( "ParticleEffectAttach", ParticleEffectAttach )
+Component:AddExternal( "SendParticleBeamData", function( particle, this, ent ) 
 	timer.Simple( 0.1, function( )
 		net.Start( "particleBeam" )
 			net.WriteString( particle )
@@ -444,8 +444,8 @@ local function MakeEffect( ent, name, origin, start, angle, magnitude, scale )
 	util.Effect(name, fx)
 end
 
-Context:AddExternal( "ValidEffect", ValidEffect )
-Context:AddExternal( "MakeEffect", MakeEffect )
+Component:AddExternal( "ValidEffect", ValidEffect )
+Component:AddExternal( "MakeEffect", MakeEffect )
 
 Component:AddFunction( "fx", "s,v", "", [[
 	local %effect, %origin = value %1, value %2 
