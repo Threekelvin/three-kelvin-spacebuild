@@ -4,7 +4,7 @@ local AllowedWeapons = {
     ["weapon_physgun"]      =   true,
     ["gmod_camera"]         =   true,
     ["gmod_tool"]           =   true,
-    ["hands"]               =   true,
+    ["none"]                =   true,
     ["remotecontroller"]    =   true,
     ["laserpointer"]        =   true
 }
