@@ -248,7 +248,7 @@ local function RegisterAtmospheres()
             planet:SetPos(Vector(v.x, v.y, v.z))
             planet:Spawn()
             planet:SetupAtomsphere(v.data)
-            print(planet, "Created", planet:GetGravity())
+            print(planet, "Created")
         elseif v.cat == "star" then
             local star = ents.Create("at_star")
             star:SetPos(Vector(v.x, v.y, v.z))

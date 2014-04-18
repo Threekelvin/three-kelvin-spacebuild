@@ -342,7 +342,7 @@ function PANEL:Think(force)
     local Storage = TK.DB:GetPlayerData("terminal_storage")
     
     if IsValid(self.ActiveNode) then
-        if (self.ActiveNode:GetPos() - panel.Terminal.Ent:GetPos()):LengthSqr() > TK.RT.Radius then
+        if (self.ActiveNode:GetPos() - self.Terminal.Ent:GetPos()):LengthSqr() > TK.RT.Radius then
             self.ActiveNode = nil
         end
     end
@@ -350,7 +350,7 @@ function PANEL:Think(force)
     if !IsValid(self.ActiveNode) then
         for k,v in pairs(ents.FindByClass("rd_node")) do
             if v:CPPIGetOwner() != LocalPlayer() then continue end
-            if (v:GetPos() - panel.Terminal.Ent:GetPos()):LengthSqr() <= TK.RT.Radius then
+            if (v:GetPos() - self.Terminal.Ent:GetPos()):LengthSqr() <= TK.RT.Radius then
                 self.ActiveNode = v
                 break
             end
