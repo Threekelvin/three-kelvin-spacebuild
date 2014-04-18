@@ -27,7 +27,7 @@ function PLAYER:Loadout()
     self.Player:Give("weapon_physgun")
     self.Player:Give("gmod_camera")
     self.Player:Give("gmod_tool")
-    self.Player:Give("hands")
+    self.Player:Give("none")
     
     local cl_defaultweapon = self.Player:GetInfo("cl_defaultweapon")
 

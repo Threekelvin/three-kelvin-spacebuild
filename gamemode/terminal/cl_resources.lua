@@ -260,7 +260,7 @@ local function CaptchaPopup(panel, request)
     local browser = vgui.Create("HTML", frame)
     browser:SetPos(5, 25)
     browser:SetSize(frame:GetWide()-10, frame:GetTall()-submit:GetTall()-35)
-    browser:OpenURL("http://threekelvin.co.uk/resource/captcha.php?steamid="..LocalPlayer():SteamID())
+    browser:OpenURL("http://resource.threekelv.in/captcha.php?steamid="..LocalPlayer():SteamID())
     
     net.Receive("3k_terminal_resources_captcha_response", function()
         if !IsValid(mouseblock) then return end
