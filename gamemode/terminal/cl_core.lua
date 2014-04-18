@@ -141,7 +141,7 @@ function Terminal:Create()
 
         net.Start("3k_term_request")
             net.WriteTable(BuildTable(key))
-            net.WriteEntity(Terminal.Ent)
+            net.WriteEntity(frame.Ent)
             net.WriteTable(BuildTable(querry))
         net.SendToServer()
     end
@@ -175,30 +175,30 @@ function Terminal:Create()
 end
 
 function Terminal:Open(ent)
-    if !Terminal.Menu then
-        Terminal:Create()
+    if !self.Menu then
+        self:Create()
     else
         hook.Remove("GUIMousePressed", "OuterClickClose")
         hook.Remove("KeyRelease", "ReleaseClose")
         timer.Simple(1, function()
             hook.Add("GUIMousePressed", "OuterClickClose", function(mc)
                 if !vgui.IsHoveringWorld() then return end
-                if !IsValid(Terminal.Menu) then return end
-                Terminal.Menu:SetVisible(false)
+                if !IsValid(self.Menu) then return end
+                self.Menu:SetVisible(false)
                 hook.Remove("GUIMousePressed", "OuterClickClose")
             end)
             hook.Add("KeyRelease", "ReleaseClose", function(ply, key)
                 if !( key == IN_USE ) then return end
-                if !IsValid(Terminal.Menu) then return end
-                Terminal.Menu:SetVisible(false)
+                if !IsValid(self.Menu) then return end
+                self.Menu:SetVisible(false)
                 hook.Remove("KeyRelease", "ReleaseClose")
             end)
         end)
-        Terminal.Menu:SetVisible(true)
-        Terminal.Menu.startTime = SysTime()
+        self.Menu:SetVisible(true)
+        self.Menu.startTime = SysTime()
     end
     
-    Terminal.Ent = ent
+    self.Menu.Ent = ent
     gamemode.Call("TKOpenTerminal")
 end
 

@@ -111,7 +111,20 @@ function TOOL:RightClick(trace)
                 phys:SetPos(ent:GetPos())
                 phys:SetAngles(ent:GetAngles())
             end
+            
+            local welds, welds_made = table.Copy(self.Selected), 0
+            table.sort(welds, function(a, b)
+                return a:BoundingRadius() > b:BoundingRadius()
+            end)
+            
             constraint.Weld(self.Parent, ent, 0, 0, 0, false)
+            for _,acr in ipairs(welds) do
+                if welds_made >= 3 then continue end
+                if acr == self.Parent then continue end
+                constraint.Weld(acr, ent, 0, 0, 0, false)
+                welds_made = welds_made + 1
+            end
+            
             ent:SetCollisionGroup(COLLISION_GROUP_VEHICLE)
             ent:PhysWake()
             self:UnSelectEnt(ent)

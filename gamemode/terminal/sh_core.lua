@@ -1,4 +1,4 @@
 
 TK.RT = TK.RT or {}
 
-TK.RT.Radius = 1024
+TK.RT.Radius = 1048576
