@@ -10,7 +10,7 @@ function ENT:Initialize()
     self.Stage = 1
     self:SendStage()
     
-    self:SetModel(TK.Settings.Tiberium[self.Stage].model)
+    self:SetModel(TK.TI.Settings[self.Stage].model)
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetMoveType(MOVETYPE_NONE)
     self:SetSolid(SOLID_VPHYSICS)
@@ -45,7 +45,7 @@ end
 
 function ENT:CanAdvance()
     local next_stage = self:GetStage() + 1
-    local data = TK.Settings.Tiberium[next_stage]
+    local data = TK.TI.Settings[next_stage]
     if !data then return false end
     if self.delay < data.delay then return false end
     
@@ -61,7 +61,7 @@ end
 
 function ENT:NextStage()
     local next_stage = self:GetStage() + 1
-    local data = TK.Settings.Tiberium[next_stage]
+    local data = TK.TI.Settings[next_stage]
     if !data then return end
     
     self.Stage = next_stage

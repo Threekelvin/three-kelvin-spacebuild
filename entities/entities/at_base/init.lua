@@ -180,6 +180,10 @@ function ENT:SetupAtomsphere(data)
     self:PhysicsSetup()
 end
 
+function ENT:IsAtmosphere()
+    return true
+end
+
 function ENT:IsStar()
     return false
 end
@@ -194,6 +198,10 @@ end
 
 function ENT:IsSpace()
     return false
+end
+
+function ENT:GetName()
+    return self.atmosphere.name 
 end
 
 function ENT:GetRadius()

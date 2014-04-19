@@ -139,13 +139,6 @@ local Queries = {
             raw_tiberium INT DEFAULT 0
         )]],
         
-        terminal_refinery = [[CREATE TABLE IF NOT EXISTS
-        terminal_refinery(
-            steamid VARCHAR(20) NOT NULL PRIMARY KEY,
-            asteroid_ore INT DEFAULT 0,
-            raw_tiberium INT DEFAULT 0
-        )]],
-        
         terminal_upgrades = [[CREATE TABLE IF NOT EXISTS
         terminal_upgrades(
             steamid VARCHAR(20) NOT NULL PRIMARY KEY,
@@ -192,7 +185,6 @@ local Queries = {
         player_inventory = true,
         terminal_setting = true,
         terminal_storage = true,
-        terminal_refinery = true,
         terminal_upgrades = true,
     },
     
@@ -206,7 +198,6 @@ local Queries = {
         player_inventory = true,
         terminal_setting = true,
         terminal_storage = true,
-        terminal_refinery = true,
         terminal_upgrades = true,
     },
     
@@ -219,7 +210,6 @@ local Queries = {
         player_inventory = true,
         terminal_setting = true,
         terminal_storage = true,
-        terminal_refinery = true,
         terminal_upgrades = true,
     },
     

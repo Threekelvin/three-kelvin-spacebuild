@@ -79,7 +79,7 @@ local function PlayerLSCheck()
             ply.tk_hev.update = true
         end
         
-        if ply.tk_hev.airper < 5 or ply:WaterLevel() == 3 then
+        if ply.tk_hev.airper < 10 or ply:WaterLevel() == 3 then
             local required = 5
             
             if ply.tk_hev.oxygen >= required then

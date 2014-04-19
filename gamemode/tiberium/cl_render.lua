@@ -25,8 +25,8 @@ net.Receive("TKTib_M", function()
     local data = net.ReadTable()
     
     Models[entid] = {}
-    Models[entid].pre = (TK.Settings.Tiberium[data.stage - 1] or {}).model
-    Models[entid].cur = TK.Settings.Tiberium[data.stage].model
+    Models[entid].pre = (TK.TI.Settings[data.stage - 1] or {}).model
+    Models[entid].cur = TK.TI.Settings[data.stage].model
     Models[entid].grow = true
     Models[entid].time = SysTime()
     Models[entid].origin = data.pos

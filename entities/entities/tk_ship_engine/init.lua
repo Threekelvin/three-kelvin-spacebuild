@@ -12,7 +12,7 @@ local KeyTracker = {
 }
 
 local Inputs = {
-    [IN_RELOAD]    = "Activate",
+    [IN_RELOAD]    = "Level",
     [IN_FORWARD]   = "Forward",
     [IN_BACK]      = "Backward",
     [IN_MOVELEFT]  = "Left",
@@ -103,11 +103,23 @@ function ENT:Initialize()
     self.VecThrust = Vector(0, 0, 0)
     self.AngThrust = Angle(0, 0, 0)
     self.ShouldLevel = false
-    self.MaxThrust = 150
     self.Ents = {}
     self.Pod = nil
     
+    self.Updated = false
+    self.VecThrustMul = 0
+    self.AngThrustMul = 0
+    
     self:SetNWBool("Generator", true)
+end
+
+function ENT:math_angaim(tar, cur)
+    local dif = tar - cur
+    return Angle(
+        dif.p > self.AngThrustMul and self.AngThrustMul or dif.p < -self.AngThrustMul and -self.AngThrustMul or dif.p,
+        dif.y > self.AngThrustMul and self.AngThrustMul or dif.y < -self.AngThrustMul and -self.AngThrustMul or dif.y,
+        0
+    )
 end
 
 function ENT:OnRemove()
@@ -120,13 +132,9 @@ function ENT:OnRemove()
 end
 
 function ENT:TriggerKey(iname, value)
-    if iname == "Activate" then
+    if iname == "Level" then
         if value != 1 then return end
-        if self:GetActive() then
-            self:TurnOff()
-        else
-            self:TurnOn()
-        end
+        self.ShouldLevel = !self.ShouldLevel
     elseif iname == "Forward" then
         self.VecInput.x = self.VecInput.x + (value == 1 and 1 or -1)
     elseif iname == "Backward" then
@@ -150,6 +158,7 @@ function ENT:TriggerKey(iname, value)
     elseif iname == "Mode" then
         if value != 1 then return end
         self.Aim = self.Aim == 0 and 1 or 0
+        self.AimAngle = Angle(0,0,0)
     end
 end
 
@@ -184,6 +193,11 @@ function ENT:TurnOn()
     if self:GetActive() or !self:IsLinked() then return end
     self:SetActive(true)
     
+    self.Updated = false
+    self.VecInput = Vector(0, 0, 0)
+    self.AngInput = Angle(0, 0, 0)
+    self.AimAngle = Angle(0, 0, 0)
+    
     self.Ents = self:GetConstrainedEntities()
     for k,v in pairs(self.Ents) do
        self:DisableGravity(v)
@@ -217,34 +231,104 @@ function ENT:DoThink(eff)
     end
 
     self.Ents = conents
-    self.data.power = math.floor(table.Count(self.Ents) * -2)
+    local vol, num = 0, 0
+    for _,ent in pairs(self.Ents) do
+        local phys = ent:GetPhysicsObject()
+        if !IsValid(phys) then continue end
+        num = num + 1
+        vol = vol + phys:GetVolume()
+    end
+    
+    self.data.power = math.floor(num * -2)
+    self.Updated = true
+    self.VecThrustMul = 10 * math.Clamp(4000 / math.sqrt(vol), 0.1, 1)
+    self.AngThrustMul = self.VecThrustMul * 0.75
     if !self:Work() then return end
 end
 
 function ENT:Think()
-    if !self:GetActive() then return end
+    local driver
+    if self:GetActive() then
+        if !IsValid(self.Pod) then self:TurnOff() return end
+        driver = self.Pod:GetDriver()
+        if !IsValid(driver) then self:TurnOff() return end
+    else
+        if !IsValid(self.Pod) then return end
+        driver = self.Pod:GetDriver()
+        if !IsValid(driver) then return end
+        self:TurnOn()
+    end
+    
+    if !self.Updated then return end
     local parent = IsValid(self:GetParent()) and self:GetParent() or self
     local pphys = parent:GetPhysicsObject()
     if !IsValid(pphys) then return end
-    
-    if IsValid(self.Pod) then
-        self.Driver = self.Pod:GetDriver()
-        if IsValid(self.Driver) then
-            local s_ang, d_ang = self:GetAngles(), self.Driver:EyeAngles()
-            local ang_diff = d_ang - s_ang
-            self.AimAngle.p = (ang_diff.p > 5 or ang_diff.p < -5) and d_ang.p or s_ang.p
-            self.AimAngle.y = (ang_diff.y > 5 or ang_diff.y < -5) and d_ang.y or s_ang.y
-            self.AimAngle.r = (ang_diff.r > 5 or ang_diff.r < -5) and d_ang.r or s_ang.r
-        end
+    local pos, ang = pphys:GetPos(), math_angnorm(pphys:GetAngles())
+
+    if self.Aim == 1 then
+        local s_ang, d_ang = driver:GetAngles(), driver:EyeAngles()
+        local ang_diff = d_ang - s_ang
+        self.AimAngle.p = (ang_diff.p > 5 or ang_diff.p < -5) and d_ang.p or ang.p
+        self.AimAngle.y = (ang_diff.y > 5 or ang_diff.y < -5) and d_ang.y or ang.y
+        self.AimAngle.r = (ang_diff.r > 5 or ang_diff.r < -5) and d_ang.r or ang.r
     end
 
-    self.VecThrust = self.VecInput * 10
-    self.AngThrust = self.AngInput * 15
     
-    local pos, ang = pphys:GetPos(), math_angnorm(pphys:GetAngles())
-    local vec = Vector(self.VecThrust.x, self.VecThrust.y, self.VecThrust.z)
-    local lvec,lang = LocalToWorld(vec, Angle(0,0,0), pos, ang)
-    local Thrust = (lvec - pos) * self.MaxThrust * self.Eff
+    local vec_fac, aim_fac = 0.015, 0.025
+    if self.VecInput.x == 0 then
+        self.VecThrust.x = self.VecThrust.x + (self.VecThrust.x > vec_fac and -vec_fac or (self.VecThrust.x < -vec_fac and vec_fac or -self.VecThrust.x))
+    else
+        self.VecThrust.x = math.Clamp(self.VecThrust.x + self.VecInput.x * vec_fac, -1 , 1)
+    end
+    
+    if self.VecInput.y == 0 then
+        self.VecThrust.y = self.VecThrust.y + (self.VecThrust.y > vec_fac and -vec_fac or (self.VecThrust.y < -vec_fac and vec_fac or -self.VecThrust.y))
+    else
+        self.VecThrust.y = math.Clamp(self.VecThrust.y + self.VecInput.y * vec_fac, -1 , 1)
+    end
+    
+    if self.VecInput.z == 0 then
+        self.VecThrust.z = self.VecThrust.z + (self.VecThrust.z > vec_fac and -vec_fac or (self.VecThrust.z < -vec_fac and vec_fac or -self.VecThrust.z))
+    else
+        self.VecThrust.z = math.Clamp(self.VecThrust.z + self.VecInput.z * vec_fac, -1 , 1)
+    end
+    
+    
+    local Ang_Aim = Angle(0,0,0)
+    if self.Aim == 1 then
+        Ang_Aim = self:math_angaim(self.AimAngle, ang)
+        Ang_Aim.p = (Ang_Aim.p / self.AngThrustMul) * 0.5
+        Ang_Aim.y = (Ang_Aim.y / self.AngThrustMul) * 0.5
+        Ang_Aim.r = (Ang_Aim.r / self.AngThrustMul) * 0.5
+    end
+    
+
+    local Ang_In = self.AngInput + Ang_Aim
+    Ang_In.p = Ang_In.p * self.Eff
+    Ang_In.y = Ang_In.y * self.Eff
+    Ang_In.r = Ang_In.r * self.Eff
+    
+    if Ang_In.p == 0 then
+        self.AngThrust.p = self.AngThrust.p + (self.AngThrust.p > aim_fac and -aim_fac or (self.AngThrust.p < -aim_fac and aim_fac or -self.AngThrust.p))
+    else
+        self.AngThrust.p = math.Clamp(self.AngThrust.p + Ang_In.p * aim_fac, -1 , 1)
+    end
+    
+    if Ang_In.y == 0 then
+        self.AngThrust.y = self.AngThrust.y + (self.AngThrust.y > aim_fac and -aim_fac or (self.AngThrust.y < -aim_fac and aim_fac or -self.AngThrust.y))
+    else
+        self.AngThrust.y = math.Clamp(self.AngThrust.y + Ang_In.y * aim_fac, -1 , 1)
+    end
+    
+    if Ang_In.r == 0 then
+        self.AngThrust.r = self.AngThrust.r + (self.AngThrust.r > aim_fac and -aim_fac or (self.AngThrust.r < -aim_fac and aim_fac or -self.AngThrust.r))
+    else
+        self.AngThrust.r = math.Clamp(self.AngThrust.r + Ang_In.r * aim_fac, -1 , 1)
+    end
+    
+
+    local lvec,lang = LocalToWorld(self.VecThrust * self.VecThrustMul, Angle(0,0,0), pos, ang)
+    local Thrust = (lvec - pos) * (100 * self.Eff)
     
     for _,ent in pairs(self.Ents) do
         if !IsValid(ent) then continue end
@@ -254,16 +338,9 @@ function ENT:Think()
         phys:AddAngleVelocity(phys:GetAngleVelocity() * -1)
     end
     
-    local Torque
-    if self.Aim == 1 then
-        local lang = self.AimAngle + self.AngThrust
-        local tang = self.ShouldLevel and Angle(0, lang.y, 0) or lang
-        Torque = math_rotationvector(tang, ang)
-    else
-        local lvec,lang = LocalToWorld(Vector(0,0,0), self.AngThrust, pos, ang)
-        local tang = self.ShouldLevel and Angle(0, lang.y, 0) or lang
-        Torque = math_rotationvector(tang, ang)
-    end
+    local lvec,lang = LocalToWorld(Vector(0,0,0), self.AngThrust * self.AngThrustMul, pos, ang)
+    local tang = self.ShouldLevel and Angle(0, lang.y, 0) or lang
+    local Torque = math_rotationvector(tang, ang)
     
     Torque = (1000 * Torque - pphys:GetAngleVelocity() * 20) * pphys:GetInertia()
     local magnitude = Torque:Length()
@@ -282,7 +359,7 @@ function ENT:Think()
 
     pphys:ApplyForceOffset(dir, off)
     pphys:ApplyForceOffset(dir * -1, off * -1)
-    
+
     self:NextThink(CurTime())
     return true
 end

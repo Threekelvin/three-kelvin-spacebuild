@@ -45,8 +45,6 @@ hook.Add("Initialize", "TK.RD", function()
     TK.RD:AddResource("hydrogen", "Hydrogen")
     TK.RD:AddResource("liquid_nitrogen", "Liquid Nitrogen")
     TK.RD:AddResource("water", "Water")
-    TK.RD:AddResource("asteroid_ore", "Asteroid Ore")
-    TK.RD:AddResource("raw_tiberium", "Raw Tiberium")
 end)
 
 local function RequestData(typ, id)

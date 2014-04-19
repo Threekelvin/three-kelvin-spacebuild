@@ -17,7 +17,7 @@ local ply_models = {
     ["models/raindrops_player.mdl"] =           {rank = 2},
     ["models/rarity_player.mdl"] =              {rank = 2},
     ["models/roseluck_player.mdl"] =            {rank = 2},
-    ["models/spitfire_player.mdl"] =            {rank = 2},
+    ["models/spitfire_player.mdl"] =            {sid = {"STEAM_0:1:17838782"}},
     ["models/trixie_player.mdl"] =              {rank = 2},
     ["models/twilightsparkle_player.mdl"] =     {rank = 2},
     ["models/vinyl_player.mdl"] =               {rank = 2},

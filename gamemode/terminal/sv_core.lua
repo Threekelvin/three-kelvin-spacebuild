@@ -4,9 +4,6 @@ util.AddNetworkString("3k_term_key")
 util.AddNetworkString("3k_term_test")
 util.AddNetworkString("3k_term_request")
 
-util.AddNetworkString("3k_term_ref_begin")
-util.AddNetworkString("3k_term_ref_finish")
-
 util.AddNetworkString("3k_terminal_resources_captcha_response")
 util.AddNetworkString("3k_terminal_resources_captcha_challenge")
 ///--- ---\\\
@@ -14,11 +11,11 @@ util.AddNetworkString("3k_terminal_resources_captcha_challenge")
 local Terminal = {}
 
 ///--- Resources ---\\\
-function Terminal.StorageToNode(ply, arg)
+function Terminal.StorageToNode(ply, arg, ent)
     local Node, res, amt = Entity(tonumber(arg[1])), arg[2], tonumber(arg[3])
     if !IsValid(Node) or Node:CPPIGetOwner() != ply then return end
     if !Node.IsTKRD or !Node.IsNode then print("error", Node) return end
-    if (Node:GetPos() - TK.Settings.Term.Pos):LengthSqr() > TK.Settings.Term.Size then return end
+    if (Node:GetPos() - ent:GetPos()):LengthSqr() > TK.RT.Radius then return end
     local storage = TK.DB:GetPlayerData(ply, "terminal_storage")
     if !storage[res] then return end
     if storage[res] < amt then return end
@@ -29,12 +26,12 @@ function Terminal.StorageToNode(ply, arg)
     TK.DB:UpdatePlayerData(ply, "terminal_storage", {[res] = storage[res] - amt})
 end
 
-function Terminal.NodeTostorage(ply, arg)
+function Terminal.NodeTostorage(ply, arg, ent)
     local Node, res, amt = Entity(tonumber(arg[1])), arg[2], tonumber(arg[3])
     if !IsValid(Node) or Node:CPPIGetOwner() != ply then return end
     if !Node.IsTKRD or !Node.IsNode then return end
     if !TK.TD:AcceptResource(res) then return end
-    if (Node:GetPos() - TK.Settings.Term.Pos):LengthSqr() > TK.Settings.Term.Size then return end
+    if (Node:GetPos() - ent:GetPos()):LengthSqr() > TK.RT.Radius then return end
     local storage = TK.DB:GetPlayerData(ply, "terminal_storage")
     storage[res] = storage[res] or 0
 
@@ -64,114 +61,8 @@ net.Receive("3k_terminal_resources_captcha_challenge", function(len,ply)
 end)
 ///--- ---\\\
 
-///--- Refinery ---\\\
-function Terminal.StartRefine(ply, res)
-    local storage, newstorage = TK.DB:GetPlayerData(ply, "terminal_storage"), {}
-    local refinery, newrefinery = TK.DB:GetPlayerData(ply, "terminal_refinery"), {}
-    local settings = TK.DB:GetPlayerData(ply, "terminal_setting")
-    local newtime = 0
-    
-    for k,v in pairs(res) do
-        if !storage[k] or storage[k] < v then continue end
-        
-        newstorage[k] = storage[k] - v
-        newrefinery[k] = refinery[k] + v
-        newtime = newtime + (v / TK.TD:Refine(ply, k))
-    end
-    
-    if newtime > 0 then
-
-        TK.DB:UpdatePlayerData(ply, "terminal_storage", newstorage)
-        TK.DB:UpdatePlayerData(ply, "terminal_refinery", newrefinery)
-        
-        if settings.refine_length == 0 then
-            newtime = math.floor(newtime)
-            TK.DB:UpdatePlayerData(ply, "terminal_setting", {refine_started = true, refine_length = newtime})
-        else
-            newtime = math.floor(newtime + settings.refine_length)
-            TK.DB:UpdatePlayerData(ply, "terminal_setting", {refine_length = newtime})
-        end
-        
-        net.Start("3k_term_ref_begin")
-            net.WriteBit(1)
-        net.Send(ply)
-    end
-end
-
-function Terminal.EndRefine(ply)
-    local refinery, newrefinery = TK.DB:GetPlayerData(ply, "terminal_refinery"), {}
-    local info = TK.DB:GetPlayerData(ply, "player_info")
-    local totalvalue = 0
-    
-    for k,v in pairs(refinery) do
-        if v > 0 then
-            local value = TK.TD:Ore(ply, k)
-            newrefinery[k] = 0
-            totalvalue = totalvalue + (v * value)
-        end
-    end
-
-    if totalvalue > 0 then
-        local credits = math.floor(info.credits + totalvalue)
-        local score = math.floor(info.score + totalvalue * 0.25)
-        local exp = math.floor(info.exp + totalvalue * 0.125)
-        
-        TK.DB:UpdatePlayerData(ply, "player_info", {credits = credits, score = score, exp = exp})
-        
-        TK.DB:UpdatePlayerData(ply, "terminal_refinery", newrefinery)
-        TK.DB:UpdatePlayerData(ply, "terminal_setting", {refine_started = 0, refine_length = 0})
-        net.Start("3k_term_ref_finish")
-            net.WriteBit(1)
-        net.Send(ply)
-    end
-end
-
-hook.Add("Initialize", "TKRefinery", function()
-    timer.Create("TKRefinery", 10, 0, function()
-        for k,v in pairs(player.GetAll()) do
-            local settings = TK.DB:GetPlayerData(v, "terminal_setting")
-            local complete = settings.refine_started + settings.refine_length
-            if complete == 0 then continue end
-            if TK.DB:OSTime() >= complete then
-                Terminal.EndRefine(v)
-            end
-        end
-    end)
-end)
-
-function Terminal.Refine(ply, arg)
-    Terminal.StartRefine(ply, {[arg[1]] = tonumber(arg[2])})
-end
-
-function Terminal.RefineAll(ply, arg)
-    local storage, res = TK.DB:GetPlayerData(ply, "terminal_storage"), {}
-    res["asteroid_ore"] = storage["asteroid_ore"] or 0
-    res["raw_tiberium"] = storage["raw_tiberium"] or 0
-    
-    Terminal.StartRefine(ply, res)
-end
-
-function Terminal.CancelRefine(ply, arg)
-    local storage, newstorage = TK.DB:GetPlayerData(ply, "terminal_storage"), {}
-    local refinery, newrefinery = TK.DB:GetPlayerData(ply, "terminal_refinery"), {}
-    
-    for k,v in pairs(refinery) do
-        newstorage[k] = storage[k] + v
-        newrefinery[k] = 0
-    end
-
-    TK.DB:UpdatePlayerData(ply, "terminal_storage", newstorage)
-    TK.DB:UpdatePlayerData(ply, "terminal_refinery", newrefinery)
-    TK.DB:UpdatePlayerData(ply, "terminal_setting", {refine_started = 0, refine_length = 0})
-    
-    net.Start("3k_term_ref_begin")
-        net.WriteBit(0)
-    net.Send(ply)
-end
-///--- ---\\\
-
 ///--- Research ---\\\
-function Terminal.AddResearch(ply, arg)
+function Terminal.AddResearch(ply, arg, ent)
     local idx = arg[1]
     local upgrades = TK.DB:GetPlayerData(ply, "terminal_upgrades")
     local data = TK.TD:GetUpgrade(idx)
@@ -192,7 +83,7 @@ end
 ///--- ---\\\
 
 ///--- Loadout ---\\\
-function Terminal.SetSlot(ply, arg)
+function Terminal.SetSlot(ply, arg, ent)
     local slot, idx, item = arg[1], tonumber(arg[2]), tonumber(arg[3])
     local loadout = TK.DB:GetPlayerData(ply, "player_loadout")
     local inventory = TK.DB:GetPlayerData(ply, "player_inventory").inventory
@@ -222,21 +113,15 @@ function Terminal.SetSlot(ply, arg)
 end
 ///--- ---\\\
 
-///--- Market ---\\\
-
-///--- ---\\\
-
 ///--- Terminal ConCommand ---\\\
 local SecureInfo = {}
 local SecureKeys = {}
 
-local function CanCall(ply)
-    for k,v in pairs(ents.FindByClass("tk_terminal")) do
-        if (ply:GetPos() - v:GetPos()):LengthSqr() < 22500 then
-            return true
-        end
-    end
-    return false
+local function CanCall(ply, ent)
+    if !IsValid(ent) then return false end
+    if ent:GetClass() != "tk_terminal" then return false end
+    if (ply:GetPos() - ent:GetPos()):LengthSqr() > 22500 then return false end
+    return true
 end
 
 local function BuildString(data)
@@ -269,30 +154,24 @@ end)
 
 net.Receive("3k_term_request", function(len, ply)
     local uid = ply:UID()
-    if !CanCall(ply) then return end
-
     local pwd = BuildString(net.ReadTable())
+    local ent = net.ReadEntity()
     local crypt =  BuildString(net.ReadTable())
+    if !CanCall(ply, ent) then return end
+    
     local arg = aeslua.decrypt(SecureKeys[uid].encrypt_key, crypt)
-
     if pwd == SecureInfo[uid] then
         arg = string.Explode(" ", arg)
         local cmd = table.remove(arg, 1)
         
         if cmd == "storagetonode" then
-            Terminal.StorageToNode(ply, arg)
+            Terminal.StorageToNode(ply, arg, ent)
         elseif cmd == "nodetostorage" then
-            Terminal.NodeTostorage(ply, arg)
-        elseif cmd == "refine" then
-            Terminal.Refine(ply, arg)
-        elseif cmd == "refineall" then
-            Terminal.RefineAll(ply, arg)
-        elseif cmd == "cancelrefine" then
-            Terminal.CancelRefine(ply, arg)
+            Terminal.NodeTostorage(ply, arg, ent)
         elseif cmd == "addresearch" then
-            Terminal.AddResearch(ply, arg)
+            Terminal.AddResearch(ply, arg, ent)
         elseif cmd == "setslot" then
-            Terminal.SetSlot(ply, arg)
+            Terminal.SetSlot(ply, arg, ent)
         end
     end
     

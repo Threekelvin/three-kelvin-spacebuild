@@ -25,7 +25,7 @@ net.Receive("3k_chat_r", function(len, ply)
         plys = player.GetAll()
     end
     
-    print((toTeam and "(TEAM) " or "") .. ply:Name() .. ": " .. msg)
+    print("[Msg] ".. (toTeam and "(TEAM) " or "") .. ply:Name() .. ": " .. msg)
     
     net.Start("3k_chat_b")
         net.WriteBit(toTeam)
@@ -68,7 +68,7 @@ concommand.Add("tk_chat_bubble", function(ply, cmd, arg)
 end)
 
 hook.Add("player_connect", "TKChatBox", function(data)
-    print("Client '" ..data.name.. "' connected (" ..data.networkid.. ")")
+    print("[Msg] Client '" ..data.name.. "' connected (" ..data.networkid.. ")")
     
     net.Start("3k_chat_g")
         net.WriteInt(1, 4)

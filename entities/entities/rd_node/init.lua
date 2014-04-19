@@ -2,6 +2,8 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 include('shared.lua')
 
+umsg.PoolString("3k_node_at")
+
 function ENT:Initialize()
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetMoveType(MOVETYPE_VPHYSICS)
@@ -31,15 +33,6 @@ end
 
 function ENT:DoCommand(ply, cmd, arg)
 
-end
-
-function ENT:Use(ply)
-    if !IsValid(ply) or !ply:IsPlayer() then return end
-    if !self:CPPICanUse(ply) then return end
-    if self.next_use > CurTime() then return end
-    self.next_use = CurTime() + 1
-    
-    self:DoMenu(ply)
 end
 
 function ENT:SetNetID(netid)
