@@ -153,7 +153,7 @@ Component:AddFunction( "getResourceCapacity", "e:s", "n", [[
 
 Component:AddFunction( "getUnitResourceCapacity", "e:s", "n", [[
 	if %TKValidAction( %context, value %1 ) and value %1.IsTKRD then 
-		%util = value %1:getUnitResourceCapacity( value %2 ) 
+		%util = value %1:GetUnitResourceCapacity( value %2 ) 
 	end 
 ]], "(%util or 0)" )
 
@@ -181,7 +181,7 @@ Component:AddFunction( "loSpawn", "s,v,n", "e", [[
 	local %slot, %pos, %frozen = value %1, value %2, value %3
 	local %loadout = %GetLoadout( %context ) 
 	
-	%util = %CreateLOent( %context, %loadout.Data[slot], %pos:Garry( ), %context.Entity:GetAngles( ), %frozen )
+	%util = %CreateLOent( %context, %loadout.Data[%slot], %pos:Garry( ), %context.Entity:GetAngles( ), %frozen )
 ]], "(%util or %NULL_ENTITY)" ) 
 
 Component:AddFunction( "loSpawn", "n,v,n", "e", [[
@@ -195,7 +195,7 @@ Component:AddFunction( "loSpawn", "s,a,n", "e", [[
 	local %slot, %ang, %frozen = value %1, value %2, value %3
 	local %loadout = %GetLoadout( %context ) 
 	
-	%util = %CreateLOent( %context, %loadout.Data[slot], %context.Entity:GetPos( ) + %context.Entity:GetUp( ) * 25, %ang, %frozen )
+	%util = %CreateLOent( %context, %loadout.Data[%slot], %context.Entity:GetPos( ) + %context.Entity:GetUp( ) * 25, %ang, %frozen )
 ]], "(%util or %NULL_ENTITY)" ) 
 
 Component:AddFunction( "loSpawn", "n,a,n", "e", [[
@@ -209,7 +209,7 @@ Component:AddFunction( "loSpawn", "s,v,a,n", "e", [[
 	local %slot, %pos, %ang, %frozen = value %1, value %2, value %3, value %4
 	local %loadout = %GetLoadout( %context ) 
 	
-	%util = %CreateLOent( %context, %loadout.Data[slot], %pos:Garry( ), %ang, %frozen )
+	%util = %CreateLOent( %context, %loadout.Data[%slot], %pos:Garry( ), %ang, %frozen )
 ]], "(%util or %NULL_ENTITY)" ) 
 
 Component:AddFunction( "loSpawn", "n,v,a,n", "e", [[
@@ -233,7 +233,7 @@ Component:AddFunction( "rdSpawn", "s,s,n", "e", [[
 Component:AddFunction( "rdSpawn", "e,n", "e", [[
 	local %template, %frozen = value %1, value %2
 	
-	if  %IsValid( %template ) then 
+	if  $IsValid( %template ) then 
 		%util = %CreateRDent( %context, %template:GetClass( ), %template:GetModel( ), %context.Entity:GetPos( ) + %context.Entity:GetUp( ) * 25, %context.Entity:GetAngles( ), %frozen )
 	end 
 ]], "(%util or %NULL_ENTITY)" ) 
@@ -247,7 +247,7 @@ Component:AddFunction( "rdSpawn", "s,s,v,n", "e", [[
 Component:AddFunction( "rdSpawn", "e,v,n", "e", [[
 	local %template, %pos, %frozen = value %1, value %2, value %3
 	
-	if %IsValid( %template ) then 
+	if $IsValid( %template ) then 
 		%util = %CreateRDent( %context, %template:GetClass( ), %template:GetModel( ), %pos:Garry( ), %context.Entity:GetAngles( ), %frozen )
 	end 
 ]], "(%util or %NULL_ENTITY)" ) 
@@ -261,7 +261,7 @@ Component:AddFunction( "rdSpawn", "s,s,a,n", "e", [[
 Component:AddFunction( "rdSpawn", "e,a,n", "e", [[
 	local %template, %ang, %frozen = value %1, value %2, value %3
 	
-	if %IsValid( %template ) then 
+	if $IsValid( %template ) then 
 		%util = %CreateRDent( %context, %template:GetClass( ), %template:GetModel( ), %context.Entity:GetPos( ) + %context.Entity:GetUp( ) * 25, %ang, %frozen )
 	end 
 ]], "(%util or %NULL_ENTITY)" ) 
@@ -275,7 +275,7 @@ Component:AddFunction( "rdSpawn", "s,s,v,a,n", "e", [[
 Component:AddFunction( "rdSpawn", "e,v,a,n", "e", [[
 	local %template, %pos, %ang, %frozen = value %1, value %2, value %3, value %4
 	
-	if %IsValid( %template ) then 
+	if $IsValid( %template ) then 
 		%util = %CreateRDent( %context, %template:GetClass( ), %template:GetModel( ), %pos:Garry( ), %ang, %frozen )
 	end 
 ]], "(%util or %NULL_ENTITY)" ) 
@@ -493,37 +493,37 @@ Component:AddFunction( "fx", "s,v,v,a,n,n", "", [[
 ==============================================================================================*/
 
 Component:AddFunction( "isVip", "e:", "b", [[
-	if %IsValid( value %1 ) and value %1:IsPlayer then 
+	if $IsValid( value %1 ) and value %1:IsPlayer( ) then 
 		%util = value %1:IsVip( ) 
 	end 
 ]], "(%util and true or false)" )
 
 Component:AddFunction( "isDJ", "e:", "b", [[
-	if %IsValid( value %1 ) and value %1:IsPlayer then 
+	if $IsValid( value %1 ) and value %1:IsPlayer( ) then 
 		%util = value %1:IsDJ( ) 
 	end 
 ]], "(%util and true or false)" )
 
 Component:AddFunction( "isModerator", "e:", "b", [[
-	if %IsValid( value %1 ) and value %1:IsPlayer then 
+	if $IsValid( value %1 ) and value %1:IsPlayer( ) then 
 		%util = value %1:IsModerator( ) 
 	end 
 ]], "(%util and true or false)" )
 
 Component:AddFunction( "isAdmin", "e:", "b", [[
-	if %IsValid( value %1 ) and value %1:IsPlayer then 
+	if $IsValid( value %1 ) and value %1:IsPlayer( ) then 
 		%util = value %1:IsAdmin( ) 
 	end 
 ]], "(%util and true or false)" )
 
 Component:AddFunction( "isSuperAdmin", "e:", "b", [[
-	if %IsValid( value %1 ) and value %1:IsPlayer then 
+	if $IsValid( value %1 ) and value %1:IsPlayer( ) then 
 		%util = value %1:IsSuperAdmin( ) 
 	end 
 ]], "(%util and true or false)" )
 
 Component:AddFunction( "isOwner", "e:", "b", [[
-	if %IsValid( value %1 ) and value %1:IsPlayer then 
+	if $IsValid( value %1 ) and value %1:IsPlayer( ) then 
 		%util = value %1:IsOwner( ) 
 	end 
 ]], "(%util and true or false)" )
@@ -534,7 +534,7 @@ Component:AddFunction( "isOwner", "e:", "b", [[
 ==============================================================================================*/
 
 Component:AddFunction( "score", "e:", "n", [[
-	if %IsValid( value %1 ) and value %1:IsPlayer then 
+	if $IsValid( value %1 ) and value %1:IsPlayer( ) then 
 		%util = $TK.DB:GetPlayerData( value %1, "player_info" ).score
 	end 
 ]], "(%util or 0)" )
