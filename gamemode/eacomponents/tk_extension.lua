@@ -297,6 +297,12 @@ Component:AddFunction( "sequenceGet", "e:", "n", [[
 	end 
 ]], "(%util or 0)" )
 
+Component:AddFunction( "sequenceGetName", "e:n", "s", [[
+	if %TKValidAction( %context, value %1 ) then 
+		%util = value %1:GetSequenceName( value %2 ) or 0 
+	end 
+]], "(%util or \"\")" )
+
 Component:AddFunction( "sequenceLookup", "e:s", "n", [[
 	if %TKValidAction( %context, value %1 ) then 
 		local %id, %dur = value %1:LookupSequence( value %2 ) 
@@ -343,6 +349,11 @@ Component:AddFunction( "setPoseParameter", "e:s,n", "", [[
 	end 
 ]] )
 
+Component:AddFunction( "getPoseParameter", "h:s", "n", [[
+	if %TKValidAction( %context, value %1 ) then 
+		%util = value %1:GetPoseParameter( value %2 ) 
+	end 
+]], "(%util or 0)" )
 
 /*==============================================================================================
 		Section: Particles
