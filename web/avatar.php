@@ -1,14 +1,13 @@
 <?php
-
-if ($_SERVER['SERVER_ADDR'] !== $_SERVER['REMOTE_ADDR']) {
-	header('HTTP/1.0 403 Forbidden');
+if (getenv('SERVER_ADDR') !== getenv('REMOTE_ADDR')) {
+	http_response_code(403);
 	exit;
 }
 
 $steamid = (isset($_GET['steamid']) ? $_GET['steamid'] : null);
 $regex = '/^STEAM_[0-5]:[01]:\d+$/';
 if(!preg_match($regex, $steamid)) {
-	header('HTTP/1.0 400 Forbidden');
+	http_response_code(400);
 	exit;
 }
 
@@ -23,5 +22,4 @@ $profile = simplexml_load_file( $url );
 $avatar = $profile->avatarMedium;
 echo $avatar;
 header('Location: ' . $avatar);
-
 ?>
