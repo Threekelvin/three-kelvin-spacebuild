@@ -349,7 +349,7 @@ Component:AddFunction( "setPoseParameter", "e:s,n", "", [[
 	end 
 ]] )
 
-Component:AddFunction( "getPoseParameter", "h:s", "n", [[
+Component:AddFunction( "getPoseParameter", "e:s", "n", [[
 	if %TKValidAction( %context, value %1 ) then 
 		%util = value %1:GetPoseParameter( value %2 ) 
 	end 
