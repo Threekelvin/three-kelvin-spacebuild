@@ -2,8 +2,8 @@
 $steamid = (isset($_GET['steamid']) ? $_GET['steamid'] : null);
 $regex = '/^STEAM_[0-5]:[01]:\d+$/';
 if(!preg_match($regex, $steamid)) {
-	echo 'Invalid Parameters';
-	exit(1);
+	header('HTTP/1.0 400 Forbidden');
+	exit;
 }
 
 function getString( $steamid )
