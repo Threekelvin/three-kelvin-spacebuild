@@ -2,7 +2,7 @@
 
 PLUGIN.Name       = "Player Name"
 PLUGIN.Prefix     = "!"
-PLUGIN.Command    = "PlayerName"
+PLUGIN.Command    = "Name"
 PLUGIN.Level      = 1
 
 if SERVER then

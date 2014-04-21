@@ -1,0 +1,4 @@
+# Ignore the avatar cache but not the default avatar.
+
+web/avatars/*
+!web/avatars/default_avatar.jpg
