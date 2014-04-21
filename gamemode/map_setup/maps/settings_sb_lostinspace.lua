@@ -20,7 +20,7 @@ TK.MapSetup.SpawnPoints = {
 
 
 TK.MapSetup.Resources = {
-    tk_tritanium = {
+    tk_magnetite = {
         [1] = {
             Pos = Vector(-10364,2585,-750),
             Ang = Angle(0, 0, 0),
@@ -29,7 +29,7 @@ TK.MapSetup.Resources = {
             Size = 20,
             Ents = {},
             NSpawn = 0,
-            Class = "tk_tritanium",
+            Class = "tk_magnetite",
         },
     },
     tk_quintinite = {
@@ -56,7 +56,7 @@ TK.MapSetup.Resources = {
             Class = "tk_riddinite",
         },
     },
-    tk_tiberium = {
+    tk_tib_crystal = {
         [1] = {
             Pos = Vector(9579,11932,7967),
             Ang = Angle(0, 0, 0),
@@ -65,7 +65,7 @@ TK.MapSetup.Resources = {
             Size = 8,
             Ents = {},
             NSpawn = 0,
-            Class = "tk_tiberium",
+            Class = "tk_tib_crystal",
         },
         [2] = {
             Pos = Vector(10666,9521,8022),
@@ -75,7 +75,7 @@ TK.MapSetup.Resources = {
             Size = 8,
             Ents = {},
             NSpawn = 0,
-            Class = "tk_tiberium",
+            Class = "tk_tib_crystal",
         }
     },
 }

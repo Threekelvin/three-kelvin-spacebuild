@@ -5,10 +5,6 @@ local table = table
 TK.AM = TK.AM or {}
 
 ///--- FindTargets ---\\\
-function _R.Player:Ip()
-    return string.match(self:IPAddress(), "(%d+%.%d+%.%d+%.%d+)")
-end
-
 function TK.AM:Match(ply, name)
     if name then
         if name == "*" then
@@ -209,10 +205,4 @@ function TK.AM:SetRank(ply, lvl)
     elseif lvl == 2 then ply:SetUserGroup("vip")
     else ply:SetUserGroup("user") end
 end
-///--- ---\\\
-
-///--- Hooks ---\\\
-hook.Add("PlayXIsPermitted", "isTKDJ", function(ply)
-    return ply:IsDJ()
-end)
 ///--- ---\\\

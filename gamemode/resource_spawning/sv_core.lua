@@ -29,7 +29,7 @@ local function SpawnAsteroid(cluster, pos)
 end
 
 local function SpawnCrystal(cluster, pos, ang)
-    local ent = ents.Create("tk_tib_crystal")
+    local ent = ents.Create(cluster.Class)
     ent:SetPos(pos)
     ent:SetAngles(ang)
     ent:Spawn()

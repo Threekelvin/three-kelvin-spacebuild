@@ -128,12 +128,10 @@ hook.Add("HUDPaint", "TKPH_Time", function()
     //-- Info --\\
     if Hud.moving or !Hud.show:GetBool() then return end
     
-    local info = TK.DB:GetPlayerData("player_info")
-    
     surface.SetFont(Hud.font)
     local x, y = surface.GetTextSize("00:00:00")
     
-    draw.SimpleText("Playtime: "..TK:FormatTime(info.playtime), Hud.font, Hud.width - 5, 3, TK.HUD.Colors.text, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
+    draw.SimpleText("Playtime: "..TK:FormatTime(LocalPlayer():GetNWInt("TKPlaytime", 0)), Hud.font, Hud.width - 5, 3, TK.HUD.Colors.text, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
     draw.SimpleText(os.date("%H:%M:%S"), Hud.font, Hud.width - x - 5, Hud.tallEdge / 2, TK.HUD.Colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     
     //-- MOTD --\\

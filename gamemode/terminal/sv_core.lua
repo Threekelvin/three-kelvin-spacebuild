@@ -30,7 +30,6 @@ function Terminal.NodeTostorage(ply, arg, ent)
     local Node, res, amt = Entity(tonumber(arg[1])), arg[2], tonumber(arg[3])
     if !IsValid(Node) or Node:CPPIGetOwner() != ply then return end
     if !Node.IsTKRD or !Node.IsNode then return end
-    if !TK.TD:AcceptResource(res) then return end
     if (Node:GetPos() - ent:GetPos()):LengthSqr() > TK.RT.Radius then return end
     local storage = TK.DB:GetPlayerData(ply, "terminal_storage")
     storage[res] = storage[res] or 0

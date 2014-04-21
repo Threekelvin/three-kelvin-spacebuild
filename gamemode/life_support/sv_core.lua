@@ -150,14 +150,15 @@ hook.Add("PlayerSpawn", "TKLS", function(ply)
     ply.tk_hev.update = true
 end)
 
-hook.Add("OnAtmosphereChange", "TKLS", function(ent)
-    if ent:IsPlayer() and !ent:IsAdmin() then
-        if ent:GetEnv():CanNoclip() then return end
-        if ent:GetMoveType() == MOVETYPE_NOCLIP then
-            ent:SetMoveType(MOVETYPE_WALK)
-            ent:SetVelocity(-ent:GetVelocity() * 0.75)
-        end
-    end
+hook.Add("OnAtmosphereChange", "TKLS", function(ent, old_env, new_env)
+    if !ent:IsPlayer() then return end
+    ent:SetNWString("TKPlanet", new_env.atmosphere.name)
+    if !ent:IsAdmin() then return end
+    if new_env:CanNoclip() then return end
+    if ent:GetMoveType() != MOVETYPE_NOCLIP then return end
+    
+    ent:SetMoveType(MOVETYPE_WALK)
+    ent:SetVelocity(-ent:GetVelocity() * 0.7)
 end)
 
 hook.Add("PlayerNoClip", "TKLS", function(ply)
@@ -169,7 +170,7 @@ end)
 hook.Add("SetupMove", "TKLS", function(ply, data)
     if ply:IsAdmin() then return end
     local env = ply:GetEnv()
-    if env:CanNoclip() or env:GetGravity() > 0 then return end
+    if env:CanNoclip() or env.atmosphere.gravity > 0 then return end
     data:SetForwardSpeed(0)
     data:SetSideSpeed(0)
     data:SetUpSpeed(0)

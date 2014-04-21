@@ -9,22 +9,6 @@ TK.TD.Settings = {
     tiberium_refine = 5
 }
 
-local Resources = {
-    "asteroid_ore",
-    "raw_tiberium",
-    "oxygen",
-    "nitrogen",
-    "carbon_dioxide",
-    "hydrogen",
-    "water",
-    "liquid_nitrogen"
-}
-
-function TK.TD:AcceptResource(res, typ)
-    if typ == "node" and res == "raw_tiberium" then return false end
-    return table.HasValue(Resources, res)
-end
-
 if SERVER then
     function TK.TD:ResearchCost(ply, idx)
         if !IsValid(ply) then return 0 end

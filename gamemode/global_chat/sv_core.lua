@@ -66,15 +66,15 @@ function TKGC:RemoteFunction(server, toserver, cmd, rank, faction, name)
     RunConsoleCommand("3k", unpack(string.Explode(" ", cmd)))
 end
 
-function TK.DB:SendGlobalMsg(ply, msg, flag)
+function TKGC:SendGlobalMsg(ply, msg, flag)
     if !IsValid(ply) or !ply:IsPlayer() then return end
     if !TKGC:CanSendMsg(ply) then
         TK.AM:SystemMessage({"Global Message Limit, please wait"}, {ply}, 2)
         return
     end
     
-    TK.DB:MakeQuery(TK.DB:FormatInsertQuery("server_globalchat", {
-        msg_conection_id = false,
+    TK.DB:InsertQuery("server_globalchat", {
+        msg_conection_id = "DB_CONN_ID",
         msg_key = 0,
         msg_origin = TK:HostName(),
         msg_flag = flag,
@@ -82,25 +82,25 @@ function TK.DB:SendGlobalMsg(ply, msg, flag)
         sender_rank = ply:GetRank(),
         sender_faction = IsValid(ply) and ply:Team() or 0,
         sender_name = ply:Name()
-    }))
+    })
     
     TKGC:SendPlyMsg(flag, TK:HostName(), ply:GetRank(), ply:Team(), ply:Name(), msg)    
 end
 
 function TK.DB:SendGlobalSystemMsg(msg)
-    TK.DB:MakeQuery(TK.DB:FormatInsertQuery("server_globalchat", {
-        msg_conection_id = false,
+    TK.DB:InsertQuery("server_globalchat", {
+        msg_conection_id = "DB_CONN_ID",
         msg_key = 1,
         msg_origin = TK:HostName(),
         msg_data = msg
-    }))
+    })
     
     TKGC:SendSysMsg(TK:HostName(), msg)
 end
 
 function TK.DB:SendRemoteCmd(ply, svr, cmd)
-    TK.DB:MakeQuery(TK.DB:FormatInsertQuery("server_globalchat", {
-        msg_conection_id = false,
+    TK.DB:InsertQuery("server_globalchat", {
+        msg_conection_id = "DB_CONN_ID",
         msg_key = 2,
         msg_origin = TK:HostName(),
         msg_recipient = svr,
@@ -108,19 +108,20 @@ function TK.DB:SendRemoteCmd(ply, svr, cmd)
         sender_rank = ply:GetRank(),
         sender_faction = IsValid(ply) and ply:Team() or 0,
         sender_name = ply:Name()
-    }))
+    })
 end
 
 hook.Add("Initialize", "TKGC", function()
-    TK.DB:MakeQuery(TK.DB:FormatSelectQuery("server_globalchat", {"msg_idx"}, {"msg_idx > %s", TKGC.LastMsg}, {"msg_idx"}), function(data)
-        TKGC.LastMsg = data[#data].msg_idx or 0
+    if !TK.DB then return end
+    TK.DB:SelectQuery("server_globalchat", {"msg_idx"}, {["msg_idx > %s"] = 0}, {"msg_idx", "DESC"}, 1, function(data)
+        TKGC.LastMsg = data[1].msg_idx or 0
     end)
 
     timer.Create("TKTKGC", 10, 0, function()
         if !TK.DB:IsConnected() then return end
         if TKGC.LastMsg == -1 then return end
 
-        TK.DB:MakeQuery(TK.DB:FormatSelectQuery("server_globalchat", {}, {"msg_idx > %s", TKGC.LastMsg}, {"msg_idx"}), function(data)
+        TK.DB:SelectQuery("server_globalchat", nil, {["msg_idx > %s"] = TKGC.LastMsg}, {"msg_idx"}, nil, function(data)
             for k,v in ipairs(data) do
                 TKGC.LastMsg = v.msg_idx
                 if v.msg_conection_id == TK.DB:ConnectionID() then return end
@@ -150,13 +151,13 @@ hook.Add("PlayerSay", "TKGC", function(ply, text, toteam)
         end
         
         if msg == "" then return end
-        TK.DB:SendGlobalMsg(ply, msg, flag)
+        TKGC:SendGlobalMsg(ply, msg, flag)
         return false
     elseif string.sub(text, 1, 2) == ";@" then
         local flag, msg = 4, string.Trim(string.sub(text, 3))
         
         if msg == "" then return end
-        TK.DB:SendGlobalMsg(ply, msg, flag)
+        TKGC:SendGlobalMsg(ply, msg, flag)
         return false
     end
 end)

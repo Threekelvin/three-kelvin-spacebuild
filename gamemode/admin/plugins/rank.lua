@@ -25,7 +25,7 @@ if SERVER then
                 local time = tonumber(arg[3]) or 0
                 if !time or time == 0 then
                     timer.Remove("temp_lvl_"..tar:UID())
-                    TK.DB:UpdatePlayerData(tar, "player_info", {rank = lvl})
+                    TK.DB:UpdatePlayer(tar, "server_player_record", {rank = lvl})
                     TK.AM:SystemMessage({ply, " Has Set ", tar, " To ", TK.AM.Rank.RGBA[lvl], "["..TK.AM.Rank.Group[lvl].."]"})
                 else
                     timer.Remove("temp_lvl_"..tar:UID())

@@ -130,6 +130,26 @@ function ENT:OnRemove()
     TK.RD:RemoveNet(self)
 end
 
+function ENT:Use()
+
+end
+
+function ENT:SetActive(val)
+
+end
+
+function ENT:TurnOn()
+
+end
+
+function ENT:TurnOff()
+
+end
+
+function ENT:Work()
+
+end
+
 function ENT:PreEntityCopy()
     local info = {}
     

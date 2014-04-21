@@ -44,10 +44,10 @@ end
 
 function ENT:DoThink(eff)
     if !self:GetActive() then return end
-
+    local temp = self:GetEnv():DoTemp(self)
     local water = self.data.water * self.mult * eff
     
-    if self:WaterLevel() < 1 then self:TurnOff() return end
+    if temp > 373 or self:WaterLevel() < 1 then self:TurnOff() return end
     if !self:Work() then return end
 
     water = self:SupplyResource("water", water)

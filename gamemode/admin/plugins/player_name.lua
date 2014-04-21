@@ -15,7 +15,7 @@ if SERVER then
         if name == "[Too Many Invalid Characters]" then return end
         local team_color = team.GetColor(ply:Team())
         
-        TK.DB:UpdatePlayerData(ply, "player_info", {name = name})
+        TK.DB:UpdatePlayer(ply, "server_player_record", {nick_name = name})
         
         msgdata = {team_color , name_old, " Has Changed Their Name To ",team_color, name}
         TK.AM:SystemMessage(msgdata)

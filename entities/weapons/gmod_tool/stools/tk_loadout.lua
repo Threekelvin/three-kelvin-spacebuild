@@ -139,7 +139,7 @@ if CLIENT then
         List:Populate()
         CPanel:AddItem(List)
         
-        hook.Add("TKDBPlayerData", "tk_loadout", function(dtable, idx, data)
+        hook.Add("TKDB_Player_Data", "tk_loadout", function(dtable, idx, data)
             if dtable != "player_loadout" then return end
             List:Populate()
         end)

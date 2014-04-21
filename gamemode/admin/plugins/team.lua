@@ -21,7 +21,7 @@ if SERVER then
             if !teams[faction] or !teams[faction].Joinable then
                 TK.AM:SystemMessage({"No Valid Team Selected"}, {ply}, 2)
             else
-                TK.DB:UpdatePlayerData(tar, "player_team", {team = faction})
+                TK.DB:UpdatePlayer(tar, "server_player_record", {team = faction})
                 TK.AM:SystemMessage({ply, " has added ", tar, " to ", team.GetColor(faction), team.GetName(faction)})
             end
         end

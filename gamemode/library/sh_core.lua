@@ -1,4 +1,8 @@
 
+function _R.Player:Ip()
+    return string.match(self:IPAddress(), "(%d+%.%d+%.%d+%.%d+)")
+end
+
 function TK:HostName()
     return string.match(GetHostName(), "%[%w+%]") or "[Server]"
 end

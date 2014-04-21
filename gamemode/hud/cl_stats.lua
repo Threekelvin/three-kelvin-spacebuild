@@ -94,13 +94,12 @@ hook.Add("HUDPaint", "TKPH_Stats", function()
     //-- Info --\\
     if Hud.moving or !Hud.show:GetBool() then return end
     
-    local info = TK.DB:GetPlayerData("player_info")
     draw.SimpleText("Name:", Hud.font, 5, 3, TK.HUD.Colors.text)
-    draw.SimpleText(info.name, Hud.font, 122, 3, TK.HUD.Colors.text)
+    draw.SimpleText(LocalPlayer():GetNWString("TKName", LocalPlayer():GetName()), Hud.font, 122, 3, TK.HUD.Colors.text)
     
-    draw.SimpleText("Experience:", Hud.font, 5, Hud.tallEdge / 2, TK.HUD.Colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-    draw.SimpleText(TK:Format(info.exp), Hud.font, 122, Hud.tallEdge / 2, TK.HUD.Colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText("Planet:", Hud.font, 5, Hud.tallEdge / 2, TK.HUD.Colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText(LocalPlayer():GetNWString("TKPlanet", "Space"), Hud.font, 122, Hud.tallEdge / 2, TK.HUD.Colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     
-    draw.SimpleText("Credits:", Hud.font, 5, Hud.tallEdge - 3, TK.HUD.Colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-    draw.SimpleText(TK:Format(info.credits), Hud.font, 122, Hud.tallEdge - 3, TK.HUD.Colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+    draw.SimpleText("Score:", Hud.font, 5, Hud.tallEdge - 3, TK.HUD.Colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+    draw.SimpleText(TK:Format(LocalPlayer():GetNWInt("TKScore", 0)), Hud.font, 122, Hud.tallEdge - 3, TK.HUD.Colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 end)

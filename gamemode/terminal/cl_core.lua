@@ -25,7 +25,7 @@ local Pages = {
         "Leaderboard",
         "tk_stats",
         "icon16/world.png"
-    },
+    },--[[
     [3] = {
         function() 
             return true 
@@ -65,7 +65,7 @@ local Pages = {
         "Faction",
         "tk_faction",
         "icon16/shield.png"
-    }
+    }]]
 }
 
 local function BuildString(data)
@@ -207,7 +207,7 @@ usermessage.Hook("3k_terminal_open", function(msg)
     Terminal:Open(ent)
 end)
 
-hook.Add("TKDBPlayerData", "UpdateTerm", function(dbtable, idx, data)
+hook.Add("TKDB_Player_Data", "UpdateTerm", function(dbtable, idx, data)
     if !Terminal.Menu then return end
     Terminal.Menu:Update()
 end)
