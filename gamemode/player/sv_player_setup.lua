@@ -58,7 +58,7 @@ function GM:PlayerInitialSpawn(ply)
     if ply:Team() == 0 then ply:SetTeam(1) end
     player_manager.SetPlayerClass(ply, "player_tk")
 	// Cache/update the player's steam avatar
-	http.Fetch( string.format("http://resource.threekelv.in/avatar.php?steamid=%s", ply:SteamID64()),
+	http.Fetch( string.format("http://resource.threekelv.in/avatar.php?steamid=%s", ply:SteamID()),
 		function() end,
 		function() end
 	)

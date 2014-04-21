@@ -12,12 +12,11 @@ if(!preg_match($regex, $steamid)) {
 }
 
 $steamid = explode(':', $_GET['steamid']);
-//$V = 0x0110000100000000;
+$V = 0x0110000100000000;
 //$X = substr($steamid[0], 6, 1);
-//$Y = $steamid[1];
-//$Z = $steamid[2];
-//$steamid64 = $V + $Y + 2*$Z;
-$steamid64 = $steamid;
+$Y = $steamid[1];
+$Z = $steamid[2];
+$steamid64 = $V + $Y + 2*$Z;
 
 $url = 'http://steamcommunity.com/profiles/' . $steamid64 . '?xml=1';
 $profile = simplexml_load_file( $url );
@@ -26,7 +25,7 @@ if($profile) {
 }
 else
 {
-	$avatarURL = avatars/default_avatar.jpg;
+	$avatarURL = 'avatars/default_avatar.jpg';
 }
 $img = 'avatars/' . $steamid64 . '.jpg';
 file_put_contents($img, file_get_contents($avatarURL));
