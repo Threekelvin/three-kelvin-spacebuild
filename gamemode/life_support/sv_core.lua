@@ -153,7 +153,7 @@ end)
 hook.Add("OnAtmosphereChange", "TKLS", function(ent, old_env, new_env)
     if !ent:IsPlayer() then return end
     ent:SetNWString("TKPlanet", new_env.atmosphere.name)
-    if !ent:IsAdmin() then return end
+    if ent:IsAdmin() then return end
     if new_env:CanNoclip() then return end
     if ent:GetMoveType() != MOVETYPE_NOCLIP then return end
     

@@ -111,7 +111,7 @@ function TK.DB:SendRemoteCmd(ply, svr, cmd)
     })
 end
 
-hook.Add("Initialize", "TKGC", function()
+hook.Add("InitPostEntity", "TKGC", function()
     if !TK.DB then return end
     TK.DB:SelectQuery("server_globalchat", {"msg_idx"}, {["msg_idx > %s"] = 0}, {"msg_idx", "DESC"}, 1, function(data)
         TKGC.LastMsg = data[1].msg_idx or 0
