@@ -34,4 +34,5 @@ else
 }
 $img = 'avatars/' . $steamid64 . '.jpg';
 file_put_contents($img, file_get_contents($avatarURL));
+chmod($img, 0664);
 ?>

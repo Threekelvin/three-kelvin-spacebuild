@@ -25,7 +25,7 @@ function getAvatarUri($name) {
 	return $uri;
 }
 
-$top = "<html><head><style type='text/css'> html, body { background:#979797; } .entry { background:#c9c9c9; border-radius:5px; margin:5px; padding:5px; overflow:hidden; min-height:64px; font-family:Tahoma,Arial,sans-serif; } .avatar { float:right; } img { margin:0; } ul { margin:0; } </style><title>Changelog</title><meta http-equiv='Content-Type' content='text/html;charset=utf-8' /></head><body>";
+$top = "<html><head><style type='text/css'> html, body { background:#979797; } .entry { background:#c9c9c9; border-radius:10px; margin:10px; padding:10px; overflow:hidden; min-height:64px; font-family:Tahoma,Arial,sans-serif; } .avatar { float:right; } img { margin:0; } ul { margin:0; } </style><title>Changelog</title><meta http-equiv='Content-Type' content='text/html;charset=utf-8' /></head><body>";
 $middle = "";
 $bottom = "</body></html>";
 
