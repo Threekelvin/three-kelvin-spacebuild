@@ -112,7 +112,7 @@ function ENT:DoThink(eff)
     for k,v in pairs(entdata.data) do
         local amt = self:ConsumeResource(k, v * eff)
         if amt > 0 then 
-            TK.RD:NetSupplyResource(lnetid, k, amt)
+            self:SupplyResource(k, TK.RD:NetSupplyResource(lnetid, k, amt))
         end
     end
 end
