@@ -11,12 +11,17 @@ if(!preg_match($regex, $steamid)) {
 	exit;
 }
 
-$steamid = explode(':', $_GET['steamid']);
-$V = 0x0110000100000000;
-//$X = substr($steamid[0], 6, 1);
-$Y = $steamid[1];
-$Z = $steamid[2];
-$steamid64 = $V + $Y + 2*$Z;
+function getSteamID64($steamid) {
+	$steamid = explode(':', $_GET['steamid']);
+	$V = 0x0110000100000000;
+	//$X = substr($steamid[0], 6, 1);
+	$Y = $steamid[1];
+	$Z = $steamid[2];
+	return $V + $Y + 2*$Z;
+}
+
+$steamid = $_GET['steamid'];
+$steamid64 = getSteamID64($steamid);
 
 $url = 'http://steamcommunity.com/profiles/' . $steamid64 . '?xml=1';
 $profile = simplexml_load_file( $url );
