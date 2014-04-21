@@ -25,23 +25,23 @@ function getAvatarUri($name) {
 	return $uri;
 }
 
-$top = "<html><head><style type='text/css'> html, body { background:#979797; } .entry { background:#c9c9c9; border-radius: 5px; margin:5px; padding:5px; min-height:64px; font-family: Tahoma,Arial,sans-serif; } .avatar { float:right; } img { margin:0; } ul { margin:0; } </style><title>Changelog</title></head><body>";
+$top = "<html><head><style type='text/css'> html, body { background:#979797; } .entry { background:#c9c9c9; border-radius: 5px; margin:5px; padding:5px; height:auto; min-height:64px; font-family: Tahoma,Arial,sans-serif; } .avatar { float:right; } img { margin:0; } ul { margin:0; } </style><title>Changelog</title><meta http-equiv='Content-Type' content='text/html;charset=utf-8' /></head><body>";
 $middle = "";
 $bottom = "</body></html>";
 
 $delim = '@@@@@@@@@@';
-$lines = explode( PHP_EOL, shell_exec("git log --pretty=tformat:'%cd%n%cN%n%B" . $delim . "' -10 --no-merges --date=short") );
+$lines = explode( PHP_EOL, shell_exec("git log --pretty=tformat:'%cd%n%cN%n%B" . $delim . "' -20 --no-merges --date=short") );
 $commits = [];
-for($i = 0; $i < count($lines); $i++) {
-	$date = trim($lines[i]);
-	if(!array_key_exists($date, $commits) { $commits[$date] = []; }
+for($i = 0; $i < count($lines)-1; $i++) {
+	$date = trim($lines[$i]);
+	if(!array_key_exists($date, $commits)) { $commits[$date] = []; }
 	$i++;
-	$user = trim($lines[i]);
-	if(!array_key_exists($user, $commits[$date]) { $commits[$date][$user] = []; }
+	$user = trim($lines[$i]);
+	if(!array_key_exists($user, $commits[$date])) { $commits[$date][$user] = []; }
 	$i++;
 	// Commit messages
-	while($lines[i] != $delim) {
-		array_push($commits[$date][$user], trim($lines[i]);
+	while($lines[$i] != $delim) {
+		array_push($commits[$date][$user], trim($lines[$i]));
 		$i++;
 	}
 }
@@ -49,7 +49,7 @@ for($i = 0; $i < count($lines); $i++) {
 foreach($commits as $date => $users) {
 	$middle = $middle . "<div class='entry'><b>" . $date . "</b><br>";
 	foreach($users as $user => $messages) {
-		$middle = $middle . "<u>" . $user . "</u><div class='avatar'><img src='" . getAvatarUri($user) . "' width='64' height='64'/></div><br><ul>";
+		$middle = $middle . "<u>" . $user . "</u><div class='avatar'><img src='" . getAvatarUri($user) . "' width='64' height='64'/></div><br><br><ul>";
 		foreach($messages as $message) {
 			$middle = $middle . "<li>" . $message . "</li>";
 		}
