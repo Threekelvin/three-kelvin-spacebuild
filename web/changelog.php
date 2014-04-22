@@ -50,9 +50,9 @@ for($i = 0; $i < count($lines)-1; $i++) {
 }
 
 foreach($commits as $date => $users) {
-	$middle .= "<div class='entry'><b>" . $date . "</b><br><br>";
+	$middle .= "<div class='entry'><b>" . $date . "</b><br>";
 	foreach($users as $user => $messages) {
-		$middle .= "<div style='overflow:hidden'><u>" . $user . "</u><div class='avatar'><img src='" . getAvatarUri($user) . "' width='64' height='64'/></div><br><ul>";
+		$middle .= "<div style='overflow:hidden'><br><u>" . $user . "</u><div class='avatar'><img src='" . getAvatarUri($user) . "' width='64' height='64'/></div><br><ul>";
 		foreach($messages as $message) {
 			$middle .= "<li>" . $message . "</li>";
 		}
