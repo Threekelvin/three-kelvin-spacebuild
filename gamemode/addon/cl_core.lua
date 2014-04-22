@@ -137,7 +137,7 @@ function AOC:BuildMenu()
         if IsValid(line[1]) then
             if line[1]:GetValue(2) == "Tutorial" then
                 gui.OpenURL(line[1]:GetValue(5))
-            elseif line[1]:GetValue(2) == "SVN" then
+            elseif line[1]:GetValue(2) == "Git" then
                 SetClipboardText(line[1]:GetValue(5) or "")
             elseif line[1]:GetValue(2) == "Workshop" then
                 steamworks.ViewFile(line[1]:GetValue(5))
