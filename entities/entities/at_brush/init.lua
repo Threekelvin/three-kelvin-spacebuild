@@ -39,7 +39,6 @@ local function EnvPrioritySort(a, b)
 end
 
 function ENT:StartTouch(ent)
-    print(ent)
     if !IsValid(self.env) or !ent.tk_env then return end
     if IsValid(ent.tk_env.core) then return end
     
