@@ -8,11 +8,11 @@ local table = table
 
 function ENT:Initialize()
     if !IsValid(self.parent) then self:Remove() return end
-    
+
     self:SetModel(self.parent:GetModel())
     self:SetMoveType(MOVETYPE_NONE)
     self:PhysicsInit(SOLID_OBB)
-    self:SetSolid(SOLID_NONE)
+    self:SetSolid(SOLID_OBB)
     
     self:SetPos(self.parent:GetPos())
     self:SetAngles(self.parent:GetAngles())
@@ -39,6 +39,7 @@ local function EnvPrioritySort(a, b)
 end
 
 function ENT:StartTouch(ent)
+    print(ent)
     if !IsValid(self.env) or !ent.tk_env then return end
     if IsValid(ent.tk_env.core) then return end
     
