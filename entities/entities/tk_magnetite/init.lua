@@ -4,13 +4,9 @@ include('shared.lua')
 
 local ModelList = {
     [1] = "models/mandrac/asteroid/pyroxveld1.mdl",
-    [2] = "models/mandrac/asteroid/pyroxveld2.mdl",
-    [3] = "models/mandrac/asteroid/pyroxveld3.mdl",
-    [4] = "models/mandrac/asteroid/pyroxveld4.mdl",
-    [5] = "models/mandrac/asteroid/rock2.mdl",
-    [5] = "models/mandrac/asteroid/rock3.mdl",
-    [5] = "models/mandrac/asteroid/rock4.mdl",
-    [5] = "models/mandrac/asteroid/rock5.mdl",
+    [2] = "models/mandrac/asteroid/pyroxveld4.mdl",
+    [3] = "models/mandrac/asteroid/rock3.mdl",
+    [4] = "models/mandrac/asteroid/rock5.mdl",
 }
 
 function ENT:GetField()

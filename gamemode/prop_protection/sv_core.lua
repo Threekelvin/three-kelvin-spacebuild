@@ -204,7 +204,7 @@ function PP.CleanUpDisconnected()
             SafeRemoveEntity(ent)
         end
         
-        timer.Remove(tostring(k).." cleanup")
+        timer.Destroy(tostring(k).." cleanup")
         PP.EntityTrace[k] = nil
     end
 end
@@ -503,7 +503,7 @@ util.AddNetworkString("PPShare")
 
 hook.Add("PlayerInitialSpawn", "TKPP", function(ply)
     local uid = ply:UID()
-    timer.Remove(uid.." cleanup")
+    timer.Destroy(uid.." cleanup")
 
     if PP.BuddyTable[uid] then
         net.Start("PPBuddy")

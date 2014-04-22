@@ -167,17 +167,18 @@ end)
 function MySQL:GmodToDatabase(dbtable, idx, value)
     if !self.Schema[dbtable] then return value end
     if !self.Schema[dbtable][idx] then return value end
-    if self.Schema[dbtable][idx].type == "table" then
+    
+    if self.Schema[dbtable][idx].p_h then
+        for k,v in pairs(MySQL.Placeholder) do
+            if value != k then continue end
+            return v
+        end
+    elseif self.Schema[dbtable][idx].type == "table" then
         return SQLStr(util.TableToJSON(value))
     elseif self.Schema[dbtable][idx].type == "boolean" then
         return SQLStr(value and 1 or 0, true)
     elseif self.Schema[dbtable][idx].type == "number" then
         return SQLStr(tonumber(value), true)
-    end
-    
-    for k,v in pairs(MySQL.Placeholder) do
-        if value != k then continue end
-        return v
     end
 
     return SQLStr(value)

@@ -587,7 +587,7 @@ hook.Add("PlayerSpawnedVehicle", "TKRD", function(ply, ent)
 
     function ent:DoThink(eff)
         local ply = self:GetDriver()
-        self.data.power = IsValid(ply) and -5 or 0
+        self.data.power = IsValid(ply) and -1 or 0
         
         if !self:Work() then return end
         if !IsValid(ply) then return end

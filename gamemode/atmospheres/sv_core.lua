@@ -333,6 +333,17 @@ function TK.AT:GetAtmosphereOnPos(pos)
     return env
 end
 
+function TK.AT:ManualCheck(ent)
+    if !IsValid(ent) then return end
+    local new_env = self:GetAtmosphereOnPos(ent:GetPos())
+    local old_env = ent:GetEnv()
+    if new_env == old_env then return end
+    ent.tk_env.envlist = {new_env}
+    
+    new_env:DoGravity(ent)
+    gamemode.Call("OnAtmosphereChange", ent, old_env, new_env)
+end
+
 util.AddNetworkString("TKAT")
 
 hook.Add("Initialize", "TKAT", function()

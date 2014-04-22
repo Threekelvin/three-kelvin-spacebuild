@@ -158,7 +158,7 @@ function TK.AM:SetAFK(ply, isAFK, txt)
         TK.AM:SystemMessage({ply, " Is Back"})
     elseif !ply:IsAFK() and isAFK then
         ply:SetNWBool("TKAFK", true)
-        timer.Remove("AFK_".. ply:UserID())
+        timer.Destroy("AFK_".. ply:UserID())
         umsg.Start("TKAFK", ply)
             umsg.Bool(true)
         umsg.End()
@@ -178,13 +178,13 @@ hook.Add("KeyPress", "TKAFKTimer", function(ply, key)
     if ply:IsAFK() then
         TK.AM:SetAFK(ply, false)
     else
-        timer.Remove("AFK_".. ply:UserID())
+        timer.Destroy("AFK_".. ply:UserID())
         timer.Create("AFK_".. ply:UserID(), 600, 1, function() TK.AM:SetAFK(ply, true) end)
     end
 end)
 
 hook.Add("PlayerDisconnected", "TKAFKTimer", function(ply)
-    timer.Remove("AFK_".. ply:UserID())
+    timer.Destroy("AFK_".. ply:UserID())
 end)
 ///--- ---\\\
 

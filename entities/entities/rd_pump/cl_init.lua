@@ -206,7 +206,9 @@ function ENT:DoMenu()
     connect:SetPos(270, 140)
     connect:SetText("Connect")
     connect.DoClick = function()
-        local entid = nodes:GetSelected()[1]:GetValue(2)
+        local node = nodes:GetSelected()[1]
+        if !node then return end
+        local entid = node:GetValue(2)
         local ent = Entity(entid)
         if !IsValid(ent) then return end
         surface.PlaySound("ui/buttonclickrelease.wav")

@@ -111,3 +111,19 @@ hook.Add("Initialize", "SBEP_Fix", function()
     end
     ///--- ---\\\
 end)
+
+///--- Sit Anywhere ---\\\
+hook.Add("EntitySpawned", "Sit_Anywhere", function(ent)
+    if !ent:IsVehicle() then return end
+    timer.Simple(0.1, function()
+        if ent:GetCollisionGroup() == COLLISION_GROUP_VEHICLE then return end
+        TK.AT:ManualCheck(ent)
+        timer.Create("SitAnywhereFix_".. ent:EntIndex(), 1, 0, function()
+            TK.AT:ManualCheck(ent)
+        end)
+        ent:CallOnRemove("SitAnywhereFix", function(ent)
+            timer.Destroy("SitAnywhereFix_".. ent:EntIndex())
+        end)
+    end)
+end)
+///--- ---\\\

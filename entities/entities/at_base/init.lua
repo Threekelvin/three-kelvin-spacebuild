@@ -102,8 +102,7 @@ function ENT:Think()
     
     for idx,ent in pairs(self.outside) do
         if IsValid(ent) then
-            if (ent:GetPos() - self:GetPos()):LengthSqr() > self:GetRadius2() then continue end
-            self:MoveInside(ent)
+            self:CheckEntity(ent)
         else
             self.outside[idx] = nil
         end
@@ -111,8 +110,7 @@ function ENT:Think()
     
     for idx,ent in pairs(self.inside) do
         if IsValid(ent) then
-            if (ent:GetPos() - self:GetPos()):LengthSqr() < self:GetRadius2() then continue end
-            self:MoveOutside(ent)
+            self:CheckEntity(ent)
         else
             self.inside[idx] = nil
         end
@@ -123,8 +121,6 @@ function ENT:Think()
 end
 
 function ENT:CheckEntity(ent)
-    if !IsValid(ent) then return end
-    
     if self.inside[ent] then
         if (ent:GetPos() - self:GetPos()):LengthSqr() < self:GetRadius2() then return end
         self:MoveOutside(ent)

@@ -6,7 +6,7 @@ local threekelvin = {
         idx                         =   {"INT", "PRIMARY KEY", "AUTO_INCREMENT", type = "number"},
         ply_steamid                 =   {"VARCHAR(20)", type = "string"},
         ply_ip                      =   {"VARCHAR(40)", type = "string"},
-        ban_start                   =   {"INT", "NOT NULL", type = "number"},
+        ban_start                   =   {"INT", "NOT NULL", type = "number", p_h = true},
         ban_lenght                  =   {"INT", "NOT NULL", type = "number"},
         ban_reason                  =   {"LONGTEXT", type = "string"},
         ban_lifted                  =   {"BIT", "DEFAULT 0", type = "boolean"},
@@ -21,7 +21,7 @@ local threekelvin = {
     },
     server_globalchat = {
         msg_idx                     =   {"INT", "PRIMARY KEY", "AUTO_INCREMENT", type = "number"},
-        msg_conection_id            =   {"INT", "DEFAULT 0", type = "number"},
+        msg_conection_id            =   {"INT", "DEFAULT 0", type = "number", p_h = true},
         msg_key                     =   {"TINYINT", "DEFAULT 0", type = "number"},
         msg_origin                  =   {"VARCHAR(127)", type = "string"},
         msg_recipient               =   {"VARCHAR(127)", type = "string"},

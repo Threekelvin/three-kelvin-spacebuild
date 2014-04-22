@@ -35,6 +35,7 @@ function ENT:Initialize()
     self:SetNWBool("Generator", true)
     self:AddResource("oxygen", 0)
     self:AddResource("nitrogen", 0)
+    self:AddResource("water", 0)
     
     self.Inputs = WireLib.CreateInputs(self, {"Activate", "Disable GHD"})
     self.Outputs = WireLib.CreateOutputs(self, {"Shield", "Max Shield", "Armor", "Max Armor", "Hull", "Max Hull"})

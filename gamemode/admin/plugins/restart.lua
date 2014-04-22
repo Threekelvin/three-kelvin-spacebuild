@@ -62,7 +62,7 @@ if SERVER then
                     if Time <=0 then
                         RunConsoleCommand("sv_password", "")
                         RunConsoleCommand("changelevel", game.GetMap())
-                        timer.Remove("server_restart")
+                        timer.Destroy("server_restart")
                     end
                     TK.AM:SystemMessage({"Server Restart In "..Time.." Seconds"})
                 end
@@ -73,7 +73,7 @@ if SERVER then
             Restart = false
             HUDwarning( player.GetAll(), "" )
             RunConsoleCommand("sv_password", "")
-            timer.Remove("server_restart")
+            timer.Destroy("server_restart")
             TK.AM:StopSounds()
             TK.AM:SystemMessage({ply, " Has Stopped The Restart!"})
         end
