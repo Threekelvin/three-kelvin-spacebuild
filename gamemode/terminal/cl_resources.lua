@@ -273,7 +273,7 @@ local function CaptchaPopup(panel, request)
             textBox:SetEditable(true)
             textBox:SetEnterAllowed(true)
             submit:SetDisabled(false)
-            browser:OpenURL("http://threekelvin.co.uk/resource/captcha.php?steamid="..LocalPlayer():SteamID())
+            browser:OpenURL("http://resource.threekelv.in/captcha.php?steamid="..LocalPlayer():SteamID())
             Derma_Message("Incorrect. Please try again.", "", "OK")
         end
     end)
@@ -339,7 +339,7 @@ function PANEL:Think(force)
         self.NextThink = CurTime() + 1
     end
     
-    local Storage = TK.DB:GetPlayerData("terminal_storage")
+    local Storage = TK.DB:GetPlayerData("player_terminal_storage")
     
     if IsValid(self.ActiveNode) then
         if (self.ActiveNode:GetPos() - self.Terminal.Ent:GetPos()):LengthSqr() > TK.RT.Radius then

@@ -16,14 +16,14 @@ function Terminal.StorageToNode(ply, arg, ent)
     if !IsValid(Node) or Node:CPPIGetOwner() != ply then return end
     if !Node.IsTKRD or !Node.IsNode then print("error", Node) return end
     if (Node:GetPos() - ent:GetPos()):LengthSqr() > TK.RT.Radius then return end
-    local storage = TK.DB:GetPlayerData(ply, "terminal_storage")
+    local storage = TK.DB:GetPlayerData(ply, "player_terminal_storage")
     if !storage[res] then return end
     if storage[res] < amt then return end
     
     local amt = Node:SupplyResource(res, amt)
     if amt <= 0 then return end
 
-    TK.DB:UpdatePlayerData(ply, "terminal_storage", {[res] = storage[res] - amt})
+    TK.DB:UpdatePlayer(ply, "player_terminal_storage", {[res] = storage[res] - amt})
 end
 
 function Terminal.NodeTostorage(ply, arg, ent)
@@ -31,13 +31,13 @@ function Terminal.NodeTostorage(ply, arg, ent)
     if !IsValid(Node) or Node:CPPIGetOwner() != ply then return end
     if !Node.IsTKRD or !Node.IsNode then return end
     if (Node:GetPos() - ent:GetPos()):LengthSqr() > TK.RT.Radius then return end
-    local storage = TK.DB:GetPlayerData(ply, "terminal_storage")
+    local storage = TK.DB:GetPlayerData(ply, "player_terminal_storage")
     storage[res] = storage[res] or 0
 
     local amt = Node:ConsumeResource(res, amt)
     if amt <= 0 then return end
 
-    TK.DB:UpdatePlayerData(ply, "terminal_storage", {[res] = math.floor(storage[res] + amt)})
+    TK.DB:UpdatePlayer(ply, "player_terminal_storage", {[res] = math.floor(storage[res] + amt)})
 end
 
 function Terminal.GetCaptcha(ply)
@@ -47,7 +47,7 @@ end
 
 function Terminal.NewCaptcha(ply)
     local captcha = string.random(5)
-    TK.DB:UpdatePlayerData(ply, "terminal_setting", {["captcha"] = captcha})
+    TK.DB:UpdatePlayer(ply, "terminal_setting", {["captcha"] = captcha})
     return captcha
 end
 
@@ -76,8 +76,7 @@ function Terminal.AddResearch(ply, arg, ent)
     end
 
 
-    TK.DB:UpdatePlayerData(ply, "terminal_upgrades", {[idx] = upgrades[idx] + 1})
-    TK.DB:UpdatePlayerData(ply, "player_info", {exp = info.exp - cost})
+    TK.DB:UpdatePlayer(ply, "terminal_upgrades", {[idx] = upgrades[idx] + 1})
 end
 ///--- ---\\\
 

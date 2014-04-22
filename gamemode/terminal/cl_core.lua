@@ -25,7 +25,7 @@ local Pages = {
         "Leaderboard",
         "tk_stats",
         "icon16/world.png"
-    },--[[
+    },
     [3] = {
         function() 
             return true 
@@ -33,7 +33,7 @@ local Pages = {
         "Resources",
         "tk_resources",
         "icon16/ruby.png"
-    },
+    },--[[
     [4] = {
         function() 
             return true 

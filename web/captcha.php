@@ -15,7 +15,7 @@ function getString( $steamid )
 				. $mysqli->connect_error);
 	}
 
-	$query = "SELECT `captcha` FROM `terminal_setting` WHERE `steamid`='" . $steamid . "'";
+	$query = "SELECT `captcha` FROM `player_settings` WHERE `steamid`='" . $steamid . "'";
 	if ($result = $mysqli->query($query)) {
 		$retstr = $result->fetch_object()->captcha;
 		$result->close();
