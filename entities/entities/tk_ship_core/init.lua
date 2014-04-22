@@ -16,7 +16,7 @@ end
 
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
-    self.ghd = true
+    self.ghd = false
     
     self.atmosphere = {}
     
@@ -37,7 +37,7 @@ function ENT:Initialize()
     self:AddResource("nitrogen", 0)
     self:AddResource("water", 0)
     
-    self.Inputs = WireLib.CreateInputs(self, {"Activate", "Disable GHD"})
+    self.Inputs = WireLib.CreateInputs(self, {"Activate", "GHD"})
     self.Outputs = WireLib.CreateOutputs(self, {"Shield", "Max Shield", "Armor", "Max Armor", "Hull", "Max Hull"})
 
     self.hull = {}
@@ -56,7 +56,7 @@ function ENT:TriggerInput(iname, value)
         else
             self:TurnOff()
         end
-    elseif iname == "Disable GHD" then
+    elseif iname == "GHD" then
         if value != 0 then
             self:TurnOff()
             self.ghd = false

@@ -560,17 +560,6 @@ function TK.RD:GetResourceName(idx)
 end
 ///--- ---\\\
 
-///--- Resources ---\\\
-hook.Add("Initialize", "TKRD", function()
-    TK.RD:AddResource("oxygen", "Oxygen")
-    TK.RD:AddResource("carbon_dioxide", "Carbon Dioxide")
-    TK.RD:AddResource("nitrogen", "Nitrogen")
-    TK.RD:AddResource("hydrogen", "Hydrogen")
-    TK.RD:AddResource("liquid_nitrogen", "Liquid Nitrogen")
-    TK.RD:AddResource("water", "Water")
-end)
-///--- ---\\\
-
 ///--- Vehicles ---\\\
 hook.Add("PlayerSpawnedVehicle", "TKRD", function(ply, ent)
     ent.data = {}

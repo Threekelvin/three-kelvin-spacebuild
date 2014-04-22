@@ -5,11 +5,10 @@ local AOC = {}
 AOC.ListVersion = 2 //change this to make it popup for everyone
 
 AOC.Tutorial = {
-    ["SVN Tutorial"]                        = "http://facepunch.com/showthread.php?t=688324"  
 }
 AOC.Legacy = {
-    ["SpaceBuild Enhancement Project"]      = "https://github.com/SnakeSVx/sbep/trunk/",
-    ["TKMP"]                                = "http://3k-model-pack.googlecode.com/svn/trunk/",
+    ["SpaceBuild Enhancement Project"]      = "https://github.com/SnakeSVx/sbep.git",
+    ["TKMP"]                                = "https://code.google.com/p/3k-model-pack/",
 }
 AOC.MountedLegacy = {}
 
@@ -108,7 +107,7 @@ function AOC:BuildMenu()
     
     for k,v in pairs(self.Legacy) do
         local mounted = self:IsLegacyMounted(k)
-        local line = List:AddLine(k, "SVN", tostring(self:IsLegacyInstalled(k)), tostring(mounted), v)
+        local line = List:AddLine(k, "Git", tostring(self:IsLegacyInstalled(k)), tostring(mounted), v)
         if !mounted then AutoHide = 1 end
         line.OnSelect = function()
             copy.txt = "Copy Selected Link"
@@ -118,7 +117,7 @@ function AOC:BuildMenu()
     RunConsoleCommand("tk_aoc_show", AutoHide)
     
     copy = vgui.Create("DButton", Panel)
-    copy.txt = "Open Tutorial Page"
+    copy.txt = "Copy Selected Link"
     copy:SetPos(5, 255)
     copy:SetSize(525, 35)
     copy:SetText("")

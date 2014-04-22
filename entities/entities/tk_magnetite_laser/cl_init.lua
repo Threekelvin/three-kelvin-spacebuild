@@ -27,7 +27,7 @@ function ENT:Draw()
         
         if IsValid(trace.Entity) then
             local ent = trace.Entity
-            if ent:GetClass() == "tk_roid" then
+            if ent:GetClass() == "tk_magnetite" then
                 render.StartBeam(14)
                     render.AddBeam(self:LocalToWorld(Vector(0,0,32)), 40, CurTime(), Color(255,255,255,255))
                     

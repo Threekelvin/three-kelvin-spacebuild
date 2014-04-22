@@ -89,7 +89,7 @@ function TK.DB:BuildPlayer(ply)
 end
 
 function TK.DB:NewPlayer(ply)
-    self:InsertQuery("server_player_record", {steamid = ply.steamid, ip = ply.ip, uniqueid = ply.uid, steam_name = ply:GetName(), nick_name = ply:GetName()})
+    self:InsertQuery("server_player_record", {steamid = ply.steamid, ip = ply.ip, uniqueid = ply.uid, steam_name = ply:GetName(), nick_name = ply:GetSafeName()})
     
     for dbtable,data in pairs(list.Get("TK_Database")) do
         if !string.match(dbtable, "^player_") then continue end
@@ -134,6 +134,7 @@ function TK.DB:CheckForData(ply)
             TK.DB:SetNetworkData(ply, data[1])
             TK.DB:LoadPlayer(ply)
         else
+            TK.DB:SetNetworkData(ply, {nick_name = ply:GetSafeName(), rank = 1, team = 1})
             TK.DB:NewPlayer(ply)
         end
     end, ply)

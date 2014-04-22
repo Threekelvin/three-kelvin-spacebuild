@@ -38,15 +38,6 @@ net.Receive("TKRD_MEnt", function()
     ent:DoMenu()
 end)
 
-hook.Add("Initialize", "TK.RD", function()
-    TK.RD:AddResource("oxygen", "Oxygen")
-    TK.RD:AddResource("carbon_dioxide", "Carbon Dioxide")
-    TK.RD:AddResource("nitrogen", "Nitrogen")
-    TK.RD:AddResource("hydrogen", "Hydrogen")
-    TK.RD:AddResource("liquid_nitrogen", "Liquid Nitrogen")
-    TK.RD:AddResource("water", "Water")
-end)
-
 local function RequestData(typ, id)
     local idx, time = typ..id, CurTime()
     if sync_data[idx] and sync_data[idx] > time then return end
