@@ -1,10 +1,10 @@
 
 TK.AT = TK.AT or {}
 
-local Suns = {}
-local Stars = {}
-local Ships = {}
-local Planets = {}
+TK.AT.Suns = {}
+TK.AT.Stars = {}
+TK.AT.Ships = {}
+TK.AT.Planets = {}
 
 ///--- Flags ---\\\
 ATMOSPHERE_SUNBURN = 2
@@ -255,7 +255,7 @@ local function RegisterAtmospheres()
             star:Spawn()
             star:SetupAtomsphere(v.data)
             print(star, "Created")
-            table.insert(Suns, Vector(v.x, v.y, v.z))
+            table.insert(TK.AT.Suns, Vector(v.x, v.y, v.z))
         end
     end
     print("-------------------------------")
@@ -265,13 +265,13 @@ local function RegisterSuns()
     print("------- Registering Suns ------")
     for k,v in ipairs(ents.FindByClass("env_sun")) do
         if IsValid(v) then
-            table.insert(Suns, v:GetPos())
+            table.insert(TK.AT.Suns, v:GetPos())
             print(v, "Found")
         end
     end
     
-    if #Suns == 0 then
-        table.insert(Suns, Vector(50000, 50000, 50000))
+    if #TK.AT.Suns == 0 then
+        table.insert(TK.AT.Suns, Vector(50000, 50000, 50000))
         print("No Sun Found, Default Added")
     end
     print("-------------------------------")
@@ -289,24 +289,24 @@ function TK.AT:GetSpace()
 end
 
 function TK.AT:GetPlanets()
-    return Planets
+    return self.Planets
 end
 
 function TK.AT:GetShips()
-    return Ships
+    return self.Ships
 end
 
 function TK.AT:GetStars()
-    return Stars
+    return self.Stars
 end
 
 function TK.AT:GetSuns()
-    return Suns
+    return self.Suns
 end
 
 function TK.AT:GetAtmosphereOnPos(pos)
     local env = Space
-    for k,v in pairs(Stars) do
+    for k,v in pairs(TK.AT.Stars) do
         if IsValid(v) then
             if EnvPrioritySort(v, env) and v:InAtmosphere(pos) then
                 env = v
@@ -314,7 +314,7 @@ function TK.AT:GetAtmosphereOnPos(pos)
         end
     end
     
-    for k,v in pairs(Ships) do
+    for k,v in pairs(TK.AT.Ships) do
         if IsValid(v) then
             if EnvPrioritySort(v, env) and v:InAtmosphere(pos) then
                 env = v
@@ -322,7 +322,7 @@ function TK.AT:GetAtmosphereOnPos(pos)
         end
     end
     
-    for k,v in pairs(Planets) do
+    for k,v in pairs(TK.AT.Planets) do
         if IsValid(v) then
             if EnvPrioritySort(v, env) and v:InAtmosphere(pos) then
                 env = v
@@ -374,7 +374,7 @@ hook.Add("InitPostEntity", "TKAT", function()
     print("---- TK Atmospheres Loaded ----")
     
     timer.Create("TKAT_wind", 10, 0, function()
-        for k,v in pairs(Planets) do
+        for k,v in pairs(TK.AT.Planets) do
             if !IsValid(v) then continue end
             v.atmosphere.windspeed = math.random(0, 100)
         end
@@ -392,11 +392,11 @@ hook.Add("EntitySpawned", "TKAT", function(ent)
     local class = ent:GetClass()
 
     if class == "at_planet" then
-        table.insert(Planets, ent)
+        table.insert(TK.AT.Planets, ent)
     elseif class == "at_star" then
-        table.insert(Stars, ent)
+        table.insert(TK.AT.Stars, ent)
     elseif class == "tk_ship_core" then
-        table.insert(Ships, ent)
+        table.insert(TK.AT.Ships, ent)
     end
     
     if ent.Type == "brush" or ent.Type == "point" then return end

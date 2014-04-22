@@ -16,14 +16,16 @@ function Terminal.StorageToNode(ply, arg, ent)
     if !IsValid(Node) or Node:CPPIGetOwner() != ply then return end
     if !Node.IsTKRD or !Node.IsNode then print("error", Node) return end
     if (Node:GetPos() - ent:GetPos()):LengthSqr() > TK.RT.Radius then return end
-    local storage = TK.DB:GetPlayerData(ply, "player_terminal_storage")
+    local storage = TK.DB:GetPlayerData(ply, "player_terminal_storage").storage
     if !storage[res] then return end
     if storage[res] < amt then return end
     
     local amt = Node:SupplyResource(res, amt)
     if amt <= 0 then return end
-
-    TK.DB:UpdatePlayer(ply, "player_terminal_storage", {[res] = storage[res] - amt})
+    
+    storage[res] = storage[res] - amt
+    storage[res] = storage[res] == 0 and nil or storage[res]
+    TK.DB:UpdatePlayer(ply, "player_terminal_storage", {storage = storage})
 end
 
 function Terminal.NodeTostorage(ply, arg, ent)
@@ -31,27 +33,27 @@ function Terminal.NodeTostorage(ply, arg, ent)
     if !IsValid(Node) or Node:CPPIGetOwner() != ply then return end
     if !Node.IsTKRD or !Node.IsNode then return end
     if (Node:GetPos() - ent:GetPos()):LengthSqr() > TK.RT.Radius then return end
-    local storage = TK.DB:GetPlayerData(ply, "player_terminal_storage")
-    storage[res] = storage[res] or 0
+    local storage = TK.DB:GetPlayerData(ply, "player_terminal_storage").storage
 
     local amt = Node:ConsumeResource(res, amt)
     if amt <= 0 then return end
-
-    TK.DB:UpdatePlayer(ply, "player_terminal_storage", {[res] = math.floor(storage[res] + amt)})
+    
+    storage[res] = math.floor((storage[res] or 0) + amt)
+    TK.DB:UpdatePlayer(ply, "player_terminal_storage", {storage = storage})
 end
 
 function Terminal.GetCaptcha(ply)
-    local setting = TK.DB:GetPlayerData(ply, "terminal_setting")
+    local setting = TK.DB:GetPlayerData(ply, "player_settings")
     return setting["captcha"]
 end
 
 function Terminal.NewCaptcha(ply)
     local captcha = string.random(5)
-    TK.DB:UpdatePlayer(ply, "terminal_setting", {["captcha"] = captcha})
+    TK.DB:UpdatePlayer(ply, "player_settings", {captcha = captcha})
     return captcha
 end
 
-net.Receive("3k_terminal_resources_captcha_challenge", function(len,ply)
+net.Receive("3k_terminal_resources_captcha_challenge", function(len, ply)
     local challenge = net.ReadString()
     net.Start("3k_terminal_resources_captcha_response")
         net.WriteBit(string.lower(Terminal.GetCaptcha(ply)) == string.lower(challenge))

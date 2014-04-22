@@ -7,8 +7,8 @@ function TK.DB:SetPlayerData(ply, dbtable, data)
     if !self.PlayerData[ply.uid] then return end
     if !self.PlayerData[ply.uid][dbtable] then return end
     local p_data = self.PlayerData[ply.uid][dbtable]
-    
     local n_data = {}
+    
     for idx,val in pairs(data) do
         if !p_data[idx] or p_data == val then continue end
         
@@ -18,7 +18,7 @@ function TK.DB:SetPlayerData(ply, dbtable, data)
         if self:NoSync(dbtable, idx) then continue end
         n_data[idx] = val
     end
-    
+
     self.PlayerData[ply.uid][dbtable] = p_data
     
     if table.Count(n_data) == 0 then return end
@@ -69,7 +69,7 @@ function TK.DB:BuildPlayer(ply)
                 n_data[idx] = val.default
             else
                 for k,v in ipairs(val) do
-                    local value = string.match(v, "DEFAULT (%w+)")
+                    local value = string.match(v, "DEFAULT (%w+)") or string.match(v, "DEFAULT '(%w+)'")
                     if !value then continue end
                     
                     self.PlayerData[ply.uid][dbtable][idx] = self:DatabaseToGmod(dbtable, idx, value)
@@ -189,7 +189,7 @@ end)
 
 function TK.DB:GetPlayerData(ply, dbtable)
     if !IsValid(ply) then return end
-    return self.PlayerData[ply.uid][dbtable] or {}
+    return table.Copy(self.PlayerData[ply.uid][dbtable]) or {}
 end
 
 function TK.DB:AddPlayTime(ply, time)

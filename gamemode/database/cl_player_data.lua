@@ -2,7 +2,7 @@
 TK.DB = TK.DB or {}
 TK.DB.PlayerData = {}
 
-net.Receive("DB_Sync", function()
+net.Receive("TKDB_Sync", function()
     local dbtable = net.ReadString()
     local data = net.ReadTable()
     

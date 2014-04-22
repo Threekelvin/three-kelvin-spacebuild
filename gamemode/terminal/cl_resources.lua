@@ -339,7 +339,7 @@ function PANEL:Think(force)
         self.NextThink = CurTime() + 1
     end
     
-    local Storage = TK.DB:GetPlayerData("player_terminal_storage")
+    local Storage = TK.DB:GetPlayerData("player_terminal_storage").storage
     
     if IsValid(self.ActiveNode) then
         if (self.ActiveNode:GetPos() - self.Terminal.Ent:GetPos()):LengthSqr() > TK.RT.Radius then
