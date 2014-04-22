@@ -26,11 +26,13 @@ $steamid64 = getSteamID64($steamid);
 $url = 'http://steamcommunity.com/profiles/' . $steamid64 . '?xml=1';
 $profile = simplexml_load_file( $url );
 if($profile) {
-	$avatarURL = $profile->avatarMedium;
+	$avatarURL =	$profile->avatarMedium;
 }
 else
 {
-	$avatarURL = 'avatars/default_avatar.jpg';
+	$avatarURL =	file_exists('avatars/' . $steamid64 . '.jpg')
+					? 'avatars/' . $steamid64 . '.jpg'
+					: 'avatars/default_avatar.jpg';
 }
 $img = 'avatars/' . $steamid64 . '.jpg';
 file_put_contents($img, file_get_contents($avatarURL));
