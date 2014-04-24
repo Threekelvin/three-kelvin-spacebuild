@@ -1,5 +1,5 @@
 
-TOOL.Category    = "Power Generators"
+TOOL.Category    = "Generators"
 TOOL.Name        = "Fusion Reactor"
 TOOL.Limit        = 5
 TOOL.Data        = {

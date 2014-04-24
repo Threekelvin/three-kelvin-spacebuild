@@ -1,5 +1,5 @@
 
-TOOL.Category    = "Power Generators"
+TOOL.Category    = "Generators"
 TOOL.Name        = "Solar Panel"
 TOOL.Limit        = 5
 

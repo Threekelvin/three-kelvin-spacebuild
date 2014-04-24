@@ -15,7 +15,7 @@ function ENT:Initialize()
     entdata.update = {}
     
     self.Inputs = WireLib.CreateInputs(self, {"On"})
-    self.Outputs = WireLib.CreateOutputs(self, {"On", "Name [STRING]", "Tempurature", "Gravity", "Resources [TABLE]"})
+    self.Outputs = WireLib.CreateOutputs(self, {"On", "Name [STRING]", "Temperature", "Gravity", "Resources [TABLE]"})
 end
 
 function ENT:TurnOn()
@@ -29,7 +29,7 @@ function ENT:TurnOff()
     self:SetActive(false)
     WireLib.TriggerOutput(self, "On", 0)
     WireLib.TriggerOutput(self, "Name", "")
-    WireLib.TriggerOutput(self, "Tempurature", 0)
+    WireLib.TriggerOutput(self, "Temperature", 0)
     WireLib.TriggerOutput(self, "Gravity", 0)
     WireLib.TriggerOutput(self, "Resources", {n={},ntypes={},s={},stypes={},size=0})
 end
@@ -61,7 +61,7 @@ function ENT:DoThink(eff)
     local temp = eff and env:DoTemp(self) or 0
     if entdata.data.temp != temp then
         entdata.data.temp = temp
-        WireLib.TriggerOutput(self, "Tempurature", temp)
+        WireLib.TriggerOutput(self, "Temperature", temp)
         entdata.update = {}
     end
     

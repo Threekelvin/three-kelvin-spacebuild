@@ -1,5 +1,5 @@
 
-TOOL.Category    = "Generators"
+TOOL.Category    = "Compressors"
 TOOL.Name        = "Oxygen Compressor"
 TOOL.Limit        = 2
 TOOL.Data        = {

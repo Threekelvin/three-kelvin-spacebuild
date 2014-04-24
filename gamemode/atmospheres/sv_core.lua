@@ -373,7 +373,7 @@ hook.Add("InitPostEntity", "TKAT", function()
     RegisterSuns()
     print("---- TK Atmospheres Loaded ----")
     
-    timer.Create("TKAT_wind", 10, 0, function()
+    timer.Create("TKAT_wind", 30, 0, function()
         for k,v in pairs(TK.AT.Planets) do
             if !IsValid(v) then continue end
             v.atmosphere.windspeed = math.random(0, 100)

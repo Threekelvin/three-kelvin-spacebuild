@@ -55,7 +55,7 @@ function ENT:Draw()
         
         Add(OverlayText, "\nName: ")
         Add(OverlayText, entdata.data.id or "Space")
-        Add(OverlayText, "\nTempurature: ")
+        Add(OverlayText, "\nTemperature: ")
         Add(OverlayText, entdata.data.temp or 3)
         Add(OverlayText, "\nGravity: ")
         Add(OverlayText, entdata.data.gravity or 0)

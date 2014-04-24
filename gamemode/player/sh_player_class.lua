@@ -45,6 +45,8 @@ function PLAYER:Spawn()
 
     local col = team.GetColor(self.Player:Team())
     self.Player:SetWeaponColor(Vector(col.r / 255, col.g / 255, col.b / 255))
+    
+    self.Player:SetupHands()
 end
 
 function PLAYER:ShouldDrawLocal() 
