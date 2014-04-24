@@ -38,12 +38,12 @@ function ENT:DoThink()
         local ang = self:GetUp():Dot((v - pos):GetNormal())
         direct = math.max(direct, ang)
     end
-    
+
     if direct <= 0.5 or !self:GetEnv():InSun(self) then
         self:TurnOff()
     else
         self:TurnOn()
-        self:SetPower(self.data.power)
+        self:SetPower(math.ceil(self.data.power * direct))
         WireLib.TriggerOutput(self, "Output", self:GetPowerGrid())
     end
 end

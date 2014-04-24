@@ -18,8 +18,7 @@ function ENT:Initialize()
 end
 
 function ENT:Think()
-    self.speed = self.speed + 0.01 * (self.windspeed - self.speed)
-    if self.speed < 0.0005 then self.speed = 0 end
+    self.speed = self.speed + 0.01 * ((self.windspeed == 0 and 0.1 or self.windspeed ) - self.speed)
     self:SetPlaybackRate(self.speed)
     self:NextThink(CurTime())
     return true
@@ -48,7 +47,7 @@ function ENT:DoThink()
     if !env:IsPlanet() then self:TurnOff() return end
     self.windspeed = env.atmosphere.windspeed > 20 and env.atmosphere.windspeed / 100 or 0
     self:TurnOn()
-    self:SetPower(math.ceil(self.data.power * self.windspeed))
+    self:SetPower(math.ceil(self.data.power * (self.windspeed + 1) * 0.5))
     WireLib.TriggerOutput(self, "Output", self:GetPowerGrid())
 end
 
