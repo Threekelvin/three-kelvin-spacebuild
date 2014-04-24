@@ -29,12 +29,13 @@ function CPPI:GetInterfaceVersion()
 end
 
 hook.Add("Initialize", "TKPP", function()
-    function _R.Entity:UID()
+    function _R.Player:UID()
+        if !IsValid(self) then return "0" end
         local uid = self:GetNWString("UID", false)
-        if !uid and self:IsPlayer() then
-            uid = tostring(self:UniqueID())
-            self:SetNWString("UID", uid)
-        end
+        if uid then return uid end
+        
+        uid = tostring(self:UniqueID())
+        self:SetNWString("UID", uid)
         return uid
     end
 end)

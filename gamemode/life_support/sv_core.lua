@@ -151,14 +151,19 @@ hook.Add("PlayerSpawn", "TKLS", function(ply)
 end)
 
 hook.Add("OnAtmosphereChange", "TKLS", function(ent, old_env, new_env)
-    if !ent:IsPlayer() then return end
-    ent:SetNWString("TKPlanet", new_env.atmosphere.name)
-    if ent:IsAdmin() then return end
-    if new_env:CanNoclip() then return end
-    if ent:GetMoveType() != MOVETYPE_NOCLIP then return end
-    
-    ent:SetMoveType(MOVETYPE_WALK)
-    ent:SetVelocity(-ent:GetVelocity() * 0.7)
+    if ent:IsPlayer() then
+        ent:SetNWString("TKPlanet", new_env.atmosphere.name)
+        if ent:IsAdmin() then return end
+        if new_env:CanNoclip() then return end
+        if ent:GetMoveType() != MOVETYPE_NOCLIP then return end
+        
+        ent:SetMoveType(MOVETYPE_WALK)
+        ent:SetVelocity(-ent:GetVelocity() * 0.7)
+    elseif ent:IsVehicle() then
+        local ply = ent:GetDriver()
+        if !IsValid(ply) then return end
+        ply:SetNWString("TKPlanet", new_env.atmosphere.name)
+    end
 end)
 
 hook.Add("PlayerNoClip", "TKLS", function(ply)
