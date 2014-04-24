@@ -13,14 +13,6 @@ if SERVER then
         end
     end
 
-    util.AddNetworkString("HUD_WARNING")
-    local function HUDwarning( ply, message )
-        net.Start( "HUD_WARNING" )
-            net.WriteString( "restart" )
-            net.WriteString( message )
-        net.Send( ply )
-    end
-
     function PLUGIN.Call(ply, arg)
         if !Restart then
             if table.Count(player.GetAll()) == 0 then
@@ -28,7 +20,7 @@ if SERVER then
                 return
             end
             Restart = true
-            HUDwarning( player.GetAll(), "Restart in progress..." )
+            TK.HUD:StartWarning(player.GetAll(), "Restart in progress...")
             RunConsoleCommand("sv_password", "restarting")
             local Time = math.Clamp(tonumber(arg[1]) or 120, 10, 120)
             
@@ -71,7 +63,7 @@ if SERVER then
             end)
         else
             Restart = false
-            HUDwarning( player.GetAll(), "" )
+            TK.HUD:StopWarning(player.GetAll(), "Restart in progress...")
             RunConsoleCommand("sv_password", "")
             timer.Destroy("server_restart")
             TK.AM:StopSounds()

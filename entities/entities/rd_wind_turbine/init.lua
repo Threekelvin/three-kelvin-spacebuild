@@ -48,7 +48,7 @@ function ENT:DoThink()
     if !env:IsPlanet() then self:TurnOff() return end
     self.windspeed = env.atmosphere.windspeed > 20 and env.atmosphere.windspeed / 100 or 0
     self:TurnOn()
-    self:SetPower(math.floor(self.data.power * self.windspeed))
+    self:SetPower(math.ceil(self.data.power * self.windspeed))
     WireLib.TriggerOutput(self, "Output", self:GetPowerGrid())
 end
 

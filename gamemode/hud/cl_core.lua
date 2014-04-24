@@ -1,5 +1,6 @@
 
 TK.HUD = TK.HUD or {}
+TK.HUD.Warning = {}
 local Admin = CreateClientConVar("3k_admin_overlay", 1, true, false)
 
 surface.CreateFont("Terminal", {
@@ -51,14 +52,19 @@ TK.HUD.MOTDs = {
 }
 
 function TK.HUD.NextMOTD()
-    index = (index % #TK.HUD.MOTDs) + 1
-    return TK.HUD.MOTDs[index]
+    if #TK.HUD.Warning > 0 then
+        index = (index % #TK.HUD.Warning) + 1
+        return TK.HUD.Warning[index]
+    else
+        index = (index % #TK.HUD.MOTDs) + 1
+        return TK.HUD.MOTDs[index]
+    end
 end
 
 hook.Add("HUDPaint", "TKHUD_Admin", function()
     if !IsValid(LocalPlayer()) then return end
     local teamcol = team.GetColor(LocalPlayer():Team())
-    TK.HUD.Colors.border = teamcol
+    TK.HUD.Colors.border = #TK.HUD.Warning > 0 and Color(255, 0, 0, 191 + 64 * math.sin(math.pi * RealTime())) or teamcol
     TK.HUD.Colors.bar = Color(teamcol.r, teamcol.g, teamcol.b, 100)
     
     if !Admin:GetBool() then return end
@@ -86,5 +92,24 @@ end)
 hook.Add("HUDShouldDraw", "TKPH", function(str)
     if str == "CHudHealth" or str == "CHudBattery" then
         return false
+    end
+end)
+
+net.Receive("TKHUD_Start_Warning", function()
+    table.insert(TK.HUD.Warning, net.ReadString())
+    if !TK.HUD.Time then return end
+    TK.HUD.Time.MOTD:SetText(TK.HUD.NextMOTD())
+    TK.HUD.Time.MOTD.voffset = 0
+end)
+
+net.Receive("TKHUD_Stop_Warning", function()
+    local msg = net.ReadString()
+    for k,v in pairs(TK.HUD.Warning) do
+        if v != msg then continue end
+        table.remove(TK.HUD.Warning, k)
+        if !TK.HUD.Time then return end
+        TK.HUD.Time.MOTD:SetText(TK.HUD.NextMOTD())
+        TK.HUD.Time.MOTD.voffset = 0
+        break
     end
 end)

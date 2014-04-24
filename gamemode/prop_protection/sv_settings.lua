@@ -135,7 +135,13 @@ TK.PP.EntityBlackList = {
     "combine_mine",
     "weapon_striderbuster",
     "prop_thumper",
-    "npc_grenade_frag"
+    "npc_grenade_frag",
+    "livable_module",
+    "sbep_base_docking_clamp",
+    "sbep_base_door",
+    "sbep_base_door_controller",
+    "sbep_elev_housing",
+    "sbep_elev_system",
 }
 
 TK.PP.BadTools = {
