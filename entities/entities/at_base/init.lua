@@ -256,15 +256,18 @@ end
 
 function ENT:DoGravity(ent)
     if !IsValid(ent) or !ent.tk_env or ent.tk_env.nogravity then return end
-    local phys = ent:GetPhysicsObject()
-    if !IsValid(phys) then return end
 
     local grav = self.atmosphere.gravity
     if !ent.tk_env.gravity == grav then return end
     
     local bool = grav > 0
-    phys:EnableGravity(bool)
-    phys:EnableDrag(bool)
+    for i=0, ent:GetPhysicsObjectCount() do
+        local phys = ent:GetPhysicsObjectNum(i)
+        if !IsValid(phys) then continue end
+        
+        phys:EnableGravity(bool)
+        phys:EnableDrag(bool)
+    end
     ent:SetGravity(grav + 0.001)
     ent.tk_env.gravity = grav
 end
