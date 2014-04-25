@@ -69,9 +69,9 @@
 		}
 		
 		function formatTime($time){
-			$days = floor($time / 86400);
-			$hours = floor(($time - ($days * 86400)) / 3600);
-			$mins = floor(($time - ($days * 86400) - ($hours * 3600)) / 60);
+			$days = floor($time / 1440);
+			$hours = floor(($time - ($days * 1440)) / 60);
+			$mins = floor(($time - ($days * 1440) - ($hours * 60)));
 			
 			if($days > 0){
 				echo $days . " days " . pad($hours) . " hrs " . pad($mins) . " mins";
