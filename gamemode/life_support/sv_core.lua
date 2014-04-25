@@ -151,6 +151,7 @@ hook.Add("PlayerSpawn", "TKLS", function(ply)
 end)
 
 hook.Add("OnAtmosphereChange", "TKLS", function(ent, old_env, new_env)
+    if !IsValid(ent) then return end
     if ent:IsPlayer() then
         ent:SetNWString("TKPlanet", new_env.atmosphere.name)
         if ent:IsAdmin() then return end

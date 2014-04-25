@@ -8,7 +8,7 @@ if(!preg_match($regex, $steamid)) {
 
 function getString( $steamid )
 {
-	$mysqli = new mysqli('localhost', 'gmod_dev', 'zKKZ8KSHCmx4Rzve', 'threekelvin');
+	$mysqli = new mysqli('localhost', 'gmod_public', '', 'threekelvin');
 
 	if ($mysqli->connect_error) {
 		die('Connect Error (' . $mysqli->connect_errno . ') '
