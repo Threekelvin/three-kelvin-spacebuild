@@ -472,7 +472,7 @@ hook.Add("Initialize", "PP_FO", function()
 end)
 
 hook.Add("EntitySpawned", "TKPP", function(ent)
-    timer.Simple(0.1, function()
+    timer.Simple(0.01, function()
         if !IsValid(ent) then return end
         local owner, uid = PP.GetOwner(ent)
         if !owner and !uid then

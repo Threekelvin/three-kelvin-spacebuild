@@ -260,7 +260,7 @@ function ENT:DoGravity(ent)
     local grav = self.atmosphere.gravity
     if !ent.tk_env.gravity == grav then return end
     
-    local bool = grav > 0
+    local bool = grav > 0.001
     for i=0, ent:GetPhysicsObjectCount() do
         local phys = ent:GetPhysicsObjectNum(i)
         if !IsValid(phys) then continue end

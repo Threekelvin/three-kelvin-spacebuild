@@ -7,6 +7,7 @@ PLUGIN.Level      = 5
 
 if SERVER then
     local Restart = false
+    local Host = ""
     local function PlaySound(sound)
         for k,v in pairs(player.GetAll()) do
             v:ConCommand("playgamesound "..sound)
@@ -19,11 +20,15 @@ if SERVER then
                 RunConsoleCommand("changelevel", game.GetMap())
                 return
             end
+            
             Restart = true
-            TK.HUD:StartWarning(player.GetAll(), "Restart in progress...")
+            Host = GetHostName()
+            
             RunConsoleCommand("sv_password", "restarting")
+            RunConsoleCommand("hostname", TK:HostName() .." Restarting")
             local Time = math.Clamp(tonumber(arg[1]) or 120, 10, 120)
             
+            TK.HUD:StartWarning(player.GetAll(), "Restart in progress...")
             TK.AM:SystemMessage({ply, " Has Started A Restart!"})
             
             timer.Create("server_restart", 1, 0, function()
@@ -65,6 +70,7 @@ if SERVER then
             Restart = false
             TK.HUD:StopWarning(player.GetAll(), "Restart in progress...")
             RunConsoleCommand("sv_password", "")
+            RunConsoleCommand("hostname", Host)
             timer.Destroy("server_restart")
             TK.AM:StopSounds()
             TK.AM:SystemMessage({ply, " Has Stopped The Restart!"})

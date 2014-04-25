@@ -2,6 +2,7 @@
 TK.RD = TK.RD or {}
 
 hook.Add("Initialize", "TK.RD", function()
+    TK.RD:AddResource("kilojoules", "Kilojoules")
     TK.RD:AddResource("oxygen", "Oxygen")
     TK.RD:AddResource("carbon_dioxide", "Carbon Dioxide")
     TK.RD:AddResource("nitrogen", "Nitrogen")

@@ -14,7 +14,7 @@ local function MakeResearchBox(panel, idx, data)
         if CurTime() < btn.NextThink then return end
         btn.NextThink = CurTime() + 1
         
-        btn.rank = TK.DB:GetPlayerData("terminal_upgrades")[btn.idx]
+        btn.level = TK.UP:GetUpgradeLevel(btn.idx)
         btn.cost = TK.TD:ResearchCost(btn.idx)
     end
     

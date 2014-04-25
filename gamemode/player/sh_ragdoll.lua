@@ -14,9 +14,9 @@ else
         local ply = net.ReadEntity()
         local grav = net.ReadFloat()
         
-        timer.Simple(0.1, function()
+        timer.Simple(0.01, function()
             local rag = ply:GetRagdollEntity()
-            local bool = grav > 0
+            local bool = grav > 0.001
             
             if !IsValid(rag) then return end
             for i=0, rag:GetPhysicsObjectCount() do
@@ -25,9 +25,13 @@ else
                 
                 phys:EnableGravity(bool)
                 phys:EnableDrag(bool)
-                phys:AddVelocity(Vector(math.Rand(-10, 10), math.Rand(-10, 10), math.Rand(-10, 10)))
+                phys:AddVelocity(Vector(math.Rand(-5, 5), math.Rand(-5, 5), math.Rand(-5, 5)))
                 rag:SetGravity(grav + 0.001)
             end
         end)
+    end)
+    
+    hook.Add("CreateClientsideRagdoll", "TK_Ragdoll", function(ent, rag)
+        print(ent, rag)
     end)
 end

@@ -87,7 +87,7 @@ function ENT:GetUnitResourceCapacity(idx)
 end
 
 function ENT:Think()
-    local produce, comsume = 1, 1
+    local produce, consume = 1, 1
     for k,v in pairs(self.netdata.entities) do
         if !IsValid(v) then
             self.netdata.entities[k] = nil
@@ -102,14 +102,19 @@ function ENT:Think()
             if power > 0 then
                 produce = produce + power
             else
-                comsume = comsume - power
+                consume = consume - power
             end
         end
     end
-    local efficenty = produce == 1 and 0 or math.min((produce / comsume)^2, 1)
+    local efficiency = produce == 1 and 0 or math.min((produce / consume)^2, 1)
 
     for k,v in pairs(self.netdata.entities) do
-        local valid, info = pcall(v.DoThink, v, efficenty)
+        local valid, info = pcall(v.DoThink, v, efficiency)
+        if !valid then print(info) end
+    end
+    
+    for k,v in pairs(self.netdata.entities) do
+        local valid, info = pcall(v.DoPostThink, v)
         if !valid then print(info) end
     end
     
@@ -121,7 +126,7 @@ function ENT:Think()
             if !valid then print(info) end
         end
     end
-    
+
     self:NextThink(CurTime() + 1)
     return true
 end

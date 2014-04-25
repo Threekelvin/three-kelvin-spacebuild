@@ -175,6 +175,10 @@ function ENT:DoThink(eff)
 
 end
 
+function ENT:DoPostThink()
+
+end
+
 function ENT:NewNetwork(netid)
 
 end

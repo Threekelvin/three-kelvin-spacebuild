@@ -592,6 +592,10 @@ hook.Add("PlayerSpawnedVehicle", "TKRD", function(ply, ent)
             ply:AddhevRes("oxygen", self:ConsumeResource("oxygen", 5) * eff)
         end
     end
+    
+    function ent:DoPostThink()
+    
+    end
 
     function ent:NewNetwork(netid)
 
