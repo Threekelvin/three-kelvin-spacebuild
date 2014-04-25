@@ -60,7 +60,7 @@
             elseif($faction == 4){
                 echo '<span style="color:#afeb4b;">' . $name;
             }
-            elseif(&faction == 5){
+            elseif($faction == 5){
                 echo '<span style="color:#c84b4b;">' . $name;
             }
 		}
