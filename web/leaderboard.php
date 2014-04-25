@@ -57,6 +57,12 @@
 			elseif($faction == 3){
 				echo '<span style="color:#4B4BEB;">' . $name;
 			}
+            elseif($faction == 4){
+                echo '<span style="color:#afeb4b;">' . $name;
+            }
+            elseif(&faction == 5){
+                echo '<span style="color:#c84b4b;">' . $name;
+            }
 		}
 		
 		function pad($num){
