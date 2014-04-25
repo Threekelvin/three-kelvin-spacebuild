@@ -97,14 +97,14 @@
 				else{
 					echo "<tr> <td class='darkleft'>" . $inc . "] </td> <td class='darkleft'>";
 				}
-				colorNamr($row['name'], $row['faction']);
+				colorNamr($row['nick_name'], $row['team']);
 				echo "</td> <td class='darkright'>" . number_format($row['score']) . "</td> <td class='darkright'>";
 				formatTime($row['playtime']);
 				echo "</td> </tr>";
 			}
 			else{
 				echo "<tr> <td class='lightleft'>" . $inc . "] </td> <td class='lightleft'>";
-				colorNamr($row['name'], $row['faction']);
+				colorNamr($row['nick_name'], $row['team']);
 				echo "</td> <td class='lightright'>" . number_format($row['score']) . "</td> <td class='lightright'>";
 				formatTime($row['playtime']);
 				echo "</td> </tr>";
