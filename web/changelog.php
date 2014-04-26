@@ -33,7 +33,7 @@ $middle = "";
 $bottom = "</body></html>";
 
 $delim = '@@@@@@@@@@';
-$lines = explode( PHP_EOL, shell_exec("git log --pretty=tformat:'%cd%n%cN%n%B" . $delim . "' -20 --no-merges --date=short") );
+$lines = explode( PHP_EOL, shell_exec("git log --pretty=tformat:'%cd%n%cN%n%B" . $delim . "' -100 --no-merges --date=short") );
 $commits = [];
 for($i = 0; $i < count($lines)-1; $i++) {
 	$date = trim($lines[$i]);
@@ -49,7 +49,10 @@ for($i = 0; $i < count($lines)-1; $i++) {
 	}
 }
 
+$days = 0;
 foreach($commits as $date => $users) {
+	$days++;
+	if($days>3) { break; }
 	$middle .= "<div class='entry'><b>" . $date . "</b><br>";
 	foreach($users as $user => $messages) {
 		$middle .= "<div style='overflow:hidden'><br><u>" . $user . "</u><div class='avatar'><img src='" . getAvatarUri($user) . "' width='64' height='64'/></div><br><ul>";
