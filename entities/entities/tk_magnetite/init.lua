@@ -76,7 +76,7 @@ end
 
 function ENT:Split(laser)
     local rad = self:BoundingRadius() * 0.5
-    local dir = laser:Up()
+    local dir = laser:GetUp()
     
     for k,v in pairs(ModelList[self:GetModel()].children) do
         local ent = ents.Create("tk_magnetite_ore")

@@ -98,10 +98,10 @@
 			$inc += 1;
 			if($inc % 2 == 1){
 				if($inc == 1){
-					echo "<tr> <td class='darkleft'>" . $inc . " ] </td> <td class='darkleft'>";
+					echo "<tr> <td class='darkleft'>" . pad($inc) . " ] </td> <td class='darkleft'>";
 				}
 				else{
-					echo "<tr> <td class='darkleft'>" . $inc . "] </td> <td class='darkleft'>";
+					echo "<tr> <td class='darkleft'>" . pad($inc) . "] </td> <td class='darkleft'>";
 				}
 				colorNamr($row['nick_name'], $row['team']);
 				echo "</td> <td class='darkright'>" . number_format($row['score']) . "</td> <td class='darkright'>";
@@ -109,7 +109,7 @@
 				echo "</td> </tr>";
 			}
 			else{
-				echo "<tr> <td class='lightleft'>" . $inc . "] </td> <td class='lightleft'>";
+				echo "<tr> <td class='lightleft'>" . pad($inc) . "] </td> <td class='lightleft'>";
 				colorNamr($row['nick_name'], $row['team']);
 				echo "</td> <td class='lightright'>" . number_format($row['score']) . "</td> <td class='lightright'>";
 				formatTime($row['playtime']);

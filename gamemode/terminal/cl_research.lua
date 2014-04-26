@@ -7,15 +7,14 @@ local function MakeResearchBox(panel, idx, data)
     btn.NextThink = 0
     btn.idx = idx
     btn.data = data
+    btn.level = 0
     btn:SetSize(400, 75)
     btn:SetText("")
     
     btn.Think = function()
         if CurTime() < btn.NextThink then return end
         btn.NextThink = CurTime() + 1
-        
-        btn.level = TK.UP:GetUpgradeLevel(btn.idx)
-        btn.cost = TK.TD:ResearchCost(btn.idx)
+
     end
     
     btn.Paint = function(panel, w, h)
@@ -97,12 +96,9 @@ local function MakeResearchBox(panel, idx, data)
         upgrade.DoClick = function()
             if !IsValid(panel.Terminal) then return end
             surface.PlaySound("ui/buttonclickrelease.wav")
-            local cost = TK.TD:ResearchCost(btn.idx)
-            
-            if TK.DB:GetPlayerData("player_info").exp < cost then 
-                panel:ShowError("Not Enough Experience")
-                return 
-            end
+
+            panel:ShowError("What are you doing here? go away!")
+            return --[[
             
             local upgrades = TK.DB:GetPlayerData("terminal_upgrades")
             for k,v in pairs(btn.data.req or {}) do
@@ -113,7 +109,7 @@ local function MakeResearchBox(panel, idx, data)
                 end
             end
 
-            panel.Terminal.AddQuery("addresearch", btn.idx)
+            panel.Terminal.AddQuery("addresearch", btn.idx)]]--
         end
     end
     
@@ -134,21 +130,20 @@ local function MakeTechTree(parent, panel, cat)
     end
     
     local btn
-    for k,v in pairs(TK.TD:GetUpgradeCat(cat)) do
-        btn = MakeResearchBox(parent, k, v)
+    for id,data in pairs(TK.UP:GetUpgradeTable(cat)) do
+        btn = MakeResearchBox(parent, id, data)
         btn:SetParent(panel)
-        btn.posx = 5 + ((btn:GetWide() + 100) * (v.pos[1] - 1))
-        btn.posy = 5 + ((btn:GetTall() + 10) * (v.pos[2] - 1))
+        btn.posx = 5 + ((btn:GetWide() + 100) * (data.vec.x - 1))
+        btn.posy = 5 + ((btn:GetTall() + 10) * (data.vec.y - 1))
         btn:SetPos(btn.posx, btn.posy)
         table.insert(panel.children, btn)
         
-        if v.pos[1] > panel.maxscrollx then
-            panel.maxscrollx = v.pos[1]
-            panel.ResearchMax = v.pos[1]
+        if data.vec.x > panel.maxscrollx then
+            panel.maxscrollx = data.vec.x
         end
         
-        if v.pos[2] > panel.maxscrolly then
-            panel.maxscrolly = v.pos[2]
+        if data.vec.y > panel.maxscrolly then
+            panel.maxscrolly = data.vec.y
         end
     end
     
@@ -175,7 +170,7 @@ end
 function PANEL:Init()
     self:SetSkin("Terminal")
     self.NextThink = 0
-    self.ResearchSetting = "asteroid"
+    self.ResearchSetting = "life_support"
     
     self.container = vgui.Create("DButton", self)
     self.container:SetSkin("Terminal")
@@ -186,8 +181,8 @@ function PANEL:Init()
     self.container.children = {}
     self.container:SetText("")
     self.container:SetCursor("sizeall")
-    self.container.Think = function()
-        ContainerThink(self.container)
+    self.container.Think = function(panel)
+        ContainerThink(panel)
     end
     self.container.Paint = function(panel, w, h)
         derma.SkinHook("Paint", "TKContainer", self.container, w, h)
@@ -204,12 +199,14 @@ function PANEL:Init()
         return true
     end
     self.scrollleft.DoClick = function()
-        if self.ResearchSetting == "refinery" then
-            self.ResearchSetting = "tiberium"
-        elseif self.ResearchSetting == "tiberium" then
-            self.ResearchSetting = "asteroid"
-        elseif self.ResearchSetting == "asteroid" then
-            self.ResearchSetting = "refinery"
+        if self.ResearchSetting == "life_support" then
+            self.ResearchSetting = "weapons"
+        elseif self.ResearchSetting == "weapons" then
+            self.ResearchSetting = "mining"
+        elseif self.ResearchSetting == "mining" then
+            self.ResearchSetting = "ship"
+        elseif self.ResearchSetting == "ship" then
+            self.ResearchSetting = "life_support"
         end
         
         surface.PlaySound("ui/buttonclickrelease.wav")
@@ -226,12 +223,14 @@ function PANEL:Init()
         return true
     end
     self.scrollright.DoClick = function()
-        if self.ResearchSetting == "asteroid" then
-            self.ResearchSetting = "tiberium"
-        elseif self.ResearchSetting == "tiberium" then
-            self.ResearchSetting = "refinery"
-        elseif self.ResearchSetting == "refinery" then
-            self.ResearchSetting = "asteroid"
+        if self.ResearchSetting == "life_support" then
+            self.ResearchSetting = "ship"
+        elseif self.ResearchSetting == "ship" then
+            self.ResearchSetting = "mining"
+        elseif self.ResearchSetting == "mining" then
+            self.ResearchSetting = "weapons"
+        elseif self.ResearchSetting == "weapons" then
+            self.ResearchSetting = "life_support"
         end
         
         surface.PlaySound("ui/buttonclickrelease.wav")
@@ -250,7 +249,7 @@ end
 
 function PANEL:PerformLayout()
     self.container:SetPos(10, 125)
-    self.container:SetSize(760, 400)
+    self.container:SetSize(755, 395)
     
     self.scrollleft:SetPos(10, 80)
     self.scrollleft:SetSize(40, 40)
@@ -264,8 +263,6 @@ function PANEL:Think(force)
         if CurTime() < self.NextThink then return end
         self.NextThink = CurTime() + 1
     end
-    
-    self.exp = TK:Format(TK.DB:GetPlayerData("player_info").exp)
 end
 
 function PANEL:Update()

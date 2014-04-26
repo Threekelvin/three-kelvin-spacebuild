@@ -33,7 +33,7 @@ local Pages = {
         "Resources",
         "tk_resources",
         "icon16/ruby.png"
-    },--[[
+    },
     [4] = {
         function() 
             return true 
@@ -41,7 +41,7 @@ local Pages = {
         "Research",
         "tk_research",
         "icon16/wrench.png"
-    },
+    },--[[
     [5] = {
         function() 
             return true 
