@@ -10,16 +10,19 @@ hook.Add("PhysgunPickup", "TKPP_Phys", function(ply, ent)
         PP.EntCVar = nil
     end
     if PP.EntList[eid] then return false end
-    
-    PP.EntList[eid] = ent
-    
+
     if ent:IsPlayer() then
-        PP.EntCVar[eid] = {
+        PP.EntCVar[eid] = PP.EntCVar[eid] or {
             move = ent:GetMoveType()
         }
         
-        ent:SetMoveType(MOVETYPE_NOCLIP)
+        if ent:GetMoveType() != MOVETYPE_NOCLIP then
+            ent:SetMoveType(MOVETYPE_NOCLIP)
+            return
+        end
     end
+    
+    PP.EntList[eid] = ent
 end)
 
 hook.Add("PhysgunDrop", "TKPP_Phys", function(ply, ent)
@@ -39,4 +42,8 @@ end)
 hook.Add("OnAtmosphereChange", "TKPP_Phys", function(ent, old, new)
     if not ent:IsPlayer() then return end
     if PP.EntList[ent:EntIndex()] and PP.EntList[ent:EntIndex()] == ent then return false end
+end)
+
+hook.Add("PlayerNoClip", "TKPP_Phys", function(ply, bool)
+    if PP.EntList[ply:EntIndex()] then return false end
 end)
