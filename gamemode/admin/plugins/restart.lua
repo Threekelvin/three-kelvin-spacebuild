@@ -58,6 +58,7 @@ if SERVER then
                 elseif Time < 10 then
                     if Time <=0 then
                         RunConsoleCommand("sv_password", "")
+                        RunConsoleCommand("hostname", Host)
                         RunConsoleCommand("changelevel", game.GetMap())
                         timer.Destroy("server_restart")
                     end
