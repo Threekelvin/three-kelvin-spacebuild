@@ -1,7 +1,7 @@
 
 TOOL.Category    = "Storage"
 TOOL.Name        = "Life-Support Resource Cache"
-TOOL.Limit        = 5
+
 TOOL.Data        = {
     ["models/ce_ls3additional/resource_cache/resource_cache_small.mdl"]     = {oxygen = 10000, water = 10000, nitrogen = 10000},
     ["models/ce_ls3additional/resource_cache/resource_cache_medium.mdl"]    = {oxygen = 20000, water = 20000, nitrogen = 20000},

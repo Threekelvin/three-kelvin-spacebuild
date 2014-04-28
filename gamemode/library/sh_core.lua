@@ -3,6 +3,16 @@ function _R.Player:Ip()
     return string.match(self:IPAddress(), "(%d+%.%d+%.%d+%.%d+)")
 end
 
+function _R.Entity:UID()
+    if !IsValid(self) then return false end
+    local uid = self:GetNWString("UID", false)
+    if uid then return uid end
+    if !self:IsPlayer() then return false end
+    uid = tostring(self:UniqueID())
+    self:SetNWString("UID", uid)
+    return uid
+end
+
 function TK:HostName()
     return string.match(GetHostName(), "%[%w+%]") or "[Server]"
 end

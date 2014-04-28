@@ -7,7 +7,7 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
     TOOL.Name       = class
     TOOL.Mode       = class
     TOOL.Category   = "Other"
-    TOOL.Limit      = 6
+    TOOL.Limit      = TK.UP.default
     TOOL.Data       = {}
     
     TOOL.ClientConVar["weld"] = 0
@@ -28,13 +28,14 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
         if CLIENT then return true end
         
         local ply = self:GetOwner()
-        if !ply:CheckLimit(self.Mode) then return false end
-        local ent = ents.Create(self.Mode)
-        ent:SetModel(self:SelectModel())
-        ent:SetPos(trace.HitPos)
-        local angles = trace.HitNormal:Angle() + Angle(90,0,0)
-        ent:SetAngles(angles)
-        ent:Spawn()
+        local data = {}
+        data.Class = class
+        data.Model = self:SelectModel()
+        data.Pos = trace.HitPos
+        data.Angle = trace.HitNormal:Angle() + Angle(90,0,0)
+        
+        local ent = TK.UP.MakeEntity(ply, data)
+        if !IsValid(ent) then return false end
         ent:SetPos(trace.HitPos - trace.HitNormal * ent:OBBMins().z)
         
         if self:GetClientNumber("weld", 0) == 1 then
@@ -58,8 +59,6 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
                 phys:EnableMotion(false)
             end
         end
-        
-        ply:AddCount(self.Mode, ent)
         
         undo.Create(self.Mode)
             undo.AddEntity(ent)
@@ -145,7 +144,8 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
             end
         end
         
-        CreateConVar("sbox_max"..class, TOOL.Limit)
+        TK.UP:SetDefaultLimit(class, TOOL.Limit)
+        duplicator.RegisterEntityClass(class, TK.UP.MakeEntity, "Data")
     else
         TK.RD.EntityData[class] = {}
         for k,v in pairs(TOOL.Data) do
@@ -160,8 +160,8 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
     
     cleanup.Register(TOOL.Name)
 
-    TOOL.Command        = nil
-    TOOL.ConfigName        = nil
+    TOOL.Command         = nil
+    TOOL.ConfigName      = nil
     TOOL.Tab             = "3K Spacebuild"
     TOOL.Data            = nil
     
@@ -170,10 +170,10 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
     TOOL = nil
 end
 
-TOOL                = ToolObj:Create()
-TOOL.Category        = "3K Spacebuild"
-TOOL.Mode            = "tk_tools"
-TOOL.Name             = "3K Tools"
-TOOL.Command        = nil
-TOOL.ConfigName        = nil
-TOOL.AddToMenu         = false
+TOOL            = ToolObj:Create()
+TOOL.Category   = "3K Spacebuild"
+TOOL.Mode       = "tk_tools"
+TOOL.Name       = "3K Tools"
+TOOL.Command    = nil
+TOOL.ConfigName = nil
+TOOL.AddToMenu  = false

@@ -52,7 +52,7 @@ end
 ///--- ---\\\
 
 ///--- Menus ---\\\
-function PP.OpenPropMenu(msg, self)
+function PP:OpenPropMenu(msg)
     if IsValid(self.Menu) then return end
     
     local trace = LocalPlayer():GetEyeTraceNoCursor()
@@ -120,7 +120,7 @@ function PP.OpenPropMenu(msg, self)
     self.Menu:Center()
 end
 
-function PP.OpenPlayerMenu(msg, self)
+function PP:OpenPlayerMenu(msg)
     if IsValid(self.Menu) then return end
     
     self.Menu = vgui.Create("DFrame")
@@ -181,8 +181,8 @@ function PP.OpenPlayerMenu(msg, self)
             local value = tonumber(text:GetValue()) or 0
             local flag = 0
             for k,v in pairs(TK.PP.Permissions) do
-                if !PP:HasPermission(value, k) then continue end
-                flag = PP:AddPermission(flag, k)
+                if !self:HasPermission(value, k) then continue end
+                flag = self:AddPermission(flag, k)
             end
             
             self.BuddyTable[uid] = flag
@@ -248,8 +248,12 @@ function PP.OpenPlayerMenu(msg, self)
     end
 end
 
-usermessage.Hook("PP_Menu1", PP.OpenPropMenu, PP)
-usermessage.Hook("PP_Menu2", PP.OpenPlayerMenu, PP)
+usermessage.Hook("PP_Menu1", function(msg)
+    PP:OpenPropMenu()
+end)
+usermessage.Hook("PP_Menu2", function(msg)
+    PP:OpenPlayerMenu()
+end)
 ///--- ---\\\
 
 ///--- Datastreams ---\\\

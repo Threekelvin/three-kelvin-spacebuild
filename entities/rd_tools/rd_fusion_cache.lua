@@ -1,7 +1,7 @@
 
 TOOL.Category    = "Storage"
 TOOL.Name        = "Fusion Resource Cache"
-TOOL.Limit        = 5
+
 TOOL.Data        = {
     ["models/ce_ls3additional/resource_cache/resource_cache_small.mdl"]     = {nitrogen = 5000, hydrogen = 5000, liquid_nitrogen = 5000},
     ["models/ce_ls3additional/resource_cache/resource_cache_medium.mdl"]    = {nitrogen = 10000, hydrogen = 10000, liquid_nitrogen = 10000},

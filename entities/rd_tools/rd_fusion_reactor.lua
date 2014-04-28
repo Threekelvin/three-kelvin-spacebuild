@@ -1,7 +1,7 @@
 
 TOOL.Category    = "Generators"
 TOOL.Name        = "Fusion Reactor"
-TOOL.Limit        = 5
+
 TOOL.Data        = {
     ["models/ce_ls3additional/fusion_generator/fusion_generator_small.mdl"]         = {hydrogen = 5, power = 25},
     ["models/smallbridge/life support/sbclimatereg.mdl"]                            = {hydrogen = 10, power = 50},

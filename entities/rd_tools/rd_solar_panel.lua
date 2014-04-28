@@ -1,7 +1,7 @@
 
 TOOL.Category    = "Generators"
 TOOL.Name        = "Solar Panel"
-TOOL.Limit        = 5
+
 
 TOOL.Data        = {
     ["models/ce_ls3additional/solar_generator/solar_generator_c_small.mdl"]        = {power = 4},
