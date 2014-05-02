@@ -11,7 +11,7 @@ function ENT:Initialize()
     self.PowerLevel = 0
     
     self.data.yield = 0
-    self.data.power = 0
+    self.data.kilowatt = 0
     
     self:SetNWBool("Generator", true)
     self:AddResource("raw_tiberium", 0, true)
@@ -135,7 +135,7 @@ function ENT:Update(ply)
     local upgrades = TK.TD:GetUpgradeStats(ply, "tiberium")
     
     self.data.yield = data.yield + (data.yield * upgrades.yield)
-    self.data.power = data.power - (data.power * upgrades.power)
+    self.data.kilowatt = data.kilowatt - (data.kilowatt * upgrades.kilowatt)
 end
 
 function ENT:PreEntityCopy()

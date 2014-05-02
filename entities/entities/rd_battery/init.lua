@@ -32,8 +32,8 @@ function ENT:DoThink(eff)
 end
 
 function ENT:DoPostThink()
-    local power = self:GetPowerGrid() - self:GetUnitPowerGrid()
-    local energy = power > 0 and math.min(power, self.data.power) or  math.max(power, -self.data.power)
+    local kilowatt = self:GetPowerGrid() - self:GetUnitPowerGrid()
+    local energy = kilowatt > 0 and math.min(kilowatt, self.data.kilowatt) or  math.max(kilowatt, -self.data.kilowatt)
     
     if energy > 0 then
         self:SetPower(-energy)

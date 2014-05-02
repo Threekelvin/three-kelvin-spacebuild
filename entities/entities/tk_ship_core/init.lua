@@ -197,7 +197,7 @@ function ENT:DoThink(eff)
     end
     
     local rate = 2 * self.hull_size
-    self.data.power = -rate
+    self.data.kilowatt = -rate
     
     if !self:Work() then return end
     rate = rate * 1 / math.Max(eff, 0.1)

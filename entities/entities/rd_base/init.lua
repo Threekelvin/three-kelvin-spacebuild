@@ -128,8 +128,8 @@ end
 
 function ENT:Work()
     if !self:GetActive() then return false end
-    if self:GetUnitPowerGrid() != self.data.power * self.mult then
-        self:SetPower(self.data.power * self.mult)
+    if self:GetUnitPowerGrid() != self.data.kilowatt * self.mult then
+        self:SetPower(self.data.kilowatt * self.mult)
         return false
     end
     
@@ -203,8 +203,8 @@ function ENT:AddResource(idx, max, gen)
     return TK.RD:EntAddResource(self, idx, max, gen)
 end
 
-function ENT:SetPower(power)
-    return TK.RD:SetPower(self, power)
+function ENT:SetPower(kilowatt)
+    return TK.RD:SetPower(self, kilowatt)
 end
 
 function ENT:IsLinked()

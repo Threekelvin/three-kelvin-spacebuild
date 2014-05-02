@@ -135,7 +135,7 @@ function ENT:DoThink(eff)
     if !self:GetActive() then return end
 
     self.Ents = self:GetConstrainedEntities()
-    self.data.power = math.floor(table.Count(self.Ents) * -5)
+    self.data.kilowatt = math.floor(table.Count(self.Ents) * -5)
     if !self:Work() then return end
     local pos, ang = self:GetPos(), self:GetAngles()
     if (pos - self.j_pos):LengthSqr() < 100 then return end

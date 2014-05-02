@@ -558,11 +558,11 @@ end
 ///--- Vehicles ---\\\
 hook.Add("PlayerSpawnedVehicle", "TKRD", function(ply, ent)
     ent.data = {}
-    ent.data.power = 0
+    ent.data.kilowatt = 0
     
     function ent:Work()
-        if self:GetUnitPowerGrid() != self.data.power then
-            self:SetPower(self.data.power)
+        if self:GetUnitPowerGrid() != self.data.kilowatt then
+            self:SetPower(self.data.kilowatt)
             return false
         end
         
@@ -571,7 +571,7 @@ hook.Add("PlayerSpawnedVehicle", "TKRD", function(ply, ent)
 
     function ent:DoThink(eff)
         local ply = self:GetDriver()
-        self.data.power = IsValid(ply) and -1 or 0
+        self.data.kilowatt = IsValid(ply) and -1 or 0
         
         if !self:Work() then return end
         if !IsValid(ply) then return end
@@ -600,8 +600,8 @@ hook.Add("PlayerSpawnedVehicle", "TKRD", function(ply, ent)
 
     end
     
-    function ent:SetPower(power)
-        return TK.RD:SetPower(self, power)
+    function ent:SetPower(kilowatt)
+        return TK.RD:SetPower(self, kilowatt)
     end
 
     function ent:AddResource(idx, max, gen)

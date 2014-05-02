@@ -8,7 +8,7 @@ function ENT:Initialize()
     self.data = {}
     self.data.yield = 0
     self.data.range = 0
-    self.data.power = 0
+    self.data.kilowatt = 0
     self:SetNWInt("range", 0)
 
     self:SetNWBool("Generator", true)
@@ -101,7 +101,7 @@ function ENT:Update(ply)
     
     self.data.yield = data.yield + (data.yield * upgrades.yield)
     self.data.range = data.range + (data.range * upgrades.range)
-    self.data.power = data.power - (data.power * upgrades.power)
+    self.data.kilowatt = data.kilowatt - (data.kilowatt * upgrades.kilowatt)
     
     self:SetNWInt("range", self.data.range)
     WireLib.TriggerOutput(self, "Range", self.data.range)

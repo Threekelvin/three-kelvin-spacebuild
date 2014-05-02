@@ -43,7 +43,7 @@ function ENT:DoThink()
         self:TurnOff()
     else
         self:TurnOn()
-        self:SetPower(math.ceil(self.data.power * direct))
+        self:SetPower(math.ceil(self.data.kilowatt * direct))
         WireLib.TriggerOutput(self, "Output", self:GetPowerGrid())
     end
 end

@@ -239,7 +239,7 @@ function ENT:DoThink(eff)
         vol = vol + phys:GetVolume()
     end
     
-    self.data.power = math.floor(num * -2)
+    self.data.kilowatt = math.floor(num * -2)
     self.Updated = true
     self.VecThrustMul = 10 * math.Clamp(4000 / math.sqrt(vol), 0.1, 1)
     self.AngThrustMul = self.VecThrustMul * 0.75

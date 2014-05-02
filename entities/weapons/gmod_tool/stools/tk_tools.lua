@@ -158,6 +158,15 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
             icon.idx = k
             icon:SetModel(k)
             icon:SetSize(64, 64)
+            
+            local tip = ""
+            for res,amt in pairs(v) do
+                if not TK.RD:IsResource(res) then continue end
+                tip = tip.. TK.RD:GetResourceName(res) .." = ".. amt .."\n"
+            end
+            tip = string.sub(tip, 0, -2)
+            icon:SetToolTip(tip == "" and k or tip)
+            
             List:AddPanel(icon, {[tool.Mode .."_model"] = k, playgamesound = "ui/buttonclickrelease.wav"})
         end
         List:SortByMember("idx")

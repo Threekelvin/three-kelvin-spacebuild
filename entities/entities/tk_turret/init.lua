@@ -199,5 +199,5 @@ function ENT:Update(ply)
     local data = TK.TD:GetItem(self.itemid).data
     self.Bullet = TK.DC:GetBullet(data.bullet)
     
-    self.data.power = self.Bullet.Power or 0
+    self.data.kilowatt = self.Bullet.Power or 0
 end

@@ -84,11 +84,11 @@ function ENT:Think()
             v:Unlink()
             v:SoundPlay(0)
         else
-            local power = v:GetUnitPowerGrid()
-            if power > 0 then
-                produce = produce + power
+            local kilowatt = v:GetUnitPowerGrid()
+            if kilowatt > 0 then
+                produce = produce + kilowatt
             else
-                consume = consume - power
+                consume = consume - kilowatt
             end
         end
     end

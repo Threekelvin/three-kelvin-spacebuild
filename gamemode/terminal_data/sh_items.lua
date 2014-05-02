@@ -8,7 +8,7 @@ local Items = {
             name = "Basic Asteroid Mining Laser",
             class = "tk_ore_laser",
             mdl = "models/props_phx/life_support/crylaser_small.mdl",
-            data = {yield = 100, range = 1000, power = -50},
+            data = {yield = 100, range = 1000, kilowatt = -50},
             r = 19,
             buy = 10000,
             sell = 7500
@@ -18,7 +18,7 @@ local Items = {
             name = "Basic Tiberium Extractor",
             class = "tk_tib_extractor",
             mdl = "models/techbot/sonic_thingy.mdl",
-            data = {yield = 20, power = -50},
+            data = {yield = 20, kilowatt = -50},
             r = 28,
             buy = 10000,
             sell = 7500
@@ -52,7 +52,7 @@ local Items = {
             name = "Basic Ballistic Turret",
             class = "tk_turret",
             mdl = "models/tk/turret/flak/flak_turret.mdl",
-            data = {power = 0, bullet = "20mm_cannon"},
+            data = {kilowatt = 0, bullet = "20mm_cannon"},
             r = 50,
             buy = 100000,
             sell = 7500
