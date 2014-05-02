@@ -11,7 +11,7 @@ function TK.UP:CheckLimit(ply, class)
 end
 
 function TK.UP:SetLimit(ply, class, limit)
-    if !IsValid(ply) then return end
+    if not IsValid(ply) then return end
     self.limits[ply.uid] = self.limits[ply.uid] or {}
     self.limits[ply.uid][class] = limit or self.default
 end
@@ -21,13 +21,13 @@ function TK.UP:SetDefaultLimit(class, limit)
 end
 
 function TK.UP:GetLimit(ply, class)
-    if !IsValid(ply) then return end
+    if  not IsValid(ply) then return end
     self.limits[ply.uid] = self.limits[ply.uid] or {}
     return self.limits[ply.uid][class] or self.limits_default[class]
 end
 
 function TK.UP:GetCount(ply, class)
-    if !IsValid(ply) then return end
+    if not IsValid(ply) then return end
     self.entities[ply.uid] = self.entities[ply.uid] or {}
     self.entities[ply.uid][class] = self.entities[ply.uid][class] or {}
     
@@ -47,7 +47,7 @@ function TK.UP:GetCount(ply, class)
 end
 
 function TK.UP:AddCount(ply, class, ent)
-    if !IsValid(ply) or !IsValid(ent) then return end
+    if not IsValid(ply) or not IsValid(ent) then return end
     self.entities[ply.uid] = self.entities[ply.uid] or {}
     self.entities[ply.uid][class] = self.entities[ply.uid][class] or {}
     
@@ -58,12 +58,15 @@ function TK.UP:AddCount(ply, class, ent)
 end
 
 function TK.UP.MakeEntity(ply, data)
-    if !IsValid(ply) or !TK.UP:CheckLimit(ply, data.Class) then return end
+    if not IsValid(ply) or not TK.UP:CheckLimit(ply, data.Class) then return end
+    local ent_data = TK.UP:GetEntData(ply, data.Class)
+    if not TK.UP:HasSize(ply, data.Class, ent_data[data.Model].size) then return end
     
     local ent = ents.Create(data.Class)
     ent:SetModel(data.Model)
     ent:SetPos(data.Pos)
     ent:SetAngles(data.Angle)
+    ent.data = ent_data[data.Model]
     ent:Spawn()
     
     TK.UP:AddCount(ply, data.Class, ent)

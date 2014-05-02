@@ -50,14 +50,13 @@ function ENT:Initialize()
         phys:Wake()
     end
     
-    self.data = {}
     self.soundlib = {
         [0] = CreateSound(self, SoundLib.d[5])
     }
     self.mult = 1
     self.mute = false
     self.next_use = 0
-    self.data = {}
+    self.data = self.data or {}
     
     TK.RD:Register(self)
     self:SetSkin(self.data.skin or 0)

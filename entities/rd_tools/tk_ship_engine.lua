@@ -10,6 +10,7 @@ TOOL.Last = 0
 function TOOL:SelectModel()
     local str = self:GetClientInfo("model")
     if !util.IsValidModel(str) then return self.DefaultModel end
+    self.Data[str] = {}
     return str
 end
 

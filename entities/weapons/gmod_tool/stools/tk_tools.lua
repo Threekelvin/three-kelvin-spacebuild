@@ -2,37 +2,56 @@
 TOOL = nil
 
 for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
-    local class = string.match(t_file, "[%w_]+")
     TOOL            = ToolObj:Create()
-    TOOL.Name       = class
-    TOOL.Mode       = class
+    TOOL.Name       = string.match(t_file, "[%w_]+")
+    TOOL.Mode       = TOOL.Name
     TOOL.Category   = "Other"
     TOOL.Limit      = TK.UP.default
     TOOL.Data       = {}
+    TOOL.Build      = true
     
     TOOL.ClientConVar["weld"] = 0
     TOOL.ClientConVar["weldingtoworld"] = 0
     TOOL.ClientConVar["makefrozen"] = 1
     TOOL.ClientConVar["model"] = ""
     
-    function TOOL:SelectModel()
-        local str = self:GetClientInfo("model")
-        if !TK.RD.EntityData[self.Mode][str] then
-            return table.GetFirstKey(TK.RD.EntityData[self.Mode])
+    if SERVER then
+        function TOOL:SelectModel()
+            local str = self:GetClientInfo("model")
+            if not self.Data[str] or not TK.UP:HasSize(self:GetOwner(), self.Mode, self.Data[str].size) then
+                for k,v in pairs(self.Data) do
+                    if not v.size or v.size == "small" then
+                        return k
+                    end
+                end
+            end
+            return str
         end
-        return str
+    else
+        function TOOL:SelectModel()
+            local str = self:GetClientInfo("model")
+            if not self.Data[str] or not TK.UP:HasSize(self.Mode, self.Data[str].size) then
+                for k,v in pairs(self.Data) do
+                    if not v.size or v.size == "small" then
+                        return k
+                    end
+                end
+            end
+            return str
+        end
     end
+    
 
     function TOOL:LeftClick(trace)
         if !trace.Hit then return end
         if CLIENT then return true end
         
-        local ply = self:GetOwner()
-        local data = {}
-        data.Class = class
+        local ply, data = self:GetOwner(), {}
+        data.Class = self.Mode
         data.Model = self:SelectModel()
         data.Pos = trace.HitPos
         data.Angle = trace.HitNormal:Angle() + Angle(90,0,0)
+        if not util.IsValidModel(data.Model) then return end
         
         local ent = TK.UP.MakeEntity(ply, data)
         if !IsValid(ent) then return false end
@@ -78,6 +97,8 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
     end
 
     function TOOL:Think()
+        if SERVER then return end
+        
         if !IsValid(self.GhostEntity) or self.GhostEntity:GetModel() != self:SelectModel() then
             self:MakeGhostEntity(self:SelectModel(), Vector(0,0,0), Angle(0,0,0))
         else
@@ -85,77 +106,89 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
             if !trace.Hit then return end
             self.GhostEntity:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
             self.GhostEntity:SetPos(trace.HitPos - trace.HitNormal * self.GhostEntity:OBBMins().z)
-        end    
+        end
+        
+        if not self.Build then return end
+        local CPanel = controlpanel.Get(self.Mode)
+		if not CPanel then return end
+        
+        self.Build = false
+		CPanel:ClearControls()
+		self.BuildCPanel(CPanel, self)
     end
 
-    if CLIENT then
-        function TOOL.BuildCPanel(CPanel)
-            local Weld = vgui.Create("DCheckBoxLabel")
-            Weld:SetText("Weld")
-            Weld:SetConVar(class.."_weld")
-            Weld:SetValue(0)
-            Weld:SizeToContents()
-            CPanel:AddItem(Weld)
-            
-            local AllowWeldingToWorld = vgui.Create("DCheckBoxLabel")
-            AllowWeldingToWorld:SetText("Weld To World")
-            AllowWeldingToWorld:SetConVar(class.."_weldingtoworld")
-            AllowWeldingToWorld:SetValue(0)
-            AllowWeldingToWorld:SizeToContents()
-            CPanel:AddItem(AllowWeldingToWorld)
-            
-            local MakeFrozen = vgui.Create("DCheckBoxLabel")
-            MakeFrozen:SetText("Make Frozen")
-            MakeFrozen:SetConVar(class.."_makefrozen")
-            MakeFrozen:SetValue(1)
-            MakeFrozen:SizeToContents()
-            CPanel:AddItem(MakeFrozen)
-            
-            local List = vgui.Create("DPanelSelect")
-            List:SetSize(0, 200)
-            List:EnableVerticalScrollbar(true)
-            CPanel:AddItem(List)
-            
-            for k,v in pairs(TK.RD.EntityData[class]) do
-                local icon = vgui.Create("SpawnIcon")
-                icon.DoRightClick = function()
-                    surface.PlaySound("ui/buttonclickrelease.wav")
-                    SetClipboardText(k)
-                    GAMEMODE:AddNotify("Model path copied to clipboard.", NOTIFY_HINT, 5)
-                end
-                icon.idx = k
-                icon:SetModel(k)
-                icon:SetSize(64, 64)
-                List:AddPanel(icon, {[class.."_model"] = k, playgamesound = "ui/buttonclickrelease.wav"})
+    function TOOL.BuildCPanel(CPanel, tool)
+        if SERVER then return end
+        if not tool then return end
+
+        local Weld = vgui.Create("DCheckBoxLabel")
+        Weld:SetText("Weld")
+        Weld:SetConVar(tool.Mode.."_weld")
+        Weld:SetValue(0)
+        Weld:SizeToContents()
+        CPanel:AddItem(Weld)
+        
+        local AllowWeldingToWorld = vgui.Create("DCheckBoxLabel")
+        AllowWeldingToWorld:SetText("Weld To World")
+        AllowWeldingToWorld:SetConVar(tool.Mode.."_weldingtoworld")
+        AllowWeldingToWorld:SetValue(0)
+        AllowWeldingToWorld:SizeToContents()
+        CPanel:AddItem(AllowWeldingToWorld)
+        
+        local MakeFrozen = vgui.Create("DCheckBoxLabel")
+        MakeFrozen:SetText("Make Frozen")
+        MakeFrozen:SetConVar(tool.Mode.."_makefrozen")
+        MakeFrozen:SetValue(1)
+        MakeFrozen:SizeToContents()
+        CPanel:AddItem(MakeFrozen)
+        
+        local List = vgui.Create("DPanelSelect")
+        List:SetSize(0, 200)
+        List:EnableVerticalScrollbar(true)
+        CPanel:AddItem(List)
+        
+        for k,v in pairs(tool.Data) do
+            if not TK.UP:HasSize(tool.Mode, v.size) then continue end
+            local icon = vgui.Create("SpawnIcon")
+            icon.DoRightClick = function()
+                surface.PlaySound("ui/buttonclickrelease.wav")
+                SetClipboardText(k)
+                GAMEMODE:AddNotify("Model path copied to clipboard.", NOTIFY_HINT, 5)
             end
-            List:SortByMember("idx")
+            icon.idx = k
+            icon:SetModel(k)
+            icon:SetSize(64, 64)
+            List:AddPanel(icon, {[tool.Mode .."_model"] = k, playgamesound = "ui/buttonclickrelease.wav"})
+        end
+        List:SortByMember("idx")
+        
+        local mdl = tool:SelectModel()
+        for k,v in pairs(List:GetItems()) do
+            if v.idx != mdl then continue end
+            List:SelectPanel(v)
+            break
         end
     end
-    
+
     AddCSLuaFile("rd_tools/"..t_file)
     include("rd_tools/"..t_file)
     
     if SERVER then 
-        TK.RD.EntityData[class] = {}
         for k,v in pairs(TOOL.Data) do
             if util.IsValidModel(k) then
                 util.PrecacheModel(k)
-                TK.RD.EntityData[class][k] = v
+            else
+                TOOL.Data[k] = nil
             end
         end
         
-        TK.UP:SetDefaultLimit(class, TOOL.Limit)
-        duplicator.RegisterEntityClass(class, TK.UP.MakeEntity, "Data")
+        TK.UP:SetDefaultLimit(TOOL.Mode, TOOL.Limit)
+        duplicator.RegisterEntityClass(TOOL.Mode, TK.UP.MakeEntity, "Data")
     else
-        TK.RD.EntityData[class] = {}
-        for k,v in pairs(TOOL.Data) do
-            TK.RD.EntityData[class][k] = true
-        end
-        
-        language.Add("tool."..class..".name", TOOL.Name)
-        language.Add("tool."..class..".desc", "Use to Spawn a "..TOOL.Name)
-        language.Add("tool."..class..".0", "Left Click: Spawn a "..TOOL.Name)
-        language.Add("sboxlimit_"..class, "You Have Hit the "..TOOL.Name.." Limit!")
+        language.Add("tool."..TOOL.Mode..".name", TOOL.Name)
+        language.Add("tool."..TOOL.Mode..".desc", "Use to Spawn a "..TOOL.Name)
+        language.Add("tool."..TOOL.Mode..".0", "Left Click: Spawn a "..TOOL.Name)
+        language.Add("sboxlimit_"..TOOL.Mode, "You Have Hit the "..TOOL.Name.." Limit!")
     end
     
     cleanup.Register(TOOL.Name)
@@ -163,10 +196,9 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
     TOOL.Command         = nil
     TOOL.ConfigName      = nil
     TOOL.Tab             = "3K Spacebuild"
-    TOOL.Data            = nil
-    
     TOOL:CreateConVars()
-    SWEP.Tool[class] = TOOL
+    SWEP.Tool[TOOL.Mode] = TOOL
+    
     TOOL = nil
 end
 
@@ -177,3 +209,17 @@ TOOL.Name       = "3K Tools"
 TOOL.Command    = nil
 TOOL.ConfigName = nil
 TOOL.AddToMenu  = false
+
+if SERVER then
+
+else
+    hook.Add("TKDB_Player_Data", "TKTG", function(dbtable, idx, val)
+        for k,v in pairs(TK.UP.lists) do
+            if not string.match(v .."$", dbtable) then continue end
+            local tool = LocalPlayer():GetWeapon("gmod_tool")
+            for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
+                tool.Tool[string.match(t_file, "[%w_]+")].Build = true
+            end
+        end
+    end)
+end

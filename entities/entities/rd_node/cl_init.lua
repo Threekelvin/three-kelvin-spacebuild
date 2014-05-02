@@ -5,21 +5,7 @@ local function Add(array, data)
     array.idx = array.idx + 1
 end
 
-function ENT:Draw()
-    self:DrawModel()
-    if (self:GetPos() - LocalPlayer():GetPos()):LengthSqr() > 262144 then 
-        local size = self:OBBMaxs() - self:OBBMins()
-        local width, height = 0.8*size.x, 0.7*size.y
-        local pos = self:LocalToWorld( self:OBBCenter() + 0.5*Vector( -width, height, size.z-0.75 ) )
-        local scale = 10.0
-        
-        cam.Start3D2D( pos, self:GetAngles(), 1.0/scale )
-            surface.SetDrawColor( 0, 0, 0, 255 )
-            surface.DrawRect( 0, 0, width*scale, height*scale )
-        cam.End3D2D()
-        return 
-    end
-    
+function ENT:MakeText()
     local netdata = self:GetNetTable()
     local owner , uid = self:CPPIGetOwner()
     local name = "World"
@@ -54,8 +40,26 @@ function ENT:Draw()
     end
 
     OverlayText.idx = nil
+    return OverlayText
+end
 
-    local ScreenText = string.Explode( "\n", table.concat( OverlayText ) )
+function ENT:DrawOverlay()
+    if (self:GetPos() - LocalPlayer():GetPos()):LengthSqr() > 262144 then 
+        local size = self:OBBMaxs() - self:OBBMins()
+        local width, height = 0.8*size.x, 0.7*size.y
+        local pos = self:LocalToWorld( self:OBBCenter() + 0.5*Vector( -width, height, size.z-0.75 ) )
+        local scale = 10.0
+        
+        cam.Start3D2D( pos, self:GetAngles(), 1.0/scale )
+            surface.SetDrawColor( 0, 0, 0, 255 )
+            surface.DrawRect( 0, 0, width*scale, height*scale )
+        cam.End3D2D()
+        return 
+    end
+    
+    
+
+    local ScreenText = string.Explode( "\n", table.concat( self:MakeText() ) )
     local size = self:OBBMaxs() - self:OBBMins()
     local width, height = 0.8*size.x, 0.7*size.y
     local pos = self:LocalToWorld( self:OBBCenter() + 0.5*Vector( -width, height, size.z-0.75 ) )
@@ -73,6 +77,25 @@ function ENT:Draw()
             surface.DrawText( line )
         end
     cam.End3D2D()
+end
+
+function ENT:DrawBubble()
+    if (self:GetPos() - LocalPlayer():GetPos()):LengthSqr() > 262144 then return end
+    if LocalPlayer():GetEyeTrace().Entity != self then return end
+
+
+    AddWorldTip(nil, table.concat(self:MakeText(), ""), nil, self:LocalToWorld(self:OBBCenter()))
+end
+
+function ENT:Draw()
+    self:DrawModel()
+    
+    if self:BoundingRadius() < 45 then
+        self:DrawBubble()
+    else
+        self:DrawOverlay()
+    end
+    
 end
 
 function ENT:DoCommand(cmd, ...)

@@ -3,698 +3,615 @@ TK.UP = TK.UP or {}
 
 TK.UP.life_support = {
     ///--- Generators ---\\\
-    gen_out = {
+    generators_out = {
         name = "Generators",
         info = "",
-        upgrade = {["gen_out"] = 1},
         levels = 10,
         vec = {x = 1, y = 1}
     },
-    solar_out = {
+    rd_solar_panel_out = {
         name = "Solar Panel Output",
         info = "",
-        upgrade = {["sol_out"] = 2},
+        upgrade = {["out"] = 2},
         levels = 5,
-        req = {"gen_out"},
+        req = {"generators_out"},
         vec = {x = 2, y = 1}
     },
-    solar_med = {
+    rd_solar_panel_medium = {
         name = "Medium Solar Panel",
         info = "",
-        upgrade = {["sol_med"] = 1},
         levels = 1,
-        req = {"solar_out"},
+        req = {"rd_solar_panel_out"},
         vec = {x = 3, y = 1}
     },
-    solar_lrg = {
+    rd_solar_panel_large = {
         name = "Large Solar Panel",
         info = "",
-        upgrade = {["sol_lrg"] = 1},
         levels = 1,
-        req = {"solar_med"},
+        req = {"rd_solar_panel_medium"},
         vec = {x = 4, y = 1}
     },
-    solar_3nd = {
-        name = "3rd Solar Panel",
+    rd_solar_panel_extra = {
+        name = "Extra Solar Panel",
         info = "",
-        upgrade = {["sol_3rd"] = 1},
-        levels = 1,
-        req = {"solar_lrg"},
+        levels = 2,
+        req = {"rd_solar_panel_large"},
         vec = {x = 5, y = 1}
     },
-    solar_4th = {
-        name = "4th Solar Panel",
-        info = "",
-        upgrade = {["sol_4th"] = 1},
-        levels = 1,
-        req = {"solar_3nd"},
-        vec = {x = 6, y = 1}
-    },
-    wind_out = {
+    rd_wind_turbine_out = {
         name = "Wind Turbine Output",
         info = "",
-        upgrade = {["wnd_out"] = 2},
         levels = 5,
-        req = {"gen_out"},
+        req = {"generators_out"},
         vec = {x = 2, y = 2}
     },
-    wind_med = {
+    rd_wind_turbine_medium = {
         name = "Medium Wind Turbine",
         info = "",
-        upgrade = {["wnd_med"] = 1},
         levels = 1,
-        req = {"wind_out"},
+        req = {"rd_wind_turbine_out"},
         vec = {x = 3, y = 2}
     },
-    wind_lrg = {
+    rd_wind_turbine_large = {
         name = "Large Wind Turbine",
         info = "",
-        upgrade = {["wnd_lrg"] = 1},
         levels = 1,
-        req = {"wind_med"},
+        req = {"rd_wind_turbine_medium"},
         vec = {x = 4, y = 2}
     },
-    wind_3nd = {
-        name = "3rd Wind Turbine",
+    rd_wind_turbine_extra = {
+        name = "Extra Wind Turbine",
         info = "",
-        upgrade = {["wnd_3rd"] = 1},
-        levels = 1,
-        req = {"wind_lrg"},
+        levels = 2,
+        req = {"rd_wind_turbine_large"},
         vec = {x = 5, y = 2}
     },
-    wind_4th = {
-        name = "4th Wind Turbine",
-        info = "",
-        upgrade = {["wnd_4th"] = 1},
-        levels = 1,
-        req = {"wind_3nd"},
-        vec = {x = 6, y = 2}
-    },
-    fusn_out = {
+    rd_fusion_reactor_out = {
         name = "Fusion Reactor Output",
         info = "",
-        upgrade = {["fus_out"] = 2},
         levels = 5,
-        req = {"gen_out"},
+        req = {"generators_out"},
         vec = {x = 2, y = 3}
     },
-    heat_trf = {
+    rd_fusion_reactor_heat = {
         name = "Heat Transfer",
         info = "",
-        upgrade = {["fus_htt"] = 2},
         levels = 5,
-        req = {"fusn_out"},
+        req = {"rd_fusion_reactor_out"},
         vec = {x = 3, y = 3}
     },
-    fuel_eff = {
+    rd_fusion_reactor_fuel = {
         name = "Fuel Efficiency",
         info = "",
-        upgrade = {["fus_fef"] = 2},
         levels = 5,
-        req = {"fusn_out"},
+        req = {"rd_fusion_reactor_out"},
         vec = {x = 3, y = 4}
     },
-    fusn_med = {
+    rd_fusion_reactor_medium = {
         name = "Unlock Medium",
         info = "",
-        upgrade = {["fus_med"] = 1},
         levels = 1,
-        req = {"heat_trf", "fuel_eff"},
+        req = {"rd_fusion_reactor_heat", "rd_fusion_reactor_fuel"},
         vec = {x = 4, y = 3}
     },
-    fusn_pwr = {
+    rd_fusion_reactor_power = {
         name = "Fusion Power",
         info = "",
-        upgrade = {["fus_pwr"] = 2},
         levels = 5,
-        req = {"fusn_med"},
+        req = {"rd_fusion_reactor_medium"},
         vec = {x = 5, y = 3}
     },
-    fusn_exp = {
+    rd_fusion_reactor_damage = {
         name = "Reactor Containment",
         info = "",
-        upgrade = {["fus_exp"] = 5},
         levels = 5,
-        req = {"fusn_med"},
+        req = {"rd_fusion_reactor_power"},
         vec = {x = 5, y = 4}
     },
-    fusn_lrg = {
+    rd_fusion_reactor_large = {
         name = "Unlock Large",
         info = "",
-        upgrade = {["fus_lrg"] = 1},
         levels = 1,
-        req = {"fusn_pwr", "fusn_exp"},
+        req = {"rd_fusion_reactor_power", "rd_fusion_reactor_damage"},
         vec = {x = 6, y = 3}
     },
     
     ///--- Compressors ---\\\
-    cmp_out = {
+    compressors_out = {
         name = "Compressors",
         info = "",
-        upgrade = {["cmp_out"] = 1},
         levels = 10,
         vec = {x = 1, y = 6}
     },
     // CO2
-    co2_out = {
+    rd_carbondioxide_compressor_out = {
         name = "CO2 Output",
         info = "",
-        upgrade = {["co2_out"] = 2},
         levels = 5,
-        req = {"cmp_out"},
+        req = {"compressors_out"},
         vec = {x = 2, y = 6}
     },
-    co2_med = {
+    rd_carbondioxide_compressor_medium = {
         name = "Unlock Medium",
         info = "",
-        upgrade = {["co2_med"] = 1},
         levels = 1,
-        req = {"co2_out"},
+        req = {"rd_carbondioxide_compressor_out"},
         vec = {x = 3, y = 6}
     },
-    co2_eff = {
+    rd_carbondioxide_compressor_power = {
         name = "Compressor Efficiency",
         info = "",
-        upgrade = {["co2_eff"] = 2},
         levels = 5,
-        req = {"co2_med"},
+        req = {"rd_carbondioxide_compressor_medium"},
         vec = {x = 4, y = 6}
     },
-    co2_lrg = {
+    rd_carbondioxide_compressor_large = {
         name = "Unlock Large",
         info = "",
-        upgrade = {["co2_lrg"] = 1},
         levels = 1,
-        req = {"co2_eff"},
+        req = {"rd_carbondioxide_compressor_power"},
         vec = {x = 5, y = 6}
     },
-    co2_mul = {
+    rd_carbondioxide_compressor_clock = {
         name = "Compressor Over-clocker",
         info = "",
-        upgrade = {["co2_ovr"] = 1},
         levels = 1,
-        req = {"co2_lrg"},
+        req = {"rd_carbondioxide_compressor_large"},
         vec = {x = 6, y = 6}
     },
     // N2
-    n2_out = {
+    rd_nitrogen_compressor_out = {
         name = "N2 Output",
         info = "",
-        upgrade = {["n2_out"] = 2},
         levels = 5,
-        req = {"cmp_out"},
+        req = {"compressors_out"},
         vec = {x = 2, y = 7}
     },
-    n2_med = {
+    rd_nitrogen_compressor_medium = {
         name = "Unlock Medium",
         info = "",
-        upgrade = {["n2_med"] = 1},
         levels = 1,
-        req = {"n2_out"},
+        req = {"rd_nitrogen_compressor_out"},
         vec = {x = 3, y = 7}
     },
-    n2_eff = {
+    rd_nitrogen_compressor_power = {
         name = "Compressor Efficiency",
         info = "",
-        upgrade = {["n2_eff"] = 2},
         levels = 5,
-        req = {"n2_med"},
+        req = {"rd_nitrogen_compressor_medium"},
         vec = {x = 4, y = 7}
     },
-    n2_lrg = {
+    rd_nitrogen_compressor_large = {
         name = "Unlock Large",
         info = "",
-        upgrade = {["n2_lrg"] = 1},
         levels = 1,
-        req = {"n2_eff"},
+        req = {"rd_nitrogen_compressor_power"},
         vec = {x = 5, y = 7}
     },
-    n2_mul = {
+    rd_nitrogen_compressor_clock = {
         name = "Compressor Over-clocker",
         info = "",
-        upgrade = {["n2_ovr"] = 1},
         levels = 1,
-        req = {"n2_lrg"},
+        req = {"rd_nitrogen_compressor_large"},
         vec = {x = 6, y = 7}
     },
     // H2
-    h2_out = {
+    rd_hydrogen_compressor_out = {
         name = "H2 Output",
         info = "",
-        upgrade = {["h2_out"] = 2},
         levels = 5,
-        req = {"cmp_out"},
+        req = {"compressors_out"},
         vec = {x = 2, y = 8}
     },
-    h2_med = {
+    rd_hydrogen_compressor_medium = {
         name = "Unlock Medium",
         info = "",
-        upgrade = {["h2_med"] = 1},
         levels = 1,
-        req = {"h2_out"},
+        req = {"rd_hydrogen_compressor_out"},
         vec = {x = 3, y = 8}
     },
-    h2_eff = {
+    rd_hydrogen_compressor_power = {
         name = "Compressor Efficiency",
         info = "",
-        upgrade = {["h2_eff"] = 2},
         levels = 5,
-        req = {"h2_med"},
+        req = {"rd_hydrogen_compressor_medium"},
         vec = {x = 4, y = 8}
     },
-    h2_lrg = {
+    rd_hydrogen_compressor_large = {
         name = "Unlock Large",
         info = "",
-        upgrade = {["h2_lrg"] = 1},
         levels = 1,
-        req = {"h2_eff"},
+        req = {"rd_hydrogen_compressor_power"},
         vec = {x = 5, y = 8}
     },
-    h2_mul = {
+    rd_hydrogen_compressor_clock = {
         name = "Compressor Over-clocker",
         info = "",
-        upgrade = {["h2_ovr"] = 1},
         levels = 1,
-        req = {"h2_lrg"},
+        req = {"rd_hydrogen_compressor_large"},
         vec = {x = 6, y = 8}
     },
     // O2
-    o2_out = {
+    rd_oxygen_compressor_out = {
         name = "O2 Output",
         info = "",
-        upgrade = {["o2_out"] = 2},
         levels = 5,
-        req = {"cmp_out"},
+        req = {"compressors_out"},
         vec = {x = 2, y = 9}
     },
-    o2_med = {
+    rd_oxygen_compressor_medium = {
         name = "Unlock Medium",
         info = "",
-        upgrade = {["o2_med"] = 1},
         levels = 1,
-        req = {"o2_out"},
+        req = {"rd_oxygen_compressor_out"},
         vec = {x = 3, y = 9}
     },
-    o2_eff = {
+    rd_oxygen_compressor_power = {
         name = "Compressor Efficiency",
         info = "",
-        upgrade = {["o2_eff"] = 2},
         levels = 5,
-        req = {"o2_med"},
+        req = {"rd_oxygen_compressor_medium"},
         vec = {x = 4, y = 9}
     },
-    o2_lrg = {
+    rd_oxygen_compressor_large = {
         name = "Unlock Large",
         info = "",
-        upgrade = {["o2_lrg"] = 1},
         levels = 1,
-        req = {"o2_eff"},
+        req = {"rd_oxygen_compressor_power"},
         vec = {x = 5, y = 9}
     },
-    o2_mul = {
+    rd_oxygen_compressor_clock = {
         name = "Compressor Over-clocker",
         info = "",
-        upgrade = {["o2_ovr"] = 1},
         levels = 1,
-        req = {"o2_lrg"},
+        req = {"rd_oxygen_compressor_large"},
         vec = {x = 6, y = 9}
     },
     // H2O Elec
-    h2o_elc_out = {
+    rd_water_electrolyzer_out = {
         name = "H2O Electrolyzer Output",
         info = "",
-        upgrade = {["h2o_elc_out"] = 2},
         levels = 5,
-        req = {"cmp_out"},
+        req = {"compressors_out"},
         vec = {x = 2, y = 10}
     },
-    h2o_elc_med = {
+    rd_water_electrolyzer_medium = {
         name = "Unlock Medium",
         info = "",
-        upgrade = {["h2o_elc_med"] = 1},
         levels = 1,
-        req = {"h2o_elc_out"},
+        req = {"rd_water_electrolyzer_out"},
         vec = {x = 3, y = 10}
     },
-    h2o_elc_eff = {
+    rd_water_electrolyzer_power = {
         name = "Compressor Efficiency",
         info = "",
-        upgrade = {["h2o_elc_eff"] = 2},
         levels = 5,
-        req = {"h2o_elc_med"},
+        req = {"rd_water_electrolyzer_medium"},
         vec = {x = 4, y = 10}
     },
-    h2o_elc_lrg = {
+    rd_water_electrolyzer_large = {
         name = "Unlock Large",
         info = "",
-        upgrade = {["h2o_elc_lrg"] = 1},
         levels = 1,
-        req = {"h2o_elc_eff"},
+        req = {"rd_water_electrolyzer_power"},
         vec = {x = 5, y = 10}
     },
-    h2o_elc_mul = {
+    rd_water_electrolyzer_clock = {
         name = "Compressor Over-clocker",
         info = "",
-        upgrade = {["h2o_elc_ovr"] = 1},
         levels = 1,
-        req = {"h2o_elc_lrg"},
+        req = {"rd_water_electrolyzer_large"},
         vec = {x = 6, y = 10}
     },
     // H2O Pump
-    h2o_pmp_out = {
+    rd_water_pump_out = {
         name = "H2O Pump Output",
         info = "",
-        upgrade = {["h2o_pmp_out"] = 2},
         levels = 5,
-        req = {"cmp_out"},
+        req = {"compressors_out"},
         vec = {x = 2, y = 11}
     },
-    h2o_pmp_med = {
+    rd_water_pump_medium = {
         name = "Unlock Medium",
         info = "",
-        upgrade = {["h2o_pmp_med"] = 1},
         levels = 1,
-        req = {"h2o_pmp_out"},
+        req = {"rd_water_pump_out"},
         vec = {x = 3, y = 11}
     },
-    h2o_pmp_eff = {
+    rd_water_pump_power = {
         name = "Compressor Efficiency",
         info = "",
-        upgrade = {["h2o_pmp_eff"] = 2},
         levels = 5,
-        req = {"h2o_pmp_med"},
+        req = {"rd_water_pump_medium"},
         vec = {x = 4, y = 11}
     },
-    h2o_pmp_lrg = {
+    rd_water_pump_large = {
         name = "Unlock Large",
         info = "",
-        upgrade = {["h2o_pmp_lrg"] = 1},
         levels = 1,
-        req = {"h2o_pmp_eff"},
+        req = {"rd_water_pump_power"},
         vec = {x = 5, y = 11}
     },
-    h2o_pmp_mul = {
+    rd_water_pump_clock = {
         name = "Compressor Over-clocker",
         info = "",
-        upgrade = {["h2o_pmp_ovr"] = 1},
         levels = 1,
-        req = {"h2o_pmp_lrg"},
+        req = {"rd_water_pump_large"},
         vec = {x = 6, y = 11}
     },
      // LN2
-    ln2_out = {
+    rd_nitrogen_liquifier_out = {
         name = "LN2 Output",
         info = "",
-        upgrade = {["ln2_out"] = 2},
         levels = 5,
-        req = {"cmp_out"},
+        req = {"compressors_out"},
         vec = {x = 2, y = 12}
     },
-    ln2_med = {
+    rd_nitrogen_liquifier_medium = {
         name = "Unlock Medium",
         info = "",
-        upgrade = {["ln2_med"] = 1},
         levels = 1,
-        req = {"ln2_out"},
+        req = {"rd_nitrogen_liquifier_out"},
         vec = {x = 3, y = 12}
     },
-    ln2_eff = {
+    rd_nitrogen_liquifier_power = {
         name = "Compressor Efficiency",
         info = "",
-        upgrade = {["ln2_eff"] = 2},
         levels = 5,
-        req = {"ln2_med"},
+        req = {"rd_nitrogen_liquifier_medium"},
         vec = {x = 4, y = 12}
     },
-    ln2_lrg = {
+    rd_nitrogen_liquifier_large = {
         name = "Unlock Large",
         info = "",
-        upgrade = {["ln2_lrg"] = 1},
         levels = 1,
-        req = {"ln2_eff"},
+        req = {"rd_nitrogen_liquifier_power"},
         vec = {x = 5, y = 12}
     },
-    ln2_mul = {
+    rd_nitrogen_liquifier_clock = {
         name = "Compressor Over-clocker",
         info = "",
-        upgrade = {["ln2_ovr"] = 1},
         levels = 1,
-        req = {"ln2_lrg"},
+        req = {"rd_nitrogen_liquifier_large"},
         vec = {x = 6, y = 12}
     },
     
     ///--- Storage ---\\\
-    str_cap = {
+    storage_cap = {
         name = "Storage",
         info = "",
-        upgrade = {["str_cap"] = 1},
         levels = 10,
         vec = {x = 1, y = 14}
     },
     // Battery
-    bat_cap = {
+    rd_battery_cap1 = {
         name = "Battery Capacity",
         info = "",
-        upgrade = {["bat_cap"] = 2},
         levels = 5,
-        req = {"str_cap"},
+        req = {"storage_cap"},
         vec = {x = 2, y = 14}
     },
-    bat_str_med = {
+    rd_battery_medium = {
         name = "Unlock Medium",
         info = "",
-        upgrade = {["bat_med"] = 1},
         levels = 1,
-        req = {"bat_cap"},
+        req = {"rd_battery_cap1"},
         vec = {x = 3, y = 14}
     },
-    bat_cap_2 = {
+    rd_battery_cap2 = {
         name = "Battery Capacity",
         info = "",
-        upgrade = {["bat_cap_2"] = 1},
         levels = 5,
-        req = {"bat_str_med"},
+        req = {"rd_battery_medium"},
         vec = {x = 4, y = 14}
     },
-    bat_str_lrg = {
+    rd_battery_large = {
         name = "Unlock Large",
         info = "",
-        upgrade = {["bat_lrg"] = 1},
         levels = 1,
-        req = {"bat_cap_2"},
+        req = {"rd_battery_cap2"},
         vec = {x = 5, y = 14}
     },
-    bat_cap_3 = {
+    rd_battery_cap3 = {
         name = "Battery Capacity",
         info = "",
-        upgrade = {["bat_cap_3"] = 2},
         levels = 5,
-        req = {"bat_str_lrg"},
+        req = {"rd_battery_large"},
         vec = {x = 6, y = 14}
     },
     // CO2
-    co2_cap = {
+    rd_carbondioxide_storage_cap1 = {
         name = "CO2 Capacity",
         info = "",
-        upgrade = {["co2_cap"] = 2},
         levels = 5,
-        req = {"str_cap"},
+        req = {"storage_cap"},
         vec = {x = 2, y = 15}
     },
-    co2_str_med = {
+    rd_carbondioxide_storage_medium = {
         name = "Unlock Medium",
         info = "",
-        upgrade = {["co2_med"] = 1},
         levels = 1,
-        req = {"co2_cap"},
+        req = {"rd_carbondioxide_storage_cap1"},
         vec = {x = 3, y = 15}
     },
-    co2_cap_2 = {
+    rd_carbondioxide_storage_cap2 = {
         name = "CO2 Capacity",
         info = "",
-        upgrade = {["co2_cap_2"] = 1},
         levels = 5,
-        req = {"co2_str_med"},
+        req = {"rd_carbondioxide_storage_medium"},
         vec = {x = 4, y = 15}
     },
-    co2_str_lrg = {
+    rd_carbondioxide_storage_large = {
         name = "Unlock Large",
         info = "",
-        upgrade = {["co2_lrg"] = 1},
         levels = 1,
-        req = {"co2_cap_2"},
+        req = {"rd_carbondioxide_storage_cap2"},
         vec = {x = 5, y = 15}
     },
-    co2_cap_3 = {
+    rd_carbondioxide_storage_cap3 = {
         name = "CO2 Capacity",
         info = "",
-        upgrade = {["co2_cap_3"] = 2},
         levels = 5,
-        req = {"co2_str_lrg"},
+        req = {"rd_carbondioxide_storage_large"},
         vec = {x = 6, y = 15}
     },
     // N2
-    n2_cap = {
+    rd_nitrogen_storage_cap1 = {
         name = "N2 Capacity",
         info = "",
-        upgrade = {["n2_cap"] = 2},
         levels = 5,
-        req = {"str_cap"},
+        req = {"storage_cap"},
         vec = {x = 2, y = 16}
     },
-    n2_str_med = {
+    rd_nitrogen_storage_medium = {
         name = "Unlock Medium",
         info = "",
-        upgrade = {["n2_med"] = 1},
         levels = 1,
-        req = {"n2_cap"},
+        req = {"rd_nitrogen_storage_cap1"},
         vec = {x = 3, y = 16}
     },
-    n2_cap_2 = {
+    rd_nitrogen_storage_cap2 = {
         name = "N2 Capacity",
         info = "",
-        upgrade = {["n2_cap_2"] = 1},
         levels = 5,
-        req = {"n2_str_med"},
+        req = {"rd_nitrogen_storage_medium"},
         vec = {x = 4, y = 16}
     },
-    n2_str_lrg = {
+    rd_nitrogen_storage_large = {
         name = "Unlock Large",
         info = "",
-        upgrade = {["n2_lrg"] = 1},
         levels = 1,
-        req = {"n2_cap_2"},
+        req = {"rd_nitrogen_storage_cap2"},
         vec = {x = 5, y = 16}
     },
-    n2_cap_3 = {
+    rd_nitrogen_storage_cap3 = {
         name = "N2 Capacity",
         info = "",
-        upgrade = {["n2_cap_3"] = 2},
         levels = 5,
-        req = {"n2_str_lrg"},
+        req = {"rd_nitrogen_storage_large"},
         vec = {x = 6, y = 16}
     },
     // H2
-    h2_cap = {
+    rd_hydrogen_storage_cap1 = {
         name = "H2 Capacity",
         info = "",
-        upgrade = {["h2_cap"] = 2},
         levels = 5,
-        req = {"str_cap"},
+        req = {"storage_cap"},
         vec = {x = 2, y = 17}
     },
-    h2_str_med = {
+    rd_hydrogen_storage_medium = {
         name = "Unlock Medium",
         info = "",
-        upgrade = {["h2_med"] = 1},
         levels = 1,
-        req = {"h2_cap"},
+        req = {"rd_hydrogen_storage_cap1"},
         vec = {x = 3, y = 17}
     },
-    h2_cap_2 = {
+    rd_hydrogen_storage_cap2 = {
         name = "H2 Capacity",
         info = "",
-        upgrade = {["h2_cap_2"] = 1},
         levels = 5,
-        req = {"h2_str_med"},
+        req = {"rd_hydrogen_storage_medium"},
         vec = {x = 4, y = 17}
     },
-    h2_str_lrg = {
+    rd_hydrogen_storage_large = {
         name = "Unlock Large",
         info = "",
-        upgrade = {["h2_lrg"] = 1},
         levels = 1,
-        req = {"h2_cap_2"},
+        req = {"rd_hydrogen_storage_cap2"},
         vec = {x = 5, y = 17}
     },
-    h2_cap_3 = {
+    rd_hydrogen_storage_cap3 = {
         name = "H2 Capacity",
         info = "",
-        upgrade = {["h2_cap_3"] = 2},
         levels = 5,
-        req = {"h2_str_lrg"},
+        req = {"rd_hydrogen_storage_large"},
         vec = {x = 6, y = 17}
     },
     // O2
-    o2_cap = {
+    rd_oxygen_storage_cap1 = {
         name = "O2 Capacity",
         info = "",
-        upgrade = {["o2_cap"] = 2},
         levels = 5,
-        req = {"str_cap"},
+        req = {"storage_cap"},
         vec = {x = 2, y = 18}
     },
-    o2_str_med = {
+    rd_oxygen_storage_medium = {
         name = "Unlock Medium",
         info = "",
-        upgrade = {["o2_med"] = 1},
         levels = 1,
-        req = {"o2_cap"},
+        req = {"rd_oxygen_storage_cap1"},
         vec = {x = 3, y = 18}
     },
-    o2_cap_2 = {
+    rd_oxygen_storage_cap2 = {
         name = "O2 Capacity",
         info = "",
-        upgrade = {["o2_cap_2"] = 1},
         levels = 5,
-        req = {"o2_str_med"},
+        req = {"rd_oxygen_storage_medium"},
         vec = {x = 4, y = 18}
     },
-    o2_str_lrg = {
+    rd_oxygen_storage_large = {
         name = "Unlock Large",
         info = "",
-        upgrade = {["o2_lrg"] = 1},
         levels = 1,
-        req = {"o2_cap_2"},
+        req = {"rd_oxygen_storage_cap2"},
         vec = {x = 5, y = 18}
     },
-    o2_cap_3 = {
+    rd_oxygen_storage_cap3 = {
         name = "O2 Capacity",
         info = "",
-        upgrade = {["o2_cap_3"] = 2},
         levels = 5,
-        req = {"o2_str_lrg"},
+        req = {"rd_oxygen_storage_large"},
         vec = {x = 6, y = 18}
     },
     // H2O
-    h2o_cap = {
+    rd_water_storage_cap1 = {
         name = "H2O Capacity",
         info = "",
-        upgrade = {["h2o_cap"] = 2},
         levels = 5,
-        req = {"str_cap"},
+        req = {"storage_cap"},
         vec = {x = 2, y = 19}
     },
-    h2o_str_med = {
+    rd_water_storage_medium = {
         name = "Unlock Medium",
         info = "",
-        upgrade = {["h2o_med"] = 1},
         levels = 1,
-        req = {"h2o_cap"},
+        req = {"rd_water_storage_cap1"},
         vec = {x = 3, y = 19}
     },
-    h2o_cap_2 = {
+    rd_water_storage_cap2 = {
         name = "H2O Capacity",
         info = "",
-        upgrade = {["h2o_cap_2"] = 1},
         levels = 5,
-        req = {"h2o_str_med"},
+        req = {"rd_water_storage_medium"},
         vec = {x = 4, y = 19}
     },
-    h2o_str_lrg = {
+    rd_water_storage_large = {
         name = "Unlock Large",
         info = "",
-        upgrade = {["h2o_lrg"] = 1},
         levels = 1,
-        req = {"h2o_cap_2"},
+        req = {"rd_water_storage_cap2"},
         vec = {x = 5, y = 19}
     },
-    h2o_cap_3 = {
+    rd_water_storage_cap3 = {
         name = "H2O Capacity",
         info = "",
-        upgrade = {["h2o_cap_3"] = 2},
         levels = 5,
-        req = {"h2o_str_lrg"},
+        req = {"rd_water_storage_large"},
         vec = {x = 6, y = 19}
+    },
+    
+    //-- Node --\\
+    rd_node_medium = {
+        name = "Medium Resource Node",
+        info = "",
+        levels = 1,
+        vec = {x = 1, y = 21}
+    },
+    rd_node_large = {
+        name = "Large Resource Node",
+        info = "",
+        levels = 1,
+        req = {"rd_node_medium"},
+        vec = {x = 2, y = 21}
     },
 }

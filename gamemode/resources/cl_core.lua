@@ -1,6 +1,6 @@
 
-TK.RD = {}
-TK.RD.EntityData = {}
+TK.RD = TK.RD or {}
+
 local sync_data = {}
 local ent_table = {}
 local net_table = {}

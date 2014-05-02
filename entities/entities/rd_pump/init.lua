@@ -4,7 +4,7 @@ include('shared.lua')
 
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
-    
+
     self:SetNWInt("Range", self.data.range)
     self:SetNWInt("Linked", 0)
     self.rangesqr = self.data.range * self.data.range

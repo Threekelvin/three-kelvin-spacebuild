@@ -1,6 +1,5 @@
 
 TK.RD = TK.RD or {}
-TK.RD.EntityData = {}
 TK.RD.ent_table = {}
 TK.RD.net_table = {}
 TK.RD.res_table = {}
@@ -89,19 +88,15 @@ local function RegisterNet(node)
     node.netdata = TK.RD.net_table[netid]
 end
 
-function TK.RD:Register(ent, node)
+function TK.RD:Register(ent)
     if !IsValid(ent) then return end
     ent.IsTKRD = true
     
-    if node then
+    if ent:GetClass() == "rd_node" then
         RegisterNet(ent)
         ent.IsNode = true
     else
         RegisterEnt(ent)
-    end
-    
-    if self.EntityData[ent:GetClass()] then
-        ent.data = self.EntityData[ent:GetClass()][ent:GetModel()] or {}
     end
 end
 

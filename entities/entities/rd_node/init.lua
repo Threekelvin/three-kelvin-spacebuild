@@ -5,22 +5,8 @@ include('shared.lua')
 umsg.PoolString("3k_node_at")
 
 function ENT:Initialize()
-    self:PhysicsInit(SOLID_VPHYSICS)
-    self:SetMoveType(MOVETYPE_VPHYSICS)
-    self:SetSolid(SOLID_VPHYSICS)
-    self:SetUseType(SIMPLE_USE)
-    self.next_use = 0
-    
-    local phys = self:GetPhysicsObject()
-    if IsValid(phys) then
-        phys:Wake()
-    end
-    
-    self.netid = 0
-    self.range =  0
-    self.rangesqr =  0
-    self.netdata = {res = {}, entities = {}, update = {}, node = self}
-    TK.RD:Register(self, true)
+    self.BaseClass.Initialize(self)
+
     self:SetRange(self.data.range)
 end
 

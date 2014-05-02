@@ -1,5 +1,11 @@
 
 TK.UP = TK.UP or {}
+TK.UP.lists = {
+    "life_support",
+    "ship",
+    "mining",
+    "weapons",
+}
 
 function TK.UP:GrowTree(tree)
     for id,data in pairs(self[tree]) do
@@ -11,15 +17,13 @@ function TK.UP:GrowTree(tree)
 end
 
 hook.Add("Initialize", "TKUP", function()
-    TK.UP:GrowTree("life_support")
-    TK.UP:GrowTree("ship")
-    TK.UP:GrowTree("mining")
-    TK.UP:GrowTree("weapons")
+    for k,v in pairs(TK.UP.lists) do
+        TK.UP:GrowTree(v)
+    end
 end)
 
 hook.Add("OnReloaded", "TKUP", function()
-    TK.UP:GrowTree("life_support")
-    TK.UP:GrowTree("ship")
-    TK.UP:GrowTree("mining")
-    TK.UP:GrowTree("weapons")
+    for k,v in pairs(TK.UP.lists) do
+        TK.UP:GrowTree(v)
+    end
 end)
