@@ -100,6 +100,8 @@ function TK.LO.MakeEntity(ply, data, item_id)
     ent.PrintName = item.name
     ent:Spawn()
     
+    table.Merge(ent:GetTable(), {item_id = item_id})
+    
     timer.Simple(0.1, function()
         net.Start("TKLO_Ent")
             net.WriteTable({[ent:EntIndex()] = item.name})
