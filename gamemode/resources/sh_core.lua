@@ -13,4 +13,6 @@ hook.Add("Initialize", "TK.RD", function()
     
     TK.RD:AddResource("tiberium", "Tiberium")
     TK.RD:AddResource("magnetite", "Magnetite")
+    TK.RD:AddResource("quintinite", "Quintinite")
+    TK.RD:AddResource("riddinite", "Riddinite")
 end)

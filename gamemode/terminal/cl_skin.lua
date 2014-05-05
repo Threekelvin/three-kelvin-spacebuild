@@ -209,7 +209,7 @@ function SKIN:PaintTKButton(btn, w, h)
 end
 
 function SKIN:PaintTKLOButton(btn, w, h)
-    if tobool(btn.loadout[btn.slot.. "_" ..btn.id.. "_locked"]) then
+    if TK.LO:SlotLocked(btn.slot.. "_" ..btn.id) then
         surface.SetMaterial(self.lock)
         surface.SetDrawColor(255, 255, 255, 255)
         surface.DrawTexturedRect(w / 2 - 16, h / 2 - 16, 32, 32)
@@ -284,7 +284,7 @@ end
 function SKIN:PaintTKItemPanel(btn, w, h)
     draw.RoundedBox(4, 0, 0, w, h, self.light)
     draw.RoundedBox(4, 5, 5, w - 10, 25, self.dark)
-    draw.SimpleText(btn.item.name, "TKFont15", w / 2, 17.5, self.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    draw.SimpleText(btn.name, "TKFont15", w / 2, 17.5, self.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 ///--- ---\\\
 

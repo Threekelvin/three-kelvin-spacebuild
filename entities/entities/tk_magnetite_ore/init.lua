@@ -9,7 +9,13 @@ function ENT:Initialize()
     
     local phys = self:GetPhysicsObject()
     if IsValid(phys) then
-        phys:EnableMotion(false)
+        phys:SetMass(50000)
+        phys:EnableMotion(true)
         phys:Wake()
     end
+    
+    
+    timer.Simple(math.random(90, 150), function()
+        SafeRemoveEntity(self)
+    end)
 end

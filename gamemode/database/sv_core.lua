@@ -55,7 +55,6 @@ function MySQL:ProcessQuery(data)
         
         if msg == "MySQL server has gone away" then
             MySQL.Connected = false
-            print("fail?")
             pcall(MySQL.MakePriorityQuery, MySQL, data[1], data[2], unpack(data[3]))
         end
         

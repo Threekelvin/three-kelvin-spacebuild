@@ -261,7 +261,7 @@ function PP:CanToolEnt(ply, toolmode, ent)
     
     local owner, uid = self:GetOwner(ent)
     if IsValid(owner) then
-        if toolmode == "adv_duplicator" or toolmode == "duplicator" or toolmode == "advdupe2" then
+        if string.match(toolmode, "duplicator") or string.match(toolmode, "dupe") then
             if !self:CheckConstraints(ply, ent, "Dupe") then return false end
             
             if ply == owner then return end
@@ -278,7 +278,7 @@ function PP:CanToolEnt(ply, toolmode, ent)
         if self:IsBuddy(uid, ply, "Tool Gun") then return end
         if self:IsShared(ent, "Tool Gun") then return end
     else
-        if toolmode == "adv_duplicator" or toolmode == "duplicator" or toolmode == "advdupe2" then
+        if string.match(toolmode, "duplicator") or string.match(toolmode, "dupe") then
             if self:CanOverride(ply, "Dupe", "World") then return end
         else
             if self:CanOverride(ply, "Tool Gun", "World") then return end
@@ -296,7 +296,7 @@ function PP:CanToolGun(ply, tr, toolmode)
 
     local owner, uid = self:GetOwner(ent)
     if IsValid(owner) then
-        if toolmode == "adv_duplicator" or toolmode == "duplicator" or toolmode == "advdupe2" then
+        if string.match(toolmode, "duplicator") or string.match(toolmode, "dupe") then
             if !self:CheckConstraints(ply, ent, "Dupe") then return false end
             
             if ply == owner then return end
@@ -327,7 +327,7 @@ function PP:CanToolGun(ply, tr, toolmode)
         if self:IsBuddy(uid, ply, "Tool Gun") then return end
         if self:IsShared(ent, "Tool Gun") then return end
     else
-        if toolmode == "adv_duplicator" or toolmode == "duplicator" or toolmode == "advdupe2" then
+        if string.match(toolmode, "duplicator") or string.match(toolmode, "dupe") then
             if self:CanOverride(ply, "Dupe", "World") then return end
         else
             if self:CanOverride(ply, "Tool Gun", "World") then return end

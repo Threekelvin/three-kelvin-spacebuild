@@ -1,39 +1,51 @@
-TOOL.Category        = "Mining"
-TOOL.Name            = "Loadout"
+TOOL.Category       = "Mining"
+TOOL.Name           = "Loadout"
 TOOL.Command        = nil
-TOOL.ConfigName        = nil
-TOOL.Tab = "3K Spacebuild"
+TOOL.ConfigName     = nil
+TOOL.Tab            = "3K Spacebuild"
+TOOL.Build          = true
 
 TOOL.ClientConVar["dontweld"] = 0
 TOOL.ClientConVar["allowweldingtoworld"] = 0
 TOOL.ClientConVar["makefrozen"] = 1
-TOOL.ClientConVar["item"] = 0
-TOOL.ClientConVar["model"] = ""
+TOOL.ClientConVar["item"] = ""
 
 if CLIENT then
     language.Add("tool.tk_loadout.name", "Player Loadout Tool")
     language.Add("tool.tk_loadout.desc", "Use to Spawn Items From Your Loadout")
     language.Add("tool.tk_loadout.0", "Left Click:    Right Click:    Reload:")
-else
-
+    
+    hook.Add("TKDB_Player_Data", "TKLO_tool", function(dtable, idx, data)
+        if dtable != "player_terminal_loadout" or idx != "loadout" then return end
+        
+        if not LocalPlayer().GetWeapons then return end
+        local tools = LocalPlayer():GetWeapons()
+        for _,tool in pairs(tools) do
+            if tool:GetClass() != "gmod_tool" then continue end
+            tool.Tool["tk_loadout"].Build = true
+            break
+        end
+    end)
 end
 
 function TOOL:SelectModel()
-    local str = self:GetClientInfo("model")
-    return str
+    local item = TK.LO:GetItem(self:GetClientInfo("item"))
+    return item.mdl or ""
 end
 
 function TOOL:LeftClick(trace)
     if !trace.Hit then return end
     if CLIENT then return true end
     
-    local ply = self:GetOwner()
-    local item = self:GetClientNumber("item", 0)
-    if !TK.LO:CanSpawn(ply, item) then return end
+    local ply, item, data = self:GetOwner(), self:GetClientInfo("item"), {}
+    data.Class = self.Mode
+    data.Model = self:SelectModel()
+    data.Pos = trace.HitPos
+    data.Angle = trace.HitNormal:Angle() + Angle(90,0,0)
+    if not util.IsValidModel(data.Model) then return end
     
-    local pos = trace.HitPos
-    local angles = trace.HitNormal:Angle() + Angle(90,0,0)
-    local ent = TK.LO:SpawnItem(ply, item, pos, angles)
+    local ent = TK.LO.MakeEntity(ply, data, item)
+    if not IsValid(ent) then return false end
     ent:SetPos(trace.HitPos - trace.HitNormal * ent:OBBMins().z)
     
     if self:GetClientNumber("dontweld", 0) == 0 then
@@ -76,6 +88,8 @@ function TOOL:Reload(trace)
 end
 
 function TOOL:Think()
+    if SERVER then return end
+    
     if !IsValid(self.GhostEntity) or self.GhostEntity:GetModel() != self:SelectModel() then
         self:MakeGhostEntity(self:SelectModel(), Vector(0,0,0), Angle(0,0,0))
     else
@@ -83,65 +97,68 @@ function TOOL:Think()
         if !trace.Hit then return end
         self.GhostEntity:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
         self.GhostEntity:SetPos(trace.HitPos - trace.HitNormal * self.GhostEntity:OBBMins().z)
-    end    
+    end
+    
+    if not self.Build then return end
+    local CPanel = controlpanel.Get(self.Mode)
+    if not CPanel then return end
+    
+    self.Build = false
+    CPanel:ClearControls()
+    self.BuildCPanel(CPanel, self)
 end
 
-if CLIENT then
-    function TOOL.BuildCPanel(CPanel)
-        local DontWeld = vgui.Create("DCheckBoxLabel")
-        DontWeld:SetText("Don't Weld")
-        DontWeld:SetConVar("tk_loadout_dontweld")
-        DontWeld:SetValue(1)
-        DontWeld:SizeToContents()
-        CPanel:AddItem(DontWeld)
-        
-        local AllowWeldingToWorld = vgui.Create("DCheckBoxLabel")
-        AllowWeldingToWorld:SetText("Allow Welding To World")
-        AllowWeldingToWorld:SetConVar("tk_loadout_allowweldingtoworld")
-        AllowWeldingToWorld:SetValue(0)
-        AllowWeldingToWorld:SizeToContents()
-        CPanel:AddItem(AllowWeldingToWorld)
-        
-        local MakeFrozen = vgui.Create("DCheckBoxLabel")
-        MakeFrozen:SetText("Make Frozen")
-        MakeFrozen:SetConVar("tk_loadout_makefrozen")
-        MakeFrozen:SetValue(1)
-        MakeFrozen:SizeToContents()
-        CPanel:AddItem(MakeFrozen)
-        
-        local List = vgui.Create("DPanelSelect")
-        List:SetSize(0, 200)
-        List:EnableVerticalScrollbar(true)
-        List.Populate = function(self)
-            self:Clear(true)
-            self.SelectedPanel = nil
-            RunConsoleCommand("tk_loadout_item", "0")
-            RunConsoleCommand("tk_loadout_model", "")
-            
-            local loadout = TK.DB:GetPlayerData("player_loadout")
-            
-            for k,itemid in pairs(loadout) do
-                if string.match(k, "[%w]+$") != "item" or itemid == 0 then continue end
-                
-                local item = TK.TD:GetItem(itemid)
-                local icon = vgui.Create("SpawnIcon")
-                icon.DoRightClick = function()
-                    surface.PlaySound("ui/buttonclickrelease.wav")
-                    SetClipboardText(k)
-                    GAMEMODE:AddNotify("Model path copied to clipboard.", NOTIFY_HINT, 5)
-                end
-                icon:SetModel(item.mdl)
-                icon:SetSize(64, 64)
-                icon:SetToolTip(item.name)
-                self:AddPanel(icon, {tk_loadout_item = itemid, tk_loadout_model = item.mdl, playgamesound = "ui/buttonclickrelease.wav"})
-            end
+function TOOL.BuildCPanel(CPanel, tool)
+    if SERVER then return end
+    if !tool then return end
+    
+    local DontWeld = vgui.Create("DCheckBoxLabel")
+    DontWeld:SetText("Don't Weld")
+    DontWeld:SetConVar("tk_loadout_dontweld")
+    DontWeld:SetValue(1)
+    DontWeld:SizeToContents()
+    CPanel:AddItem(DontWeld)
+    
+    local AllowWeldingToWorld = vgui.Create("DCheckBoxLabel")
+    AllowWeldingToWorld:SetText("Allow Welding To World")
+    AllowWeldingToWorld:SetConVar("tk_loadout_allowweldingtoworld")
+    AllowWeldingToWorld:SetValue(0)
+    AllowWeldingToWorld:SizeToContents()
+    CPanel:AddItem(AllowWeldingToWorld)
+    
+    local MakeFrozen = vgui.Create("DCheckBoxLabel")
+    MakeFrozen:SetText("Make Frozen")
+    MakeFrozen:SetConVar("tk_loadout_makefrozen")
+    MakeFrozen:SetValue(1)
+    MakeFrozen:SizeToContents()
+    CPanel:AddItem(MakeFrozen)
+    
+    local List = vgui.Create("DPanelSelect")
+    List:SetSize(0, 200)
+    List:EnableVerticalScrollbar(true)
+    CPanel:AddItem(List)
+
+    local loadout = TK.DB:GetPlayerData("player_terminal_loadout").loadout
+    
+    for _,item_id in pairs(loadout) do
+        local icon = vgui.Create("SpawnIcon")
+        icon.idx = item_id
+        icon.item = TK.LO:GetItem(item_id)
+        function icon:DoRightClick()
+            surface.PlaySound("ui/buttonclickrelease.wav")
+            SetClipboardText(self.item.mdl)
+            GAMEMODE:AddNotify("Model path copied to clipboard.", NOTIFY_HINT, 5)
         end
-        List:Populate()
-        CPanel:AddItem(List)
-        
-        hook.Add("TKDB_Player_Data", "tk_loadout", function(dtable, idx, data)
-            if dtable != "player_loadout" then return end
-            List:Populate()
-        end)
+        icon:SetModel(icon.item.mdl)
+        icon:SetSize(64, 64)
+        icon:SetToolTip(icon.item.name)
+        List:AddPanel(icon, {tk_loadout_item = item_id, playgamesound = "ui/buttonclickrelease.wav"})
+    end
+    List:SortByMember("idx")
+    local items = List:GetItems()
+    if table.Count(items) > 0 then
+        List:SelectPanel(table.GetFirstValue(items))
+    else
+        RunConsoleCommand("tk_loadout_item", "")
     end
 end

@@ -74,18 +74,46 @@ function ENT:Initialize()
     end
 end
 
-function ENT:Split(laser)
-    local rad = self:BoundingRadius() * 0.5
-    local dir = laser:GetUp()
+function ENT:GetRoidPos(ent)
+    local rad, ran_vec = self:BoundingRadius() * 0.75
+    
+    while true do
+        ran_vec = self:LocalToWorld(self:OBBCenter()) + Vector(math.random(-rad, rad), math.random(-rad, rad), math.random(-rad, rad))
+        
+        local td = {}
+        td.start = ran_vec
+        td.endpos = ran_vec
+        td.filter = self
+        td.mins = ent:OBBMins()
+        td.maxs = ent:OBBMaxs()
+        
+        local trace = util.TraceHull(td)
+        if not trace.Hit then break end
+    end
+    
+    return ran_vec
+end
+
+function ENT:Split()
     
     for k,v in pairs(ModelList[self:GetModel()].children) do
         local ent = ents.Create("tk_magnetite_ore")
         ent:SetModel(v)
-        local ran_vec = Vector(math.random(-rad, rad), math.random(-rad, rad), math.random(-rad, rad))
-        ent:SetPos(self:GetMassCenter() + ran_vec)
+        ent:SetPos(self:GetRoidPos(ent))
         ent:SetAngles(Angle(math.random(-180, 180), math.random(-180, 180), math.random(-180, 180)))
-        ent:SetVelocity((dir + dir * math.Rand(0.5, 1.5)) * 100)
+        ent:Spawn()
+        
+        local phys = ent:GetPhysicsObject()
+        phys:AddVelocity(Vector(math.Rand(-10, 10), math.Rand(-10, 10), math.Rand(-10, 10)))
+        phys:AddAngleVelocity(Vector(math.Rand(-2, 2), math.Rand(-2, 2), math.Rand(-2, 2)))
     end
     
     SafeRemoveEntity(self)
+end
+
+function ENT:Mine(dmg)
+    self.health = self.health - dmg
+    if self.health >= 0 then return end
+    
+    self:Split()
 end

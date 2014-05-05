@@ -150,12 +150,12 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
         for k,v in pairs(tool.Data) do
             if not TK.UP:HasSize(tool.Mode, v.size) then continue end
             local icon = vgui.Create("SpawnIcon")
-            icon.DoRightClick = function()
+            icon.idx = k
+            function icon:DoRightClick()
                 surface.PlaySound("ui/buttonclickrelease.wav")
-                SetClipboardText(k)
+                SetClipboardText(self.idx)
                 GAMEMODE:AddNotify("Model path copied to clipboard.", NOTIFY_HINT, 5)
             end
-            icon.idx = k
             icon:SetModel(k)
             icon:SetSize(64, 64)
             
@@ -225,9 +225,14 @@ else
     hook.Add("TKDB_Player_Data", "TKTG", function(dbtable, idx, val)
         for k,v in pairs(TK.UP.lists) do
             if not string.match(v .."$", dbtable) then continue end
-            local tool = LocalPlayer():GetWeapon("gmod_tool")
-            for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
-                tool.Tool[string.match(t_file, "[%w_]+")].Build = true
+            if not LocalPlayer().GetWeapons then return end
+            local tools = LocalPlayer():GetWeapons()
+            for _,tool in pairs(tools) do
+                if tool:GetClass() != "gmod_tool" then continue end
+                for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
+                    tool.Tool[string.match(t_file, "[%w_]+")].Build = true
+                end
+                break
             end
         end
     end)

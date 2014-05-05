@@ -48,14 +48,14 @@ end
 function ENT:DoThink(eff)
     if !self:GetActive() then return end
 
-    local water = math.min(self:GetResourceAmount("water"), self.data.water * self.mult * eff)
+    local water = math.min(self:GetResourceAmount("water"), -self.data.water * self.mult * eff)
     
     if water <= 0 then self:TurnOff() return end
     if !self:Work() then return end
     
     water = self:ConsumeResource("water", water)
-    WireLib.TriggerOutput(self, "O2Output", self:SupplyResource("oxygen", water / 2))
-    WireLib.TriggerOutput(self, "H2Output", self:SupplyResource("hydrogen", water))
+    WireLib.TriggerOutput(self, "O2Output", self:SupplyResource("oxygen", water * 0.25))
+    WireLib.TriggerOutput(self, "H2Output", self:SupplyResource("hydrogen", water * 0.5))
 end
 
 function ENT:NewNetwork(netid)

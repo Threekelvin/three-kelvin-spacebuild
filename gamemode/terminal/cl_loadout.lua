@@ -7,6 +7,7 @@ local function MakePanel(panel, slot, id, item)
     btn.slot = slot
     btn.id = id
     btn.item = item
+    btn.name = TK.LO:GetItem(item).name
     btn:SetSkin("Terminal")
     btn:SetSize(0, 65)
     btn.Paint = function(btn, w, h)
@@ -19,7 +20,7 @@ local function MakePanel(panel, slot, id, item)
         timer.Simple(1, function() if IsValid(btn) then btn.active = true end end)
         
         surface.PlaySound("ui/buttonclickrelease.wav")
-        panel.Terminal.AddQuery("setslot", btn.slot, btn.id, btn.item.idx)
+        panel.Terminal.AddQuery("setslot", btn.slot, btn.id, btn.item)
     end
     
     return btn
@@ -28,10 +29,9 @@ end
 local function MakeSlot(panel, slot, id)
     local btn = vgui.Create("DButton", panel)
     btn:SetSkin("Terminal")
-    btn.loadout = {}
     btn.slot = slot
     btn.id = id
-    btn.item = 0
+    btn.item = {}
     
     btn.Entity = nil
     btn.vLookatPos = Vector()
@@ -52,24 +52,23 @@ local function MakeSlot(panel, slot, id)
     btn.MakeList = function(btn)
         panel.items:Clear(true)
         
-        local validitems = {}
-        for k,v in pairs(TK.DB:GetPlayerData("player_inventory").inventory) do
-            if !TK.TD:IsSlot(btn.slot, v) then continue end
-            table.insert(validitems, v)
+        local valid_items = {}
+        for k,v in pairs(TK.DB:GetPlayerData("player_terminal_invectory").inventory) do
+            if !TK.LO:IsSlot(v, btn.slot) then continue end
+            table.insert(valid_items, v)
         end
         
         for k,v in pairs(panel[btn.slot]) do
-            if v.item == 0 then continue end
-            for _,itm in pairs(validitems) do
-                if v.item == itm then
-                    validitems[_] = nil
+            for _,item in pairs(valid_items) do
+                if v.item == item then
+                    valid_items[_] = nil
                     break
                 end
             end
         end
         
-        for k,v in pairs(validitems) do
-            panel.items:AddItem(MakePanel(panel, btn.slot, btn.id, TK.TD:GetItem(v)))
+        for k,v in pairs(valid_items) do
+            panel.items:AddItem(MakePanel(panel, btn.slot, btn.id, v))
         end
     end
     
@@ -77,15 +76,15 @@ local function MakeSlot(panel, slot, id)
         
     end
     btn.Update = function()
-        local itemid = btn.loadout[btn.slot.. "_" ..btn.id.. "_item"]
-        if !itemid or itemid == btn.item then return end
-        btn.item = itemid
-        local item = TK.TD:GetItem(itemid)
+        local item_id = panel.loadout[btn.slot.. "_" ..btn.id]
+        if !item_id or item_id == btn.item then return end
+        btn.item = item_id
+        local item = TK.LO:GetItem(item_id)
         
         btn:SetToolTip(item.name)
         btn:SetModel(item.mdl)
-        btn.vCamPos = Vector(item.r, item.r, item.r)
-        btn.vLookatPos = Vector(0 ,0 , item.r / 2)
+        btn.vCamPos = item.view
+        btn.vLookatPos = Vector(0 ,0 , item.view.z * 0.5)
         
         btn:MakeList()
     end
@@ -94,7 +93,7 @@ local function MakeSlot(panel, slot, id)
         return true
     end
     btn.DoClick = function()
-        if tobool(btn.loadout[btn.slot.. "_" ..btn.id.. "_locked"]) then return end
+        if TK.LO:SlotLocked(btn.slot.. "_" ..btn.id) then return end
         surface.PlaySound("ui/buttonclickrelease.wav")
         btn:MakeList()
     end
@@ -105,7 +104,8 @@ end
 function PANEL:Init()
     self:SetSkin("Terminal")
     self.NextThink = 0
-    self.loadout = {}
+    self.score = TK:Format(TK.DB:GetPlayerData("player_stats").score)
+    self.loadout = TK.DB:GetPlayerData("player_terminal_loadout").loadout
     
     self.items = vgui.Create("DPanelList", self)
     self.items:SetSpacing(5)
@@ -114,28 +114,17 @@ function PANEL:Init()
     self.items:EnableVerticalScrollbar(true)
     
     self.mining = {}
-    self.mining[1] = MakeSlot(self, "mining", 1)
-    self.mining[2] = MakeSlot(self, "mining", 2)
-    self.mining[3] = MakeSlot(self, "mining", 3)
-    self.mining[4] = MakeSlot(self, "mining", 4)
-    self.mining[5] = MakeSlot(self, "mining", 5)
-    self.mining[6] = MakeSlot(self, "mining", 6)
-    
     self.storage = {}
-    self.storage[1] = MakeSlot(self, "storage", 1)
-    self.storage[2] = MakeSlot(self, "storage", 2)
-    self.storage[3] = MakeSlot(self, "storage", 3)
-    self.storage[4] = MakeSlot(self, "storage", 4)
-    self.storage[5] = MakeSlot(self, "storage", 5)
-    self.storage[6] = MakeSlot(self, "storage", 6)
-    
     self.weapon = {}
-    self.weapon[1] = MakeSlot(self, "weapon", 1)
-    self.weapon[2] = MakeSlot(self, "weapon", 2)
-    self.weapon[3] = MakeSlot(self, "weapon", 3)
-    self.weapon[4] = MakeSlot(self, "weapon", 4)
-    self.weapon[5] = MakeSlot(self, "weapon", 5)
-    self.weapon[6] = MakeSlot(self, "weapon", 6)
+    
+    for i=1,6 do
+        self.mining[i] = MakeSlot(self, "mining", i)
+        self.mining[i]:Update()
+        self.storage[i] = MakeSlot(self, "storage", i)
+        self.storage[i]:Update()
+        self.weapon[i] = MakeSlot(self, "weapon", i)
+        self.weapon[i]:Update()
+    end
 end
 
 function PANEL:PerformLayout()
@@ -158,33 +147,19 @@ function PANEL:PerformLayout()
     self.items:SetSize(260, 395)
 end
 
-function PANEL:Think(force)
-    if !force then
-        if CurTime() < self.NextThink then return end
-        self.NextThink = CurTime() + 1
-    end
-    
-    self.score = TK:Format(TK.DB:GetPlayerData("player_info").score)
-    self.loadout = TK.DB:GetPlayerData("player_loadout")
-    
-    for k,v in pairs(self.mining) do
-        v.loadout = self.loadout
-        v:Update()
-    end
-    
-    for k,v in pairs(self.storage) do
-        v.loadout = self.loadout
-        v:Update()
-    end
-    
-    for k,v in pairs(self.weapon) do
-        v.loadout = self.loadout
-        v:Update()
-    end
+function PANEL:Think()
+
 end
 
 function PANEL:Update()
-    self:Think(true)
+    self.score = TK:Format(TK.DB:GetPlayerData("player_stats").score)
+    self.loadout = TK.DB:GetPlayerData("player_terminal_loadout").loadout
+    
+    for i=1,6 do
+        self.mining[i]:Update()
+        self.storage[i]:Update()
+        self.weapon[i]:Update()
+    end
 end
 
 function PANEL.Paint(self, w, h)

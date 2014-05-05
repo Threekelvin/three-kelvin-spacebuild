@@ -41,7 +41,7 @@ local Pages = {
         "Research",
         "tk_research",
         "icon16/wrench.png"
-    },--[[
+    },
     [5] = {
         function() 
             return true 
@@ -49,7 +49,7 @@ local Pages = {
         "Loadout",
         "tk_loadout",
         "icon16/briefcase.png"
-    },
+    },--[[
     [6] = {
         function() 
             return true 

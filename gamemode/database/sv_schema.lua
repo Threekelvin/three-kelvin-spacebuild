@@ -53,6 +53,14 @@ local threekelvin = {
         steamid                     =   {"VARCHAR(20)", "NOT NULL", "PRIMARY KEY", type = "string", no_sync = true},
         storage                     =   {"LONGBLOB", "NOT NULL", type = "table", default = {}}
     },
+    player_terminal_invectory = {
+        steamid                     =   {"VARCHAR(20)", "NOT NULL", "PRIMARY KEY", type = "string", no_sync = true},
+        inventory                   =   {"LONGBLOB", "NOT NULL", type = "table", default = {"magnetite_basic_laser", "magnetite_basic_storage"}}
+    },
+    player_terminal_loadout = {
+        steamid                     =   {"VARCHAR(20)", "NOT NULL", "PRIMARY KEY", type = "string", no_sync = true},
+        loadout                     =   {"LONGBLOB", "NOT NULL", type = "table", default = {["mining_1"] = "magnetite_basic_laser", ["storage_1"] = "magnetite_basic_storage"}}
+    },
     player_upgrades_life_support = {
         steamid                     =   {"VARCHAR(20)", "NOT NULL", "PRIMARY KEY", type = "string", no_sync = true},
         upgrades                    =   {"LONGBLOB", "NOT NULL", type = "table", default = {}}

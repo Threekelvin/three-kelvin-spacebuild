@@ -46,7 +46,7 @@ end
 function ENT:DoThink(eff)
     if !self:GetActive() then return end
 
-    local liquid_nitrogen = math.min(self:GetResourceAmount("nitrogen"), self.data.liquid_nitrogen * self.mult * eff)
+    local liquid_nitrogen = math.min(self:GetResourceAmount("nitrogen"), -self.data.nitrogen * self.mult * eff)
     if !self:Work() then return end
     
     liquid_nitrogen = self:ConsumeResource("nitrogen", liquid_nitrogen)

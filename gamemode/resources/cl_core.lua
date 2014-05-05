@@ -50,7 +50,6 @@ function TK.RD:AddResource(idx, name)
     name = tostring(name) or idx
     
     res_table[idx] = name
-    language.Add(idx, name)
 end
 
 function TK.RD:GetNetTable(netid)

@@ -9,7 +9,7 @@ function TK.DB:SetPlayerData(ply, dbtable, data)
     local p_data = self.PlayerData[ply.uid][dbtable]
     local n_data = {}
     
-    for idx,val in pairs(data) do
+    for idx,val in pairs(data or {}) do
         if !p_data[idx] or p_data == val then continue end
         
         p_data[idx] = val
@@ -100,13 +100,28 @@ function TK.DB:NewPlayer(ply)
     end
 end
 
+function TK.DB:NewTable(ply, dbtable)
+    local data = list.Get("TK_Database")[dbtable]
+    local n_data = {steamid = ply.steamid}
+    for idx,val in pairs(data) do
+        if !val.default then continue end
+        n_data[idx] = val.default
+    end
+    self:InsertQuery(dbtable, n_data)
+end
+
 function TK.DB:LoadPlayer(ply)
     for dbtable,data in pairs(list.Get("TK_Database")) do
         if !string.match(dbtable, "^player_") then continue end
-        self:SelectQuery(dbtable, nil, {["steamid = %s"] = ply.steamid}, nil, 1, function(data, ply)
-            TK.DB:SetPlayerData(ply, dbtable, data[1])
-            TK.DB:SetNetworkData(ply, data[1])
-        end, ply)
+        ply.loaded = ply.loaded + 1
+        self:SelectQuery(dbtable, nil, {["steamid = %s"] = ply.steamid}, nil, 1, function(data, ply, dbtable)
+            if !data[1] then 
+                TK.DB:NewTable(ply, dbtable)
+            else
+                TK.DB:SetPlayerData(ply, dbtable, data[1])
+                TK.DB:SetNetworkData(ply, data[1])
+            end
+        end, ply, dbtable)
     end
 end
 
