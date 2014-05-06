@@ -44,14 +44,14 @@ function ENT:StartTouch(ent)
     
     self.inside[ent:EntIndex()] = ent
     
-    local oldenv = ent:GetEnv()
+    local old_env = ent:GetEnv()
     table.insert(ent.tk_env.envlist, self.env)
     table.sort(ent.tk_env.envlist, EnvPrioritySort)
-    local newenv = ent:GetEnv()
+    local new_env = ent:GetEnv()
     
-    if oldenv != newenv then
-        newenv:DoGravity(ent)
-        gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
+    if old_env != new_env then
+        new_env:DoGravity(ent)
+        gamemode.Call("OnAtmosphereChange", ent, old_env, new_env)
     end
 end
 
@@ -59,18 +59,18 @@ function ENT:EndTouch(ent)
     local entid = ent:EntIndex()
     
     if self.inside[entid] and IsValid(self.env) then
-        local oldenv = ent:GetEnv()
+        local old_env = ent:GetEnv()
         for k,v in pairs(ent.tk_env.envlist) do
             if v == self.env then
                 table.remove(ent.tk_env.envlist, k)
                 break
             end
         end
-        local newenv = ent:GetEnv()
+        local new_env = ent:GetEnv()
         
-        if oldenv != newenv then
-            newenv:DoGravity(ent)
-            gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
+        if old_env != new_env then
+            new_env:DoGravity(ent)
+            gamemode.Call("OnAtmosphereChange", ent, old_env, new_env)
         end
     end
     
@@ -83,18 +83,18 @@ function ENT:OnRemove()
     for idx,ent in pairs(self.inside) do
         if !IsValid(ent) then continue end
         
-        local oldenv = ent:GetEnv()
+        local old_env = ent:GetEnv()
         for k,v in pairs(ent.tk_env.envlist) do
             if v == self.env then
                 table.remove(ent.tk_env.envlist, k)
                 break
             end
         end
-        local newenv = ent:GetEnv()
+        local new_env = ent:GetEnv()
         
-        if oldenv != newenv then
-            newenv:DoGravity(ent)
-            gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
+        if old_env != new_env then
+            new_env:DoGravity(ent)
+            gamemode.Call("OnAtmosphereChange", ent, old_env, new_env)
         end
     end
 end

@@ -55,7 +55,8 @@ function MySQL:ProcessQuery(data)
         
         if msg == "MySQL server has gone away" then
             MySQL.Connected = false
-            pcall(MySQL.MakePriorityQuery, MySQL, data[1], data[2], unpack(data[3]))
+            local valid, info = pcall(MySQL.MakePriorityQuery, MySQL, data[1], data[2], unpack(data[3]))
+            if not valid then print(info) end
         end
         
         data = nil
@@ -65,7 +66,8 @@ function MySQL:ProcessQuery(data)
     function query:onSuccess(rdata)
         MySQL.Running = false
         if data[2] then
-            pcall(data[2], rdata, unpack(data[3]))
+            local valid, info = pcall(data[2], rdata, unpack(data[3]))
+            if not valid then print(info) end
         end
         
         data = nil
@@ -313,7 +315,8 @@ function TK.DB:SelectQuery(dbtable, values, where, order, limit, callback, ...)
             end
         end
         
-        pcall(callback, data, unpack({...}))
+        local valid, info = pcall(callback, data, unpack({...}))
+        if not valid then print(info) end
     end, unpack({...}))
 end
 

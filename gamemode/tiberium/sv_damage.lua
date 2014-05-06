@@ -2,7 +2,7 @@
 hook.Add("Initialize", "3k_Tib_Damage", function()
     timer.Create("TKTI_Damage", 1, 0, function()
         for _,ply in pairs(player.GetAll()) do
-            for k,v in pairs(TK.MapSetup.Resources.tk_tib_crystal) do
+            for k,v in pairs(TK.MapSetup.Resources.tk_tiberium_crystal) do
                 local crystal = table.GetFirstValue(v.Ents)
                 if !IsValid(crystal) then continue end
                 

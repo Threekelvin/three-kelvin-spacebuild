@@ -43,14 +43,14 @@ function ENT:MoveInside(ent)
     self.inside[ent] = ent
     self.outside[ent] = nil
     
-    local oldenv = ent:GetEnv()
+    local old_env = ent:GetEnv()
     table.insert(ent.tk_env.envlist, self)
     table.sort(ent.tk_env.envlist, EnvPrioritySort)
-    local newenv = ent:GetEnv()
+    local new_env = ent:GetEnv()
     
-    if oldenv != newenv then
-        newenv:DoGravity(ent)
-        gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
+    if old_env != new_env then
+        new_env:DoGravity(ent)
+        gamemode.Call("OnAtmosphereChange", ent, old_env, new_env)
     end
 end
 
@@ -58,18 +58,18 @@ function ENT:MoveOutside(ent)
     self.outside[ent] = ent
     self.inside[ent] = nil
     
-    local oldenv = ent:GetEnv()
+    local old_env = ent:GetEnv()
     for k,v in pairs(ent.tk_env.envlist) do
         if v == self then
             table.remove(ent.tk_env.envlist, k)
             break
         end
     end
-    local newenv = ent:GetEnv()
+    local new_env = ent:GetEnv()
     
-    if oldenv != newenv then
-        newenv:DoGravity(ent)
-        gamemode.Call("OnAtmosphereChange", ent, oldenv, newenv)
+    if old_env != new_env then
+        new_env:DoGravity(ent)
+        gamemode.Call("OnAtmosphereChange", ent, old_env, new_env)
     end
 end
 

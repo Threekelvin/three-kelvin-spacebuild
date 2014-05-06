@@ -57,6 +57,33 @@ function TOOL:Reload(trace)
     return true
 end
 
+function TOOL:Think()
+    if SERVER then return end
+    
+    if !IsValid(self.GhostEntity) or self.GhostEntity:GetModel() != self:SelectModel() then
+        self:MakeGhostEntity(self:SelectModel(), Vector(0,0,0), Angle(0,0,0))
+    else
+        local trace = self:GetOwner():GetEyeTrace()
+        if !trace.Hit then return end
+        self.GhostEntity:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
+        self.GhostEntity:SetPos(trace.HitPos - trace.HitNormal * self.GhostEntity:OBBMins().z)
+        
+        if IsValid(trace.Entity) and (trace.Entity:GetClass() == "tk_ship_engine" or trace.Entity:IsVehicle()) then
+            self.GhostEntity:SetNoDraw(true)
+        else
+            self.GhostEntity:SetNoDraw(false)
+        end
+    end
+    
+    if not self.Build then return end
+    local CPanel = controlpanel.Get(self.Mode)
+    if not CPanel then return end
+    
+    self.Build = false
+    CPanel:ClearControls()
+    self.BuildCPanel(CPanel, self)
+end
+
 if SERVER then return end
 
-language.Add("tool.tk_ship_engine.0", "Left Click: Spawn a "..TOOL.Name.."      Reload: Select Model")
+language.Add("tool.tk_ship_engine.0", "Left Click: Spawn a "..TOOL.Name.."      Right Click: Link a"..TOOL.Name.." and a vehicle      Reload: Select Model")

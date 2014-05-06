@@ -127,7 +127,7 @@ TK.PP.PropBlackList = {
 
 TK.PP.EntityBlackList = {
     "tk_terminal",
-    "tk_tib_crystal",
+    "tk_tiberium_crystal",
     "tk_roid",
     "tk_teleporter",
     "tk_tib_transporter",

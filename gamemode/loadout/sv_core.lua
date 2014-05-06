@@ -95,12 +95,10 @@ function TK.LO.MakeEntity(ply, data, item_id)
     ent:SetPos(data.Pos)
     ent:SetAngles(data.Angle)
     
-    ent.item_id = id
+    ent.item_id = item_id
     ent.data = item.data
     ent.PrintName = item.name
     ent:Spawn()
-    
-    table.Merge(ent:GetTable(), {item_id = item_id})
     
     timer.Simple(0.1, function()
         net.Start("TKLO_Ent")

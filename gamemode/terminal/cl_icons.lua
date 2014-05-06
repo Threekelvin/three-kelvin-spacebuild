@@ -12,6 +12,7 @@ local Icons = {
     ["liquid_nitrogen"]     = Material("icon64/nitrogen.png"),
     ["heavy_water"]         = Material("icon64/heavy_water.png"),
     ["carbon_dioxide"]      = Material("icon64/carbon_dioxide.png"),
+    ["magnetite"]           = Material("icon64/asteroid_ore.png"),
 }
 
 function TK.TD:GetIcon(str)

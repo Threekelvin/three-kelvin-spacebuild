@@ -43,7 +43,7 @@ function Space:IsPlanet()
 end
 
 function Space:IsSpace()
-    return false
+    return true
 end
 
 function Space:GetName()
@@ -347,8 +347,10 @@ end
 util.AddNetworkString("TKAT")
 
 hook.Add("Initialize", "TKAT", function()
-    GAMEMODE.OnAtmosphereChange = function(ent, new, old)
-        
+    function GAMEMODE:OnAtmosphereChange(ent, old_env, new_env)
+    end
+    
+    function _R.Entity:OnAtmosphereChange(old_env, new_env)
     end
     
     function _R.Entity:GetEnv()
@@ -407,4 +409,14 @@ hook.Add("EntitySpawned", "TKAT", function(ent)
     ent.tk_env.envlist = {}
     ent.tk_env.gravity = -1
     ent:GetEnv():DoGravity(ent)
+end)
+
+hook.Add("OnAtmosphereChange", "TKAT", function(ent, old_env, new_env)
+    ent:OnAtmosphereChange(old_env, new_env)
+end)
+
+hook.Add("PhysgunPickup", "TKAT", function(ply, ent)
+    if ply:IsAdmin() then return end
+    if not ply:GetEnv():IsSpace() then return end
+    return false
 end)

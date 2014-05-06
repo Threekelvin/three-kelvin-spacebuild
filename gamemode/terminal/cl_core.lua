@@ -49,7 +49,7 @@ local Pages = {
         "Loadout",
         "tk_loadout",
         "icon16/briefcase.png"
-    },--[[
+    },
     [6] = {
         function() 
             return true 
@@ -57,7 +57,7 @@ local Pages = {
         "Market",
         "tk_market",
         "icon16/coins.png"
-    },
+    },--[[
     [7] = {
         function()
             return true

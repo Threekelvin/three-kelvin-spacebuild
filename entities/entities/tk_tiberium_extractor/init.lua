@@ -10,18 +10,15 @@ function ENT:Initialize()
     self.Stable = true
     self.PowerLevel = 0
     
-    self.data.yield = 0
-    self.data.kilowatt = 0
-    
     self:SetNWBool("Generator", true)
-    self:AddResource("raw_tiberium", 0, true)
+    self:AddResource("tiberium", 0, true)
     self:AddSound("a", 4, 75)
     self:AddSound("l", 8, 75)
     self:AddSound("d", 4, 100)
     self:AddSound("s", 4, 75)
     
     self.Inputs = Wire_CreateInputs(self, {"On"})
-    self.Outputs = Wire_CreateOutputs(self, {"On", "Output"})
+    self.Outputs = Wire_CreateOutputs(self, {"On"})
 end
 
 function ENT:UpdateTransmitState() 
@@ -65,7 +62,7 @@ function ENT:DoThink(eff)
     
     local crystal
     for k,v in pairs(ents.FindInCone(self:GetPos(), self:GetForward(), 100, 45)) do
-        if v:GetClass() == "tk_tib_crystal" then
+        if v:GetClass() == "tk_tiberium_crystal" then
             crystal = v
             break
         end
@@ -98,15 +95,9 @@ function ENT:DoThink(eff)
         end
         
         yield = math.min(yield, crystal.Tib)
-        yield = self:SupplyResource("raw_tiberium", yield)
-        WireLib.TriggerOutput(self, "Output", yield)
+        yield = self:SupplyResource("tiberium", yield)
         
         local value = TK.TD:Ore(owner, "raw_tiberium")
-        
-        if !owner:IsAFK() then
-            owner.tk_cache.score = math.floor((owner.tk_cache.score or 0) + value * yield * 0.75)
-            owner.tk_cache.exp = math.floor((owner.tk_cache.exp or 0) + value * yield * 0.375)
-        end
         
         crystal.Tib = crystal.Tib - yield
     else
@@ -128,24 +119,6 @@ end
 
 function ENT:UpdateValues()
 
-end
-
-function ENT:Update(ply)
-    local data = TK.TD:GetItem(self.itemid).data
-    local upgrades = TK.TD:GetUpgradeStats(ply, "tiberium")
-    
-    self.data.yield = data.yield + (data.yield * upgrades.yield)
-    self.data.kilowatt = data.kilowatt - (data.kilowatt * upgrades.kilowatt)
-end
-
-function ENT:PreEntityCopy()
-    self.BaseClass.PreEntityCopy(self)
-    TK.LO:MakeDupeInfo(self)
-end
-
-function ENT:PostEntityPaste(ply, ent, entlist)
-    self.BaseClass.PostEntityPaste(self, ply, ent, entlist)
-    TK.LO:ApplyDupeInfo(ply, ent, info)
 end
 
 function ENT:UpdateTransmitState() 

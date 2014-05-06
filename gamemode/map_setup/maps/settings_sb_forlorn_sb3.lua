@@ -3,7 +3,7 @@
 TK.MapSetup.MapEntities = {
     [1] = {
         ent = "tk_terminal",
-        pos = Vector(7490,-10770,-8990),
+        pos = Vector(9415, 10040, 811),
         ang = Angle(0,-90,0)
     },
     [2] = {
@@ -56,7 +56,7 @@ TK.MapSetup.Resources = {
             Class = "tk_riddinite",
         },
     },
-    tk_tib_crystal = {
+    tk_tiberium_crystal = {
         [1] = {
             Pos = Vector(10661,7280,-8834),
             Ang = Angle(0, 0, 0),
@@ -65,7 +65,7 @@ TK.MapSetup.Resources = {
             Size = 8,
             Ents = {},
             NSpawn = 0,
-            Class = "tk_tib_crystal",
+            Class = "tk_tiberium_crystal",
         },
         [2] = {
             Pos = Vector(7292,10758,-8854),
@@ -75,7 +75,7 @@ TK.MapSetup.Resources = {
             Size = 8,
             Ents = {},
             NSpawn = 0,
-            Class = "tk_tib_crystal",
+            Class = "tk_tiberium_crystal",
         }
     },
 }

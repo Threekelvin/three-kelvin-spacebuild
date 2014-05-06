@@ -113,7 +113,6 @@ end
 function TK.DB:LoadPlayer(ply)
     for dbtable,data in pairs(list.Get("TK_Database")) do
         if !string.match(dbtable, "^player_") then continue end
-        ply.loaded = ply.loaded + 1
         self:SelectQuery(dbtable, nil, {["steamid = %s"] = ply.steamid}, nil, 1, function(data, ply, dbtable)
             if !data[1] then 
                 TK.DB:NewTable(ply, dbtable)
@@ -156,13 +155,12 @@ end
 
 function TK.DB:StartCache(ply)
     self.PlayerCache[ply.uid] = {}
-    
-    local function PushCache()
+
+    timer.Create("TK_Data_Cache_".. ply.uid, 60, 0, function()
         if !IsValid(ply) then return end
         TK.DB:AddPlayTime(ply, 1)
         TK.DB:UnloadPlayer(ply)
-    end
-    timer.Create("TK_Data_Cache_".. ply.uid, 60, 0, PushCache)
+    end)
 end
 
 hook.Add("PlayerAuthed", "TK_Load_Player", function(ply)

@@ -56,7 +56,7 @@ TK.MapSetup.Resources = {
             Class = "tk_riddinite",
         },
     },
-    tk_tib_crystal = {
+    tk_tiberium_crystal = {
         [1] = {
             Pos = Vector(9579,11932,7967),
             Ang = Angle(0, 0, 0),
@@ -65,7 +65,7 @@ TK.MapSetup.Resources = {
             Size = 8,
             Ents = {},
             NSpawn = 0,
-            Class = "tk_tib_crystal",
+            Class = "tk_tiberium_crystal",
         },
         [2] = {
             Pos = Vector(10666,9521,8022),
@@ -75,7 +75,7 @@ TK.MapSetup.Resources = {
             Size = 8,
             Ents = {},
             NSpawn = 0,
-            Class = "tk_tib_crystal",
+            Class = "tk_tiberium_crystal",
         }
     },
 }

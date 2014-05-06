@@ -84,7 +84,7 @@ local function GetContraption(ent)
         if !CanInfect(v) then
             Contraptions[idx][k] = nil
         else
-            if v:GetClass() == "tk_tib_storage" then
+            if v:GetClass() == "tk_tiberium_storage" then
                 v.tk_tib = {}
                 TK.TI:Infect(v)
             else
@@ -123,7 +123,7 @@ local function SpawnCrystal(ent)
         if !ent.tk_tib[trace.Entity:EntIndex()] == trace.Entity then continue end
         
         
-        local crystal = ents.Create("tk_tib_infection")
+        local crystal = ents.Create("tk_tiberium_infection")
         crystal:SetPos(trace.HitPos)
         crystal:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
         crystal:Spawn()

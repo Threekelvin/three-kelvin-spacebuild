@@ -57,6 +57,8 @@ function ENT:TriggerInput(iname, value)
             self:TurnOff()
         end
     elseif iname == "GHD" then
+        if !GH then return end
+        
         if value != 0 then
             self:TurnOff()
             self.ghd = false
@@ -380,32 +382,32 @@ end
 hook.Add("EnterShip", "Ship Core", function(p, e, g)
     if !p.tk_env or !e:IsShip() then return end
     
-    local oldenv = p:GetEnv()
+    local old_env = p:GetEnv()
     table.insert(p.tk_env.envlist, e)
     table.sort(p.tk_env.envlist, EnvPrioritySort)
-    local newenv = p:GetEnv()
+    local new_env = p:GetEnv()
     
-    if oldenv != newenv then
-        newenv:DoGravity(p)
-        gamemode.Call("OnAtmosphereChange", p, oldenv, newenv)
+    if old_env != new_env then
+        new_env:DoGravity(p)
+        gamemode.Call("OnAtmosphereChange", p, old_env, new_env)
     end
 end)
 
 hook.Add("ExitShip", "Ship Core", function(p, e, g)
     if !p.tk_env or !e:IsShip() then return end
     
-    local oldenv = p:GetEnv()
+    local old_env = p:GetEnv()
     for k,v in pairs(p.tk_env.envlist) do
         if v == e then
             table.remove(p.tk_env.envlist, k)
             break
         end
     end
-    local newenv = p:GetEnv()
+    local new_env = p:GetEnv()
     
-    if oldenv != newenv then
-        newenv:DoGravity(p)
-        gamemode.Call("OnAtmosphereChange", p, oldenv, newenv)
+    if old_env != new_env then
+        new_env:DoGravity(p)
+        gamemode.Call("OnAtmosphereChange", p, old_env, new_env)
     end
 end)
 

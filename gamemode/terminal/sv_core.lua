@@ -84,16 +84,16 @@ end
 
 ///--- Loadout ---\\\
 function Terminal.SetSlot(ply, arg, ent)
-    local slot, idx, item = arg[1], tonumber(arg[2]), tonumber(arg[3])
+    local slot, idx, item = arg[1], tonumber(arg[2]), arg[3]
     local loadout = TK.DB:GetPlayerData(ply, "player_terminal_loadout").loadout
-    local inventory = TK.DB:GetPlayerData(ply, "player_terminal_invectory").inventory
+    local inventory = TK.DB:GetPlayerData(ply, "player_terminal_inventory").inventory
     local valid_items = {}
     
     for k,v in pairs(inventory) do
         if !TK.LO:IsSlot(v, slot) then continue end
         table.insert(valid_items, v)
     end
-    
+
     for k,v in pairs(loadout) do
         if string.match(k, "^[%w]+") != slot then continue end
 
@@ -103,11 +103,11 @@ function Terminal.SetSlot(ply, arg, ent)
             break
         end
     end
-    
+
     for k,v in pairs(valid_items) do
         if v != item then continue end
         loadout[slot .."_".. idx] = item
-        TK.DB:UpdatePlayerData(ply, "player_loadout", {loadout = loadout})
+        TK.DB:UpdatePlayer(ply, "player_terminal_loadout", {loadout = loadout})
         break
     end
 end

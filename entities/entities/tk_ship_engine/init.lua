@@ -5,7 +5,6 @@ include('shared.lua')
 local math = math
 local WorldToLocal = WorldToLocal
 local LocalToWorld = LocalToWorld
-local LerpAngle = LerpAngle
 
 local KeyTracker = {
 
@@ -94,7 +93,7 @@ end
 
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
-    self.data = {}
+    self.data = {kilowatt = 0}
     self.Eff = 0
     self.Aim = 0
     self.VecInput = Vector(0, 0, 0)
@@ -160,6 +159,12 @@ function ENT:TriggerKey(iname, value)
         self.Aim = self.Aim == 0 and 1 or 0
         self.AimAngle = Angle(0,0,0)
     end
+end
+
+function ENT:IsLargeHull(ent)
+    if ent:BoundingRadius() < 135 then return false end
+    if ent.IsTKRD and !ent:IsVehicle() then return false end
+    return true
 end
 
 function ENT:DisableGravity(ent)
@@ -231,18 +236,19 @@ function ENT:DoThink(eff)
     end
 
     self.Ents = conents
-    local vol, num = 0, 0
+    local vol = 0
     for _,ent in pairs(self.Ents) do
         local phys = ent:GetPhysicsObject()
-        if !IsValid(phys) then continue end
-        num = num + 1
+        if not IsValid(phys) then continue end
+        if not self:IsLargeHull(ent) then continue end
         vol = vol + phys:GetVolume()
     end
     
-    self.data.kilowatt = math.floor(num * -2)
+    vol = math.sqrt(vol)
+    self.data.kilowatt = -math.ceil((vol / 2000) ^ 5)
     self.Updated = true
-    self.VecThrustMul = 10 * math.Clamp(4000 / math.sqrt(vol), 0.1, 1)
-    self.AngThrustMul = self.VecThrustMul * 0.75
+    self.VecThrustMul = 10 * math.Clamp(6000 / vol, 0.1, 1)
+    self.AngThrustMul = self.VecThrustMul
     if !self:Work() then return end
 end
 
@@ -339,7 +345,7 @@ function ENT:Think()
     end
     
     local lvec,lang = LocalToWorld(Vector(0,0,0), self.AngThrust * self.AngThrustMul, pos, ang)
-    local tang = self.ShouldLevel and Angle(0, lang.y, 0) or lang
+    local tang = self.ShouldLevel and Angle(Lerp(1 / self.AngThrustMul, land.p, Lerp(1 / self.AngThrustMul, land.r, 0)), lang.y, 0) or lang
     local Torque = math_rotationvector(tang, ang)
     
     Torque = (1000 * Torque - pphys:GetAngleVelocity() * 20) * pphys:GetInertia()
@@ -372,6 +378,22 @@ end
 
 function ENT:UpdateValues()
 
+end
+
+function ENT:PreEntityCopy()
+    if !IsValid(self.Pod) then return end
+    local info = {pod = self.Pod:EntIndex()}
+    duplicator.StoreEntityModifier(self, self:GetClass(), info)
+end
+
+function ENT:PostEntityPaste(ply, ent, entlist)
+    if !self.EntityMods or !self.EntityMods[self:GetClass()] then return end
+    local info = self.EntityMods[self:GetClass()]
+    self.Pod = entlist[info.pod]
+    if IsValid(self.Pod) then
+        self.Pod.Engine = self
+    end
+    self.EntityMods[self:GetClass()] = nil
 end
 
 hook.Add("KeyPress", "tk_ship_engine_keypress", function(ply, key)

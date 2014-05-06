@@ -53,7 +53,7 @@ local function MakeSlot(panel, slot, id)
         panel.items:Clear(true)
         
         local valid_items = {}
-        for k,v in pairs(TK.DB:GetPlayerData("player_terminal_invectory").inventory) do
+        for k,v in pairs(TK.DB:GetPlayerData("player_terminal_inventory").inventory) do
             if !TK.LO:IsSlot(v, btn.slot) then continue end
             table.insert(valid_items, v)
         end

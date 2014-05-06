@@ -9,7 +9,7 @@ function ENT:Initialize()
     
     local phys = self:GetPhysicsObject()
     if IsValid(phys) then
-        phys:SetMass(50000)
+        phys:SetMass(math.huge)
         phys:EnableMotion(true)
         phys:Wake()
     end
@@ -18,4 +18,9 @@ function ENT:Initialize()
     timer.Simple(math.random(90, 150), function()
         SafeRemoveEntity(self)
     end)
+end
+
+function ENT:OnAtmosphereChange(old_env, new_env)
+    if new_env:IsSpace() or new_Env:IsShip() then return end
+    SafeRemoveEntity(self)
 end
