@@ -10,9 +10,12 @@ TK.LO.lists = {
 }
 
 function TK.LO:GetItem(item_id)
+    if item_id == "" then return {} end
     local tbl = string.match(item_id, "^[%w]+")
+    if !table.HasValue(self.lists, tbl) then return {} end
     local item = string.match(item_id, tbl .."_([%w_]+)")
-    return self[tbl][item]
+    
+    return self[tbl][item] or {}
 end
 
 function TK.LO:IsSlot(item_id, slot)
@@ -23,6 +26,8 @@ end
 function TK.LO:GrowTree(tree)
     for id,data in pairs(self[tree]) do
         data.id = tree .."_".. id
+        if not util.IsValidModel(data.mdl) then continue end
+        util.PrecacheModel(data.mdl)
     end
 end
 
