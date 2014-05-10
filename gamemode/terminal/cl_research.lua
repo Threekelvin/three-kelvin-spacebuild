@@ -1,5 +1,14 @@
 
 local PANEL = {}
+local Cost_txt = [[%s  Magnetite
+
+%s  Tiberium
+
+%s  Quintinite
+
+%s  Riddinite
+
+]]
 
 local function MakeResearchBox(panel, idx, data)
     local btn = vgui.Create("DButton")
@@ -56,22 +65,23 @@ local function MakeResearchBox(panel, idx, data)
             return true
         end
         
-        local info = vgui.Create("DTextEntry", frame)
-        info:SetSkin("Terminal")
-        info:SetSize(275, 120)
-        info:SetPos(5, 45)
-        info:SetMultiline(true)
-        info:SetEditable(false)
-        info:SetText(data.info or "")
-        info.style = {"dark"}
-        info.Paint = function(panel, w, h)
-            derma.SkinHook("Paint", "TKTopTextBox", info, w, h)
+        local cost = vgui.Create("DTextEntry", frame)
+        cost:SetSkin("Terminal")
+        cost:SetSize(275, 120)
+        cost:SetPos(5, 45)
+        cost:SetMultiline(true)
+        cost:SetEditable(false)
+        cost:SetText(string.format(Cost_txt, data.cost.m, data.cost.t, data.cost.q, data.cost.r))
+        cost.style = {"dark"}
+        cost.Paint = function(panel, w, h)
+            panel:SetFontInternal("TKFont15")
+            derma.SkinHook("Paint", "TKTopTextBox", cost, w, h)
             return true
         end
         
         local bonus = vgui.Create("DTextEntry", frame)
         bonus:SetSkin("Terminal")
-        bonus:SetSize(275, 50)
+        bonus:SetSize(490, 50)
         bonus:SetPos(5, 190)
         bonus:SetMultiline(true)
         bonus:SetEditable(false)

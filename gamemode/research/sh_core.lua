@@ -10,6 +10,7 @@ TK.UP.lists = {
 function TK.UP:GrowTree(tree)
     for id,data in pairs(self[tree]) do
         data.id = id
+        data.cost = data.cost or {m = 0, t = 0, q = 0, r = 0}
         for k,v in pairs(data.req or {}) do
             data.req[k] = self[tree][v]
         end

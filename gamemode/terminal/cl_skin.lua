@@ -18,7 +18,7 @@ SKIN.button     =   Color(110,150,250)
 SKIN.text       =   Color(255,255,255)
 SKIN.highlight  =   Color(20,200,250)
 SKIN.warning    =   Color(200,0,0)
-SKIN.link      =   Color(200,200,200)
+SKIN.link       =   Color(200,200,200)
 
 SKIN.lock       = Material("icon32/lock.png")
 
@@ -32,7 +32,6 @@ function SKIN:PaintTKFrame(panel, w, h)
 end
 
 function SKIN:PaintTKUpFrame(panel, w, h)
-    local w, h = panel:GetWide(), panel:GetTall()
     draw.RoundedBox(4, 0, 0, w, h, self.dark)
     draw.RoundedBox(4, 1, 1, w - 2, h - 2, self.dim)
     draw.RoundedBoxEx(4, 1, 1, w - 2, 20, self.normal, true, true)
@@ -40,10 +39,7 @@ function SKIN:PaintTKUpFrame(panel, w, h)
     draw.SimpleText("r", "Marlett", w - 11, 10, self.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     
     draw.RoundedBox(4, 5, 25, 275, 25, self.normal)
-    draw.SimpleText("Information", "TKFont18", 142.5, 26, self.text, TEXT_ALIGN_CENTER)
-    
-    draw.RoundedBox(4, 5, 170, 275, 25, self.normal)
-    draw.SimpleText("Bonuses", "TKFont18", 142.5, 171, self.text, TEXT_ALIGN_CENTER)
+    draw.SimpleText("Cost", "TKFont18", 142.5, 26, self.text, TEXT_ALIGN_CENTER)
     
     draw.RoundedBox(4, 285, 25, 210, 65, self.light)
     surface.SetMaterial(TK.TD:GetIcon(panel.btn.data.icon))
@@ -55,10 +51,8 @@ function SKIN:PaintTKUpFrame(panel, w, h)
     draw.RoundedBoxEx(4, 285, 115, 210, 50, self.dark, false, false, true, true)
     draw.SimpleText(panel.btn.level.." / "..panel.btn.data.levels, "TKFont25", 390, 127.5, self.text, TEXT_ALIGN_CENTER)
     
-    draw.RoundedBox(4, 285, 170, 210, 25, self.normal)
-    draw.SimpleText("Cost", "TKFont18", 390, 171, self.text, TEXT_ALIGN_CENTER)
-    draw.RoundedBoxEx(4, 285, 190, 210, 50, self.dark, false, false, true, true)
-   -- draw.SimpleText(TK:Format(panel.btn.cost).. " XP", "TKFont25", 390, 202.5, self.text, TEXT_ALIGN_CENTER)
+    draw.RoundedBox(4, 5, 170, 490, 25, self.normal)
+    draw.SimpleText("Bonus", "TKFont18", 250, 171, self.text, TEXT_ALIGN_CENTER)
 end
 ///--- ---\\\
 

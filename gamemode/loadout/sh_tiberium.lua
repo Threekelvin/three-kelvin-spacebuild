@@ -9,7 +9,7 @@ TK.LO.tiberium = {
         view = Vector(18, 18, 18),
         data = {kilowatt = -10, tiberium = 1, range = 75},
         slot = "mining",
-        cost = {t = 0, m = 0, q = 0, r = 0}
+        cost = {t = 0, m = 2000, q = 0, r = 0}
     },
     standard_extractor = {
         ent = "tk_tiberium_extractor",
@@ -45,7 +45,7 @@ TK.LO.tiberium = {
         view = Vector(79, 79, 79),
         data = {tiberium = 300},
         slot = "storage",
-        cost = {t = 0, m = 0, q = 0, r = 0}
+        cost = {t = 0, m = 2000, q = 0, r = 0}
     },
     standard_storage = {
         ent = "tk_tiberium_storage",
