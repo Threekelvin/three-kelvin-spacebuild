@@ -1,7 +1,7 @@
 
 local net = net
 local string = string
-local Terminal = {}
+Terminal = {}
 Terminal.request_key = ""
 
 local encrypt = aeslua.encrypt
@@ -40,9 +40,17 @@ local Pages = {
         end,
         "Research",
         "tk_research",
-        "icon16/wrench.png"
+        "icon16/cog.png"
     },
     [5] = {
+        function()
+            return true
+        end,
+        "Inventory",
+        "tk_inventory",
+        "icon16/package.png"
+    },
+    [6] = {
         function() 
             return true 
         end,
@@ -50,22 +58,14 @@ local Pages = {
         "tk_loadout",
         "icon16/briefcase.png"
     },
-    [6] = {
+    [7] = {
         function() 
             return true 
         end,
         "Market",
         "tk_market",
         "icon16/coins.png"
-    },--[[
-    [7] = {
-        function()
-            return true
-        end,
-        "Faction",
-        "tk_faction",
-        "icon16/shield.png"
-    }]]
+    },
 }
 
 local function BuildString(data)

@@ -635,5 +635,7 @@ hook.Add("EntityTakeDamage", "TKPP", function(ent, dmg)
     if not ent:IsPlayer() then return end
     local inf = dmg:GetInflictor()
     if not IsValid(inf) then return end
-    dmg:SetAttacker(PP:GetOwner(inf))
+    local ply = PP:GetOwner(inf)
+    if not IsValid(ply) then return end
+    dmg:SetAttacker(ply)
 end)

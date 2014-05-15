@@ -45,7 +45,7 @@
 		
 		mysql_select_db($mysql_database, $con);
 		
-		$result = mysql_query("SELECT nick_name, team, score, playtime FROM server_player_record, player_stats WHERE server_player_record.steamid = player_stats.steamid ORDER BY score, playtime DESC LIMIT 20");
+		$result = mysql_query("SELECT nick_name, team, score, playtime FROM server_player_record, player_stats WHERE server_player_record.steamid = player_stats.steamid ORDER BY score DESC, playtime DESC LIMIT 20");
 		
 		function colorNamr($name, $faction){
 			if($faction == 1){

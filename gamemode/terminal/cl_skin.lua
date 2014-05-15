@@ -131,40 +131,57 @@ function SKIN:PaintTKLoadout(panel, w, h)
     draw.RoundedBox(4, 265, 5, 250, 35, self.dim)
     draw.SimpleText("Loadout", "TKFont30", 390, 6, self.text, TEXT_ALIGN_CENTER)
     
-    draw.RoundedBox(4, 5, 75, 490, 450, self.normal)
-    draw.RoundedBox(4, 10, 80, 480, 40, self.dark)
+    draw.RoundedBox(4, 5, 75, 485, 450, self.normal)
+    draw.RoundedBox(4, 10, 80, 475, 40, self.dark)
     draw.SimpleText("Item Slots", "TKFont25", 250, 87.5, self.text, TEXT_ALIGN_CENTER)
     
     draw.RoundedBox(4, 10, 125, 200, 30, self.dim)
     draw.SimpleText("Mining Devices", "TKFont20", 15, 130, self.text)
-    draw.RoundedBox(4, 10, 160, 75, 75, self.dark)
-    draw.RoundedBox(4, 90, 160, 75, 75, self.dark)
-    draw.RoundedBox(4, 170, 160, 75, 75, self.dark)
-    draw.RoundedBox(4, 250, 160, 75, 75, self.dark)
-    draw.RoundedBox(4, 330, 160, 75, 75, self.dark)
-    draw.RoundedBox(4, 410, 160, 75, 75, self.dark)
     
     draw.RoundedBox(4, 10, 265, 200, 30, self.dim)
     draw.SimpleText("Mining Storage", "TKFont20", 15, 270, self.text)
-    draw.RoundedBox(4, 10, 300, 75, 75, self.dark)
-    draw.RoundedBox(4, 90, 300, 75, 75, self.dark)
-    draw.RoundedBox(4, 170, 300, 75, 75, self.dark)
-    draw.RoundedBox(4, 250, 300, 75, 75, self.dark)
-    draw.RoundedBox(4, 330, 300, 75, 75, self.dark)
-    draw.RoundedBox(4, 410, 300, 75, 75, self.dark)
-    
+
     draw.RoundedBox(4, 10, 405, 200, 30, self.dim)
     draw.SimpleText("Weapons", "TKFont20", 15, 410, self.text)
-    draw.RoundedBox(4, 10, 440, 75, 75, self.dark)
-    draw.RoundedBox(4, 90, 440, 75, 75, self.dark)
-    draw.RoundedBox(4, 170, 440, 75, 75, self.dark)
-    draw.RoundedBox(4, 250, 440, 75, 75, self.dark)
-    draw.RoundedBox(4, 330, 440, 75, 75, self.dark)
-    draw.RoundedBox(4, 410, 440, 75, 75, self.dark)
     
-    draw.RoundedBox(4, 500, 75, 270, 450, self.normal)
-    draw.RoundedBox(4, 505, 80, 260, 40, self.dark)
+    for i=1,6 do
+        draw.RoundedBox(4, i * 80 - 70, 160, 75, 75, self.dark)
+        draw.RoundedBox(4, i * 80 - 70, 300, 75, 75, self.dark)
+        draw.RoundedBox(4, i * 80 - 70, 440, 75, 75, self.dark)
+    end
+
+    
+    draw.RoundedBox(4, 495, 75, 275, 450, self.normal)
+    draw.RoundedBox(4, 500, 80, 265, 40, self.dark)
     draw.SimpleText("Items", "TKFont25", 635, 87.5, self.text, TEXT_ALIGN_CENTER)
+    
+    if panel.Error then
+        draw.RoundedBox(4, 5, 45, 765, 25, self.warning)
+        draw.SimpleText(panel.Error, "TKFont20", 10, 47.5, self.text)
+    else
+        draw.RoundedBox(4, 5, 45, 765, 25, self.normal)
+        draw.SimpleText("Score: "..panel.score, "TKFont20", 10, 47.5, self.text)
+    end
+end
+
+function SKIN:PaintTKInventory(panel, w, h)
+    draw.RoundedBox(4, 0, 0, 780, 535, self.light)
+    draw.RoundedBox(4, 265, 5, 250, 35, self.dim)
+    draw.SimpleText("Inventory", "TKFont30", 390, 6, self.text, TEXT_ALIGN_CENTER)
+    
+    draw.RoundedBox(4, 5, 75, 485, 450, self.normal)
+    draw.RoundedBox(4, 10, 80, 475, 40, self.dark)
+    draw.SimpleText("Item Slots", "TKFont25", 250, 87.5, self.text, TEXT_ALIGN_CENTER)
+    
+    for x=1,5 do
+        for y=1,6 do
+            draw.RoundedBox(4, y * 80 - 70, x * 80 + 45, 75, 75, self.dark)
+        end
+    end
+    
+    draw.RoundedBox(4, 495, 75, 275, 450, self.normal)
+    draw.RoundedBox(4, 500, 80, 265, 40, self.dark)
+    draw.SimpleText("Information", "TKFont25", 635, 87.5, self.text, TEXT_ALIGN_CENTER)
     
     if panel.Error then
         draw.RoundedBox(4, 5, 45, 765, 25, self.warning)
@@ -202,14 +219,7 @@ function SKIN:PaintTKButton(btn, w, h)
     draw.SimpleText(btn.text or "", "TKFont25", w / 2, h / 2, self.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 
-function SKIN:PaintTKLOButton(btn, w, h)
-    if TK.LO:SlotLocked(btn.slot.. "_" ..btn.id) then
-        surface.SetMaterial(self.lock)
-        surface.SetDrawColor(255, 255, 255, 255)
-        surface.DrawTexturedRect(w / 2 - 16, h / 2 - 16, 32, 32)
-        return 
-    end
-    
+function SKIN:PaintTKMdlButton(btn, w, h)
     if !IsValid(btn.Entity) then return end
     
     local x, y = btn:LocalToScreen(0, 0)

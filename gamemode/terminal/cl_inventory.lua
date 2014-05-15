@@ -1,32 +1,7 @@
 
 local PANEL = {}
 
-local function MakePanel(panel, slot, id, item)
-    local btn = vgui.Create("DButton")
-    btn.active = true
-    btn.slot = slot
-    btn.id = id
-    btn.item = item
-    btn.name = TK.LO:GetItem(item).name
-    btn:SetSkin("Terminal")
-    btn:SetSize(0, 65)
-    btn.Paint = function(btn, w, h)
-        derma.SkinHook("Paint", "TKItemPanel", btn, w, h)
-        return true
-    end
-    btn.DoClick = function()
-        if !btn.active then return end
-        btn.active = false
-        timer.Simple(1, function() if IsValid(btn) then btn.active = true end end)
-        
-        surface.PlaySound("ui/buttonclickrelease.wav")
-        panel.Terminal.AddQuery("setslot", btn.slot, btn.id, btn.item)
-    end
-    
-    return btn
-end
-
-local function MakeSlot(panel, slot, id)
+local function MakeSlot(panel, x, y)
     local btn = vgui.Create("DButton", panel)
     btn:SetSkin("Terminal")
     btn.slot = slot
@@ -95,7 +70,6 @@ local function MakeSlot(panel, slot, id)
     btn.DoClick = function()
         if TK.LO:SlotLocked(btn.slot.. "_" ..btn.id) then return end
         surface.PlaySound("ui/buttonclickrelease.wav")
-        btn:MakeList()
     end
     
     return btn
@@ -105,66 +79,24 @@ function PANEL:Init()
     self:SetSkin("Terminal")
     self.NextThink = 0
     self.score = TK:Format(TK.DB:GetPlayerData("player_stats").score)
-    self.loadout = TK.DB:GetPlayerData("player_terminal_loadout").loadout
-    
-    self.items = vgui.Create("DPanelList", self)
-    self.items:SetSpacing(5)
-    self.items:SetPadding(5)
-    self.items:EnableHorizontal(false)
-    self.items:EnableVerticalScrollbar(true)
-    
-    self.mining = {}
-    self.storage = {}
-    self.weapon = {}
-    
-    for i=1,6 do
-        self.mining[i] = MakeSlot(self, "mining", i)
-        self.mining[i]:Update()
-        self.storage[i] = MakeSlot(self, "storage", i)
-        self.storage[i]:Update()
-        self.weapon[i] = MakeSlot(self, "weapon", i)
-        self.weapon[i]:Update()
-    end
+
 end
 
 function PANEL:PerformLayout()
-    for k,v in pairs(self.mining) do
-        v:SetPos(10 + ((k - 1) * 80), 160)
-        v:SetSize(75, 75)
-    end
-    
-    for k,v in pairs(self.storage) do
-        v:SetPos(10 + ((k - 1) * 80), 300)
-        v:SetSize(75, 75)
-    end
-    
-    for k,v in pairs(self.weapon) do
-        v:SetPos(10 + ((k - 1) * 80), 440)
-        v:SetSize(75, 75)
-    end
-    
-    self.items:SetPos(500, 125)
-    self.items:SetSize(265, 395)
+
 end
 
-function PANEL:Think()
+function PANEL:Think(force)
 
 end
 
 function PANEL:Update()
     self.score = TK:Format(TK.DB:GetPlayerData("player_stats").score)
-    self.loadout = TK.DB:GetPlayerData("player_terminal_loadout").loadout
-    
-    for i=1,6 do
-        self.mining[i]:Update()
-        self.storage[i]:Update()
-        self.weapon[i]:Update()
-    end
 end
 
 function PANEL.Paint(self, w, h)
-    derma.SkinHook("Paint", "TKLoadout", self, w, h)
+    derma.SkinHook("Paint", "TKInventory", self, w, h)
     return true
 end
 
-vgui.Register("tk_loadout", PANEL)
+vgui.Register("tk_inventory", PANEL)
