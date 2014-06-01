@@ -144,10 +144,10 @@ function SKIN:PaintTKLoadout(panel, w, h)
     draw.RoundedBox(4, 10, 405, 200, 30, self.dim)
     draw.SimpleText("Weapons", "TKFont20", 15, 410, self.text)
     
-    for i=1,6 do
-        draw.RoundedBox(4, i * 80 - 70, 160, 75, 75, self.dark)
-        draw.RoundedBox(4, i * 80 - 70, 300, 75, 75, self.dark)
-        draw.RoundedBox(4, i * 80 - 70, 440, 75, 75, self.dark)
+    for i=1,4 do
+        draw.RoundedBox(4, 30 + (i - 1) * 120 , 160, 75, 75, self.dark)
+        draw.RoundedBox(4, 30 + (i - 1) * 120 , 300, 75, 75, self.dark)
+        draw.RoundedBox(4, 30 + (i - 1) * 120 , 440, 75, 75, self.dark)
     end
 
     
@@ -314,5 +314,11 @@ function SKIN:PaintTKContainer(panel, w, h)
     end
 end
 ///--- ---\\\
+
+function SKIN:DrawLock(panel, w, h)
+    surface.SetMaterial(self.lock)
+    surface.SetDrawColor(255, 255, 255, 255)
+    surface.DrawTexturedRect(w / 2 - 16, h / 2 - 16, 32, 32)
+end
 
 derma.DefineSkin("Terminal", "Terminal Skin", SKIN)

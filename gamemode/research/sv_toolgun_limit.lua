@@ -60,7 +60,7 @@ end
 function TK.UP.MakeEntity(ply, data)
     if not IsValid(ply) or not TK.UP:CheckLimit(ply, data.Class) then return end
     local ent_data = TK.UP:GetEntData(ply, data.Class)
-    if not TK.UP:HasSize(ply, data.Class, ent_data[data.Model].size) then return end
+    if not TK.UP:HasSize(ply, data.Class, ent_data[data.Model].size or "small") then return end
     
     local ent = ents.Create(data.Class)
     ent:SetModel(data.Model)

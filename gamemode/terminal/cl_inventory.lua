@@ -24,28 +24,6 @@ local function MakeSlot(panel, x, y)
         
         btn.Entity:SetNoDraw(true)
     end
-    btn.MakeList = function(btn)
-        panel.items:Clear(true)
-        
-        local valid_items = {}
-        for k,v in pairs(TK.DB:GetPlayerData("player_terminal_inventory").inventory) do
-            if !TK.LO:IsSlot(v, btn.slot) then continue end
-            table.insert(valid_items, v)
-        end
-        
-        for k,v in pairs(panel[btn.slot]) do
-            for _,item in pairs(valid_items) do
-                if v.item == item then
-                    valid_items[_] = nil
-                    break
-                end
-            end
-        end
-        
-        for k,v in pairs(valid_items) do
-            panel.items:AddItem(MakePanel(panel, btn.slot, btn.id, v))
-        end
-    end
     
     btn.Think = function()
         
@@ -60,8 +38,6 @@ local function MakeSlot(panel, x, y)
         btn:SetModel(item.mdl)
         btn.vCamPos = item.view
         btn.vLookatPos = Vector(0 ,0 , item.view.z * 0.5)
-        
-        btn:MakeList()
     end
     btn.Paint = function(btn, w, h)
         derma.SkinHook("Paint", "TKMdlButton", btn, w, h)

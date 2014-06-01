@@ -89,6 +89,11 @@ local function MakeSlot(panel, slot, id)
         btn:MakeList()
     end
     btn.Paint = function(btn, w, h)
+        if TK.LO:SlotLocked(btn.slot.. "_" ..btn.id) then 
+            derma.SkinHook("Draw", "Lock", btn, w, h)
+            return true 
+        end
+        
         derma.SkinHook("Paint", "TKMdlButton", btn, w, h)
         return true
     end
@@ -117,7 +122,7 @@ function PANEL:Init()
     self.storage = {}
     self.weapon = {}
     
-    for i=1,6 do
+    for i=1,4 do
         self.mining[i] = MakeSlot(self, "mining", i)
         self.mining[i]:Update()
         self.storage[i] = MakeSlot(self, "storage", i)
@@ -128,19 +133,15 @@ function PANEL:Init()
 end
 
 function PANEL:PerformLayout()
-    for k,v in pairs(self.mining) do
-        v:SetPos(10 + ((k - 1) * 80), 160)
-        v:SetSize(75, 75)
-    end
-    
-    for k,v in pairs(self.storage) do
-        v:SetPos(10 + ((k - 1) * 80), 300)
-        v:SetSize(75, 75)
-    end
-    
-    for k,v in pairs(self.weapon) do
-        v:SetPos(10 + ((k - 1) * 80), 440)
-        v:SetSize(75, 75)
+    for i=1,4 do
+        self.mining[i]:SetPos(30 + ((i - 1) * 120), 160)
+        self.mining[i]:SetSize(75, 75)
+        
+        self.storage[i]:SetPos(30 + ((i - 1) * 120), 300)
+        self.storage[i]:SetSize(75, 75)
+        
+        self.weapon[i]:SetPos(30 + ((i - 1) * 120), 440)
+        self.weapon[i]:SetSize(75, 75)
     end
     
     self.items:SetPos(500, 125)
