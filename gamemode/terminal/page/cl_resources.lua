@@ -243,6 +243,7 @@ local pdir = Vector(0, 0, 1)
 local nextCaptcha = 0
 
 local function ShouldCaptcha(panel)
+    if true then return false end ------------------------------Disable Captcha
     if CurTime() < nextCaptcha then return false end
     local pos = LocalPlayer():GetPos()
     if (pos - ppos):LengthSqr() < 1 then return true end

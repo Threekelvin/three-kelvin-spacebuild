@@ -73,8 +73,8 @@ function Terminal:Create()
         end
 
         net.Start("3k_term_request")
-        net.WriteEntity(frame.Ent)
-        net.WriteTable(BuildTable(table.concat({...})))
+        net.WriteEntity(TK.TD.Ent)
+        net.WriteTable(BuildTable(table.concat({...}, " ")))
         net.SendToServer()
     end
 

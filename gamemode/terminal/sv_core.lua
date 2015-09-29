@@ -150,30 +150,20 @@ local function BuildTable(data)
 end
 
 net.Receive("3k_term_request", function(len, ply)
-    local uid = ply:UID()
-    local pwd = BuildString(net.ReadTable())
     local ent = net.ReadEntity()
+    local data = BuildString(net.ReadTable())
     if not CanCall(ply, ent) then return end
 
-    if pwd == SecureInfo[uid] then
-        arg = string.Explode(" ", arg)
-        local cmd = table.remove(arg, 1)
+    local arg = string.Explode(" ", data)
+    local cmd = table.remove(arg, 1)
 
-        if cmd == "storagetonode" then
-            Terminal.StorageToNode(ply, arg, ent)
-        elseif cmd == "nodetostorage" then
-            Terminal.NodeTostorage(ply, arg, ent)
-        elseif cmd == "addresearch" then
-            Terminal.AddResearch(ply, arg, ent)
-        elseif cmd == "setslot" then
-            Terminal.SetSlot(ply, arg, ent)
-        end
+    if cmd == "storagetonode" then
+        Terminal.StorageToNode(ply, arg, ent)
+    elseif cmd == "nodetostorage" then
+        Terminal.NodeTostorage(ply, arg, ent)
+    elseif cmd == "addresearch" then
+        Terminal.AddResearch(ply, arg, ent)
+    elseif cmd == "setslot" then
+        Terminal.SetSlot(ply, arg, ent)
     end
-
-    SecureInfo[uid] = string.random(32)
-    local crypt = aeslua.encrypt(SecureKeys[uid].decrypt_key, SecureInfo[uid])
-    net.Start("3k_term_test")
-    net.WriteTable(BuildTable(crypt))
-    net.Send(ply)
 end)
---/--- ---\\\
