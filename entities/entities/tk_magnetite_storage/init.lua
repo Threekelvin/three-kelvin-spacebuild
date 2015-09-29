@@ -1,12 +1,11 @@
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
-include('shared.lua')
+include("shared.lua")
 
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
-
     self:AddResource("magnetite", self.data.magnetite)
-    self.Outputs = Wire_CreateOutputs(self, {"Magnetite", "MaxMagnetite"})
+    self.Outputs = Wire_CreateOutputs(self, {"Magnetite",  "MaxMagnetite"})
 end
 
 function ENT:NewNetwork(netid)

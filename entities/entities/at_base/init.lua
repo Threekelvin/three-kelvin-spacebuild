@@ -1,36 +1,32 @@
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
-include('shared.lua')
-
+include("shared.lua")
 local IsValid = IsValid
 local pairs = pairs
 local table = table
 
 local function EnvPrioritySort(a, b)
-    if a.atmosphere.priority == b.atmosphere.priority then
-        return a.atmosphere.radius < b.atmosphere.radius
-    end
+    if a.atmosphere.priority == b.atmosphere.priority then return a.atmosphere.radius < b.atmosphere.radius end
+
     return a.atmosphere.priority < b.atmosphere.priority
 end
 
 function ENT:Initialize()
     self:SetMoveType(MOVETYPE_NONE)
     self:SetSolid(SOLID_NONE)
-
     self.atmosphere = {}
-    self.atmosphere.name        = "Base Atmosphere"
-    self.atmosphere.sphere      = true
-    self.atmosphere.noclip      = false
-    self.atmosphere.combat      = true
-    self.atmosphere.priority    = 5
-    self.atmosphere.radius      = 0
-    self.atmosphere.gravity     = 0
-    self.atmosphere.windspeed   = 0
-    self.atmosphere.tempcold    = 3
-    self.atmosphere.temphot     = 3
-    self.atmosphere.flags       = 0
-    self.atmosphere.resources   = {}
-    
+    self.atmosphere.name = "Base Atmosphere"
+    self.atmosphere.sphere = true
+    self.atmosphere.noclip = false
+    self.atmosphere.combat = true
+    self.atmosphere.priority = 5
+    self.atmosphere.radius = 0
+    self.atmosphere.gravity = 0
+    self.atmosphere.windspeed = 0
+    self.atmosphere.tempcold = 3
+    self.atmosphere.temphot = 3
+    self.atmosphere.flags = 0
+    self.atmosphere.resources = {}
     self.outside = {}
     self.inside = {}
 end
@@ -42,13 +38,12 @@ end
 function ENT:MoveInside(ent)
     self.inside[ent] = ent
     self.outside[ent] = nil
-    
     local old_env = ent:GetEnv()
     table.insert(ent.tk_env.envlist, self)
     table.sort(ent.tk_env.envlist, EnvPrioritySort)
     local new_env = ent:GetEnv()
-    
-    if old_env != new_env then
+
+    if old_env ~= new_env then
         new_env:DoGravity(ent)
         gamemode.Call("OnAtmosphereChange", ent, old_env, new_env)
     end
@@ -57,24 +52,26 @@ end
 function ENT:MoveOutside(ent)
     self.outside[ent] = ent
     self.inside[ent] = nil
-    
     local old_env = ent:GetEnv()
-    for k,v in pairs(ent.tk_env.envlist) do
+
+    for k, v in pairs(ent.tk_env.envlist) do
         if v == self then
             table.remove(ent.tk_env.envlist, k)
             break
         end
     end
+
     local new_env = ent:GetEnv()
-    
-    if old_env != new_env then
+
+    if old_env ~= new_env then
         new_env:DoGravity(ent)
         gamemode.Call("OnAtmosphereChange", ent, old_env, new_env)
     end
 end
 
 function ENT:StartTouch(ent)
-    if !ent.tk_env then return end
+    if not ent.tk_env then return end
+
     if self.atmosphere.sphere then
         if (ent:GetPos() - self:GetPos()):LengthSqr() <= self:GetRadius2() then
             self:MoveInside(ent)
@@ -87,28 +84,28 @@ function ENT:StartTouch(ent)
 end
 
 function ENT:EndTouch(ent)
-    if !ent.tk_env then return end
-    
+    if not ent.tk_env then return end
+
     if self.inside[ent] then
         self:MoveOutside(ent)
     end
-    
+
     self.outside[ent] = nil
     self.inside[ent] = nil
 end
 
 function ENT:Think()
-    if !self.atmosphere.sphere then return end
-    
-    for idx,ent in pairs(self.outside) do
+    if not self.atmosphere.sphere then return end
+
+    for idx, ent in pairs(self.outside) do
         if IsValid(ent) then
             self:CheckEntity(ent)
         else
             self.outside[idx] = nil
         end
     end
-    
-    for idx,ent in pairs(self.inside) do
+
+    for idx, ent in pairs(self.inside) do
         if IsValid(ent) then
             self:CheckEntity(ent)
         else
@@ -117,6 +114,7 @@ function ENT:Think()
     end
 
     self:NextThink(CurTime() + 0.2)
+
     return true
 end
 
@@ -131,8 +129,8 @@ function ENT:CheckEntity(ent)
 end
 
 function ENT:OnRemove()
-    for idx,ent in pairs(self.inside) do
-        if !IsValid(ent) then continue end
+    for idx, ent in pairs(self.inside) do
+        if not IsValid(ent) then continue end
         self:MoveOutside(ent)
     end
 end
@@ -140,15 +138,16 @@ end
 function ENT:PhysicsSetup()
     local radius = self.atmosphere.radius
     if radius <= 0 then return end
-    local min, max = Vector(-radius,-radius,-radius), Vector(radius,radius,radius)
-    
+    local min, max = Vector(-radius, -radius, -radius), Vector(radius, radius, radius)
+
     if self.atmosphere.sphere then
         self:PhysicsInitSphere(radius)
     else
         self:PhysicsInitBox(min, max)
     end
-    
+
     local phys = self:GetPhysicsObject()
+
     if IsValid(phys) then
         phys:EnableMotion(false)
         phys:Wake()
@@ -161,9 +160,9 @@ function ENT:PhysicsSetup()
 end
 
 function ENT:SetupAtomsphere(data)
-    for k,v in pairs(data or {}) do
+    for k, v in pairs(data or {}) do
         local typ = type(self.atmosphere[k])
-        
+
         if typ == "number" then
             self.atmosphere[k] = tonumber(v)
         elseif typ == "boolean" then
@@ -172,7 +171,7 @@ function ENT:SetupAtomsphere(data)
             self.atmosphere[k] = v
         end
     end
-    
+
     self:PhysicsSetup()
 end
 
@@ -197,7 +196,7 @@ function ENT:IsSpace()
 end
 
 function ENT:GetName()
-    return self.atmosphere.name 
+    return self.atmosphere.name
 end
 
 function ENT:GetRadius()
@@ -214,7 +213,7 @@ end
 
 function ENT:GetVolume()
     if self.atmosphere.sphere then
-        return math.floor(((4/3) * math.pi * self.atmosphere.radius ^ 3) * 0.001)
+        return math.floor(((4 / 3) * math.pi * self.atmosphere.radius ^ 3) * 0.001)
     else
         return math.floor((self.atmosphere.radius ^ 3) * 0.001)
     end
@@ -242,60 +241,51 @@ end
 
 function ENT:InAtmosphere(pos)
     if self.atmosphere.sphere then
-        if (pos - self:GetPos()):LengthSqr() < self:GetRadius2() then
-            return true
-        end
+        if (pos - self:GetPos()):LengthSqr() < self:GetRadius2() then return true end
     else
         local cen, rad = self:GetPos(), self:GetRadius()
-        if pos.x < cen.x + rad and pos.x > cen.x - rad and pos.y < cen.y + rad and pos.y > cen.y - rad and pos.z < cen.z + rad and pos.z > cen.z - rad then
-            return true
-        end
+        if pos.x < cen.x + rad and pos.x > cen.x - rad and pos.y < cen.y + rad and pos.y > cen.y - rad and pos.z < cen.z + rad and pos.z > cen.z - rad then return true end
     end
+
     return false
 end
 
 function ENT:DoGravity(ent)
-    if !IsValid(ent) or !ent.tk_env or ent.tk_env.nogravity then return end
-
+    if not IsValid(ent) or not ent.tk_env or ent.tk_env.nogravity then return end
     local grav = self.atmosphere.gravity
-    if !ent.tk_env.gravity == grav then return end
-    
+    if ent.tk_env.gravity ~= grav then return end
     local bool = grav > 0.001
-    for i=0, ent:GetPhysicsObjectCount() do
+
+    for i = 0,  ent:GetPhysicsObjectCount() do
         local phys = ent:GetPhysicsObjectNum(i)
-        if !IsValid(phys) then continue end
-        
+        if not IsValid(phys) then continue end
         phys:EnableGravity(bool)
         phys:EnableDrag(bool)
     end
+
     ent:SetGravity(grav + 0.001)
     ent.tk_env.gravity = grav
 end
 
 function ENT:InSun(ent)
-    if !IsValid(ent) then return false end
+    if not IsValid(ent) then return false end
     local pos = ent:LocalToWorld(ent:OBBCenter())
-    
-    for k,v in pairs(TK.AT:GetSuns()) do
+
+    for k, v in pairs(TK.AT:GetSuns()) do
         local trace = {}
         trace.start = pos - (pos - v):GetNormal() * 2048
         trace.endpos = pos
-        trace.filter = {ent, ent:GetParent()}
+        trace.filter = {ent,  ent:GetParent()}
         local tr = util.TraceLine(trace)
-        if !tr.Hit then
-            return true
-        end
+        if not tr.Hit then return true end
     end
-    
+
     return false
 end
 
 function ENT:DoTemp(ent)
-    if !IsValid(ent) then return 3, false end
+    if not IsValid(ent) then return 3, false end
+    if self:InSun(ent) then return self.atmosphere.temphot, true end
 
-    if self:InSun(ent) then
-        return self.atmosphere.temphot, true
-    end
-    
     return self.atmosphere.tempcold, false
 end

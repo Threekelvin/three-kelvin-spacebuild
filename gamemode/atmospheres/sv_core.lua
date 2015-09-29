@@ -1,30 +1,25 @@
-
 TK.AT = TK.AT or {}
-
 TK.AT.Suns = {}
 TK.AT.Stars = {}
 TK.AT.Ships = {}
 TK.AT.Planets = {}
-
-///--- Flags ---\\\
+--/--- Flags ---\\\
 ATMOSPHERE_SUNBURN = 2
-///--- ---\\\
-
-///--- SPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACE ---\\\
+--/--- ---\\\
+--/--- SPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACE ---\\\
 local Space = {}
-
 Space.atmosphere = {}
-Space.atmosphere.name       = "Space"
-Space.atmosphere.sphere     = true
-Space.atmosphere.noclip     = false
-Space.atmosphere.combat     = true
-Space.atmosphere.priority   = 4
-Space.atmosphere.radius     = 0
-Space.atmosphere.gravity    = 0
-Space.atmosphere.windspeed  = 0
-Space.atmosphere.tempcold   = 3
-Space.atmosphere.temphot    = 3
-Space.atmosphere.resources  = {}
+Space.atmosphere.name = "Space"
+Space.atmosphere.sphere = true
+Space.atmosphere.noclip = false
+Space.atmosphere.combat = true
+Space.atmosphere.priority = 4
+Space.atmosphere.radius = 0
+Space.atmosphere.gravity = 0
+Space.atmosphere.windspeed = 0
+Space.atmosphere.tempcold = 3
+Space.atmosphere.temphot = 3
+Space.atmosphere.resources = {}
 
 function Space:HasFlag(id)
     return bit.band(id, self.atmosphere.flags) == id
@@ -87,7 +82,6 @@ function Space:GetResourcePercent(res)
 end
 
 function Space:CheckEntity(ent)
-
 end
 
 function Space:InAtmosphere(pos)
@@ -95,13 +89,11 @@ function Space:InAtmosphere(pos)
 end
 
 function Space:DoGravity(ent)
-    if !IsValid(ent) or !ent.tk_env or ent.tk_env.nogravity then return end
+    if not IsValid(ent) or not ent.tk_env or ent.tk_env.nogravity then return end
     local phys = ent:GetPhysicsObject()
-    if !IsValid(phys) then return end
-
+    if not IsValid(phys) then return end
     local grav = self.atmosphere.gravity
-    if !ent.tk_env.gravity == grav then return end
-    
+    if ent.tk_env.gravity ~= grav then return end
     local bool = grav > 0
     phys:EnableGravity(bool)
     phys:EnableDrag(bool)
@@ -110,34 +102,32 @@ function Space:DoGravity(ent)
 end
 
 function Space:InSun(ent)
-    if !IsValid(ent) then return false end
+    if not IsValid(ent) then return false end
     local pos = ent:LocalToWorld(ent:OBBCenter())
-    
-    for k,v in pairs(TK.AT:GetSuns()) do
+
+    for k, v in pairs(TK.AT:GetSuns()) do
         local trace = {}
         trace.start = pos - (pos - v):GetNormal() * 2048
         trace.endpos = pos
-        trace.filter = {ent, ent:GetParent()}
+        trace.filter = {ent,  ent:GetParent()}
         local tr = util.TraceLine(trace)
-        if !tr.Hit then
-            return true
-        end
+        if not tr.Hit then return true end
     end
-    
+
     return false
 end
 
 function Space:DoTemp(ent)
-    if !IsValid(ent) then return 3, false end
-    
+    if not IsValid(ent) then return 3, false end
+
     return 3, self:InSun(ent)
 end
 
 function Space:IsValid()
     return true
 end
-///---   ---\\\
 
+--/---   ---\\\
 local function DecodeKeyValues(values)
     local cat, data = "none", {}
 
@@ -147,12 +137,14 @@ local function DecodeKeyValues(values)
         data["gravity"] = tonumber(values.Case03)
         data["tempcold"] = tonumber(values.Case05)
         data["temphot"] = tonumber(values.Case06)
+
         data["resources"] = {
             oxygen = 20,
             carbon_dioxide = 5,
             nitrogen = 70,
             hydrogen = 5
         }
+
         data["name"] = "Planet"
         data["flags"] = tonumber(values.Case16)
         data["sphere"] = 1
@@ -164,12 +156,14 @@ local function DecodeKeyValues(values)
         data["gravity"] = tonumber(values.Case03)
         data["tempcold"] = tonumber(values.Case06)
         data["temphot"] = tonumber(values.Case07)
+
         data["resources"] = {
             oxygen = tonumber(values.Case09),
             carbon_dioxide = tonumber(values.Case10),
             nitrogen = tonumber(values.Case11),
             hydrogen = tonumber(values.Case12)
         }
+
         data["name"] = values.Case13
         data["flags"] = tonumber(values.Case08)
         data["sphere"] = 1
@@ -181,12 +175,14 @@ local function DecodeKeyValues(values)
         data["gravity"] = tonumber(values.Case03)
         data["tempcold"] = tonumber(values.Case06)
         data["temphot"] = tonumber(values.Case07)
+
         data["resources"] = {
             oxygen = tonumber(values.Case09),
             carbon_dioxide = tonumber(values.Case10),
             nitrogen = tonumber(values.Case11),
             hydrogen = tonumber(values.Case12)
         }
+
         data["name"] = values.Case13
         data["flags"] = tonumber(values.Case08)
         data["sphere"] = 0
@@ -197,10 +193,12 @@ local function DecodeKeyValues(values)
         data["radius"] = tonumber(values.Case02)
         data["tempcold"] = 1000000
         data["temphot"] = 1000000
+
         data["resources"] = {
             hydrogen = 80,
             helium = 20
         }
+
         data["name"] = "Star"
         data["noclip"] = 0
         data["combat"] = 1
@@ -209,40 +207,51 @@ local function DecodeKeyValues(values)
         data["radius"] = tonumber(values.Case02)
         data["tempcold"] = 1000000
         data["temphot"] = 1000000
+
         data["resources"] = {
             hydrogen = 80,
             helium = 20
         }
+
         data["name"] = values.Case06
         data["noclip"] = 0
         data["combat"] = 1
     end
-    
+
     return cat, data
 end
 
 local function LoadMapData()
-    if !TK.MapSetup.Atmospheres or #TK.MapSetup.Atmospheres == 0 then
+    if not TK.MapSetup.Atmospheres or #TK.MapSetup.Atmospheres == 0 then
         print("------- Loading From Map ------")
         TK.MapSetup.Atmospheres = {}
-        
-        for _,ent in pairs(ents.FindByClass("logic_case")) do
-            local cat, data = DecodeKeyValues(ent:GetKeyValues())    
+
+        for _, ent in pairs(ents.FindByClass("logic_case")) do
+            local cat, data = DecodeKeyValues(ent:GetKeyValues())
             local pos = ent:GetPos()
-            table.insert(TK.MapSetup.Atmospheres, {cat = cat, x = pos.x, y = pos.y, z = pos.z, data = data})
+
+            table.insert(TK.MapSetup.Atmospheres, {
+                cat = cat,
+                x = pos.x,
+                y = pos.y,
+                z = pos.z,
+                data = data
+            })
         end
-        
-        if !file.Exists("tksb", "DATA") then
+
+        if not file.Exists("tksb", "DATA") then
             file.CreateDir("tksb")
             file.CreateDir("tksb/atmospheres")
         end
-        file.Write("tksb/atmospheres/"..game.GetMap()..".txt", util.TableToKeyValues(TK.MapSetup.Atmospheres))
+
+        file.Write("tksb/atmospheres/" .. game.GetMap() .. ".txt", util.TableToKeyValues(TK.MapSetup.Atmospheres))
     end
 end
 
 local function RegisterAtmospheres()
     print("--- Registering Atmospheres ---")
-    for k,v in pairs(TK.MapSetup.Atmospheres) do
+
+    for k, v in pairs(TK.MapSetup.Atmospheres) do
         if v.cat == "planet" then
             local planet = ents.Create("at_planet")
             planet:SetPos(Vector(v.x, v.y, v.z))
@@ -258,29 +267,31 @@ local function RegisterAtmospheres()
             table.insert(TK.AT.Suns, Vector(v.x, v.y, v.z))
         end
     end
+
     print("-------------------------------")
 end
 
 local function RegisterSuns()
     print("------- Registering Suns ------")
-    for k,v in ipairs(ents.FindByClass("env_sun")) do
+
+    for k, v in ipairs(ents.FindByClass("env_sun")) do
         if IsValid(v) then
             table.insert(TK.AT.Suns, v:GetPos())
             print(v, "Found")
         end
     end
-    
+
     if #TK.AT.Suns == 0 then
         table.insert(TK.AT.Suns, Vector(50000, 50000, 50000))
         print("No Sun Found, Default Added")
     end
+
     print("-------------------------------")
 end
 
 local function EnvPrioritySort(a, b)
-    if a.atmosphere.priority == b.atmosphere.priority then
-        return a.atmosphere.radius < b.atmosphere.radius
-    end
+    if a.atmosphere.priority == b.atmosphere.priority then return a.atmosphere.radius < b.atmosphere.radius end
+
     return a.atmosphere.priority < b.atmosphere.priority
 end
 
@@ -306,40 +317,40 @@ end
 
 function TK.AT:GetAtmosphereOnPos(pos)
     local env = Space
-    for k,v in pairs(TK.AT.Stars) do
+
+    for k, v in pairs(TK.AT.Stars) do
         if IsValid(v) then
             if EnvPrioritySort(v, env) and v:InAtmosphere(pos) then
                 env = v
             end
         end
     end
-    
-    for k,v in pairs(TK.AT.Ships) do
+
+    for k, v in pairs(TK.AT.Ships) do
         if IsValid(v) then
             if EnvPrioritySort(v, env) and v:InAtmosphere(pos) then
                 env = v
             end
         end
     end
-    
-    for k,v in pairs(TK.AT.Planets) do
+
+    for k, v in pairs(TK.AT.Planets) do
         if IsValid(v) then
             if EnvPrioritySort(v, env) and v:InAtmosphere(pos) then
                 env = v
             end
         end
     end
-    
+
     return env
 end
 
 function TK.AT:ManualCheck(ent)
-    if !IsValid(ent) then return end
+    if not IsValid(ent) then return end
     local new_env = self:GetAtmosphereOnPos(ent:GetPos())
     local old_env = ent:GetEnv()
     if new_env == old_env then return end
     ent.tk_env.envlist = {new_env}
-    
     new_env:DoGravity(ent)
     gamemode.Call("OnAtmosphereChange", ent, old_env, new_env)
 end
@@ -349,21 +360,21 @@ util.AddNetworkString("TKAT")
 hook.Add("Initialize", "TKAT", function()
     function GAMEMODE:OnAtmosphereChange(ent, old_env, new_env)
     end
-    
+
     function _R.Entity:OnAtmosphereChange(old_env, new_env)
     end
-    
+
     function _R.Entity:GetEnv()
-        if !self.tk_env then return Space end
-        if self:IsPlayer() and self:InVehicle() then
-            return self:GetVehicle():GetEnv()
-        end
-        
+        if not self.tk_env then return Space end
+        if self:IsPlayer() and self:InVehicle() then return self:GetVehicle():GetEnv() end
         local env = self.tk_env.envlist[1] or Space
-        if !IsValid(env) then
+
+        if not IsValid(env) then
             table.remove(self.tk_env.envlist, 1)
+
             return self:GetEnv()
         end
+
         return env
     end
 end)
@@ -374,10 +385,10 @@ hook.Add("InitPostEntity", "TKAT", function()
     RegisterAtmospheres()
     RegisterSuns()
     print("---- TK Atmospheres Loaded ----")
-    
+
     timer.Create("TKAT_wind", 30, 0, function()
-        for k,v in pairs(TK.AT.Planets) do
-            if !IsValid(v) then continue end
+        for k, v in pairs(TK.AT.Planets) do
+            if not IsValid(v) then continue end
             v.atmosphere.windspeed = math.random(0, 100)
         end
     end)
@@ -400,11 +411,10 @@ hook.Add("EntitySpawned", "TKAT", function(ent)
     elseif class == "tk_ship_core" then
         table.insert(TK.AT.Ships, ent)
     end
-    
+
     if ent.Type == "brush" or ent.Type == "point" then return end
-    if !IsValid(ent:GetPhysicsObject()) then return end
+    if not IsValid(ent:GetPhysicsObject()) then return end
     if ent:GetMoveType() == 0 then return end
-    
     ent.tk_env = {}
     ent.tk_env.envlist = {}
     ent.tk_env.gravity = -1
@@ -418,5 +428,6 @@ end)
 hook.Add("PhysgunPickup", "TKAT", function(ply, ent)
     if ply:IsAdmin() then return end
     if not ply:GetEnv():IsSpace() then return end
+
     return false
 end)

@@ -1,22 +1,20 @@
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
-include('shared.lua')
+include("shared.lua")
 
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
-    
     self:SetNWBool("Generator", true)
     self:AddResource("nitrogen", 0)
     self:AddResource("liquid_nitrogen", 0, true)
     self:AddSound("l", 2, 65)
-    
-    WireLib.CreateInputs(self, {"On", "Multiplier", "Mute"})
-    WireLib.CreateOutputs(self, {"On", "Output"})
+    WireLib.CreateInputs(self, {"On",  "Multiplier",  "Mute"})
+    WireLib.CreateOutputs(self, {"On",  "Output"})
 end
 
 function ENT:TriggerInput(iname, value)
     if iname == "On" then
-        if value != 0 then
+        if value ~= 0 then
             self:TurnOn()
         else
             self:TurnOff()
@@ -29,14 +27,14 @@ function ENT:TriggerInput(iname, value)
 end
 
 function ENT:TurnOn()
-    if self:GetActive() or !self:IsLinked() then return end
+    if self:GetActive() or not self:IsLinked() then return end
     self:SetActive(true)
     self:SoundPlay(1)
     WireLib.TriggerOutput(self, "On", 1)
 end
 
 function ENT:TurnOff()
-    if !self:GetActive() then return end
+    if not self:GetActive() then return end
     self:SetActive(false)
     self:SoundStop(1)
     WireLib.TriggerOutput(self, "On", 0)
@@ -44,11 +42,9 @@ function ENT:TurnOff()
 end
 
 function ENT:DoThink(eff)
-    if !self:GetActive() then return end
-
+    if not self:GetActive() then return end
     local liquid_nitrogen = math.min(self:GetResourceAmount("nitrogen"), -self.data.nitrogen * self.mult * eff)
-    if !self:Work() then return end
-    
+    if not self:Work() then return end
     liquid_nitrogen = self:ConsumeResource("nitrogen", liquid_nitrogen)
     self:SupplyResource("liquid_nitrogen", liquid_nitrogen)
     WireLib.TriggerOutput(self, "Output", liquid_nitrogen)
@@ -61,5 +57,4 @@ function ENT:NewNetwork(netid)
 end
 
 function ENT:UpdateValues()
-
 end

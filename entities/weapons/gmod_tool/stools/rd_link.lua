@@ -1,14 +1,14 @@
-TOOL.Category        = "Connection"
-TOOL.Name            = "Network Link Tool"
-TOOL.Command        = nil
-TOOL.ConfigName        = nil
+TOOL.Category = "Connection"
+TOOL.Name = "Network Link Tool"
+TOOL.Command = nil
+TOOL.ConfigName = nil
 TOOL.Tab = "3K Spacebuild"
 TOOL.Selected = {}
 TOOL.OldColor = {}
 
 if CLIENT then
     language.Add("tool.rd_link.name", "Network Link Tool")
-    language.Add("tool.rd_link.desc", "Use to Link Entities To A Resource Nodes")
+    language.Add("tool.rd_link.desc", "Use to Link Life Support To A Node")
     language.Add("tool.rd_link.0", "Left Click: Select / Unselect Entity    Right Click: Link To Node    Reload: Unlink Entity")
 else
     function TOOL:SelectEnt(ent)
@@ -21,7 +21,7 @@ else
 
     function TOOL:UnSelectEnt(ent)
         if !IsValid(ent) then return end
-        
+
         local entid = ent:EntIndex()
         self.Selected[entid] = nil
         local col = self.OldColor[entid]
@@ -37,7 +37,7 @@ else
 
     function TOOL:CanSelect(ent)
         if !IsValid(ent) then return false end
-        if !ent.IsTKRD or ent.IsNode then return false end
+        if !ent.IsTKRD || ent.IsNode then return false end
         return true
     end
 end
@@ -47,12 +47,12 @@ function TOOL:LeftClick(trace)
     if CLIENT then return true end
     local ply = self:GetOwner()
     local ent = trace.Entity
-    
+
     if !self:CanSelect(ent) then
-        ply:SendLua('GAMEMODE:AddNotify("Can Not Select Entity", NOTIFY_ERROR, 3)')
+        ply:SendLua("GAMEMODE:AddNotify('Can Not Select Entity', NOTIFY_ERROR, 3)")
         return
     end
-    
+
     if self:IsEntSelected(ent) then
         self:UnSelectEnt(ent)
     else
@@ -66,18 +66,18 @@ function TOOL:RightClick(trace)
     if CLIENT then return true end
     local ply = self:GetOwner()
     local ent = trace.Entity
-    
-    if !ent.IsTKRD or !ent.IsNode then
-        ply:SendLua('GAMEMODE:AddNotify("Not A Valid Node", NOTIFY_ERROR, 3)')
+
+    if !ent.IsTKRD || !ent.IsNode then
+        ply:SendLua("GAMEMODE:AddNotify('Not A Valid Node', NOTIFY_ERROR, 3)")
         return
     end
-    
+
     for k,v in pairs(self.Selected) do
         if !IsValid(v) then continue end
         self:UnSelectEnt(v)
         v:Link(ent.netid)
     end
-    
+
     self.Selected = {}
     self.OldColor = {}
     return true
@@ -97,5 +97,7 @@ function TOOL:Think()
 end
 
 function TOOL.BuildCPanel(CPanel)
+
+    CPanel:AddControl("header", {description = "#tool.rd_link.desc"})
 
 end

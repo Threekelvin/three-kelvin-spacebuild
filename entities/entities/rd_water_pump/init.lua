@@ -1,21 +1,19 @@
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
-include('shared.lua')
+include("shared.lua")
 
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
-    
     self:SetNWBool("Generator", true)
     self:AddResource("water", 0, true)
     self:AddSound("l", 4, 75)
-    
-    WireLib.CreateInputs(self, {"On", "Multiplier", "Mute"})
-    WireLib.CreateOutputs(self, {"On", "Output"})
+    WireLib.CreateInputs(self, {"On",  "Multiplier",  "Mute"})
+    WireLib.CreateOutputs(self, {"On",  "Output"})
 end
 
 function ENT:TriggerInput(iname, value)
     if iname == "On" then
-        if value != 0 then
+        if value ~= 0 then
             self:TurnOn()
         else
             self:TurnOff()
@@ -28,14 +26,14 @@ function ENT:TriggerInput(iname, value)
 end
 
 function ENT:TurnOn()
-    if self:GetActive() or !self:IsLinked() then return end
+    if self:GetActive() or not self:IsLinked() then return end
     self:SetActive(true)
     self:SoundPlay(1)
     WireLib.TriggerOutput(self, "On", 1)
 end
 
 function ENT:TurnOff()
-    if !self:GetActive() then return end
+    if not self:GetActive() then return end
     self:SetActive(false)
     self:SoundStop(1)
     WireLib.TriggerOutput(self, "On", 0)
@@ -43,16 +41,19 @@ function ENT:TurnOff()
 end
 
 function ENT:DoThink(eff)
-    if !self:GetActive() then return end
+    if not self:GetActive() then return end
     local temp = self:GetEnv():DoTemp(self)
     local water = self.data.water * self.mult * eff
-    
-    if temp > 373 or self:WaterLevel() < 1 then self:TurnOff() return end
-    if !self:Work() then return end
 
+    if temp > 373 or self:WaterLevel() < 1 then
+        self:TurnOff()
+
+        return
+    end
+
+    if not self:Work() then return end
     water = self:SupplyResource("water", water)
     WireLib.TriggerOutput(self, "Output", water)
-    
     self:Work()
 end
 
@@ -63,5 +64,4 @@ function ENT:NewNetwork(netid)
 end
 
 function ENT:UpdateValues()
-
 end

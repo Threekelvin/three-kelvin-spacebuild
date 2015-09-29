@@ -1,12 +1,12 @@
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
-include('shared.lua')
+include("shared.lua")
 
 local ModelList = {
     [1] = "models/mandrac/asteroid/crystal1.mdl",
     [2] = "models/mandrac/asteroid/crystal2.mdl",
     [3] = "models/mandrac/asteroid/crystal3.mdl",
-    [4] = "models/mandrac/asteroid/crystal4.mdl",
+    [4] = "models/mandrac/asteroid/crystal4.mdl"
 }
 
 function ENT:GetField()
@@ -18,8 +18,8 @@ function ENT:Initialize()
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetMoveType(MOVETYPE_NONE)
     self:SetSolid(SOLID_VPHYSICS)
-    
     local phys = self:GetPhysicsObject()
+
     if IsValid(phys) then
         phys:EnableMotion(false)
         phys:Wake()
@@ -31,11 +31,12 @@ function ENT:Initialize()
     end
 end
 
-function ENT:Think()    
-    if !self.Ore or self.Ore <= 0 then
+function ENT:Think()
+    if not self.Ore or self.Ore <= 0 then
         self:Remove()
     end
-    
+
     self:NextThink(CurTime() + 1)
+
     return true
 end

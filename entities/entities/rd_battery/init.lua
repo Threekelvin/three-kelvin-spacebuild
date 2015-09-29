@@ -1,26 +1,21 @@
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
-include('shared.lua')
+include("shared.lua")
 
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
-    
     self:AddResource("kilojoules", self.data.kilojoules)
-    
-    WireLib.CreateOutputs(self, {"Kilojoules", "MaxKilojoules"})
+    WireLib.CreateOutputs(self, {"Kilojoules",  "MaxKilojoules"})
     self:UpdateValues()
 end
 
 function ENT:TurnOn()
-
 end
 
 function ENT:TurnOff()
-
 end
 
 function ENT:Use()
-
 end
 
 function ENT:Work()
@@ -28,13 +23,12 @@ function ENT:Work()
 end
 
 function ENT:DoThink(eff)
-    
 end
 
 function ENT:DoPostThink()
     local kilowatt = self:GetPowerGrid() - self:GetUnitPowerGrid()
-    local energy = kilowatt > 0 and math.min(kilowatt, self.data.kilowatt) or  math.max(kilowatt, -self.data.kilowatt)
-    
+    local energy = kilowatt > 0 and math.min(kilowatt, self.data.kilowatt) or math.max(kilowatt, -self.data.kilowatt)
+
     if energy > 0 then
         self:SetPower(-energy)
         self:SupplyResource("kilojoules", energy)

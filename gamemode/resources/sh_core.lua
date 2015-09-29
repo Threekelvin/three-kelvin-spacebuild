@@ -1,4 +1,3 @@
-
 TK.RD = TK.RD or {}
 
 hook.Add("Initialize", "TK.RD", function()
@@ -10,7 +9,6 @@ hook.Add("Initialize", "TK.RD", function()
     TK.RD:AddResource("hydrogen", "Hydrogen")
     TK.RD:AddResource("liquid_nitrogen", "Liquid Nitrogen")
     TK.RD:AddResource("water", "Water")
-    
     TK.RD:AddResource("tiberium", "Tiberium")
     TK.RD:AddResource("magnetite", "Magnetite")
     TK.RD:AddResource("quintinite", "Quintinite")

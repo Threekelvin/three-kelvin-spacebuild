@@ -9,18 +9,18 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
     TOOL.Limit      = TK.UP.default
     TOOL.Data       = {}
     TOOL.Build      = true
-    
+
     TOOL.ClientConVar["weld"] = 0
     TOOL.ClientConVar["weldingtoworld"] = 0
     TOOL.ClientConVar["makefrozen"] = 1
     TOOL.ClientConVar["model"] = ""
-    
+
     if SERVER then
         function TOOL:SelectModel()
             local str = self:GetClientInfo("model")
-            if not self.Data[str] or not TK.UP:HasSize(self:GetOwner(), self.Mode, self.Data[str].size) then
+            if !self.Data[str] || !TK.UP:HasSize(self:GetOwner(), self.Mode, self.Data[str].size) then
                 for k,v in pairs(self.Data) do
-                    if not v.size or v.size == "small" then
+                    if !v.size || v.size == "small" then
                         return k
                     end
                 end
@@ -30,9 +30,9 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
     else
         function TOOL:SelectModel()
             local str = self:GetClientInfo("model")
-            if not self.Data[str] or not TK.UP:HasSize(self.Mode, self.Data[str].size) then
+            if !self.Data[str] || !TK.UP:HasSize(self.Mode, self.Data[str].size) then
                 for k,v in pairs(self.Data) do
-                    if not v.size or v.size == "small" then
+                    if !v.size || v.size == "small" then
                         return k
                     end
                 end
@@ -40,23 +40,22 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
             return str
         end
     end
-    
 
     function TOOL:LeftClick(trace)
         if !trace.Hit then return end
         if CLIENT then return true end
-        
+
         local ply, data = self:GetOwner(), {}
         data.Class = self.Mode
         data.Model = self:SelectModel()
         data.Pos = trace.HitPos
         data.Angle = trace.HitNormal:Angle() + Angle(90,0,0)
-        if not util.IsValidModel(data.Model) then return end
-        
+        if !util.IsValidModel(data.Model) then return end
+
         local ent = TK.UP.MakeEntity(ply, data)
         if !IsValid(ent) then return false end
         ent:SetPos(trace.HitPos - trace.HitNormal * ent:OBBMins().z)
-        
+
         if self:GetClientNumber("weld", 0) == 1 then
             local hit = trace.Entity
             if hit then
@@ -69,8 +68,8 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
                 end
             end
         end
-        
-        
+
+
         local phys = ent:GetPhysicsObject()
         if phys:IsValid() then
             phys:Wake()
@@ -78,7 +77,7 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
                 phys:EnableMotion(false)
             end
         end
-        
+
         undo.Create(self.Mode)
             undo.AddEntity(ent)
             undo.SetPlayer(ply)
@@ -87,19 +86,19 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
         ply:AddCleanup(self.Mode, ent)
         return true
     end
-    
+
     function TOOL:RightClick(trace)
-    
+
     end
-    
+
     function TOOL:Reload(trace)
 
     end
 
     function TOOL:Think()
         if SERVER then return end
-        
-        if !IsValid(self.GhostEntity) or self.GhostEntity:GetModel() != self:SelectModel() then
+
+        if !IsValid(self.GhostEntity) || self.GhostEntity:GetModel() != self:SelectModel() then
             self:MakeGhostEntity(self:SelectModel(), Vector(0,0,0), Angle(0,0,0))
         else
             local trace = self:GetOwner():GetEyeTrace()
@@ -107,48 +106,41 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
             self.GhostEntity:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
             self.GhostEntity:SetPos(trace.HitPos - trace.HitNormal * self.GhostEntity:OBBMins().z)
         end
-        
-        if not self.Build then return end
-        local CPanel = controlpanel.Get(self.Mode)
-		if not CPanel then return end
-        
-        self.Build = false
-		CPanel:ClearControls()
-		self.BuildCPanel(CPanel, self)
+
+
+        if self.Build then
+            local CPanel = controlpanel.Get(self.Mode)
+            if !CPanel then return end
+
+            CPanel:ClearControls()
+            self.BuildCPanel(CPanel, self)
+
+            self.Build = false
+        end
     end
 
     function TOOL.BuildCPanel(CPanel, tool)
         if SERVER then return end
-        if not tool then return end
+        if !tool then return end
 
-        local Weld = vgui.Create("DCheckBoxLabel")
-        Weld:SetText("Weld")
-        Weld:SetConVar(tool.Mode.."_weld")
-        Weld:SetValue(0)
-        Weld:SizeToContents()
-        CPanel:AddItem(Weld)
-        
-        local AllowWeldingToWorld = vgui.Create("DCheckBoxLabel")
-        AllowWeldingToWorld:SetText("Weld To World")
-        AllowWeldingToWorld:SetConVar(tool.Mode.."_weldingtoworld")
-        AllowWeldingToWorld:SetValue(0)
-        AllowWeldingToWorld:SizeToContents()
-        CPanel:AddItem(AllowWeldingToWorld)
-        
-        local MakeFrozen = vgui.Create("DCheckBoxLabel")
-        MakeFrozen:SetText("Make Frozen")
-        MakeFrozen:SetConVar(tool.Mode.."_makefrozen")
-        MakeFrozen:SetValue(1)
-        MakeFrozen:SizeToContents()
-        CPanel:AddItem(MakeFrozen)
-        
+        CPanel:AddControl("header", {description = "#tool." .. tool.Mode .. ".desc"})
+
+        CPanel:AddControl("checkbox", {label = "Weld", command = tool.Mode .. "_weld"})
+
+        CPanel:AddControl("checkbox", {label = "Weld to world", command = tool.Mode .. "_weldingtoworld"})
+
+        CPanel:AddControl("checkbox", {label = "Make frozen", command = tool.Mode .. "_makefrozen"})
+
+        CPanel:AddControl("label", {text = "Select Size:"})
+
         local List = vgui.Create("DPanelSelect")
         List:SetSize(0, 200)
         List:EnableVerticalScrollbar(true)
-        CPanel:AddItem(List)
-        
+        CPanel:AddItem(List, nil)
+        CPanel:InvalidateLayout()
+
         for k,v in pairs(tool.Data) do
-            if not TK.UP:HasSize(tool.Mode, v.size) then continue end
+            if !TK.UP:HasSize(tool.Mode, v.size) then continue end
             local icon = vgui.Create("SpawnIcon")
             icon.idx = k
             function icon:DoRightClick()
@@ -158,19 +150,18 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
             end
             icon:SetModel(k)
             icon:SetSize(64, 64)
-            
+
             local tip = ""
             for res,amt in pairs(v) do
-                if not TK.RD:IsResource(res) then continue end
-                tip = tip.. TK.RD:GetResourceName(res) .." = ".. amt .."\n"
+                if !TK.RD:IsResource(res) then continue end
+                tip = tip .. TK.RD:GetResourceName(res) .. " = " .. amt .. "\n"
             end
             tip = string.sub(tip, 0, -2)
-            icon:SetToolTip(tip == "" and k or tip)
-            
-            List:AddPanel(icon, {[tool.Mode .."_model"] = k, playgamesound = "ui/buttonclickrelease.wav"})
+            icon:SetTooltip(tip == "" && k || tip)
+
+            List:AddPanel(icon, {[tool.Mode .. "_model"] = k, playgamesound = "ui/buttonclickrelease.wav"}, nil)
         end
-        List:SortByMember("idx")
-        
+
         local mdl = tool:SelectModel()
         for k,v in pairs(List:GetItems()) do
             if v.idx != mdl then continue end
@@ -179,10 +170,10 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
         end
     end
 
-    AddCSLuaFile("rd_tools/"..t_file)
-    include("rd_tools/"..t_file)
-    
-    if SERVER then 
+    AddCSLuaFile("rd_tools/" .. t_file)
+    include("rd_tools/" .. t_file)
+
+    if SERVER then
         for k,v in pairs(TOOL.Data) do
             if util.IsValidModel(k) then
                 util.PrecacheModel(k)
@@ -190,16 +181,16 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
                 TOOL.Data[k] = nil
             end
         end
-        
+
         TK.UP:SetDefaultLimit(TOOL.Mode, TOOL.Limit)
         duplicator.RegisterEntityClass(TOOL.Mode, TK.UP.MakeEntity, "Data")
     else
-        language.Add("tool."..TOOL.Mode..".name", TOOL.Name)
-        language.Add("tool."..TOOL.Mode..".desc", "Use to Spawn a "..TOOL.Name)
-        language.Add("tool."..TOOL.Mode..".0", "Left Click: Spawn a "..TOOL.Name)
-        language.Add("sboxlimit_"..TOOL.Mode, "You Have Hit the "..TOOL.Name.." Limit!")
+        language.Add("tool." .. TOOL.Mode .. ".name", TOOL.Name)
+        language.Add("tool." .. TOOL.Mode .. ".desc", "Used to Spawn a " .. TOOL.Name)
+        language.Add("tool." .. TOOL.Mode .. ".0", "Left Click: Spawn a " .. TOOL.Name)
+        language.Add("sboxlimit_" .. TOOL.Mode, "You Have Hit the " .. TOOL.Name .. " Limit!")
     end
-    
+
     cleanup.Register(TOOL.Name)
 
     TOOL.Command         = nil
@@ -207,7 +198,7 @@ for _,t_file in pairs(file.Find("rd_tools/*.lua", "LUA")) do
     TOOL.Tab             = "3K Spacebuild"
     TOOL:CreateConVars()
     SWEP.Tool[TOOL.Mode] = TOOL
-    
+
     TOOL = nil
 end
 
@@ -219,13 +210,11 @@ TOOL.Command    = nil
 TOOL.ConfigName = nil
 TOOL.AddToMenu  = false
 
-if SERVER then
-
-else
+if CLIENT then
     hook.Add("TKDB_Player_Data", "TKTG", function(dbtable, idx, val)
         for k,v in pairs(TK.UP.lists) do
-            if not string.match(v .."$", dbtable) then continue end
-            if not LocalPlayer().GetWeapons then return end
+            if !string.match(v .. "$", dbtable) then continue end
+            if !LocalPlayer().GetWeapons then return end
             local tools = LocalPlayer():GetWeapons()
             for _,tool in pairs(tools) do
                 if tool:GetClass() != "gmod_tool" then continue end

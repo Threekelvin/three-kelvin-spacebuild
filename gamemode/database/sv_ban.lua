@@ -1,4 +1,3 @@
-
 TK.DB = TK.DB or {}
 
 function TK.DB:AddBan(admin, tarid, tarip, length, reason)

@@ -27,7 +27,7 @@ function TOOL:RightClick(trace)
                 self.Link.Engine.Pod = self.Link.Pod
                 self.Link.Pod.Engine = self.Link.Engine
             else
-                GAMEMODE:AddNotify("Engine and pod linked", NOTIFY_HINT, 5)
+                GAMEMODE:AddNotify("Engine && pod linked", NOTIFY_HINT, 5)
             end
             self.Link = {}
         elseif CLIENT then
@@ -41,7 +41,7 @@ function TOOL:RightClick(trace)
                 self.Link.Engine.Pod = self.Link.Pod
                 self.Link.Pod.Engine = self.Link.Engine
             else
-                GAMEMODE:AddNotify("Engine and pod linked", NOTIFY_HINT, 5)
+                GAMEMODE:AddNotify("Engine && pod linked", NOTIFY_HINT, 5)
             end
             self.Link = {}
         elseif CLIENT then
@@ -60,7 +60,7 @@ end
 function TOOL:Think()
     if SERVER then return end
     
-    if !IsValid(self.GhostEntity) or self.GhostEntity:GetModel() != self:SelectModel() then
+    if !IsValid(self.GhostEntity) || self.GhostEntity:GetModel() != self:SelectModel() then
         self:MakeGhostEntity(self:SelectModel(), Vector(0,0,0), Angle(0,0,0))
     else
         local trace = self:GetOwner():GetEyeTrace()
@@ -68,16 +68,16 @@ function TOOL:Think()
         self.GhostEntity:SetAngles(trace.HitNormal:Angle() + Angle(90,0,0))
         self.GhostEntity:SetPos(trace.HitPos - trace.HitNormal * self.GhostEntity:OBBMins().z)
         
-        if IsValid(trace.Entity) and (trace.Entity:GetClass() == "tk_ship_engine" or trace.Entity:IsVehicle()) then
+        if IsValid(trace.Entity) && (trace.Entity:GetClass() == "tk_ship_engine" || trace.Entity:IsVehicle()) then
             self.GhostEntity:SetNoDraw(true)
         else
             self.GhostEntity:SetNoDraw(false)
         end
     end
     
-    if not self.Build then return end
+    if !self.Build then return end
     local CPanel = controlpanel.Get(self.Mode)
-    if not CPanel then return end
+    if !CPanel then return end
     
     self.Build = false
     CPanel:ClearControls()
@@ -86,4 +86,4 @@ end
 
 if SERVER then return end
 
-language.Add("tool.tk_ship_engine.0", "Left Click: Spawn a "..TOOL.Name.."      Right Click: Link a"..TOOL.Name.." and a vehicle      Reload: Select Model")
+language.Add("tool.tk_ship_engine.0", "Left Click: Spawn a "..TOOL.Name.."      Right Click: Link a"..TOOL.Name.." && a vehicle      Reload: Select Model")

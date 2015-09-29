@@ -16,9 +16,9 @@ if CLIENT then
     language.Add("tool.tk_loadout.0", "Left Click:    Right Click:    Reload:")
     
     hook.Add("TKDB_Player_Data", "TKLO_tool", function(dtable, idx, data)
-        if dtable != "player_terminal_loadout" or idx != "loadout" then return end
+        if dtable != "player_terminal_loadout" || idx != "loadout" then return end
         
-        if not LocalPlayer().GetWeapons then return end
+        if !LocalPlayer().GetWeapons then return end
         local tools = LocalPlayer():GetWeapons()
         for _,tool in pairs(tools) do
             if tool:GetClass() != "gmod_tool" then continue end
@@ -30,7 +30,7 @@ end
 
 function TOOL:SelectModel()
     local item = TK.LO:GetItem(self:GetClientInfo("item"))
-    return item.mdl or ""
+    return item.mdl || ""
 end
 
 function TOOL:LeftClick(trace)
@@ -42,10 +42,10 @@ function TOOL:LeftClick(trace)
     data.Model = self:SelectModel()
     data.Pos = trace.HitPos
     data.Angle = trace.HitNormal:Angle() + Angle(90,0,0)
-    if not util.IsValidModel(data.Model) then return end
+    if !util.IsValidModel(data.Model) then return end
     
     local ent = TK.LO.MakeEntity(ply, data, item)
-    if not IsValid(ent) then return false end
+    if !IsValid(ent) then return false end
     ent:SetPos(trace.HitPos - trace.HitNormal * ent:OBBMins().z)
     
     if self:GetClientNumber("dontweld", 0) == 0 then
@@ -90,7 +90,7 @@ end
 function TOOL:Think()
     if SERVER then return end
     
-    if !IsValid(self.GhostEntity) or self.GhostEntity:GetModel() != self:SelectModel() then
+    if !IsValid(self.GhostEntity) || self.GhostEntity:GetModel() != self:SelectModel() then
         self:MakeGhostEntity(self:SelectModel(), Vector(0,0,0), Angle(0,0,0))
     else
         local trace = self:GetOwner():GetEyeTrace()
@@ -99,9 +99,9 @@ function TOOL:Think()
         self.GhostEntity:SetPos(trace.HitPos - trace.HitNormal * self.GhostEntity:OBBMins().z)
     end
     
-    if not self.Build then return end
+    if !self.Build then return end
     local CPanel = controlpanel.Get(self.Mode)
-    if not CPanel then return end
+    if !CPanel then return end
     
     self.Build = false
     CPanel:ClearControls()

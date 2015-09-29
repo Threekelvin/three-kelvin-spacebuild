@@ -1,4 +1,3 @@
-
 util.AddNetworkString("TKLS_Ply")
 
 local function PlayerUpdate(ply)
@@ -6,31 +5,29 @@ local function PlayerUpdate(ply)
     data.energy = ply.tk_hev.energy
     data.water = ply.tk_hev.water
     data.oxygen = ply.tk_hev.oxygen
-    data.temp = temp
-    data.airper = airper
-    
+    data.temp = ply.tk_hev.temp
+    data.airper = ply.tk_hev.airper
     net.Start("TKLS_Ply")
-        net.WriteTable(data)
+    net.WriteTable(data)
     net.Send(ply)
 end
 
 local function PlayerLSCheck()
-    for _,ply in pairs(player.GetAll()) do
-        if !IsValid(ply) or !ply.tk_hev or !ply:Alive() then continue end
-        
+    for _, ply in pairs(player.GetAll()) do
+        if not IsValid(ply) or not ply.tk_hev or not ply:Alive() then continue end
         local env = ply:GetEnv()
         local temp, insun = env:DoTemp(ply)
         local airper = math.floor(env:GetResourcePercent("oxygen"))
-        
+
         if insun and env:Sunburn() then
             ply:TakeDamage(5)
         end
-        
-        if temp != ply.tk_hev.temp then
+
+        if temp ~= ply.tk_hev.temp then
             ply.tk_hev.temp = temp
             ply.tk_hev.update = true
         end
-        
+
         if ply.tk_hev.temp < 273 then
             local required = 5
 
@@ -43,13 +40,12 @@ local function PlayerLSCheck()
                 ply.tk_hev.energy = 0
                 ply.tk_hev.temp = 290 - left * 17
                 ply.tk_hev.update = true
-                
                 local dmg = (290 - ply.tk_hev.temp) / 10
                 ply:TakeDamage(dmg)
             end
         elseif ply.tk_hev.temp > 307 then
             local required = 5
-            
+
             if ply.tk_hev.water >= required then
                 ply.tk_hev.water = ply.tk_hev.water - required
                 ply.tk_hev.temp = 290
@@ -59,29 +55,29 @@ local function PlayerLSCheck()
                 ply.tk_hev.water = 0
                 ply.tk_hev.temp = 290 + left * 17
                 ply.tk_hev.update = true
-                
                 local dmg = (ply.tk_hev.temp - 290) / 10
                 ply:TakeDamage(dmg)
             end
         else
-            if ply.tk_hev.energy < ply.tk_hev.energymax  then
+            if ply.tk_hev.energy < ply.tk_hev.energymax then
                 ply.tk_hev.energy = math.min(ply.tk_hev.energy + 5, ply.tk_hev.energymax)
                 ply.tk_hev.update = true
             end
-            if ply.tk_hev.water < ply.tk_hev.watermax  then
+
+            if ply.tk_hev.water < ply.tk_hev.watermax then
                 ply.tk_hev.water = math.min(ply.tk_hev.water + 5, ply.tk_hev.watermax)
                 ply.tk_hev.update = true
             end
         end
-        
-        if airper != ply.tk_hev.airper then
+
+        if airper ~= ply.tk_hev.airper then
             ply.tk_hev.airper = airper
             ply.tk_hev.update = true
         end
-        
+
         if ply.tk_hev.airper < 10 or ply:WaterLevel() == 3 then
             local required = 5
-            
+
             if ply.tk_hev.oxygen >= required then
                 ply.tk_hev.oxygen = ply.tk_hev.oxygen - required
                 ply.tk_hev.update = true
@@ -89,7 +85,6 @@ local function PlayerLSCheck()
                 local left = required - ply.tk_hev.oxygen
                 ply.tk_hev.oxygen = 0
                 ply.tk_hev.update = true
-                
                 ply:TakeDamage(left)
             end
         else
@@ -98,13 +93,13 @@ local function PlayerLSCheck()
                 ply.tk_hev.update = true
             end
         end
-        
+
         if ply.tk_hev.health == ply:Health() and ply:Health() < 100 then
             ply:SetHealth(math.min(ply:Health() + 1, 100))
         end
-        
+
         ply.tk_hev.health = ply:Health()
-        
+
         if ply.tk_hev.update then
             ply.tk_hev.update = false
             PlayerUpdate(ply)
@@ -114,7 +109,7 @@ end
 
 hook.Add("Initialize", "TKLS", function()
     timer.Create("TKLS", 1, 0, PlayerLSCheck)
-    
+
     function _R.Player:AddhevRes(res, amt)
         if res == "energy" then
             self.tk_hev.energy = math.min(self.tk_hev.energy + amt, self.tk_hev.energymax)
@@ -151,18 +146,18 @@ hook.Add("PlayerSpawn", "TKLS", function(ply)
 end)
 
 hook.Add("OnAtmosphereChange", "TKLS", function(ent, old_env, new_env)
-    if !IsValid(ent) then return end
+    if not IsValid(ent) then return end
+
     if ent:IsPlayer() then
         ent:SetNWString("TKPlanet", new_env.atmosphere.name)
         if ent:IsAdmin() then return end
         if new_env:CanNoclip() then return end
-        if ent:GetMoveType() != MOVETYPE_NOCLIP then return end
-        
+        if ent:GetMoveType() ~= MOVETYPE_NOCLIP then return end
         ent:SetMoveType(MOVETYPE_WALK)
         ent:SetVelocity(-ent:GetVelocity() * 0.7)
     elseif ent:IsVehicle() then
         local ply = ent:GetDriver()
-        if !IsValid(ply) then return end
+        if not IsValid(ply) then return end
         ply:SetNWString("TKPlanet", new_env.atmosphere.name)
     end
 end)
@@ -170,6 +165,7 @@ end)
 hook.Add("PlayerNoClip", "TKLS", function(ply)
     if ply:IsAdmin() then return end
     if ply:GetEnv():CanNoclip() then return end
+
     return false
 end)
 

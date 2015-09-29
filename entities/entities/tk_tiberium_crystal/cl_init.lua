@@ -1,4 +1,4 @@
-include('shared.lua')
+include("shared.lua")
 
 function ENT:Initialize()
     self.RandCol = math.random(0, 360)
@@ -7,10 +7,8 @@ end
 
 function ENT:Draw()
     TK.TI:DrawTib(self)
-    
     if self.NextUpdate > CurTime() then return end
     self.NextUpdate = self.NextUpdate + math.random(5, 10)
-    
     local fxd = EffectData()
     fxd:SetOrigin(self:GetPos())
     fxd:SetScale(1)

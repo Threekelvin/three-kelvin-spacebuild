@@ -1,15 +1,13 @@
-
 local PANEL = {}
 
 function PANEL:Init()
     self:SetSkin("Terminal")
     self.NextThink = 0
-    
     self.webpage = vgui.Create("HTML", self)
     self.webpage:OpenURL("http://resource.threekelv.in/leaderboard.php")
-    
+
     hook.Add("TKOpenTerminal", "StatsRefresh", function()
-        self.webpage:Refresh()
+        self.webpage:OpenURL("http://resource.threekelv.in/leaderboard.php")
     end)
 end
 
@@ -19,11 +17,11 @@ function PANEL:PerformLayout()
 end
 
 function PANEL:Think(force)
-    if !force then
+    if not force then
         if CurTime() < self.NextThink then return end
         self.NextThink = CurTime() + 1
     end
-    
+
     self.score = TK:Format(TK.DB:GetPlayerData("player_info").score)
 end
 
@@ -31,8 +29,9 @@ function PANEL:Update()
     self:Think(true)
 end
 
-function PANEL.Paint(self, w, h)
+function PANEL:Paint(w, h)
     derma.SkinHook("Paint", "TKStats", self, w, h)
+
     return true
 end
 

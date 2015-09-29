@@ -1,17 +1,16 @@
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
-include('shared.lua')
-
-umsg.PoolString("3k_terminal_open")
+include("shared.lua")
+util.AddNetworkString("3k_terminal_open")
 
 function ENT:Initialize()
-    self.Entity:SetModel("models/Tiberium/factory_panel.mdl")
-    self.Entity:PhysicsInit(SOLID_VPHYSICS)
-    self.Entity:SetMoveType(MOVETYPE_NONE)
-    self.Entity:SetSolid(SOLID_VPHYSICS)
-    self.Entity:SetUseType(SIMPLE_USE)
+    self:SetModel("models/Tiberium/factory_panel.mdl")
+    self:PhysicsInit(SOLID_VPHYSICS)
+    self:SetMoveType(MOVETYPE_NONE)
+    self:SetSolid(SOLID_VPHYSICS)
+    self:SetUseType(SIMPLE_USE)
+    local phys = self:GetPhysicsObject()
 
-    local phys = self.Entity:GetPhysicsObject()
     if phys:IsValid() then
         phys:Wake()
         phys:EnableMotion(false)
@@ -19,10 +18,9 @@ function ENT:Initialize()
 end
 
 function ENT:Use(act, cal)
-    if !IsValid(act) or !act:IsPlayer() then return end
+    if not IsValid(act) or not act:IsPlayer() then return end
     if act:IsAFK() then return end
-    
-    umsg.Start("3k_terminal_open", act)
-        umsg.Entity(self)
-    umsg.End()
+    net.Start("3k_terminal_open")
+    net.WriteEntity(self)
+    net.Send(act)
 end

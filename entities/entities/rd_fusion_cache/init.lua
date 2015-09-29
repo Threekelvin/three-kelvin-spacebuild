@@ -1,32 +1,26 @@
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
-include('shared.lua')
+include("shared.lua")
 
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
-    
     self:AddResource("nitrogen", self.data.nitrogen)
     self:AddResource("hydrogen", self.data.hydrogen)
     self:AddResource("liquid_nitrogen", self.data.liquid_nitrogen)
-    
-    WireLib.CreateOutputs(self, {"Nitrogen", "MaxNitrogen", "Hydrogen", "MaxHydrogen", "LiquidNitrogen", "MaxLiquidNitrogen"})
+    WireLib.CreateOutputs(self, {"Nitrogen",  "MaxNitrogen",  "Hydrogen",  "MaxHydrogen",  "LiquidNitrogen",  "MaxLiquidNitrogen"})
     self:UpdateValues()
 end
 
 function ENT:TurnOn()
-
 end
 
 function ENT:TurnOff()
-
 end
 
 function ENT:Use()
-
 end
 
 function ENT:DoThink()
-
 end
 
 function ENT:NewNetwork(netid)

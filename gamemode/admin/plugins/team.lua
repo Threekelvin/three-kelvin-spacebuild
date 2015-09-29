@@ -1,14 +1,12 @@
-
-
-PLUGIN.Name       = "Team"
-PLUGIN.Prefix     = "!"
-PLUGIN.Command    = "Team"
-PLUGIN.Level      = 6
+PLUGIN.Name = "Team"
+PLUGIN.Prefix = "!"
+PLUGIN.Command = "Team"
+PLUGIN.Level = 6
 
 if SERVER then
     function PLUGIN.Call(ply, arg)
         local count, targets = TK.AM:TargetPlayer(ply, arg[1])
-        
+
         if count == 0 then
             TK.AM:SystemMessage({"No Target Found"}, {ply}, 2)
         elseif count > 1 then
@@ -17,16 +15,16 @@ if SERVER then
             local tar = targets[1]
             local faction = math.floor(tonumber(arg[2]))
             local teams = team.GetAllTeams()
-            
+
             if !teams[faction] or !teams[faction].Joinable then
                 TK.AM:SystemMessage({"No Valid Team Selected"}, {ply}, 2)
             else
-                TK.DB:UpdatePlayer(tar, "server_player_record", {team = faction})
-                TK.AM:SystemMessage({ply, " has added ", tar, " to ", team.GetColor(faction), team.GetName(faction)})
+                TK.DB:UpdatePlayer(tar, "server_player_record", {
+                    team = faction
+                })
+
+                TK.AM:SystemMessage({ply,  " has added ",  tar,  " to ",  team.GetColor(faction),  team.GetName(faction)})
             end
         end
     end
-else
-
 end
-

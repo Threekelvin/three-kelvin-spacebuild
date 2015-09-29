@@ -1,6 +1,6 @@
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
-include('shared.lua')
+include("shared.lua")
 ENT.VehicleExitPoint = true
 
 function ENT:Initialize()
@@ -8,8 +8,8 @@ function ENT:Initialize()
     self:SetMoveType(MOVETYPE_VPHYSICS)
     self:SetSolid(SOLID_VPHYSICS)
     self:SetCollisionGroup(COLLISION_GROUP_WORLD)
-    
     local phys = self:GetPhysicsObject()
+
     if IsValid(phys) then
         phys:Wake()
     end

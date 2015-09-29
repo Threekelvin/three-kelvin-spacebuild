@@ -1,4 +1,4 @@
-include('shared.lua')
+include("shared.lua")
 
 local function Add(array, data)
     array[array.idx] = data
@@ -7,29 +7,39 @@ end
 
 function ENT:Draw()
     self:DrawModel()
-    if Wire_Render then Wire_Render(self) end
-    
+
+    if Wire_Render then
+        Wire_Render(self)
+    end
+
     if (self:GetPos() - LocalPlayer():GetPos()):LengthSqr() > 262144 then return end
-    if LocalPlayer():GetEyeTrace().Entity != self then return end
-    
+    if LocalPlayer():GetEyeTrace().Entity ~= self then return end
     local entdata = self:GetEntTable()
     local res, gen = {}, {}
-    for k,v in pairs(entdata.res) do
+
+    for k, v in pairs(entdata.resources) do
         if v.gen then
             gen[TK.RD:GetResourceName(k)] = k
         else
             res[TK.RD:GetResourceName(k)] = k
         end
     end
-    local owner , uid = self:CPPIGetOwner()
+
+    local owner, uid = self:CPPIGetOwner()
     local name = "World"
+
     if IsValid(owner) then
         name = owner:Name()
     elseif uid then
         name = "Disconnected"
-    end 
-    
-    local OverlayText = {self.PrintName, "\n", idx = 3}
+    end
+
+    local OverlayText = {
+        self.PrintName,
+        "\n",
+        idx = 3
+    }
+
     if entdata.netid == 0 then
         Add(OverlayText, "Not Connected\n")
     else
@@ -37,14 +47,15 @@ function ENT:Draw()
         Add(OverlayText, entdata.netid)
         Add(OverlayText, "\n")
     end
+
     Add(OverlayText, "Owner: ")
     Add(OverlayText, name)
-    
+
     if self:IsGenerator() then
         Add(OverlayText, "\nStatus: ")
         Add(OverlayText, self:GetActive() and "On" or "Off")
         Add(OverlayText, "\nPower Grid: ")
-        
+
         if entdata.powergrid > 0 then
             Add(OverlayText, "+")
             Add(OverlayText, entdata.powergrid)
@@ -54,11 +65,13 @@ function ENT:Draw()
             Add(OverlayText, "kW")
         end
     end
-    
+
     Add(OverlayText, "\n")
+
     if table.Count(res) > 0 then
         Add(OverlayText, "\nResources:\n")
-        for k,v in pairs(res) do
+
+        for k, v in pairs(res) do
             Add(OverlayText, k)
             Add(OverlayText, ": ")
             Add(OverlayText, self:GetResourceAmount(v))
@@ -67,10 +80,11 @@ function ENT:Draw()
             Add(OverlayText, "\n")
         end
     end
-    
+
     if table.Count(gen) > 0 then
         Add(OverlayText, "\nGenerates:\n")
-        for k,v in pairs(gen) do
+
+        for k, v in pairs(gen) do
             Add(OverlayText, k)
             Add(OverlayText, ": ")
             Add(OverlayText, self:GetResourceAmount(v))
@@ -79,20 +93,19 @@ function ENT:Draw()
             Add(OverlayText, "\n")
         end
     end
-    
-    if OverlayText[#OverlayText] != "\n" then
+
+    if OverlayText[#OverlayText] ~= "\n" then
         Add(OverlayText, "\n")
     end
+
     OverlayText.idx = nil
     AddWorldTip(nil, table.concat(OverlayText, ""), nil, self:LocalToWorld(self:OBBCenter()))
 end
 
 function ENT:Think()
-
 end
 
 function ENT:DoMenu()
-
 end
 
 function ENT:DoCommand(cmd, ...)

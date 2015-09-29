@@ -1,5 +1,4 @@
-include('shared.lua')
-
+include("shared.lua")
 local OutlineDang = Material("models/alyx/emptool_glow")
 
 function ENT:Initialize()
@@ -12,11 +11,9 @@ function ENT:Draw()
     self:SetModelScale(self.scale * 1.1, 0)
     render.MaterialOverride(OutlineDang)
     self:DrawModel()
-    
     self:SetModelScale(self.scale, 0)
     render.MaterialOverride(nil)
     self:DrawModel()
-    
     self.scale = math.min(self.scale + 0.1 * FrameTime(), self.scale_max)
 end
 

@@ -1,11 +1,10 @@
-
 local PANEL = {}
 
 function PANEL:Init()
     self:SetSkin("Terminal")
-    
     self.webpage = vgui.Create("HTML", self)
     self.webpage:OpenURL("http://resource.threekelv.in/changelog.php")
+
     self.webpage.FinishedURL = function()
         self.webpage:SetVisible(true)
     end
@@ -17,14 +16,13 @@ function PANEL:PerformLayout()
 end
 
 function PANEL:Think(force)
-
 end
 
 function PANEL:Update()
     self:Think(true)
 end
 
-function PANEL.Paint(self, w, h)
+function PANEL:Paint(w, h)
     return true
 end
 
