@@ -23,6 +23,7 @@ function Terminal.StorageToNode(ply, arg, ent)
     if not storage[res] then return end
     if storage[res] < amt then return end
     amt = Node:SupplyResource(res, amt)
+    TK.RD:ForceUpdate(ply, Node.netid)
     if amt <= 0 then return end
     storage[res] = storage[res] - amt
     storage[res] = storage[res] == 0 and nil or storage[res]
@@ -39,6 +40,7 @@ function Terminal.NodeTostorage(ply, arg, ent)
     if (Node:GetPos() - ent:GetPos()):LengthSqr() > TK.RT.Radius then return end
     local storage = TK.DB:GetPlayerData(ply, "player_terminal_storage").storage
     amt = Node:ConsumeResource(res, amt)
+    TK.RD:ForceUpdate(ply, Node.netid)
     if amt <= 0 then return end
     storage[res] = math.floor((storage[res] or 0) + amt)
 
@@ -153,7 +155,6 @@ net.Receive("3k_term_request", function(len, ply)
     local ent = net.ReadEntity()
     local data = BuildString(net.ReadTable())
     if not CanCall(ply, ent) then return end
-
     local arg = string.Explode(" ", data)
     local cmd = table.remove(arg, 1)
 

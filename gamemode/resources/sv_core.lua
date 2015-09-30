@@ -56,6 +56,16 @@ local function RequestData(ply, cmd, arg)
     end
 end
 
+function TK.RD:ForceUpdate(ply, netid)
+    if not IsValid(ply) then return end
+    local plyid = ply:UserID()
+    local netdata = TK.RD.net_table[netid]
+    if not netdata then return end
+    if netdata.update[plyid] then return end
+    SendNet(ply, netid, netdata)
+    netdata.update[plyid] = true
+end
+
 concommand.Add("TKRD_RequestData", RequestData)
 
 --/--- ---\\\

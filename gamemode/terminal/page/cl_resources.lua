@@ -1,6 +1,12 @@
+local player_pos, player_pos_old = Vector(0, 0, 0), Vector(0, 0, 0)
+local player_dir, player_dir_old = Vector(0, 0, 0), Vector(0, 0, 0)
+local auto_node_check = false
+local next_captcha = 0
 local PANEL = {}
 
+------------------------
 ---- Resource Panel ----
+------------------------
 function PANEL:Init()
     self:SetSkin("Terminal")
     self.active = true
@@ -104,7 +110,9 @@ end
 
 vgui.Register("tk_resources_panel", PANEL, "DButton")
 PANEL = {}
+-----------------------
 ---- Select Button ----
+-----------------------
 local Active_Node = nil
 
 function PANEL:Init()
@@ -148,8 +156,11 @@ end
 vgui.Register("tk_resources_select_button", PANEL, "DButton")
 PANEL = {}
 
+---------------------
 ---- Select Node ----
+---------------------
 function PANEL:Init()
+    self:SetSize(800, 600)
     self.NextThink = 0
     self.frame = vgui.Create("DPanel", self)
     self.frame:SetSkin("Terminal")
@@ -181,14 +192,13 @@ function PANEL:Init()
 end
 
 function PANEL:PerformLayout(w, h)
-    self:SetSize(800, 600)
     self:SetPos(0, 0)
     self.frame:SetSize(400, 300)
     self.frame:Center()
-    self.close:SetPos(379, 0)
     self.close:SetSize(20, 20)
-    self.nodes:SetPos(5, 25)
+    self.close:SetPos(379, 0)
     self.nodes:SetSize(390, 270)
+    self.nodes:SetPos(5, 25)
 end
 
 function PANEL:Think()
@@ -237,111 +247,96 @@ end
 
 vgui.Register("tk_resources_select_node", PANEL, "DPanel")
 PANEL = {}
+
+-----------------
 ---- Captcha ----
-local ppos = Vector(0, 0, 0)
-local pdir = Vector(0, 0, 1)
-local nextCaptcha = 0
+-----------------
+function PANEL:Init()
+    self:SetSize(800, 600)
+    self.NextThink = 0
+    self.frame = vgui.Create("DPanel", self)
+    self.frame:SetSkin("Terminal")
+    self.frame.title = "Complete CAPTCHA"
+    self.frame.Think = function() end
 
-local function ShouldCaptcha(panel)
-    if true then return false end ------------------------------Disable Captcha
-    if CurTime() < nextCaptcha then return false end
-    local pos = LocalPlayer():GetPos()
-    if (pos - ppos):LengthSqr() < 1 then return true end
-    ppos = pos
-    local dir = LocalPlayer():EyeAngles():Forward()
-    -- Within approx 5 degrees
-    if dir:Dot(pdir) < 0.996 then return true end
-    pdir = dir
-
-    return false
-end
-
-local function CaptchaPopup(panel, request)
-    if not ShouldCaptcha(panel) then
-        request()
-
-        return
-    end
-
-    local mouseblock = vgui.Create("DPanel", panel.Terminal)
-    mouseblock:SetPos(0, 0)
-    mouseblock:SetSize(panel.Terminal:GetWide(), panel.Terminal:GetTall())
-    mouseblock.Paint = function() return true end
-    local frame = vgui.Create("DPanel", mouseblock)
-    frame:SetSkin("Terminal")
-    frame.NextThink = 0
-    frame:SetSize(210, 175)
-    frame:Center()
-    frame.title = "Complete CAPTCHA"
-
-    function frame:Paint(w, h)
-        derma.SkinHook("Paint", "TKFrame", self, w, h)
+    self.frame.Paint = function(self_f, w, h)
+        derma.SkinHook("Paint", "TKFrame", self_f, w, h)
 
         return true
     end
 
-    local close = vgui.Create("DButton", frame)
-    close:SetPos(frame:GetWide() - 21, 0)
-    close:SetSize(20, 20)
-    close:SetText("")
+    self.close = vgui.Create("DButton", self.frame)
+    self.close:SetText("")
+    self.close.Paint = function() return true end
 
-    close.DoClick = function()
+    self.close.DoClick = function()
         surface.PlaySound("ui/buttonclick.wav")
-        mouseblock:Remove()
+        self:Remove()
     end
 
-    close.Paint = function() return true end
-    local textBox = vgui.Create("DTextEntry", frame)
-    textBox:SetSize(frame:GetWide() - 70, 20)
-    textBox:SetPos(5, frame:GetTall() - textBox:GetTall() - 5)
-    textBox:SetEnterAllowed(true)
-    local submit = vgui.Create("DButton", frame)
-    submit:SetSize(frame:GetWide() - textBox:GetWide() - 11, 20)
-    submit:SetPos(frame:GetWide() - submit:GetWide() - 5, frame:GetTall() - submit:GetTall() - 5)
-    submit:SetText("Submit")
+    self.textbox = vgui.Create("DTextEntry", self.frame)
+    self.textbox:SetEnterAllowed(true)
 
-    local function doSubmit()
-        textBox:SetEditable(false)
-        textBox:SetEnterAllowed(false)
-        submit:SetDisabled(true)
-        net.Start("3k_terminal_resources_captcha_challenge")
-        net.WriteString(textBox:GetValue())
-        net.SendToServer()
+    self.textbox.OnEnter = function()
+        self:DoSubmit()
     end
 
-    textBox.OnEnter = function()
-        doSubmit()
+    self.submit = vgui.Create("DButton", self.frame)
+    self.submit:SetText("Submit")
+
+    self.submit.DoClick = function()
+        self:DoSubmit()
     end
 
-    submit.DoClick = function()
-        doSubmit()
-    end
-
-    local browser = vgui.Create("HTML", frame)
-    browser:SetPos(5, 25)
-    browser:SetSize(frame:GetWide() - 10, frame:GetTall() - submit:GetTall() - 35)
-    browser:OpenURL("http://resource.threekelv.in/captcha.php?steamid=" .. LocalPlayer():SteamID())
-
-    net.Receive("3k_terminal_resources_captcha_response", function()
-        if not IsValid(mouseblock) then return end
-
-        if net.ReadBit() == 1 then
-            mouseblock:Remove()
-            request()
-            nextCaptcha = CurTime() + 300
-        else
-            textBox:SetValue("")
-            textBox:SetEditable(true)
-            textBox:SetEnterAllowed(true)
-            submit:SetDisabled(false)
-            browser:OpenURL("http://resource.threekelv.in/captcha.php?steamid=" .. LocalPlayer():SteamID())
-            Derma_Message("Incorrect. Please try again.", "", "OK")
-        end
-    end)
+    self.browser = vgui.Create("HTML", self.frame)
+    self.browser:OpenURL("http://resource.threekelv.in/captcha.php?steamid=" .. LocalPlayer():SteamID())
 end
 
+function PANEL:DoSubmit()
+    self.textbox:SetEditable(false)
+    self.textbox:SetEnterAllowed(false)
+    self.submit:SetDisabled(true)
+    net.Start("3k_terminal_resources_captcha_challenge")
+    net.WriteString(self.textbox:GetValue())
+    net.SendToServer()
+end
+
+function PANEL:Reset()
+    self.textbox:SetValue("")
+    self.textbox:SetEditable(true)
+    self.textbox:SetEnterAllowed(true)
+    self.submit:SetDisabled(false)
+    self.browser:OpenURL("http://resource.threekelv.in/captcha.php?steamid=" .. LocalPlayer():SteamID())
+    Derma_Message("Incorrect. Please try again.", "", "OK")
+end
+
+function PANEL:PerformLayout(w, h)
+    self:SetPos(0, 0)
+    self.frame:SetSize(210, 175)
+    self.frame:Center()
+    self.close:SetSize(20, 20)
+    self.close:SetPos(189, 0)
+    self.textbox:SetSize(140, 20)
+    self.textbox:SetPos(5, 150)
+    self.submit:SetSize(59, 20)
+    self.submit:SetPos(146, 150)
+    self.browser:SetSize(200, 120)
+    self.browser:SetPos(5, 25)
+end
+
+function PANEL:Think()
+end
+
+function PANEL:Paint(w, h)
+    return true
+end
+
+vgui.Register("tk_resources_captcha", PANEL, "DPanel")
 PANEL = {}
 
+--------------------
+---- Main Panel ----
+--------------------
 function PANEL:Init()
     self:SetSkin("Terminal")
     self.NextThink = 0
@@ -388,12 +383,43 @@ function PANEL:ShowError(msg)
 end
 
 function PANEL:PerformLayout()
-    self.storage:SetPos(5, 125)
     self.storage:SetSize(245, 395)
-    self.selectnode:SetPos(268, 480)
+    self.storage:SetPos(5, 125)
     self.selectnode:SetSize(240, 40)
-    self.node:SetPos(520, 125)
+    self.selectnode:SetPos(268, 480)
     self.node:SetSize(245, 395)
+    self.node:SetPos(520, 125)
+end
+
+function PANEL:ShouldCaptcha()
+    if CurTime() < next_captcha then return false end
+    if (player_pos - player_pos_old):LengthSqr() < 1 then return true end
+    -- Within approx 5 degrees
+    if player_dir:Dot(player_dir_old) > 0.996 then return true end
+
+    return auto_node_check
+end
+
+function PANEL:DoCaptcha(func)
+    if not self:ShouldCaptcha() then
+        func()
+
+        return
+    end
+
+    local captcha = vgui.Create("tk_resources_captcha", self)
+
+    net.Receive("3k_terminal_resources_captcha_response", function()
+        if not IsValid(captcha) then return end
+
+        if net.ReadBit() == 1 then
+            captcha:Remove()
+            func()
+            next_captcha = CurTime() + 300
+        else
+            captcha:Reset()
+        end
+    end)
 end
 
 function PANEL:CreateStoragePanel()
@@ -440,7 +466,7 @@ function PANEL:CreateResourcesPanel()
     panel.LeftClick = function()
         if not IsValid(self.Terminal) then return end
 
-        CaptchaPopup(self, function()
+        self:DoCaptcha(function()
             if not IsValid(Active_Node) then
                 self:ShowError("No Node Selected")
             else
@@ -452,7 +478,7 @@ function PANEL:CreateResourcesPanel()
     panel.RightClick = function()
         if not IsValid(self.Terminal) then return end
 
-        panel.AddTextBox(function(val)
+        panel:AddTextBox(function(val)
             if val <= 0 then
                 self:ShowError("Nil Value Entered")
 
@@ -463,7 +489,7 @@ function PANEL:CreateResourcesPanel()
                 val = panel.data.value
             end
 
-            CaptchaPopup(self, function()
+            self:DoCaptcha(function()
                 if not IsValid(Active_Node) then
                     self:ShowError("No Node Selected")
                 else
@@ -489,6 +515,7 @@ function PANEL:Think(force)
     if IsValid(Active_Node) then
         if (Active_Node:GetPos() - TK.TD.Ent:GetPos()):LengthSqr() > TK.RT.Radius then
             Active_Node = nil
+            auto_node_check = true
         end
     end
 
@@ -589,3 +616,11 @@ function PANEL:Paint(w, h)
 end
 
 vgui.Register("tk_resources", PANEL)
+
+hook.Add("TKOpenTerminal", "TKTD_PData", function()
+    auto_node_check = false
+    player_pos_old = player_pos
+    player_dir_old = player_dir
+    player_pos = LocalPlayer():GetPos()
+    player_dir = LocalPlayer():EyeAngles():Forward()
+end)
