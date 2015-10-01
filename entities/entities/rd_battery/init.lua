@@ -30,8 +30,12 @@ function ENT:DoPostThink()
     local energy = kilowatt > 0 and math.min(kilowatt, self.data.kilowatt) or math.max(kilowatt, -self.data.kilowatt)
 
     if energy > 0 then
-        self:SetPower(-energy)
-        self:SupplyResource("kilojoules", energy)
+        if self:GetResourceAmount("kilojoules") == self:GetResourceCapacity("kilojoules") then
+            self:SetPower(0)
+        else
+            self:SetPower(-energy)
+            self:SupplyResource("kilojoules", energy)
+        end
     else
         self:SetPower(self:ConsumeResource("kilojoules", -energy))
     end

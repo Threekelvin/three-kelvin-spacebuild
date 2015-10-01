@@ -1,7 +1,6 @@
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 include("shared.lua")
-umsg.PoolString("3k_node_at")
 
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
