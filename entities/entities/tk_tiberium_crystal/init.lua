@@ -162,8 +162,8 @@ hook.Add("Initialize", "TKTib_Damage", function()
                 local dmginfo = DamageInfo()
                 dmginfo:SetDamage(math.ceil(25 * (1 - dist / 2250000)))
                 dmginfo:SetDamageType(DMG_RADIATION)
-                dmginfo:SetAttacker(crystal)
-                dmginfo:SetInflictor(crystal)
+                dmginfo:SetAttacker(v)
+                dmginfo:SetInflictor(v)
                 ply:TakeDamageInfo(dmginfo)
             end
         end

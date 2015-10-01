@@ -19,6 +19,14 @@ function ENT:Initialize()
     end)
 end
 
+function ENT:Think()
+    if self:GetCollisionGroup() == 0 then return end
+    local phys = self:GetPhysicsObject()
+    if not phys:IsPenetrating() then
+        self:SetCollisionGroup(COLLISION_GROUP_NONE)
+    end
+end
+
 function ENT:OnAtmosphereChange(old_env, new_env)
     if new_env:IsSpace() or new_Env:IsShip() then return end
     SafeRemoveEntity(self)

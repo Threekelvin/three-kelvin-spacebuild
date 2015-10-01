@@ -13,7 +13,6 @@ end
 
 function ENT:Initialize()
     self:SetMoveType(MOVETYPE_NONE)
-    self:SetSolid(SOLID_NONE)
     self.atmosphere = {}
     self.atmosphere.name = "Base Atmosphere"
     self.atmosphere.sphere = true
@@ -146,6 +145,7 @@ function ENT:PhysicsSetup()
         self:PhysicsInitBox(min, max)
     end
 
+    self:SetSolid(SOLID_OBB)
     local phys = self:GetPhysicsObject()
 
     if IsValid(phys) then
@@ -253,7 +253,7 @@ end
 function ENT:DoGravity(ent)
     if not IsValid(ent) or not ent.tk_env or ent.tk_env.nogravity then return end
     local grav = self.atmosphere.gravity
-    if ent.tk_env.gravity ~= grav then return end
+    if ent.tk_env.gravity == grav then return end
     local bool = grav > 0.001
 
     for i = 0,  ent:GetPhysicsObjectCount() do

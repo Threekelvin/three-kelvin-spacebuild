@@ -20,7 +20,7 @@ TK.MapSetup.SpawnPoints = {
 
 
 TK.MapSetup.Resources = {
-    tk_magnetite = {
+    tk_asteroid = {
         [1] = {
             Pos = Vector(-10364,2585,-750),
             Ang = Angle(0, 0, 0),
@@ -29,31 +29,7 @@ TK.MapSetup.Resources = {
             Size = 20,
             Ents = {},
             NSpawn = 0,
-            Class = "tk_magnetite",
-        },
-    },
-    tk_quintinite = {
-        [1] = {
-            Pos = Vector(9843,-9823,3609),
-            Ang = Angle(100, 100, 0),
-            Type = "Belt",
-            Radius = 3360,
-            Size = 4,
-            Ents = {},
-            NSpawn = 0,
-            Class = "tk_quintinite",
-        },
-    },
-    tk_riddinite = {
-        [1] = {
-            Pos = Vector(-7726,11075,-8163),
-            Ang = Angle(-45, 30, 0),
-            Type = "Belt",
-            Radius = 4896,
-            Size = 8,
-            Ents = {},
-            NSpawn = 0,
-            Class = "tk_riddinite",
+            Class = "tk_asteroid",
         },
     },
     tk_tiberium_crystal = {

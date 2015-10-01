@@ -93,11 +93,11 @@ function Space:DoGravity(ent)
     local phys = ent:GetPhysicsObject()
     if not IsValid(phys) then return end
     local grav = self.atmosphere.gravity
-    if ent.tk_env.gravity ~= grav then return end
+    if ent.tk_env.gravity == grav then return end
     local bool = grav > 0
     phys:EnableGravity(bool)
     phys:EnableDrag(bool)
-    ent:SetGravity(grav + 0.0001)
+    ent:SetGravity(grav + 0.001)
     ent.tk_env.gravity = grav
 end
 

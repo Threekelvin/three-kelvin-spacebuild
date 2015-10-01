@@ -4,9 +4,10 @@ include("shared.lua")
 
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
+    self.data = self.data or {}
     self:SetRange(self.data.range)
     self:SetNWBool("Generator", true)
-    self:AddResource("magnetite", 0, true)
+    self:AddResource("raw_asteroid_ore", 0, true)
     self:AddSound("l", 7, 65)
     self.Inputs = WireLib.CreateInputs(self, {"On"})
     self.Outputs = WireLib.CreateOutputs(self, {"On",  "Range"})
@@ -55,11 +56,11 @@ function ENT:DoThink(eff)
     local yield = math.floor(self.data.magnetite * eff)
     if yield == 0 then return end
 
-    if ent:GetClass() == "tk_magnetite" then
+    if ent:GetClass() == "tk_asteroid" then
         ent:Mine(yield)
         TK.DB:AddScore(owner, yield)
-    elseif ent:GetClass() == "tk_magnetite_ore" then
-        TK.DB:AddScore(owner, self:SupplyResource("magnetite", yield))
+    elseif ent:GetClass() == "tk_asteroid_ore" then
+        TK.DB:AddScore(owner, self:SupplyResource("raw_asteroid_ore", yield))
     elseif ent:IsPlayer() or ent:IsNPC() then
         local dmg_info = DamageInfo()
         dmg_info:SetDamage(math.random(yield, yield * 2))

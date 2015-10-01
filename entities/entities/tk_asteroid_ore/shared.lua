@@ -1,4 +1,4 @@
 DEFINE_BASECLASS("base_anim")
 ENT.Category = "3K Spacebuild"
-ENT.PrintName = "3K Magnetite Ore"
+ENT.PrintName = "3K Asteroid Ore"
 ENT.Author = "Ghost400"
