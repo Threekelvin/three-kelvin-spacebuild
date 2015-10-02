@@ -167,8 +167,8 @@ function PANEL:Init()
     self.frame.title = "Select Node"
     self.frame.Think = function() end
 
-    self.frame.Paint = function(self_f, w, h)
-        derma.SkinHook("Paint", "TKFrame", self_f, w, h)
+    self.frame.Paint = function(self_p, w, h)
+        derma.SkinHook("Paint", "TKFrame", self_p, w, h)
 
         return true
     end
@@ -194,7 +194,7 @@ end
 function PANEL:PerformLayout(w, h)
     self:SetPos(0, 0)
     self.frame:SetSize(400, 300)
-    self.frame:Center()
+    self.frame:SetPos(w / 2 - 200, h / 2 - 150)
     self.close:SetSize(20, 20)
     self.close:SetPos(379, 0)
     self.nodes:SetSize(390, 270)
@@ -259,8 +259,8 @@ function PANEL:Init()
     self.frame.title = "Complete CAPTCHA"
     self.frame.Think = function() end
 
-    self.frame.Paint = function(self_f, w, h)
-        derma.SkinHook("Paint", "TKFrame", self_f, w, h)
+    self.frame.Paint = function(self_p, w, h)
+        derma.SkinHook("Paint", "TKFrame", self_p, w, h)
 
         return true
     end
@@ -313,7 +313,7 @@ end
 function PANEL:PerformLayout(w, h)
     self:SetPos(0, 0)
     self.frame:SetSize(210, 175)
-    self.frame:Center()
+    self.frame:SetPos(w / 2 - 105, h / 2 - 87.5)
     self.close:SetSize(20, 20)
     self.close:SetPos(189, 0)
     self.textbox:SetSize(140, 20)
@@ -359,8 +359,8 @@ function PANEL:Init()
         vgui.Create("tk_resources_select_node", self)
     end
 
-    self.selectnode.Paint = function(self_f, w, h)
-        derma.SkinHook("Paint", "TKButton", self_f, w, h)
+    self.selectnode.Paint = function(self_p, w, h)
+        derma.SkinHook("Paint", "TKButton", self_p, w, h)
 
         return true
     end

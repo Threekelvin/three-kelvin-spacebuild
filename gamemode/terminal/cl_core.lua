@@ -52,7 +52,7 @@ function Terminal:Create()
     frame:SetScreenLock(true)
     frame:MakePopup()
 
-    frame.Paint = function(self_f, w, h)
+    frame.Paint = function(self_p, w, h)
         Derma_DrawBackgroundBlur(frame, frame.startTime)
         derma.SkinHook("Paint", "TKFrame", frame, w, h)
     end

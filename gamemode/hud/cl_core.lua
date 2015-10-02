@@ -5,56 +5,9 @@ TK.HUD.MOTDs[1] = "Welcome to Three Kelvin Spacebuild!"
 TK.HUD.MOTDs[2] = "This server has Audio Emotes! Bind +AudioEmotePanel_Show to see the menu"
 TK.HUD.MOTDs[3] = "We have a teamspeak server: threekelv.in"
 TK.HUD.MOTDs[4] = "Not sure how to do something? Ask!"
+
 local Admin = CreateClientConVar("3k_admin_overlay", 1, true, false)
 local index = 0
-
-surface.CreateFont("Terminal", {
-    font = "home remedy",
-    size = 128,
-    weight = 400
-})
-
-surface.CreateFont("TKFont45", {
-    font = "classic robot",
-    size = 45,
-    weight = 400
-})
-
-surface.CreateFont("TKFont30", {
-    font = "classic robot",
-    size = 30,
-    weight = 400
-})
-
-surface.CreateFont("TKFont25", {
-    font = "classic robot",
-    size = 25,
-    weight = 400
-})
-
-surface.CreateFont("TKFont20", {
-    font = "classic robot",
-    size = 20,
-    weight = 400
-})
-
-surface.CreateFont("TKFont18", {
-    font = "classic robot",
-    size = 18,
-    weight = 400
-})
-
-surface.CreateFont("TKFont15", {
-    font = "classic robot",
-    size = 15,
-    weight = 400
-})
-
-surface.CreateFont("TKFont12", {
-    font = "classic robot",
-    size = 12,
-    weight = 400
-})
 
 TK.HUD.Colors = {
     text = Color(255, 255, 255, 125),
@@ -76,15 +29,15 @@ function TK.HUD.NextMOTD()
 end
 
 hook.Add("HUDPaint", "TKHUD_Admin", function()
-    if !IsValid(LocalPlayer()) then return end
+    if not IsValid(LocalPlayer()) then return end
     local teamcol = team.GetColor(LocalPlayer():Team())
     TK.HUD.Colors.border = #TK.HUD.Warning > 0 and Color(255, 0, 0, 191 + 64 * math.sin(math.pi * RealTime())) or teamcol
     TK.HUD.Colors.bar = Color(teamcol.r, teamcol.g, teamcol.b, 100)
-    if !Admin:GetBool() then return end
-    if !LocalPlayer():Alive() or !LocalPlayer():IsModerator() then return end
+    if not Admin:GetBool() then return end
+    if not LocalPlayer():Alive() or not LocalPlayer():IsModerator() then return end
 
     for k, ply in pairs(player.GetAll()) do
-        if ply == LocalPlayer() or !ply:Alive() then continue end
+        if ply == LocalPlayer() or not ply:Alive() then continue end
         local vec = ply:LocalToWorld(ply:OBBCenter())
         local localvec = LocalPlayer():LocalToWorld(LocalPlayer():OBBCenter())
         local boxAlpha = math.Clamp((localvec - vec):LengthSqr() / 4000, 45, 300) - 45
@@ -105,7 +58,7 @@ end)
 
 net.Receive("TKHUD_Start_Warning", function()
     table.insert(TK.HUD.Warning, net.ReadString())
-    if !TK.HUD.Time then return end
+    if not TK.HUD.Time then return end
     TK.HUD.Time.MOTD:SetText(TK.HUD.NextMOTD())
     TK.HUD.Time.MOTD.voffset = 0
 end)
@@ -116,7 +69,7 @@ net.Receive("TKHUD_Stop_Warning", function()
     for k, v in pairs(TK.HUD.Warning) do
         if v ~= msg then continue end
         table.remove(TK.HUD.Warning, k)
-        if !TK.HUD.Time then return end
+        if not TK.HUD.Time then return end
         TK.HUD.Time.MOTD:SetText(TK.HUD.NextMOTD())
         TK.HUD.Time.MOTD.voffset = 0
         break
