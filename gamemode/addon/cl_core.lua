@@ -330,14 +330,14 @@ hook.Add("Initialize", "AddonCheck", function()
     for k, v in pairs(AOC.Legacy) do
         if not AOC.MountedLegacy[k] then
             AOC.missing_addon = true
-            RunConsoleCommand("tk_aoc_show", tonumber(AOC.missing_addon))
+            RunConsoleCommand("tk_aoc_show", AOC.missing_addon and 1 or 0)
 
             return
         end
     end
 
     AOC.missing_addon = false
-    RunConsoleCommand("tk_aoc_show", tonumber(AOC.missing_addon))
+    RunConsoleCommand("tk_aoc_show", AOC.missing_addon and 1 or 0)
 end)
 
 hook.Add("HUDPaint", "AddonCheck", function()

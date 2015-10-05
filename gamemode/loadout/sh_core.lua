@@ -1,12 +1,12 @@
 TK.LO = TK.LO or {}
 -- Time to "rebuild" a loadout entity before it can be respawned.
 TK.LO.RebuildTime = 0
-TK.LO.lists = {"magnetite",  "tiberium"}
+TK.LO.lists = {"asteroid",  "tiberium"}
 
 TK.LO.Categories = {
     [1] = {
-        idx = "magnetite",
-        name = "Magnetite Mining",
+        idx = "asteroid",
+        name = "Asteroid Mining",
         icon = "icon16/money_pound.png"
     },
     [2] = {

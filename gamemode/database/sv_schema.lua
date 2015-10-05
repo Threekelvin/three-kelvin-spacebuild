@@ -220,7 +220,7 @@ local threekelvin = {
             "LONGBLOB",
             "NOT NULL",
             type = "table",
-            default = {"magnetite_basic_laser",  "magnetite_basic_storage"}
+            default = {"asteroid_basic_laser",  "asteroid_basic_storage", "tiberium_basic_extractor", "tiberium_basic_storage"}
         }
     },
     player_terminal_loadout = {
@@ -236,8 +236,8 @@ local threekelvin = {
             "NOT NULL",
             type = "table",
             default = {
-                ["mining_1"] = "magnetite_basic_laser",
-                ["storage_1"] = "magnetite_basic_storage"
+                ["mining_1"] = "asteroid_basic_laser",
+                ["storage_1"] = "asteroid_basic_storage"
             }
         }
     },

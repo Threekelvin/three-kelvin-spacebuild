@@ -46,8 +46,9 @@ function SKIN:PaintTKUpFrame(panel, w, h)
     draw.SimpleText("Bonus", "TKFont18", 250, 171, self.text, TEXT_ALIGN_CENTER)
 end
 
---/--- ---\\\
---/--- Pages ---\\\
+---------------
+---- Stats ----
+---------------
 function SKIN:PaintTKStats(panel, w, h)
     draw.RoundedBox(4, 0, 0, 775, 530, self.light)
     draw.RoundedBox(4, 265, 5, 250, 35, self.dim)
@@ -61,6 +62,9 @@ function SKIN:PaintTKStats(panel, w, h)
     draw.SimpleText("Playtime", "TKFont25", 730, 100, self.text, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 end
 
+-------------------
+---- Resources ----
+-------------------
 function SKIN:PaintTKResources(panel, w, h)
     draw.RoundedBox(4, 0, 0, 775, 530, self.light)
     draw.RoundedBox(4, 265, 5, 250, 35, self.dim)
@@ -87,6 +91,9 @@ function SKIN:PaintTKResources(panel, w, h)
     end
 end
 
+------------------
+---- Research ----
+------------------
 function SKIN:PaintTKResearch(panel, w, h)
     draw.RoundedBox(4, 0, 0, 775, 530, self.light)
     draw.RoundedBox(4, 265, 5, 250, 35, self.dim)
@@ -112,7 +119,9 @@ function SKIN:PaintTKResearch(panel, w, h)
     end
 end
 
---draw.SimpleText("Experience: "..panel.exp, "TKFont20", 10, 47.5, self.text)
+-----------------
+---- Loadout ----
+-----------------
 function SKIN:PaintTKLoadout(panel, w, h)
     draw.RoundedBox(4, 0, 0, 780, 535, self.light)
     draw.RoundedBox(4, 265, 5, 250, 35, self.dim)
@@ -120,32 +129,31 @@ function SKIN:PaintTKLoadout(panel, w, h)
     draw.RoundedBox(4, 5, 75, 485, 450, self.normal)
     draw.RoundedBox(4, 10, 80, 475, 40, self.dark)
     draw.SimpleText("Item Slots", "TKFont25", 250, 87.5, self.text, TEXT_ALIGN_CENTER)
-    draw.RoundedBox(4, 10, 125, 200, 30, self.dim)
-    draw.SimpleText("Mining Devices", "TKFont20", 15, 130, self.text)
-    draw.RoundedBox(4, 10, 265, 200, 30, self.dim)
-    draw.SimpleText("Mining Storage", "TKFont20", 15, 270, self.text)
-    draw.RoundedBox(4, 10, 405, 200, 30, self.dim)
-    draw.SimpleText("Weapons", "TKFont20", 15, 410, self.text)
-
-    for i = 1,  4 do
-        draw.RoundedBox(4, 30 + (i - 1) * 120, 160, 75, 75, self.dark)
-        draw.RoundedBox(4, 30 + (i - 1) * 120, 300, 75, 75, self.dark)
-        draw.RoundedBox(4, 30 + (i - 1) * 120, 440, 75, 75, self.dark)
-    end
-
     draw.RoundedBox(4, 495, 75, 275, 450, self.normal)
     draw.RoundedBox(4, 500, 80, 265, 40, self.dark)
-    draw.SimpleText("Items", "TKFont25", 635, 87.5, self.text, TEXT_ALIGN_CENTER)
+    draw.SimpleText("Available Items", "TKFont25", 635, 87.5, self.text, TEXT_ALIGN_CENTER)
+    draw.RoundedBox(4, 5, 45, 765, 25, self.normal)
+end
 
-    if panel.Error then
-        draw.RoundedBox(4, 5, 45, 765, 25, self.warning)
-        draw.SimpleText(panel.Error, "TKFont20", 10, 47.5, self.text)
+function SKIN:PaintLoadoutList(panel, w, h)
+    draw.RoundedBoxEx(4, 0, 0, w, h, self.light)
+end
+
+function SKIN:PaintLoadoutCategory(panel, w, h)
+    if panel:GetExpanded() then
+        draw.RoundedBoxEx(4, 0, 0, w, 20, self.dim, true, true, false, false)
     else
-        draw.RoundedBox(4, 5, 45, 765, 25, self.normal)
-        draw.SimpleText("Score: " .. panel.score, "TKFont20", 10, 47.5, self.text)
+        draw.RoundedBox(4, 0, 0, w, 20, self.dim)
     end
 end
 
+function SKIN:PaintLoadoutCategoryPanel(panel, w, h)
+    draw.RoundedBoxEx(4, 0, 0, w, h, self.normal, false, false, true, true)
+end
+
+-------------------
+---- Inventory ----
+-------------------
 function SKIN:PaintTKInventory(panel, w, h)
     draw.RoundedBox(4, 0, 0, 780, 535, self.light)
     draw.RoundedBox(4, 265, 5, 250, 35, self.dim)
@@ -173,16 +181,13 @@ function SKIN:PaintTKInventory(panel, w, h)
     end
 end
 
+----------------
+---- Market ----
+----------------
 function SKIN:PaintTKMarket(panel, w, h)
     draw.RoundedBox(4, 0, 0, 780, 535, self.light)
     draw.RoundedBox(4, 265, 5, 250, 35, self.dim)
     draw.SimpleText("Market", "TKFont30", 390, 6, self.text, TEXT_ALIGN_CENTER)
-end
-
-function SKIN:PaintTKFaction(panel, w, h)
-    draw.RoundedBox(4, 0, 0, 780, 535, self.light)
-    draw.RoundedBox(4, 265, 5, 250, 35, self.dim)
-    draw.SimpleText("Faction", "TKFont30", 390, 6, self.text, TEXT_ALIGN_CENTER)
 end
 
 --/--- ---\\\
@@ -199,26 +204,6 @@ function SKIN:PaintTKButton(btn, w, h)
     end
 
     draw.SimpleText(btn.text or "", "TKFont25", w / 2, h / 2, self.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-end
-
-function SKIN:PaintTKMdlButton(btn, w, h)
-    if not IsValid(btn.Entity) then return end
-    local x, y = btn:LocalToScreen(0, 0)
-    btn.Entity:SetAngles(Angle(0, RealTime() * 10, 0))
-    local ang = (btn.vLookatPos - btn.vCamPos):Angle()
-    cam.Start3D(btn.vCamPos, ang, 70, x, y, w, h, 5, 4096)
-    cam.IgnoreZ(true)
-    render.SuppressEngineLighting(true)
-    render.SetLightingOrigin(btn.Entity:GetPos())
-    render.ResetModelLighting(50 / 255, 50 / 255, 50 / 255)
-    render.SetColorModulation(1, 1, 1)
-    render.SetBlend(1)
-    render.SetModelLighting(BOX_TOP, 1, 1, 1)
-    render.SetModelLighting(BOX_FRONT, 1, 1, 1)
-    btn.Entity:DrawModel()
-    render.SuppressEngineLighting(false)
-    cam.IgnoreZ(false)
-    cam.End3D()
 end
 
 --/--- ---\\\
