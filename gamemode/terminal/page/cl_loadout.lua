@@ -194,6 +194,7 @@ end
 function PANEL:AddCategory(str_name, id, num_slots)
     local cat = self.list:Add(str_name)
     cat:SetSkin("Terminal")
+    cat:SetZPos(TK.LO.slots[id].z)
 
     cat.Paint = function(self_p, w, h)
         derma.SkinHook("Paint", "LoadoutCategory", self_p, w, h)

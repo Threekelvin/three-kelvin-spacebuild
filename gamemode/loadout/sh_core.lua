@@ -5,27 +5,33 @@ TK.LO.RebuildTime = 0
 TK.LO.slots = {
     mining = {
         name = "Mining Equipment",
-        slots = 4
+        slots = 4,
+        z = 1
     },
     storage = {
         name = "Mining Storage",
-        slots = 4
+        slots = 4,
+        z = 2
     },
     life_support = {
         name = "Life Support",
-        slots = 4
+        slots = 4,
+        z = 3
     },
     generator = {
         name = "Power Generation",
-        slots = 4
+        slots = 4,
+        z = 4
     },
     subsystem = {
         name = "Ship Subsystems",
-        slots = 4
+        slots = 4,
+        z = 5
     },
     engine = {
         name = "Ship Engines",
-        slots = 4
+        slots = 4,
+        z = 6
     }
 }
 
@@ -57,6 +63,7 @@ end
 
 function TK.LO:IsItem(item_id)
     local items = list.Get("tk_loadout")
+
     return items[item_id] and true or false
 end
 
