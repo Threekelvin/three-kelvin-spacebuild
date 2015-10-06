@@ -354,7 +354,6 @@ function PANEL:Init()
     self.selectnode:SetText("")
 
     self.selectnode.DoClick = function()
-        if not IsValid(self.Terminal) then return end
         surface.PlaySound("ui/buttonclickrelease.wav")
         vgui.Create("tk_resources_select_node", self)
     end
@@ -426,18 +425,14 @@ function PANEL:CreateStoragePanel()
     local panel = vgui.Create("tk_resources_panel")
 
     panel.LeftClick = function()
-        if not IsValid(self.Terminal) then return end
-
         if not IsValid(Active_Node) then
             self:ShowError("No Node Selected")
         else
-            self.Terminal.AddQuery("storagetonode", Active_Node:EntIndex(), panel.data.resource, panel.data.value)
+            TK.TD:Query("storagetonode", Active_Node:EntIndex(), panel.data.resource, panel.data.value)
         end
     end
 
     panel.RightClick = function()
-        if not IsValid(self.Terminal) then return end
-
         if not IsValid(Active_Node) then
             self:ShowError("No Node Selected")
         else
@@ -452,7 +447,7 @@ function PANEL:CreateStoragePanel()
                     val = panel.data.value
                 end
 
-                self.Terminal.AddQuery("storagetonode", Active_Node:EntIndex(), panel.data.resource, val)
+                TK.TS:Query("storagetonode", Active_Node:EntIndex(), panel.data.resource, val)
             end)
         end
     end
@@ -464,20 +459,16 @@ function PANEL:CreateResourcesPanel()
     local panel = vgui.Create("tk_resources_panel")
 
     panel.LeftClick = function()
-        if not IsValid(self.Terminal) then return end
-
         self:DoCaptcha(function()
             if not IsValid(Active_Node) then
                 self:ShowError("No Node Selected")
             else
-                self.Terminal.AddQuery("nodetostorage", Active_Node:EntIndex(), panel.data.resource, panel.data.value)
+                TK.TD:Query("nodetostorage", Active_Node:EntIndex(), panel.data.resource, panel.data.value)
             end
         end)
     end
 
     panel.RightClick = function()
-        if not IsValid(self.Terminal) then return end
-
         panel:AddTextBox(function(val)
             if val <= 0 then
                 self:ShowError("Nil Value Entered")
@@ -493,7 +484,7 @@ function PANEL:CreateResourcesPanel()
                 if not IsValid(Active_Node) then
                     self:ShowError("No Node Selected")
                 else
-                    self.Terminal.AddQuery("nodetostorage", Active_Node:EntIndex(), panel.data.resource, val)
+                    TK.TD:Query("nodetostorage", Active_Node:EntIndex(), panel.data.resource, val)
                 end
             end)
         end)

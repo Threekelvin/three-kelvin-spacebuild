@@ -2,16 +2,6 @@ TK.TD = TK.TD or {}
 TK.TD.Ent = NULL
 local Terminal = {}
 
-local Pages = {
-    [1] = {function() return true end,  "Information",  "tk_info",  "icon16/feed.png"},
-    [2] = {function() return true end,  "Leaderboard",  "tk_stats",  "icon16/world.png"},
-    [3] = {function() return true end,  "Resources",  "tk_resources",  "icon16/ruby.png"},
-    [4] = {function() return true end,  "Research",  "tk_research",  "icon16/cog.png"},
-    [5] = {function() return true end,  "Inventory",  "tk_inventory",  "icon16/package.png"},
-    [6] = {function() return true end,  "Loadout",  "tk_loadout",  "icon16/briefcase.png"},
-    [7] = {function() return true end,  "Market",  "tk_market",  "icon16/coins.png"}
-}
-
 local function BuildString(data)
     local str = [[]]
 
@@ -25,6 +15,32 @@ end
 local function BuildTable(data)
     return {string.byte(data, 1, string.len(data))}
 end
+
+function TK.TD:Query(...)
+    if not Terminal.Menu then return end
+
+    if LocalPlayer():IsAFK() then
+        Terminal.Menu:SetVisible(false)
+
+        return
+    end
+
+    if not Terminal.Menu:IsVisible() then return end
+    net.Start("3k_term_request")
+    net.WriteEntity(self.Ent)
+    net.WriteTable(BuildTable(table.concat({...}, " ")))
+    net.SendToServer()
+end
+
+local Pages = {
+    [1] = {function() return true end,  "Information",  "tk_info",  "icon16/feed.png"},
+    [2] = {function() return true end,  "Leaderboard",  "tk_stats",  "icon16/world.png"},
+    [3] = {function() return true end,  "Resources",  "tk_resources",  "icon16/ruby.png"},
+    [4] = {function() return true end,  "Research",  "tk_research",  "icon16/cog.png"},
+    [5] = {function() return true end,  "Inventory",  "tk_inventory",  "icon16/package.png"},
+    [6] = {function() return true end,  "Loadout",  "tk_loadout",  "icon16/briefcase.png"},
+    [7] = {function() return true end,  "Market",  "tk_market",  "icon16/coins.png"}
+}
 
 hook.Add("Initialize", "TKTerminal", function()
     function GAMEMODE:TKOpenTerminal()
@@ -65,19 +81,6 @@ function Terminal:Create()
         frame:SetVisible(false)
     end
 
-    frame.AddQuery = function(...)
-        if LocalPlayer():IsAFK() then
-            frame:SetVisible(false)
-
-            return
-        end
-
-        net.Start("3k_term_request")
-        net.WriteEntity(TK.TD.Ent)
-        net.WriteTable(BuildTable(table.concat({...}, " ")))
-        net.SendToServer()
-    end
-
     local close = vgui.Create("DButton", frame)
     close:SetPos(780, 0)
     close:SetSize(20, 20)
@@ -96,7 +99,6 @@ function Terminal:Create()
     for _, info in ipairs(Pages) do
         if info[1]() then
             local page = vgui.Create(info[3])
-            page.Terminal = frame
             page:SetSize(780, 535)
             propertysheet:AddSheet(info[2], page, info[4], false, false)
         end
@@ -125,7 +127,7 @@ function Terminal:Open(ent)
             end)
 
             hook.Add("KeyRelease", "ReleaseClose", function(ply, key)
-                if not (key == IN_USE) then return end
+                if key ~= IN_USE then return end
                 if not IsValid(self.Menu) then return end
                 self.Menu:SetVisible(false)
                 hook.Remove("KeyRelease", "ReleaseClose")

@@ -4,9 +4,9 @@ TK.LO.limits = {}
 TK.LO.entities = {}
 util.AddNetworkString("TKLO_Ent")
 
-function TK.LO:CheckLimit(ply, item)
-    if self:GetCount(ply, item) >= self:GetLimit(ply, item) then
-        ply:LimitHit(item)
+function TK.LO:CheckLimit(ply, item_id)
+    if self:GetCount(ply, item_id) >= self:GetLimit(ply, item_id) then
+        ply:LimitHit(item_id)
 
         return false
     end
@@ -14,10 +14,10 @@ function TK.LO:CheckLimit(ply, item)
     return true
 end
 
-function TK.LO:SetLimit(ply, item, limit)
+function TK.LO:SetLimit(ply, item_id, limit)
     if not IsValid(ply) then return end
     self.limits[ply.uid] = self.limits[ply.uid] or {}
-    self.limits[ply.uid][item] = limit or self.default
+    self.limits[ply.uid][item_id] = limit or self.default
 end
 
 function TK.LO:ResetLimits(ply)
@@ -26,18 +26,18 @@ function TK.LO:ResetLimits(ply)
     end
 end
 
-function TK.LO:GetLimit(ply, item)
+function TK.LO:GetLimit(ply, item_id)
     if not IsValid(ply) then return end
     self.limits[ply.uid] = self.limits[ply.uid] or {}
 
-    return self.limits[ply.uid][item] or self.default
+    return self.limits[ply.uid][item_id] or self.default
 end
 
-function TK.LO:GetCount(ply, item)
+function TK.LO:GetCount(ply, item_id)
     if not IsValid(ply) then return end
     self.entities[ply.uid] = self.entities[ply.uid] or {}
-    self.entities[ply.uid][item] = self.entities[ply.uid][item] or {}
-    local tab = self.entities[ply.uid][item]
+    self.entities[ply.uid][item_id] = self.entities[ply.uid][item_id] or {}
+    local tab = self.entities[ply.uid][item_id]
     local c = 0
 
     for k, v in pairs(tab) do
@@ -51,11 +51,11 @@ function TK.LO:GetCount(ply, item)
     return c
 end
 
-function TK.LO:Cull(ply, item)
-    local c = self:GetCount(ply, item) - self:GetLimit(ply, item)
+function TK.LO:Cull(ply, item_id)
+    local c = self:GetCount(ply, item_id) - self:GetLimit(ply, item_id)
     if c <= 0 then return end
 
-    for _, ent in pairs(self.entities[ply.uid][item]) do
+    for _, ent in pairs(self.entities[ply.uid][item_id]) do
         if c == 0 then break end
         SafeRemoveEntity(ent)
         c = c - 1
@@ -69,23 +69,20 @@ function TK.LO:UpdateLimits(ply, data)
         self:SetLimit(ply, v, self:GetLimit(ply, v) + 1)
     end
 
-    for _, root in pairs(self.lists) do
-        for idx, item in pairs(self[root]) do
-            local id = root .. "_" .. idx
-            self:Cull(ply, id)
-        end
+    for id, item in pairs(list.Get("tk_loadout")) do
+        self:Cull(ply, id)
     end
 end
 
-function TK.LO:AddCount(ply, item, ent)
+function TK.LO:AddCount(ply, item_id, ent)
     if not IsValid(ply) or not IsValid(ent) then return end
     self.entities[ply.uid] = self.entities[ply.uid] or {}
-    self.entities[ply.uid][item] = self.entities[ply.uid][item] or {}
-    table.insert(self.entities[ply.uid][item], ent)
-    self:GetCount(ply, item)
+    self.entities[ply.uid][item_id] = self.entities[ply.uid][item_id] or {}
+    table.insert(self.entities[ply.uid][item_id], ent)
+    self:GetCount(ply, item_id)
 
     ent:CallOnRemove("GetCountUpdate", function()
-        TK.LO:GetCount(ply, item)
+        TK.LO:GetCount(ply, item_id)
     end)
 end
 
@@ -120,12 +117,10 @@ end
 hook.Add("Initialize", "TKLO", function()
     local reg = {}
 
-    for _, root in pairs(TK.LO.lists) do
-        for idx, item in pairs(TK.LO[root]) do
-            if reg[item.ent] then continue end
-            duplicator.RegisterEntityClass(item.ent, TK.LO.MakeEntity, "Data", "item_id")
-            reg[item.ent] = true
-        end
+    for id, item in pairs(list.Get("tk_loadout")) do
+        if reg[item.ent] then continue end
+        duplicator.RegisterEntityClass(item.ent, TK.LO.MakeEntity, "Data", "item_id")
+        reg[item.ent] = true
     end
 end)
 

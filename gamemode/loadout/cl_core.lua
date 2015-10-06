@@ -9,9 +9,3 @@ net.Receive("TKLO_Ent", function()
         ent.PrintName = v
     end
 end)
-
-function TK.LO:SlotLocked(slot)
-    if string.match(slot, "[%w]+$") ~= "1" then return true end
-
-    return false
-end

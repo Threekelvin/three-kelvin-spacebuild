@@ -220,7 +220,7 @@ local threekelvin = {
             "LONGBLOB",
             "NOT NULL",
             type = "table",
-            default = {"asteroid_basic_laser",  "asteroid_basic_storage", "tiberium_basic_extractor", "tiberium_basic_storage"}
+            default = {"basic_asteroid_laser",  "basic_asteroid_storage",  "basic_tiberium_extractor",  "basic_tiberium_storage"}
         }
     },
     player_terminal_loadout = {
@@ -235,10 +235,31 @@ local threekelvin = {
             "LONGBLOB",
             "NOT NULL",
             type = "table",
+            default = {}
+        },
+        slots = {
+            "LONGBLOB",
+            "NOT NULL",
+            type = "table",
             default = {
-                ["mining_1"] = "asteroid_basic_laser",
-                ["storage_1"] = "asteroid_basic_storage"
+                mining_1 = true,
+                storage_1 = true
             }
+        }
+    },
+    player_upgrades_mining = {
+        steamid = {
+            "VARCHAR(20)",
+            "NOT NULL",
+            "PRIMARY KEY",
+            type = "string",
+            no_sync = true
+        },
+        upgrades = {
+            "LONGBLOB",
+            "NOT NULL",
+            type = "table",
+            default = {}
         }
     },
     player_upgrades_life_support = {
@@ -256,37 +277,7 @@ local threekelvin = {
             default = {}
         }
     },
-    player_upgrades_ship = {
-        steamid = {
-            "VARCHAR(20)",
-            "NOT NULL",
-            "PRIMARY KEY",
-            type = "string",
-            no_sync = true
-        },
-        upgrades = {
-            "LONGBLOB",
-            "NOT NULL",
-            type = "table",
-            default = {}
-        }
-    },
-    player_upgrades_weapons = {
-        steamid = {
-            "VARCHAR(20)",
-            "NOT NULL",
-            "PRIMARY KEY",
-            type = "string",
-            no_sync = true
-        },
-        upgrades = {
-            "LONGBLOB",
-            "NOT NULL",
-            type = "table",
-            default = {}
-        }
-    },
-    player_upgrades_mining = {
+    player_upgrades_subsystem = {
         steamid = {
             "VARCHAR(20)",
             "NOT NULL",
@@ -308,14 +299,14 @@ for idx, data in pairs(threekelvin) do
 end
 
 function TK.DB:NoSync(dbtable, idx)
-    if !threekelvin[dbtable] then return end
-    if !threekelvin[dbtable][idx] then return end
+    if not threekelvin[dbtable] then return end
+    if not threekelvin[dbtable][idx] then return end
 
     return threekelvin[dbtable][idx].no_sync and true or false
 end
 
 function TK.DB:GetKey(dbtable)
-    if !threekelvin[dbtable] then return end
+    if not threekelvin[dbtable] then return end
 
     for idx, val in pairs(threekelvin[dbtable]) do
         for k, v in pairs(val) do

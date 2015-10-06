@@ -126,12 +126,12 @@ function SKIN:PaintTKLoadout(panel, w, h)
     draw.RoundedBox(4, 0, 0, 780, 535, self.light)
     draw.RoundedBox(4, 265, 5, 250, 35, self.dim)
     draw.SimpleText("Loadout", "TKFont30", 390, 6, self.text, TEXT_ALIGN_CENTER)
-    draw.RoundedBox(4, 5, 75, 485, 450, self.normal)
-    draw.RoundedBox(4, 10, 80, 475, 40, self.dark)
-    draw.SimpleText("Item Slots", "TKFont25", 250, 87.5, self.text, TEXT_ALIGN_CENTER)
-    draw.RoundedBox(4, 495, 75, 275, 450, self.normal)
-    draw.RoundedBox(4, 500, 80, 265, 40, self.dark)
-    draw.SimpleText("Available Items", "TKFont25", 635, 87.5, self.text, TEXT_ALIGN_CENTER)
+    draw.RoundedBox(4, 5, 75, 522, 450, self.normal)
+    draw.RoundedBox(4, 10, 80, 512, 40, self.dark)
+    draw.SimpleText("Item Slots", "TKFont25", 266, 87.5, self.text, TEXT_ALIGN_CENTER)
+    draw.RoundedBox(4, 532, 75, 238, 450, self.normal)
+    draw.RoundedBox(4, 537, 80, 228, 40, self.dark)
+    draw.SimpleText("Available Items", "TKFont25", 651, 87.5, self.text, TEXT_ALIGN_CENTER)
     draw.RoundedBox(4, 5, 45, 765, 25, self.normal)
 end
 
@@ -149,6 +149,18 @@ end
 
 function SKIN:PaintLoadoutCategoryPanel(panel, w, h)
     draw.RoundedBoxEx(4, 0, 0, w, h, self.normal, false, false, true, true)
+end
+
+function SKIN:PaintLoadoutSlot(panel, w, h)
+    draw.RoundedBox(4, 0, 0, w, h, self.dark)
+    if not panel.locked then return end
+    surface.SetMaterial(self.lock)
+    surface.SetDrawColor(255, 255, 255, 255)
+    surface.DrawTexturedRect(w / 2 - 16, h / 2 - 16, 32, 32)
+end
+
+function SKIN:PaintLoadoutItem(panel, w, h)
+    draw.RoundedBox(4, 0, 0, w, h, self.dark)
 end
 
 -------------------
@@ -271,13 +283,6 @@ function SKIN:PaintTKContainer(panel, w, h)
             end
         end
     end
-end
-
---/--- ---\\\
-function SKIN:DrawLock(panel, w, h)
-    surface.SetMaterial(self.lock)
-    surface.SetDrawColor(255, 255, 255, 255)
-    surface.DrawTexturedRect(w / 2 - 16, h / 2 - 16, 32, 32)
 end
 
 derma.DefineSkin("Terminal", "Terminal Skin", SKIN)

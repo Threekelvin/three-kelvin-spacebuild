@@ -95,36 +95,37 @@ end
 --/--- ---\\\
 --/--- Loadout ---\\\
 function Terminal.SetSlot(ply, arg, ent)
-    local slot, idx, item = arg[1], tonumber(arg[2]), arg[3]
+    local slot, idx, item_id = arg[1], tonumber(arg[2]), arg[3]
+    if not TK.LO:IsItem(item_id) then return end
+    local slot_idx = slot .. "_" .. idx
     local loadout = TK.DB:GetPlayerData(ply, "player_terminal_loadout").loadout
+    local slots = TK.DB:GetPlayerData(ply, "player_terminal_loadout").slots
+    if not slots[slot_idx] then return end
     local inventory = TK.DB:GetPlayerData(ply, "player_terminal_inventory").inventory
-    local valid_items = {}
+    local has_item = false
 
     for k, v in pairs(inventory) do
-        if not TK.LO:IsSlot(v, slot) then continue end
-        table.insert(valid_items, v)
-    end
-
-    for k, v in pairs(loadout) do
-        if string.match(k, "^[%w]+") ~= slot then continue end
-
-        for _, itm in pairs(valid_items) do
-            if itm ~= v then continue end
-            valid_items[_] = nil
-            break
-        end
-    end
-
-    for k, v in pairs(valid_items) do
-        if v ~= item then continue end
-        loadout[slot .. "_" .. idx] = item
-
-        TK.DB:UpdatePlayer(ply, "player_terminal_loadout", {
-            loadout = loadout
-        })
-
+        if v ~= item_id then continue end
+        table.remove(inventory, k)
+        has_item = true
         break
     end
+
+    if not has_item then return end
+
+    if loadout[slot_idx] then
+        table.insert(inventory, loadout[slot_idx])
+    end
+
+    TK.DB:UpdatePlayer(ply, "player_terminal_inventory", {
+        inventory = inventory
+    })
+
+    loadout[slot_idx] = item_id
+
+    TK.DB:UpdatePlayer(ply, "player_terminal_loadout", {
+        loadout = loadout
+    })
 end
 
 --/--- ---\\\
