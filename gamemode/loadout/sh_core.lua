@@ -13,25 +13,30 @@ TK.LO.slots = {
         slots = 4,
         z = 2
     },
+    mining_upgrades = {
+        name = "Mining Upgrades",
+        slots = 4,
+        z = 3
+    },
     life_support = {
         name = "Life Support",
         slots = 4,
-        z = 3
+        z = 4
     },
     generator = {
         name = "Power Generation",
         slots = 4,
-        z = 4
+        z = 5
     },
     subsystem = {
         name = "Ship Subsystems",
         slots = 4,
-        z = 5
+        z = 6
     },
     engine = {
         name = "Ship Engines",
         slots = 4,
-        z = 6
+        z = 7
     }
 }
 

@@ -16,6 +16,13 @@ SKIN.highlight = Color(20, 200, 250)
 SKIN.warning = Color(200, 0, 0)
 SKIN.link = Color(200, 200, 200)
 SKIN.lock = Material("icon32/lock.png")
+SKIN.tier = {
+    [0] = Color(55, 57, 61),
+    [1] = Color(255, 255, 255),
+    [2] = Color(61, 210, 11),
+    [3] = Color(47, 120, 255),
+    [4] = Color(145, 50, 200)
+}
 
 --/--- Frames ---\\\
 function SKIN:PaintTKFrame(panel, w, h)
@@ -152,7 +159,8 @@ function SKIN:PaintLoadoutCategoryPanel(panel, w, h)
 end
 
 function SKIN:PaintLoadoutSlot(panel, w, h)
-    draw.RoundedBox(4, 0, 0, w, h, self.dark)
+    draw.RoundedBox(4, 0, 0, w, h, self.tier[panel.data.tier])
+    draw.RoundedBox(4, 2,  2, w - 4, h - 4, self.dark)
     if not panel.locked then return end
     surface.SetMaterial(self.lock)
     surface.SetDrawColor(255, 255, 255, 255)
@@ -160,7 +168,8 @@ function SKIN:PaintLoadoutSlot(panel, w, h)
 end
 
 function SKIN:PaintLoadoutItem(panel, w, h)
-    draw.RoundedBox(4, 0, 0, w, h, self.dark)
+    draw.RoundedBox(4, 0, 0, w, h, self.tier[panel.data.tier])
+    draw.RoundedBox(4, 2,  2, w - 4, h - 4, self.dark)
 end
 
 -------------------

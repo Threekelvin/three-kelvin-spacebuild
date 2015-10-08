@@ -74,6 +74,7 @@ function PANEL:DoSetModel()
     local item = TK.LO:GetItem(loadout[self.data.idx])
     self.model_panel:SetModel(item.mdl)
     self.model_panel:SetTooltip(item.name)
+    self.data.tier = item.tier
     if not IsValid(self.model_panel.Entity) then return end
     local tab = PositionSpawnIcon(self.model_panel.Entity, self.model_panel.Entity:GetPos())
     if not tab then return end
@@ -87,6 +88,7 @@ function PANEL:SetSlot(id, num, items_list)
     self.data.id = id
     self.data.num = num
     self.data.idx = id .. "_" .. num
+    self.data.tier = 0
     self:DoSetModel()
 end
 

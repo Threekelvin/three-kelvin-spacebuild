@@ -54,11 +54,11 @@ function TK:FormatTime(num)
     local mins = math.modf(h_rem * 60)
 
     if days > 0 then
-        return TK:OO(days) .. " days " .. TK:OO(hours) .. " hrs " .. TK:OO(mins) .. " mins"
+        return self:OO(days) .. " days " .. self:OO(hours) .. " hrs " .. self:OO(mins) .. " mins"
     elseif hours > 0 then
-        return TK:OO(hours) .. " hrs " .. TK:OO(mins) .. " mins"
+        return self:OO(hours) .. " hrs " .. self:OO(mins) .. " mins"
     elseif mins > 0 then
-        return TK:OO(mins) .. " mins"
+        return self:OO(mins) .. " mins"
     else
         return "0 mins"
     end

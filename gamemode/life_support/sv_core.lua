@@ -156,9 +156,12 @@ hook.Add("OnAtmosphereChange", "TKLS", function(ent, old_env, new_env)
         ent:SetMoveType(MOVETYPE_WALK)
         ent:SetVelocity(-ent:GetVelocity() * 0.7)
     elseif ent:IsVehicle() then
-        local ply = ent:GetDriver()
-        if not IsValid(ply) then return end
-        ply:SetNWString("TKPlanet", new_env.atmosphere.name)
+        timer.Simple(0.1, function() -- Somehow NULL vehicles can get past IsValid while being deleted
+            if not IsValid(ent) then return end
+            local ply = ent:GetDriver()
+            if not IsValid(ply) then return end
+            ply:SetNWString("TKPlanet", new_env.atmosphere.name)
+        end)
     end
 end)
 
