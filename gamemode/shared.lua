@@ -24,7 +24,7 @@ end
 
 local function LoadModules()
     local root = GM.FolderName .. "/gamemode/"
-    local files, dirs = file.Find(root .. "*", "LUA")
+    local _, dirs = file.Find(root .. "*", "LUA")
 
     for _, dir in pairs(dirs) do
         if not IsValidFolder(dir) then continue end
@@ -48,6 +48,10 @@ local function LoadModules()
                     AddCSLuaFile(path)
                 else
                     include(path)
+                end
+            elseif lua:match("^in_") then
+                if SERVER then
+                    AddCSLuaFile(path)
                 end
             end
         end
